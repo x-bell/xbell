@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200px" height="1200px" viewBox="0 0 1200 1200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>画板</title>
+    <defs>
+        <linearGradient x1="50%" y1="-22.1292312%" x2="50%" y2="111.915064%" id="linearGradient-1">
+            <stop stop-color="#EEEEEE" offset="0%"></stop>
+            <stop stop-color="#E5E5E5" offset="40.9516021%"></stop>
+            <stop stop-color="#D8D8D8" offset="100%"></stop>
+        </linearGradient>
+        <path d="M109.941414,315.731389 L364.504395,315.731389 C375.98657,315.731389 385.291322,323.923746 385.287139,334.021311 C385.286191,336.309673 384.796756,338.577541 383.842921,340.706622 C373.185243,364.540446 367.856404,404.876729 367.856404,461.715477 C367.856404,528.246829 408.435308,623.384913 423.037777,744.207069 C425.827882,767.292639 421.881811,808.655713 411.199567,868.296291 C409.606485,877.181764 400.900333,883.731389 390.671638,883.731389 L255.899169,883.731389 L255.899169,883.731389 L130.115874,883.731389 C118.633697,883.731389 109.328152,875.54059 109.331356,865.443022 C109.331822,863.982936 109.531165,862.528154 109.923262,861.109365 C125.346766,805.488965 131.974695,766.521532 129.807055,744.207069 C117.906349,621.696924 71.0033459,528.563429 71.0033459,461.715477 C71.0033459,387.322077 78.3727991,341.1794 93.1117109,323.287449 C97.0211365,318.543125 103.278956,315.731389 109.941414,315.731389 Z" id="path-2"></path>
+        <filter x="-2.6%" y="-1.2%" width="105.1%" height="103.2%" filterUnits="objectBoundingBox" id="filter-3">
+            <feMorphology radius="2" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <path d="M814.040242,315.731389 L1068.60322,315.731389 C1080.0854,315.731389 1089.39015,323.923746 1089.38597,334.021311 C1089.38502,336.309673 1088.89558,338.577541 1087.94175,340.706622 C1077.28407,364.540446 1071.95523,404.876729 1071.95523,461.715477 C1071.95523,528.246829 1112.53414,623.384913 1127.13661,744.207069 C1129.92671,767.292639 1125.98064,808.655713 1115.2984,868.296291 C1113.70531,877.181764 1104.99916,883.731389 1094.77047,883.731389 L959.997997,883.731389 L959.997997,883.731389 L834.214703,883.731389 C822.732525,883.731389 813.42698,875.54059 813.430185,865.443022 C813.430651,863.982936 813.629994,862.528154 814.022091,861.109365 C829.445595,805.488965 836.073524,766.521532 833.905883,744.207069 C822.005177,621.696924 775.102174,528.563429 775.102174,461.715477 C775.102174,387.322077 782.471627,341.1794 797.210539,323.287449 C801.119965,318.543125 807.377785,315.731389 814.040242,315.731389 Z" id="path-4"></path>
+        <filter x="-2.6%" y="-1.2%" width="105.1%" height="103.2%" filterUnits="objectBoundingBox" id="filter-5">
+            <feMorphology radius="2" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <path d="M461.990828,315.731389 L716.553809,315.731389 C728.035984,315.731389 737.340736,323.923746 737.336553,334.021311 C737.335605,336.309673 736.84617,338.577541 735.892335,340.706622 C725.234658,364.540446 719.905819,404.876729 719.905819,461.715477 C719.905819,528.246829 760.484722,623.384913 775.087191,744.207069 C777.877297,767.292639 773.931225,808.655713 763.248981,868.296291 C761.655899,877.181764 752.949748,883.731389 742.721052,883.731389 L607.948583,883.731389 L607.948583,883.731389 L482.165289,883.731389 C470.683111,883.731389 461.377566,875.54059 461.380771,865.443022 C461.381236,863.982936 461.58058,862.528154 461.972677,861.109365 C477.39618,805.488965 484.024109,766.521532 481.856469,744.207069 C469.955763,621.696924 423.05276,528.563429 423.05276,461.715477 C423.05276,387.322077 430.422213,341.1794 445.161125,323.287449 C449.070551,318.543125 455.32837,315.731389 461.990828,315.731389 Z" id="path-6"></path>
+        <filter x="-2.6%" y="-1.2%" width="105.1%" height="103.2%" filterUnits="objectBoundingBox" id="filter-7">
+            <feMorphology radius="2" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="2" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="画板" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="矩形" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+            <use stroke="#4A4A4A" stroke-width="4" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+        </g>
+        <g id="矩形" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-5)" xlink:href="#path-4"></use>
+            <use stroke="#4A4A4A" stroke-width="4" fill="url(#linearGradient-1)" xlink:href="#path-4"></use>
+        </g>
+        <g id="矩形" fill-rule="nonzero">
+            <use fill="black" fill-opacity="1" filter="url(#filter-7)" xlink:href="#path-6"></use>
+            <use stroke="#4A4A4A" stroke-width="4" fill="url(#linearGradient-1)" xlink:href="#path-6"></use>
+        </g>
+        <text id="pages" font-family="ChalkboardSE-Bold, Chalkboard SE" font-size="70" font-weight="bold" fill="#1E8AE3">
+            <tspan x="507" y="659">pages</tspan>
+        </text>
+        <text id="mods" font-family="ChalkboardSE-Bold, Chalkboard SE" font-size="70" font-weight="bold" fill="#1E8AE3">
+            <tspan x="168" y="659">mods</tspan>
+        </text>
+        <text id="cases" font-family="ChalkboardSE-Bold, Chalkboard SE" font-size="70" font-weight="bold" fill="#1E8AE3">
+            <tspan x="868" y="659">cases</tspan>
+        </text>
+    </g>
+</svg>

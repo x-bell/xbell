@@ -1,0 +1,58 @@
+{
+	"name": "bell-vsc-extension",
+	"displayName": "Bell",
+	"description": "Bell Test for VSCode",
+	"version": "0.0.6",
+	"engines": {
+		"vscode": "^1.67.0"
+	},
+	"icon": "images/bell.png",
+	"categories": [
+		"Testing"
+	],
+	"activationEvents": [
+		"workspaceContains:**/*bell*.config.ts",
+		"onCommand:extension.debugCase",
+		"onLanguage:typescript"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run esbuild-base -- --minify",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "yarn run compile && yarn run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js",
+		"package": "pnpm vsce package --no-dependencies",
+		"release": "pnpm vsce publish --no-dependencies"
+	},
+	"devDependencies": {
+		"@types/babel__core": "^7.1.19",
+		"@types/babel__traverse": "^7.17.1",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.1",
+		"@types/node": "14.x",
+		"@types/vscode": "^1.67.0",
+		"@typescript-eslint/eslint-plugin": "^5.21.0",
+		"@typescript-eslint/parser": "^5.21.0",
+		"@vscode/test-electron": "^2.1.3",
+		"esbuild": "^0.14.42",
+		"eslint": "^8.14.0",
+		"glob": "^8.0.1",
+		"mocha": "^9.2.2",
+		"typescript": "^4.6.4"
+	},
+	"dependencies": {
+		"@babel/core": "^7.18.2",
+		"@babel/parser": "^7.18.3",
+		"@babel/traverse": "^7.18.2",
+		"@babel/types": "^7.18.2"
+	},
+	"publisher": "xlianghang"
+}
