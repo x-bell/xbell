@@ -1,8 +1,0 @@
-node_modules
-dist
-.turbo
-out
-dist
-.vscode-test/
-*.vsix
-.DS_Store
