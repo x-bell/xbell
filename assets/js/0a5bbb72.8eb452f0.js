@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[486],{1351:function(e){e.exports=JSON.parse('{"label":"facebook","permalink":"/xbell/blog/tags/facebook","allTagsPath":"/xbell/blog/tags","count":1}')}}]);
