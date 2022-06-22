@@ -1,0 +1,17 @@
+{
+  "name": "basic-example",
+  "author": "",
+  "version": "1.0.0",
+  "private": true,
+  "description": "自动化测试项目",
+  "scripts": {
+    "install:browser": "playwright install",
+    "start": "xbell"
+  },
+  "dependencies": {
+    "xbell": "workspace:*"
+  },
+  "devDependencies": {
+     "eslint-config-xbell": "^0.1.0"
+  }
+}

@@ -1,0 +1,25 @@
+.root {
+  height: calc(100vh - 70px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.avatar {
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.username {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 30px;
+}
