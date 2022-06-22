@@ -18,8 +18,10 @@ export class Context {
     public expect: Expect,
     public rootDir: string,
     public caseInfo: {
-      caseName: string;
       groupName: string;
+      caseName: string;
+      groupIndex: number;
+      caseIndex: number;
     }
   ) {}
 

@@ -3,6 +3,8 @@ import * as path from 'path';
 import { PNG } from 'pngjs'
 import { createDecorator } from './custom'
 import pixcelMatch = require('pixelmatch');
+import filenamify = require('filenamify');
+
 
 const NoPageError = createDecorator(async (ctx, next) => {
   const errors: Error[] = [];
@@ -16,7 +18,7 @@ const NoPageError = createDecorator(async (ctx, next) => {
 });
 
 function getSnapshotPath(rootDir: string, groupName: string, caseName: string, env: string, imgName = 'default') {
-  return path.join(rootDir, '__snapshots__', groupName, caseName, imgName + `[${env}]` + '.png');
+  return path.join(rootDir, '__snapshots__', filenamify(groupName), filenamify(caseName), filenamify(imgName) + `[${env}]` + '.png');
 }
 // TODO:
 const SnapshotMatch = createDecorator<Partial<{
