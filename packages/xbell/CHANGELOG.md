@@ -1,5 +1,11 @@
 # xbell
 
+## 0.2.1
+
+### Patch Changes
+
+- 57fce49: dont't clear console in debug mode
+
 ## 0.2.0
 
 ### Minor Changes
