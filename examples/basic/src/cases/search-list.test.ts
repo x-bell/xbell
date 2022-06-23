@@ -10,6 +10,11 @@ export class SearchListTestGroup {
   @Inject()
   searchListPage: SearchListPage;
 
+  @Case('错误Case')
+  async errorCase() {
+    this.ctx.expect(1 + 1).toBe(3);
+  }
+
   @Case('搜索联系人')
   @BatchData(contacts)
   async testSearchContact(@BatchData.Param() contact: Contact) {
