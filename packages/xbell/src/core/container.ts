@@ -6,12 +6,13 @@ import { MetaDataType, ParameterType } from '../constants';
 import { getParameters, getMetadataKeys, prettyPrint } from '../utils';
 import { Context } from './context';
 import { XBellConfig, IBatchData, PropertyKey, MultiEnvData } from '../types';
-import { Reporter, Status, CaseRecord, GroupRecord } from './reporter';
+// import { Reporter, Status, CaseRecord, GroupRecord } from './reporter';
 import { CreateDecorateorCallback } from './custom';
 import filenamify = require('filenamify');
 import * as path from 'path';
 import * as chalk from 'chalk';
 import { Recorder } from '../recorder';
+import { Printer } from '../printer';
 
 const defaultXBellConfig: Partial<XBellConfig> = {
   viewport: {
@@ -51,6 +52,7 @@ class Container {
   public targetCaseName?: string;
   public debug!: boolean;
   public recorder!: Recorder;
+  public printer!: Printer;
   // public envConfig: EnvConfig;
   // public reporterMap: Map<EnvConfig['ENV'], Reporter> = new Map();
   protected bellConfig!: XBellConfig;
@@ -297,9 +299,7 @@ class Container {
           // reporter.finishCase(groupIndex, caseIndex);
 
         } catch(error: any) {
-          prettyPrint.printErrorStack(error);
-          this.recorder.wrongCase(envConfig.ENV, groupIndex, caseIndex);
-          // reporter.wrongCase(groupIndex, caseIndex);
+          this.recorder.wrongCase(envConfig.ENV, groupIndex, caseIndex, error);
         } finally {
           await this.destroyContext(ctx);
         }
@@ -430,7 +430,6 @@ class Container {
 
   public async destroyContext(ctx: Context) {
     await ctx.page.close();
-    const date = new Date(this.startTime);
     
     const videoRelativePath = `records/${
       filenamify(ctx.caseInfo.groupName)
@@ -439,9 +438,13 @@ class Container {
     }[${ctx.envConfig.ENV}].webm`;
 
 
-    await ctx.page.video()?.saveAs(path.join(this.projectDirPath, this.htmlReportPath, videoRelativePath));
+    try {
+      await ctx.page.video()?.saveAs(path.join(this.projectDirPath, this.htmlReportPath, videoRelativePath));
+      this.recorder.addCaseVideoRecord(ctx.envConfig.ENV, ctx.caseInfo.groupIndex, ctx.caseInfo.caseIndex, videoRelativePath)
+    } catch (error) {
+      // no any video frames
+    }
 
-    this.recorder.addCaseVideoRecord(ctx.envConfig.ENV, ctx.caseInfo.groupIndex, ctx.caseInfo.caseIndex, videoRelativePath)
     await ctx.browser.close();
   }
 
@@ -486,11 +489,14 @@ class Container {
     const recordData = runEnvs.reduce((acc, env) => {
       acc[env] = this.initRecord(env);
       return acc;
-    }, {} as Record<EnvConfig['ENV'], XBellGroupRecord[]>)
+    }, {} as Record<EnvConfig['ENV'], XBellGroupRecord[]>);
 
     this.recorder = new Recorder(recordData);
+    this.printer = new Printer(this.recorder);
+    this.printer.start();
 
     for (const env of runEnvs) {
+      this.printer.setActiveEnv(env);
       // const reporter = this.initReporter(env);
       // this.reporterMap.set(env, reporter);
       // reporter.startPrint();
@@ -504,6 +510,8 @@ class Container {
         // reporter.stopPrint();
       }
     }
+
+    this.printer.stop();
 
     // gen html
     const html = generateHTML(this.recorder.records);
@@ -545,27 +553,6 @@ class Container {
       ...config,
       runEnvs: env ? [env as EnvConfig['ENV']] : config.runEnvs,
     };
-  }
-
-  public initReporter(env: EnvConfig['ENV']) {
-    const groupRecord = this.groups
-      .filter(group => this.isValidGroup(group, env))
-      .map(group => {
-        const cases = this.getValidCase(group.constructor, env);
-        const caseRecords: CaseRecord[] = cases.map((c) => {
-          return {
-            name: c.caseName,
-            status: Status.NotStart,
-          } as CaseRecord;
-        });
-        return {
-          name: group.groupName,
-          cases: caseRecords,
-          status: Status.NotStart
-        } as GroupRecord;
-      });
-    const reporter = new Reporter(groupRecord, env!, this.debug);
-    return reporter;
   }
 
   public initRecord(env: EnvConfig['ENV']): XBellGroupRecord[] {

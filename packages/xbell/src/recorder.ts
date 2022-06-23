@@ -1,4 +1,5 @@
 import { XBellEnvRecord } from 'xbell-reporter';
+import { parseError } from './utils/error';
 
 type Env =  EnvConfig['ENV'];
 
@@ -14,8 +15,14 @@ export class Recorder {
     this.records[env][groupIndex].cases[caseIndex].status = 'successed';
   }
 
-  public wrongCase(env: Env, groupIndex: number, caseIndex: number) {
-    this.records[env][groupIndex].cases[caseIndex].status = 'failed';
+  public wrongCase(env: Env, groupIndex: number, caseIndex: number, error: Error) {
+    const errorRet = parseError(error)
+    const targetCase = this.records[env][groupIndex].cases[caseIndex];
+    targetCase.status = 'failed';
+    targetCase.errors = targetCase.errors || [];
+    if (errorRet) {
+      targetCase.errors.push(errorRet);
+    }
   }
 
   public addCaseVideoRecord(env: Env, groupIndex: number, caseIndex: number, filepath: string) {
