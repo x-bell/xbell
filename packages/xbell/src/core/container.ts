@@ -1,13 +1,18 @@
 import { chromium } from 'playwright-core';
 import { expect } from 'expect';
+import * as fs from 'fs';
+import { XBellCaseRecord, XBellGroupRecord, generateHTML } from 'xbell-reporter';
 import { MetaDataType, ParameterType } from '../constants';
 import { getParameters, getMetadataKeys, prettyPrint } from '../utils';
 import { Context } from './context';
 import { XBellConfig, IBatchData, PropertyKey, MultiEnvData } from '../types';
-import { Reporter, Status, CaseRecord, GroupRecord } from './reporter';
+// import { Reporter, Status, CaseRecord, GroupRecord } from './reporter';
 import { CreateDecorateorCallback } from './custom';
+import filenamify = require('filenamify');
 import * as path from 'path';
 import * as chalk from 'chalk';
+import { Recorder } from '../recorder';
+import { Printer } from '../printer';
 
 const defaultXBellConfig: Partial<XBellConfig> = {
   viewport: {
@@ -35,6 +40,7 @@ interface IDepend {
 
 // IoC Container
 class Container {
+  public startTime = Date.now();
   public groups: IGroup[] = [];
   public dpendMap = new Map<Function, Map<PropertyKey, IDepend[]>>();
   public caseMap = new Map<Function, ICase[]>();
@@ -45,8 +51,10 @@ class Container {
   public targetGroupName?: string;
   public targetCaseName?: string;
   public debug!: boolean;
+  public recorder!: Recorder;
+  public printer!: Printer;
   // public envConfig: EnvConfig;
-  public reporterMap: Map<EnvConfig['ENV'], Reporter> = new Map();
+  // public reporterMap: Map<EnvConfig['ENV'], Reporter> = new Map();
   protected bellConfig!: XBellConfig;
   protected projectDirPath!: string;
   protected classDecoratorMap = new Map<Function, {
@@ -62,6 +70,21 @@ class Container {
   protected classConfigMap = new Map<Function, Partial<XBellConfig>>()
 
   protected methodConfigMap = new Map<Function, Map<PropertyKey, Partial<XBellConfig>>>()
+
+  get htmlReportPath() {
+    const formatZero = (num: number) => num < 10 ? `0${num}` : num;
+
+    const date = new Date(this.startTime);
+    const displayTime =
+      date.getFullYear() + '-' +
+      date.getMonth() + 1 + '-' +
+      date.getDate() + '--' +
+      formatZero(date.getHours()) + '-' +
+      formatZero(date.getMinutes()) + '-' +
+      formatZero(date.getSeconds());
+    
+      return `html-report-${displayTime}`;
+  }
 
   public addGroup(groupName: string, constructor: Function) {
     this.groups.push({
@@ -256,11 +279,14 @@ class Container {
       const ctx = await this.initContext(envConfig, {
         groupName,
         caseName,
+        groupIndex,
+        caseIndex,
         config: this.getMethodConfig(constructor, propertyKey),
       });
 
-      const reporter = this.reporterMap.get(envConfig.ENV) as Reporter;
-      reporter.startCase(groupIndex, caseIndex);
+      // const reporter = this.reporterMap.get(envConfig.ENV) as Reporter;
+      this.recorder.startCase(envConfig.ENV, groupIndex, caseIndex);
+      // reporter.startCase(groupIndex, caseIndex);
 
       // console.log('_runCase:before');
       // for (let batchDataIndex = 0; batchDataIndex < batchData.length; batchDataIndex++) {
@@ -269,11 +295,11 @@ class Container {
             isDepend: false,
             // batchDataIndex
           });
-          reporter.finishCase(groupIndex, caseIndex);
+          this.recorder.finishCase(envConfig.ENV, groupIndex, caseIndex);
+          // reporter.finishCase(groupIndex, caseIndex);
 
         } catch(error: any) {
-          prettyPrint.printErrorStack(error);
-          reporter.wrongCase(groupIndex, caseIndex);
+          this.recorder.wrongCase(envConfig.ENV, groupIndex, caseIndex, error);
         } finally {
           await this.destroyContext(ctx);
         }
@@ -367,10 +393,14 @@ class Container {
   public async initContext(envConfig: EnvConfig, {
     groupName,
     caseName,
+    groupIndex,
+    caseIndex,
     config
   }: {
     groupName: string;
     caseName: string;
+    groupIndex: number;
+    caseIndex: number;
     config: XBellConfig;
   }) {
     const { viewport, headless } = config;
@@ -391,13 +421,30 @@ class Container {
     const page = await context.newPage();
     const ctx = new Context(envConfig, browser, page, expect, this.projectDirPath, {
       caseName,
-      groupName
+      groupName,
+      caseIndex,
+      groupIndex,
     });
     return ctx;
   }
 
   public async destroyContext(ctx: Context) {
     await ctx.page.close();
+    
+    const videoRelativePath = `records/${
+      filenamify(ctx.caseInfo.groupName)
+    }/${
+      filenamify(ctx.caseInfo.caseName)
+    }[${ctx.envConfig.ENV}].webm`;
+
+
+    try {
+      await ctx.page.video()?.saveAs(path.join(this.projectDirPath, this.htmlReportPath, videoRelativePath));
+      this.recorder.addCaseVideoRecord(ctx.envConfig.ENV, ctx.caseInfo.groupIndex, ctx.caseInfo.caseIndex, videoRelativePath)
+    } catch (error) {
+      // no any video frames
+    }
+
     await ctx.browser.close();
   }
 
@@ -438,10 +485,21 @@ class Container {
       console.log(chalk.red('启动环境未定义，请配置 xbell.config.ts 文件中 runEnvs 属性'));
       return;
     }
+
+    const recordData = runEnvs.reduce((acc, env) => {
+      acc[env] = this.initRecord(env);
+      return acc;
+    }, {} as Record<EnvConfig['ENV'], XBellGroupRecord[]>);
+
+    this.recorder = new Recorder(recordData);
+    this.printer = new Printer(this.recorder);
+    this.printer.start();
+
     for (const env of runEnvs) {
-      const reporter = this.initReporter(env);
-      this.reporterMap.set(env, reporter);
-      reporter.startPrint();
+      this.printer.setActiveEnv(env);
+      // const reporter = this.initReporter(env);
+      // this.reporterMap.set(env, reporter);
+      // reporter.startPrint();
       const config = this.bellConfig.envConfig[env]!;
       try {
         await this.runAllGroup(config);
@@ -449,9 +507,18 @@ class Container {
         // 
         throw error;
       } finally {
-        reporter.stopPrint();
+        // reporter.stopPrint();
       }
     }
+
+    this.printer.stop();
+
+    // gen html
+    const html = generateHTML(this.recorder.records);
+    fs.writeFileSync(path.join(this.htmlReportPath, 'index.html'), html, 'utf-8');
+
+    // remove .xbell folder
+    fs.rmSync(path.join(this.projectDirPath, '.xbell'), { recursive: true, force: true });
   }
 
   public loadXBellConfig(): XBellConfig {
@@ -488,25 +555,30 @@ class Container {
     };
   }
 
-  public initReporter(env: EnvConfig['ENV']) {
-    const groupRecord = this.groups
-      .filter(group => this.isValidGroup(group, env))
-      .map(group => {
-        const cases = this.getValidCase(group.constructor, env);
-        const caseRecords: CaseRecord[] = cases.map((c) => {
-          return {
-            name: c.caseName,
-            status: Status.NotStart,
-          } as CaseRecord;
-        });
+  public initRecord(env: EnvConfig['ENV']): XBellGroupRecord[] {
+    const groupRecord: XBellGroupRecord[] = this.groups
+    .filter(group => this.isValidGroup(group, env))
+    .map(group => {
+      const cases = this.getValidCase(group.constructor, env);
+      const caseRecords: XBellCaseRecord[] = cases.map((c) => {
         return {
-          name: group.groupName,
-          cases: caseRecords,
-          status: Status.NotStart
-        } as GroupRecord;
+          caseName: c.caseName,
+          status: 'waiting',
+          videoRecords: [],
+          groupName: group.groupName,
+          browser: 'chromium',
+          env,
+        } as XBellCaseRecord;
       });
-    const reporter = new Reporter(groupRecord, env!, this.debug);
-    return reporter;
+      return {
+        groupName: group.groupName,
+        cases: caseRecords,
+        browser: 'chromium',
+        env,
+      } as XBellGroupRecord;
+    });
+
+    return groupRecord;
   }
 }
 
