@@ -300,6 +300,7 @@ class Container {
 
         } catch(error: any) {
           this.recorder.wrongCase(envConfig.ENV, groupIndex, caseIndex, error);
+          prettyPrint.printErrorStack(error);
         } finally {
           await this.destroyContext(ctx);
         }

@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 
 // import * as path from 'path';
 // import { dim } from 'colors/safe';
+import { parseError } from './error';
 
 
 const FAIL_TEXT = '失败';
@@ -83,6 +84,19 @@ class PrettyPrint {
       clearInterval(this.loadingTimer)
     }
     process.stdout.write('\r')
+  }
+
+  public printErrorStack(error: Error) {
+    if (!error?.stack) {
+      return;
+    }
+    const ret = parseError(error);
+    if (ret) {
+      console.log(ret.message)
+      console.log('');
+      if (ret.codeFrame) console.log(ret.codeFrame);
+      if (ret.firstFrame) console.log(ret.firstFrame);
+    }
   }
 
   // public printErrorStack(error: Error) {

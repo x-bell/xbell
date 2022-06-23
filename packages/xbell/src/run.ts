@@ -1,7 +1,8 @@
 import 'reflect-metadata';
 import * as fs from 'fs';
 import { resolve, join } from 'path';
-import { chromium } from 'playwright-core';
+// @ts-ignore
+// import server = require('playwright-core/lib/server');
 import { container, Context } from './core';
 import { MetaDataType } from './constants';
 import { sleep, prettyPrint } from './utils';
@@ -25,6 +26,22 @@ program
   .option('-d, --debug', '调试模式: 不会清空打印等');
 
 program.parse(process.argv);
+
+// program.command('install')
+// .action(async () => {
+//   const executables = server.registry.defaultExecutables();
+
+//   await server.registry.install(executables, false);
+// })
+
+// program
+//   .command('run')
+//   .description('Run test cases')
+//   .action(async () => {
+//     console.log('run');
+//     const rootDir = join(process.cwd(), '');
+//     await load(rootDir);
+//   })
 
 const commandOptions = program.opts() as CommandOptions;
 
@@ -52,6 +69,7 @@ export async function load(rootDir: string) {
   // 运行所有环境
   await container.runAllEnvs();
 }
+
 
 (async () => {
   const rootDir = join(process.cwd(), '');
