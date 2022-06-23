@@ -7,12 +7,12 @@ import theme from 'assets/theme';
 import GroupCard from 'components/GroupCard';
 import AccountBar from 'components/AccountBar';
 import { MaterialUIControllerProvider } from './context';
-import { XBellReportResources } from '../lib/index';
+import { XBellEnvRecord } from '../lib/index';
 
 import './App.css'
 
 // @ts-ignore
-const XBELL_RESOURCES: XBellReportResources = window.XBELL_RESOURCES;
+const XBELL_RESOURCES: XBellEnvRecord = window.XBELL_RESOURCES;
 
 const ListContainer = styled('div')`
   padding: 40px;

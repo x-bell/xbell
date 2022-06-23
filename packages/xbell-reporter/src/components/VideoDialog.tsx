@@ -73,8 +73,6 @@ const VideoDialog: React.FC<VideoDialogProps> = ({
     if (!playing) {
       setPlaying(true);
     }
-
-    console.error('debug:canplay');
   }
 
   const handleTimeUpdate = () => {

@@ -4,6 +4,13 @@ export type XBellCaseStatus =
   | 'running'
   | 'waiting';
 
+export interface XBellErrorRecord {
+  originError: Error;
+  message?: string;
+  codeFrame?: string;
+  firstFrame?: string;
+}
+
 export interface XBellCaseRecord {
   env: string;
   caseName: string;
@@ -13,6 +20,8 @@ export interface XBellCaseRecord {
   videoRecords: {
     filepath: string;
   }[]
+  errors?: XBellErrorRecord[];
+  steps?: string[];
 }
 
 export interface XBellGroupRecord {
