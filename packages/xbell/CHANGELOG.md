@@ -1,5 +1,11 @@
 # xbell
 
+## 0.2.4
+
+### Patch Changes
+
+- 9df41a3: print error stack
+
 ## 0.2.3
 
 ### Patch Changes
