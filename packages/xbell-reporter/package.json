@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && node ./scripts/gen-html.js",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
