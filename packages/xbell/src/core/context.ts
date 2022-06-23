@@ -2,8 +2,7 @@ import { Browser, Page } from 'playwright-core';
 import { Expect } from 'expect';
 import { getMetadataKeys } from '../utils';
 import { MetaDataType } from '../constants';
-// import { EnvConfig } from '../env';
-// import { getDestroyKeys } from './destroy';
+import { XBellPage } from '../types/page';
 
 type Step<T> = <R>(stepDescription: string, callback: (v: T) => R) => Promise<Step<Awaited<R>>>
 export class Context {
@@ -11,10 +10,12 @@ export class Context {
   protected _currentStep?: string;
   protected prevPages: Page[] = []
 
+  public page: XBellPage;
+
   constructor(
     public envConfig: EnvConfig,
     public browser: Browser,
-    public page: Page,
+    page: Page,
     public expect: Expect,
     public rootDir: string,
     public caseInfo: {
@@ -23,7 +24,9 @@ export class Context {
       groupIndex: number;
       caseIndex: number;
     }
-  ) {}
+  ) {
+    this.page = this._extendPage(page);
+  }
 
   /**
    * 创建实例，并自动注入依赖 & 上下文
@@ -60,7 +63,7 @@ export class Context {
   public async switchToNewPage() {
     this.prevPages = [...this.prevPages, this.page]
     const page = await this.page.context().waitForEvent('page')
-    this.page = page;
+    this.page = this._extendPage(page);
   }
 
   protected _genStep<T>(v: T)  {
@@ -72,6 +75,15 @@ export class Context {
     }
 
     return nextStep
+  }
+
+  protected _extendPage(page: Page) {
+    // @ts-ignore
+    page.queryByText = (text: string) => {
+      return page.locator(`text=${text}`);
+    }
+
+    return page as XBellPage;
   }
 
   public step = this._genStep(undefined)
