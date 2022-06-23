@@ -492,8 +492,10 @@ class Container {
     }, {} as Record<EnvConfig['ENV'], XBellGroupRecord[]>);
 
     this.recorder = new Recorder(recordData);
-    this.printer = new Printer(this.recorder);
-    this.printer.start();
+    if (!this.debug) {
+      this.printer = new Printer(this.recorder);
+      this.printer.start();
+    }
 
     for (const env of runEnvs) {
       this.printer.setActiveEnv(env);
@@ -511,7 +513,9 @@ class Container {
       }
     }
 
-    this.printer.stop();
+    if (!this.debug) {
+      this.printer.stop();
+    }
 
     // gen html
     const html = generateHTML(this.recorder.records);
