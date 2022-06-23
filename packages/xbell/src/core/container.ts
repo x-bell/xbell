@@ -498,7 +498,9 @@ class Container {
     }
 
     for (const env of runEnvs) {
-      this.printer.setActiveEnv(env);
+      if (!this.debug) {
+        this.printer.setActiveEnv(env);
+      }
       // const reporter = this.initReporter(env);
       // this.reporterMap.set(env, reporter);
       // reporter.startPrint();
