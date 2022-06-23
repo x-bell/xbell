@@ -1,5 +1,11 @@
 # xbell
 
+## 0.2.3
+
+### Patch Changes
+
+- 84b3d66: support queryByXXX api
+
 ## 0.2.2
 
 ### Patch Changes
