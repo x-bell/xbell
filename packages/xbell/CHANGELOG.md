@@ -1,5 +1,11 @@
 # xbell
 
+## 0.2.2
+
+### Patch Changes
+
+- 05edd09: bugfix: printer invoke
+
 ## 0.2.1
 
 ### Patch Changes
