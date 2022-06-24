@@ -1,6 +1,6 @@
 {
   "name": "xbell",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "测试框架",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

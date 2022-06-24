@@ -1,5 +1,11 @@
 # xbell
 
+## 0.2.6
+
+### Patch Changes
+
+- 27f29cf: Friendly tips for snapshot match
+
 ## 0.2.5
 
 ### Patch Changes
