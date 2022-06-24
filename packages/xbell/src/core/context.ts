@@ -83,6 +83,27 @@ export class Context {
       return page.locator(`text=${text}`);
     }
 
+    // @ts-ignore
+    page.queryByClass = (className: string, tagType: string = '') => {
+      const cls = className.startsWith('.') ? className : `.${className}`
+      return page.locator(`${tagType}${cls}`);
+    }
+
+    // @ts-ignore
+    page.queryByTestId = (testId: string, tagType: string = '') => {
+      return page.locator(`${tagType}[data-testid=${testId}]`);
+    };
+
+    // @ts-ignore
+    page.queryByPlaceholder = (placeholder: string, tagType: string = '') => {
+      return page.locator(`${tagType}[placeholder="${placeholder}"]`);
+    }
+
+    // @ts-ignore
+    page.queryById = (id: string) => {
+      return page.locator(`#${id}`);
+    }
+
     return page as XBellPage;
   }
 
