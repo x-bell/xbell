@@ -49,16 +49,17 @@ const SnapshotMatch = createDecorator<Partial<{
       return 0;
     })();
     if (diff > expectDiffCount) {
+      const diffPngPath = snapshotPath.replace(/\.png$/, '.diff.png');
       fs.writeFileSync(
         snapshotPath.replace(/\.png$/, '.new.png'),
         buffer
       );
       fs.writeFileSync(
-        snapshotPath.replace(/\.png$/, '.diff.png'),
+        diffPngPath,
         PNG.sync.write(diffPNG)
       );
+      throw new Error('快照对比失败，请查看：' + diffPngPath);
     }
-    ctx.expect(diff).toBeLessThanOrEqual(expectDiffCount);
   }
 })
 
