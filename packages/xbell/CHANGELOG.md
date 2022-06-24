@@ -1,5 +1,11 @@
 # xbell
 
+## 0.2.5
+
+### Patch Changes
+
+- 362fa38: support queryByClassName queryByTestId queryById queryByPlaceholder
+
 ## 0.2.4
 
 ### Patch Changes
