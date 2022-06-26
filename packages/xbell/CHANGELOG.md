@@ -1,5 +1,11 @@
 # xbell
 
+## 0.3.0
+
+### Minor Changes
+
+- fa145d3: Support custom decorator
+
 ## 0.2.6
 
 ### Patch Changes
