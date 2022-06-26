@@ -1,7 +1,7 @@
 {
   "name": "xbell",
-  "version": "0.2.6",
-  "description": "测试框架",
+  "version": "0.3.0",
+  "description": "A Web end-to-end testing framework.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,7 +20,16 @@
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "end-to-end",
+    "testing",
+    "pom",
+    "ioc",
+    "typescript",
+    "decorator",
+    "multi-environment",
+    "ddt"
+  ],
   "author": "lianghang",
   "license": "ISC",
   "dependencies": {

@@ -16,7 +16,7 @@ export {
   RunEnvs,
   RunBrowsers,
   Sleep,
-  createDecorator,
+  defineDecorator,
 } from './core';
 
 export {

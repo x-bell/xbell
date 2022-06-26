@@ -1,12 +1,12 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { PNG } from 'pngjs'
-import { createDecorator } from './custom'
+import { createDecoratorImpl } from './custom'
 import pixcelMatch = require('pixelmatch');
 import filenamify = require('filenamify');
 
 
-const NoPageError = createDecorator(async (ctx, next) => {
+const NoPageError = createDecoratorImpl(async (ctx, next) => {
   const errors: Error[] = [];
   ctx.page.on('pageerror', (message) => {
       errors.push(message);
@@ -21,7 +21,7 @@ function getSnapshotPath(rootDir: string, groupName: string, caseName: string, e
   return path.join(rootDir, '__snapshots__', filenamify(groupName), filenamify(caseName), filenamify(imgName) + `[${env}]` + '.png');
 }
 // TODO:
-const SnapshotMatch = createDecorator<Partial<{
+const SnapshotMatch = createDecoratorImpl<Partial<{
   imageName: string;
   diffPXCount: number;
   diffPXRatio: number;
