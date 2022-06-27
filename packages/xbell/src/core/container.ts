@@ -1,5 +1,4 @@
 import { chromium } from 'playwright-core';
-import { expect } from 'expect';
 import * as fs from 'fs';
 import { XBellCaseRecord, XBellGroupRecord, generateHTML } from 'xbell-reporter';
 import { MetaDataType, ParameterType } from '../constants';
@@ -420,7 +419,7 @@ class Container {
       },
     })
     const page = await context.newPage();
-    const ctx = new Context(envConfig, browser, page, expect, this.projectDirPath, {
+    const ctx = new Context(envConfig, browser, page, this.projectDirPath, {
       caseName,
       groupName,
       caseIndex,

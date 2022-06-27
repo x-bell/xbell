@@ -1,8 +1,10 @@
-import { Browser, Page } from 'playwright-core';
-import { Expect } from 'expect';
+import { Browser, Page, PageScreenshotOptions } from 'playwright-core';
+import { expect as jexpect, Expect as JExpect } from 'expect';
+import { ExpectType } from '../types';
 import { getMetadataKeys } from '../utils';
 import { MetaDataType } from '../constants';
 import { XBellPage } from '../types/page';
+import { toMatchSnapshot, ToMatchSnapshotOptions, ScreenshotTarget } from './snapshot';
 
 type Step<T> = <R>(stepDescription: string, callback: (v: T) => R) => Promise<Step<Awaited<R>>>
 export class Context {
@@ -12,11 +14,12 @@ export class Context {
 
   public page: XBellPage;
 
+  public expect: ExpectType;
+
   constructor(
     public envConfig: EnvConfig,
     public browser: Browser,
     page: Page,
-    public expect: Expect,
     public rootDir: string,
     public caseInfo: {
       groupName: string;
@@ -25,6 +28,7 @@ export class Context {
       caseIndex: number;
     }
   ) {
+    this.expect = this._extendExpect(jexpect);
     this.page = this._extendPage(page);
   }
 
@@ -64,6 +68,25 @@ export class Context {
     this.prevPages = [...this.prevPages, this.page]
     const page = await this.page.context().waitForEvent('page')
     this.page = this._extendPage(page);
+  }
+
+  protected _extendExpect(expect: JExpect): ExpectType {
+    const ctx = this;
+    expect.extend({
+      async toMatchSnapshot (
+        this: ReturnType<JExpect['getState']>,
+        received: ScreenshotTarget,
+        {
+          name,
+          maxDiffPixels,
+          maxDiffPixelRatio,
+          threshold,
+        }: ToMatchSnapshotOptions) {
+        return toMatchSnapshot(ctx, received, { maxDiffPixelRatio, maxDiffPixels, name, threshold })
+      }
+    })
+
+    return expect as ExpectType;
   }
 
   protected _genStep<T>(v: T)  {
