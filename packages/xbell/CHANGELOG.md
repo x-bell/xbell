@@ -1,5 +1,11 @@
 # xbell
 
+## 0.3.3
+
+### Patch Changes
+
+- e1152d9: handle nth first last api
+
 ## 0.3.2
 
 ### Patch Changes
