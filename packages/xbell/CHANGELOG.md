@@ -1,5 +1,11 @@
 # xbell
 
+## 0.3.1
+
+### Patch Changes
+
+- 532441c: ctx.expect support toMatchSnapshot
+
 ## 0.3.0
 
 ### Minor Changes
