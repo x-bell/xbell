@@ -129,9 +129,9 @@ export class Context {
   protected _extendQuery(page: Page | Locator): XBellPage | XBellLocator {
     const rawLocator = page.locator;
     const ctx = this;
-    page.locator = function (...args) {
+    page.locator = (...args) => {
       return ctx._extendLocator(
-        rawLocator.apply(this, args)
+        rawLocator.apply(page, args)
       )
     }
     // @ts-ignore
