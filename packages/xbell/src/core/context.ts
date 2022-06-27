@@ -1,9 +1,9 @@
-import { Browser, Page, PageScreenshotOptions } from 'playwright-core';
+import { Browser, Locator, Page, PageScreenshotOptions } from 'playwright-core';
 import { expect as jexpect, Expect as JExpect } from 'expect';
 import { ExpectType } from '../types';
 import { getMetadataKeys } from '../utils';
 import { MetaDataType } from '../constants';
-import { XBellPage } from '../types/page';
+import { XBellLocator, XBellPage } from '../types/page';
 import { toMatchSnapshot, ToMatchSnapshotOptions, ScreenshotTarget } from './snapshot';
 
 type Step<T> = <R>(stepDescription: string, callback: (v: T) => R) => Promise<Step<Awaited<R>>>
@@ -100,33 +100,50 @@ export class Context {
     return nextStep
   }
 
-  protected _extendPage(page: Page) {
+  protected _extendQuery(page: Page): XBellPage;
+
+  protected _extendQuery(page: Locator): XBellLocator;
+
+
+  protected _extendQuery(page: Page | Locator): XBellPage | XBellLocator {
+    const rawLocator = page.locator;
+    const ctx = this;
+    page.locator = function (...args) {
+      return ctx._extendQuery(
+        rawLocator.apply(this, args)
+      )
+    }
     // @ts-ignore
     page.queryByText = (text: string) => {
-      return page.locator(`text=${text}`);
+      return this._extendQuery(page.locator(`text=${text}`));
     }
 
     // @ts-ignore
     page.queryByClass = (className: string, tagType: string = '') => {
       const cls = className.startsWith('.') ? className : `.${className}`
-      return page.locator(`${tagType}${cls}`);
+      return this._extendQuery(page.locator(`${tagType}${cls}`));
     }
 
     // @ts-ignore
     page.queryByTestId = (testId: string, tagType: string = '') => {
-      return page.locator(`${tagType}[data-testid=${testId}]`);
+      return this._extendQuery(page.locator(`${tagType}[data-testid=${testId}]`));
     };
 
     // @ts-ignore
     page.queryByPlaceholder = (placeholder: string, tagType: string = '') => {
-      return page.locator(`${tagType}[placeholder="${placeholder}"]`);
+      return this._extendQuery(page.locator(`${tagType}[placeholder="${placeholder}"]`));
     }
 
     // @ts-ignore
     page.queryById = (id: string) => {
-      return page.locator(`#${id}`);
+      return this._extendQuery(page.locator(`#${id}`));
     }
 
+    return page as XBellPage | XBellLocator;
+  }
+
+  protected _extendPage(page: Page) {
+    this._extendQuery(page);
     return page as XBellPage;
   }
 
