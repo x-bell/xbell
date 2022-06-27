@@ -100,43 +100,64 @@ export class Context {
     return nextStep
   }
 
+  protected _extendLocator(locator: Locator): XBellLocator {
+    this._extendQuery(locator);
+    const rawNth = locator.nth;
+    const rawFirst = locator.first;
+    const rawLast = locator.last;
+    locator.nth = (index: number) => {
+      return this._extendLocator(
+        rawNth.apply(locator, [index])
+      )
+    }
+
+    locator.first = () => {
+      return this._extendLocator(rawFirst.apply(locator));
+    }
+
+    locator.last = () => {
+      return this._extendLocator(rawLast.apply(locator));
+    }
+
+    return locator as XBellLocator;
+  }
+
   protected _extendQuery(page: Page): XBellPage;
 
   protected _extendQuery(page: Locator): XBellLocator;
-
 
   protected _extendQuery(page: Page | Locator): XBellPage | XBellLocator {
     const rawLocator = page.locator;
     const ctx = this;
     page.locator = function (...args) {
-      return ctx._extendQuery(
+      return ctx._extendLocator(
         rawLocator.apply(this, args)
       )
     }
     // @ts-ignore
     page.queryByText = (text: string) => {
-      return this._extendQuery(page.locator(`text=${text}`));
+      return this._extendLocator(page.locator(`text=${text}`));
     }
 
     // @ts-ignore
     page.queryByClass = (className: string, tagType: string = '') => {
       const cls = className.startsWith('.') ? className : `.${className}`
-      return this._extendQuery(page.locator(`${tagType}${cls}`));
+      return this._extendLocator(page.locator(`${tagType}${cls}`));
     }
 
     // @ts-ignore
     page.queryByTestId = (testId: string, tagType: string = '') => {
-      return this._extendQuery(page.locator(`${tagType}[data-testid=${testId}]`));
+      return this._extendLocator(page.locator(`${tagType}[data-testid=${testId}]`));
     };
 
     // @ts-ignore
     page.queryByPlaceholder = (placeholder: string, tagType: string = '') => {
-      return this._extendQuery(page.locator(`${tagType}[placeholder="${placeholder}"]`));
+      return this._extendLocator(page.locator(`${tagType}[placeholder="${placeholder}"]`));
     }
 
     // @ts-ignore
     page.queryById = (id: string) => {
-      return this._extendQuery(page.locator(`#${id}`));
+      return this._extendLocator(page.locator(`#${id}`));
     }
 
     return page as XBellPage | XBellLocator;

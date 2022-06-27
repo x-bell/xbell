@@ -31,5 +31,7 @@ export interface XBellPage extends Omit<Page, 'locator'>, XBellQuery  {
 }
 
 export interface XBellLocator extends Omit<Locator, 'locator'>, XBellQuery {
-
+  nth(index: number): XBellLocator;
+  first(): XBellLocator;
+  last(): XBellLocator;
 }
