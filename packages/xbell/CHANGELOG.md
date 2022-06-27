@@ -1,5 +1,11 @@
 # xbell
 
+## 0.3.2
+
+### Patch Changes
+
+- 393a817: Support chained mode query
+
 ## 0.3.1
 
 ### Patch Changes
