@@ -6,43 +6,43 @@ import { ContextProvider } from '@site/src/components/Context';
 const dataSource: CardInfo[] = [
   {
     username: '皮卡丘',
-    avatar: 'avatar/pikachu.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/pikachu.png',
   },
   {
     username: '可达鸭',
-    avatar: 'avatar/psyduck.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/psyduck.png',
   },
   {
     username: '伊布',
-    avatar: 'avatar/eevee.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/eevee.png',
   },
   {
     username: '小火龙',
-    avatar: 'avatar/charmander.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/charmander.png',
   },
   {
     username: '马里奥',
-    avatar: 'avatar/super_mario.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/super_mario.png',
   },
   {
     username: '妙蛙种子',
-    avatar: 'avatar/bullbasaur.png'
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/bullbasaur.png'
   },
   {
     username: '胖丁',
-    avatar: 'avatar/jigglypuff.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/jigglypuff.png',
   },
   {
     username: '杰尼龟',
-    avatar: 'avatar/squirtle.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/squirtle.png',
   },
   {
     username: '喵喵',
-    avatar: 'avatar/meowth.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/meowth.png',
   },
   {
     username: '卡比兽',
-    avatar: 'avatar/snorlax.png',
+    avatar: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/test-website/avatar/snorlax.png',
   },
 ];
 
