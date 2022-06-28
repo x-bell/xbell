@@ -13,9 +13,9 @@ $ xbell --debug
 ## VSCode 插件
 VSCode 商店搜索 XBell，安装
 
-![VSCode插件](./xbell-vscode.png)
+![VSCode插件](https://raw.githubusercontent.com/x-bell/xbell-assets/main/vscode/xbell-vscode.png)
 
 设置后断点后，点击 Case 上的「调试」，进入 debug 模式
 
 
-![VSCode插件](./xbell-vscode-debug.png)
+![VSCode插件](https://raw.githubusercontent.com/x-bell/xbell-assets/main/vscode/xbell-vscode-debug.png)

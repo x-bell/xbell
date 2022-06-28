@@ -4,14 +4,14 @@ import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  src: string;
   description: JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: '多功能装饰器',
-    Svg: require('@site/static/img/xbell-decorators.svg').default,
+    src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-decorators.svg',
     description: (
       <>
         在这，你几乎能通过装饰器干一切事
@@ -22,7 +22,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'POM & 模块化',
-    Svg: require('@site/static/img/xbell-mods.svg').default,
+    src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-mods.svg',
     description: (
       <>
         让你像前后端开发一样，通过模块化的方式组织你的用例
@@ -31,7 +31,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: '协作',
-    Svg: require('@site/static/img/xbell-cooperation.svg').default,
+    src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-cooperation.svg',
     description: (
       <>
         对 bug 自动生成视频录制，快速同步开发 & 产品经理
@@ -40,11 +40,11 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, src, description}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <img className={styles.featureSvg} role="img" src={src} />
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>

@@ -13,7 +13,7 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
        <div className={styles.fullLogoContainer}>
-          <img src={siteConfig.baseUrl + 'img/xbell-512.svg'} width={250} height={250} />
+          <img src="https://raw.githubusercontent.com/x-bell/xbell-assets/main/logo/xbell-512.svg" width={250} height={250} />
         </div>
       <div className={clsx('container', styles.container)}>
         <h1 className="hero__title">{siteConfig.title}</h1>
