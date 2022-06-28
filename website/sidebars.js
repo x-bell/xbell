@@ -29,6 +29,7 @@ const sidebars = {
         'pom',
         'multi-env',
         'ddt',
+        'snapshot',
       ],
     },
     {
@@ -54,7 +55,8 @@ const sidebars = {
       collapsed: false,
       items: [
         'api/decorator',
-        'api/expect-decorator'
+        'api/expect-decorator',
+        'api/query',
       ]
     }
   ]
