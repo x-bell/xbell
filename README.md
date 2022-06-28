@@ -3,7 +3,7 @@
     height="250"
     width="250"
     alt="xbell"
-    src="https://x-bell.github.io/xbell/img/xbell-logo.svg"
+    src="https://raw.githubusercontent.com/x-bell/xbell-assets/main/logo/xbell-logo.svg"
   />
 <h2>一款舒适的自动化测试框架</h2>
 
