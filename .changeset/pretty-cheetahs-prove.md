@@ -1,5 +1,0 @@
----
-"xbell": patch
----
-
-Rename api
