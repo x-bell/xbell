@@ -60,7 +60,7 @@ const config = {
         title: 'XBell',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/xbell-logo.svg',
+          src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/logo/xbell-logo.svg',
         },
         items: [
           {

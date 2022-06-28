@@ -31,7 +31,7 @@ const Home: React.FC<HomeProps> = ({
             {userInfo.username}
           </div>
       </div> : <div className={styles.card}>
-          <img  width={250} src={siteConfig.baseUrl + 'img/xbell.svg'} />
+          <img  width={250} src="https://raw.githubusercontent.com/x-bell/xbell-assets/main/logo/xbell.svg" />
           <Button size="large" color="primary" startIcon={<FingerprintIcon />} onClick={handleLoginClick}>
             去登录
           </Button>
