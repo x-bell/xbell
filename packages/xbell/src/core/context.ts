@@ -1,8 +1,10 @@
-import { Browser, Page } from 'playwright-core';
-import { Expect } from 'expect';
+import { Browser, Locator, Page, PageScreenshotOptions } from 'playwright-core';
+import { expect as jexpect, Expect as JExpect } from 'expect';
+import { ExpectType } from '../types';
 import { getMetadataKeys } from '../utils';
 import { MetaDataType } from '../constants';
-import { XBellPage } from '../types/page';
+import { XBellLocator, XBellPage } from '../types/page';
+import { toMatchSnapshot, ToMatchSnapshotOptions, ScreenshotTarget } from './snapshot';
 
 type Step<T> = <R>(stepDescription: string, callback: (v: T) => R) => Promise<Step<Awaited<R>>>
 export class Context {
@@ -12,11 +14,12 @@ export class Context {
 
   public page: XBellPage;
 
+  public expect: ExpectType;
+
   constructor(
     public envConfig: EnvConfig,
     public browser: Browser,
     page: Page,
-    public expect: Expect,
     public rootDir: string,
     public caseInfo: {
       groupName: string;
@@ -25,6 +28,7 @@ export class Context {
       caseIndex: number;
     }
   ) {
+    this.expect = this._extendExpect(jexpect);
     this.page = this._extendPage(page);
   }
 
@@ -66,6 +70,25 @@ export class Context {
     this.page = this._extendPage(page);
   }
 
+  protected _extendExpect(expect: JExpect): ExpectType {
+    const ctx = this;
+    expect.extend({
+      async toMatchSnapshot (
+        this: ReturnType<JExpect['getState']>,
+        received: ScreenshotTarget,
+        {
+          name,
+          maxDiffPixels,
+          maxDiffPixelRatio,
+          threshold,
+        }: ToMatchSnapshotOptions) {
+        return toMatchSnapshot(ctx, received, { maxDiffPixelRatio, maxDiffPixels, name, threshold })
+      }
+    })
+
+    return expect as ExpectType;
+  }
+
   protected _genStep<T>(v: T)  {
     const nextStep: Step<T> = async <R>(stepDescription: string, callback: (v: T) => R) => {
       // const readlV: Await<T> = await v;
@@ -77,33 +100,71 @@ export class Context {
     return nextStep
   }
 
-  protected _extendPage(page: Page) {
+  protected _extendLocator(locator: Locator): XBellLocator {
+    this._extendQuery(locator);
+    const rawNth = locator.nth;
+    const rawFirst = locator.first;
+    const rawLast = locator.last;
+    locator.nth = (index: number) => {
+      return this._extendLocator(
+        rawNth.apply(locator, [index])
+      )
+    }
+
+    locator.first = () => {
+      return this._extendLocator(rawFirst.apply(locator));
+    }
+
+    locator.last = () => {
+      return this._extendLocator(rawLast.apply(locator));
+    }
+
+    return locator as XBellLocator;
+  }
+
+  protected _extendQuery(page: Page): XBellPage;
+
+  protected _extendQuery(page: Locator): XBellLocator;
+
+  protected _extendQuery(page: Page | Locator): XBellPage | XBellLocator {
+    const rawLocator = page.locator;
+    const ctx = this;
+    page.locator = (...args) => {
+      return ctx._extendLocator(
+        rawLocator.apply(page, args)
+      )
+    }
     // @ts-ignore
     page.queryByText = (text: string) => {
-      return page.locator(`text=${text}`);
+      return this._extendLocator(page.locator(`text=${text}`));
     }
 
     // @ts-ignore
     page.queryByClass = (className: string, tagType: string = '') => {
       const cls = className.startsWith('.') ? className : `.${className}`
-      return page.locator(`${tagType}${cls}`);
+      return this._extendLocator(page.locator(`${tagType}${cls}`));
     }
 
     // @ts-ignore
     page.queryByTestId = (testId: string, tagType: string = '') => {
-      return page.locator(`${tagType}[data-testid=${testId}]`);
+      return this._extendLocator(page.locator(`${tagType}[data-testid=${testId}]`));
     };
 
     // @ts-ignore
     page.queryByPlaceholder = (placeholder: string, tagType: string = '') => {
-      return page.locator(`${tagType}[placeholder="${placeholder}"]`);
+      return this._extendLocator(page.locator(`${tagType}[placeholder="${placeholder}"]`));
     }
 
     // @ts-ignore
     page.queryById = (id: string) => {
-      return page.locator(`#${id}`);
+      return this._extendLocator(page.locator(`#${id}`));
     }
 
+    return page as XBellPage | XBellLocator;
+  }
+
+  protected _extendPage(page: Page) {
+    this._extendQuery(page);
     return page as XBellPage;
   }
 
