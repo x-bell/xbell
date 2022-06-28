@@ -12,7 +12,7 @@ const NoPageError = createDecoratorImpl(async (ctx, next) => {
   ctx.expect(errors.length).toBe(0);
 });
 
-const ToSnapShotMatch = createDecoratorImpl<ToMatchSnapshotOptions>(
+const ToMatchSnapshot = createDecoratorImpl<ToMatchSnapshotOptions>(
   async (
     ctx,
     next,
@@ -25,6 +25,6 @@ const ToSnapShotMatch = createDecoratorImpl<ToMatchSnapshotOptions>(
 
 export const Expect = {
   NoPageError,
-  ToSnapShotMatch,
+  ToMatchSnapshot,
 };
 
