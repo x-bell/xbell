@@ -7,7 +7,7 @@
   "bin": {
     "create-xbell": "./bin/create-xbell.js"
   },
-  "license": "ISC",
+  "license": "MIT",
   "files": [
     "templates",
     "dist",

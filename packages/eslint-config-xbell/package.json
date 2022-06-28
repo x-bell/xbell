@@ -6,6 +6,7 @@
   "peerDependencies": {
     "eslint": ">=7.0.0"
   },
+  "license": "MIT",
   "dependencies": {
     "eslint-config-prettier": "^8.5.0",
     "@typescript-eslint/eslint-plugin": "^5.21.0",
