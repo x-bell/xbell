@@ -1,6 +1,6 @@
 {
   "name": "create-xbell",
-  "version": "0.1.2",
+  "version": "0.3.5",
   "author": "lianghang",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

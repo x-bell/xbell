@@ -1,5 +1,11 @@
 # xbell
 
+## 0.3.5
+
+### Patch Changes
+
+- 092ec23: Automatically switch download sources
+
 ## 0.3.4
 
 ### Patch Changes
