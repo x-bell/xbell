@@ -145,6 +145,7 @@ importers:
       filenamify: ^4.3.0
       fs-extra: ^10.1.0
       lodash: ^4.17.21
+      network-speed: ^2.1.1
       pixelmatch: ^5.3.0
       playwright-core: ^1.22.0
       pngjs: ^6.0.0
@@ -162,6 +163,7 @@ importers:
       filenamify: registry.npmmirror.com/filenamify/4.3.0
       fs-extra: registry.npmmirror.com/fs-extra/10.1.0
       lodash: registry.npmmirror.com/lodash/4.17.21
+      network-speed: registry.npmmirror.com/network-speed/2.1.1
       pixelmatch: registry.npmmirror.com/pixelmatch/5.3.0
       playwright-core: registry.npmmirror.com/playwright-core/1.22.2
       pngjs: registry.npmmirror.com/pngjs/6.0.0
@@ -10561,6 +10563,12 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/neo-async/-/neo-async-2.6.2.tgz}
     name: neo-async
     version: 2.6.2
+
+  registry.npmmirror.com/network-speed/2.1.1:
+    resolution: {integrity: sha512-NDr8h55toVE5Gy/CZI5nUAl+57DX1xl3PyhcXWacUiUttOJ2JsKkm5JzyVaoJ5psR9KUhi9y4EKc+atnWarkOg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/network-speed/-/network-speed-2.1.1.tgz}
+    name: network-speed
+    version: 2.1.1
+    dev: false
 
   registry.npmmirror.com/no-case/3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/no-case/-/no-case-3.0.4.tgz}

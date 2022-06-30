@@ -6,4 +6,4 @@ require('ts-node').register({
   transpileOnly: true,
 });
 
-require('../dist/run.js');
+require('../dist/cli.js');
