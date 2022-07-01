@@ -5,12 +5,11 @@ import { container, Context } from './core';
 import { MetaDataType } from './constants';
 import { sleep, prettyPrint } from './utils';
 import { Command } from 'commander';
-import NetworkSpeed = require('network-speed');
+import { checkDownloadSpeed } from './utils/network';
 
 const pwServer = require('playwright-core/lib/server');
 const program = new Command();
 
-const testNetworkSpeed = new NetworkSpeed();
 
 
 interface CommandOptions {
@@ -28,9 +27,12 @@ const BROWSER_SOURCES = [
 
 const TEST_BROWSER_ZIP = '/builds/chromium/1000/chromium-linux.zip'
 
-async function getNetworkDownloadSpeed(sourceUrl: string) {
-  const fileSizeInBytes = 1024 * 1024 / 4;
-  await testNetworkSpeed.checkDownloadSpeed(sourceUrl + TEST_BROWSER_ZIP, fileSizeInBytes);
+async function tryToDownlaod1M(sourceUrl: string) {
+  const maxDownloadByteSize = 1024 * 1024;
+  await checkDownloadSpeed(sourceUrl + TEST_BROWSER_ZIP, {
+    maxDownloadByteSize,
+    timeout: 1000 * 10,
+  });
   return sourceUrl;
 }
 
@@ -70,12 +72,13 @@ program
 program
   .command('install [browser...]')
   .action(async (browsers: string[]) => {
-    const sourceHost = await Promise.race(BROWSER_SOURCES.map((source) => getNetworkDownloadSpeed(source)));
+    const sourceHost = await Promise.race(BROWSER_SOURCES.map((source) => tryToDownlaod1M(source)));
     process.env.PLAYWRIGHT_DOWNLOAD_HOST = sourceHost;
     // TODO: 暂仅支持全部安装
     // const installAll = !browsers.length || (browsers.length === 1 && browsers[0] === 'browser')
     const executables = pwServer.registry.defaultExecutables();
     await pwServer.registry.install(executables, false);
-  })
+    process.exit(0);
+  });
 
 program.parse();
