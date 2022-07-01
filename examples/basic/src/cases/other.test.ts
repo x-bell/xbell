@@ -8,7 +8,7 @@ export class OtherTestGroup {
   @Case('打开xbell官网，截图')
   @Viewport({ width: 1300, height: 1000 }) // 指定该 case 窗口大小为 1300 * 1000
   @RunEnvs(['prod']) // 只运行一个环境
-  @Expect.ToSnapShotMatch({ name: '全窗口' }) // 保存快照，并为下一次 case 运行做对比
+  @Expect.ToMatchSnapshot({ name: '全窗口' }) // 保存快照，并为下一次 case 运行做对比
   @Expect.NoPageError() // 页面无报错
   async testSnapshot() {
     const { page, expect } = this.ctx;

@@ -70,7 +70,7 @@ export class HelloTestGroup {
   @Case('打开 XBell 官网，页面无报错并截图')
   // 添加两个断言
   @Expect.NoPageError()
-  @Expect.SnapshotMatch()
+  @Expect.ToMatchSnapshot({ name: '截图' })
   async testHelloXBell() {
     await this.ctx.page.goto('https://x-bell.github.io/xbell/');
   }

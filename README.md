@@ -55,7 +55,7 @@ $ npm run start
 |  装饰器   | 类型  | 描述 |  例子| 已支持
 |  ----  | ----  | --- | --- | ---
 | @Expect.NoPageError  | Method | 断言页面无报错 | @Expect.NoPageError() | ✅
-| @Expect.SnapshotMatch  | Method | 首次运行则生成快照，第二次运行将对比之前快照 | @SnapshotMatch() | TODO
+| @Expect.ToMatchSnapshot  | Method | 首次运行则生成快照，第二次运行将对比之前快照 | @ToMatchSnapshot() | TODO
 
 ## 非常用装饰器
 |  装饰器   | 类型  | 描述 | 例子 | 已支持
