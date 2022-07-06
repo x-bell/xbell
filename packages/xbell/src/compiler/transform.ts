@@ -1,14 +1,29 @@
 import { addHook } from 'pirates';
 import { transformSync } from '@swc/core';
-import { tsParserConfig } from './config';
+import { jscConfig } from './config';
 import { transformJSX } from './jsx';
 
 export function registerTransfomer() {
-  const revert = addHook(
+  const revertJsx = addHook(
     (sourceCode, filename) => {
-      return transformJSX(sourceCode).code;
+      return transformJSX(sourceCode, filename).code;
     },
     { exts: ['.jsx', '.tsx'] }
   );
-  return revert;
+
+  const revertTs = addHook((sourceCode, filename) => {
+    const { code, map } = transformSync(sourceCode, {
+      module: {
+        type: 'commonjs'
+      },
+      jsc: jscConfig,
+    });
+    return code;
+  }, {
+    exts: ['.ts']
+  })
+  return [
+    revertJsx,
+    revertTs
+  ];
 }

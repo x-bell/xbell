@@ -12,16 +12,21 @@ import {
   PropertyName,
   StringLiteral,
   UnaryExpression,
-  Span
+  Span,
 } from '@swc/core';
+import * as path from 'path';
 import { Visitor } from './visitor';
 import { tsParserConfig, jscConfig } from './config';
 
 
 class JSXCollector extends Visitor {
-  jsxTagNames: Set<string> = new Set();
+  public jsxTagNames = new Set<string>();
+  public jsxElements = new Set<JSXElement>();
 
   visitJSXElement(n: JSXElement): JSXElement {
+    this.jsxElements.add(
+      JSON.parse(JSON.stringify(n))
+    );
     if (n.opening.name.type === 'Identifier') {
       this.jsxTagNames.add(n.opening.name.value);
     }
@@ -60,14 +65,23 @@ function genStringLiteral(span: Span, value: string): StringLiteral {
   }
 }
 class NodeJSCaseCoder extends Visitor {
-  constructor(public componentNames: Set<string>) {
+  public importDeclarations = new Set<ImportDeclaration>()
+
+  constructor(public componentNames: Set<string>, public filename: string) {
     super();
   }
 
-  vistDefault(n: ImportDeclaration): ImportDeclaration {
+  visitImportDeclaration(n: ImportDeclaration): ImportDeclaration {
+    let addComponent = false;
     for (const specifier of n.specifiers) {
       if (specifier.type === 'ImportDefaultSpecifier' || specifier.type === 'ImportSpecifier' || specifier.type === 'ImportNamespaceSpecifier') {
         if (this.componentNames.has(specifier.local.value)) {
+          if (!addComponent) {
+            addComponent = true;
+            const newImportDecorationNode: ImportDeclaration = JSON.parse(JSON.stringify(n));
+            newImportDecorationNode.source.value = path.join(this.filename, newImportDecorationNode.source.value)
+            this.importDeclarations.add(newImportDecorationNode)
+          }
           // @ts-ignore
           return undefined;
         }
@@ -108,7 +122,7 @@ class NodeJSCaseCoder extends Visitor {
   }
 }
 
-export function transformJSX(sourceCode: string) {
+export function transformJSX(sourceCode: string, filename: string) {
   const program = parseSync(sourceCode, {
     ...tsParserConfig,
   });
@@ -116,8 +130,10 @@ export function transformJSX(sourceCode: string) {
   const jsxCollector = new JSXCollector();
 
   jsxCollector.visitProgram(program);
-  const nodeJsCaseCoder = new NodeJSCaseCoder(jsxCollector.jsxTagNames)
+
+  const nodeJsCaseCoder = new NodeJSCaseCoder(jsxCollector.jsxTagNames, filename)
   const outputProgram = nodeJsCaseCoder.visitProgram(program)
+
   const { code, map } = transformSync(outputProgram, {
     module: {
       type: 'commonjs'
