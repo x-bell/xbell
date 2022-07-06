@@ -1420,7 +1420,6 @@ export class Visitor {
   }
 
   visitJSXElement(n: JSXElement): JSXElement {
-    console.log('visitJSXElement');
     n.opening = this.visitJSXOpeningElement(n.opening);
     n.children = this.visitJSXElementChildren(n.children);
     n.closing = this.visitJSXClosingElement(n.closing);
