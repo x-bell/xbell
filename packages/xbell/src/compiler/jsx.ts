@@ -13,12 +13,15 @@ import {
   StringLiteral,
   UnaryExpression,
   Span,
+  Program,
+  Module
 } from '@swc/core';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { Visitor } from './visitor';
 import { tsParserConfig, jscConfig } from './config';
-
-
+import { genKeyValueProperty, genIdentifier, genStringLiteral, genEmptySpan, genVariableDeclaration } from './ast';
+import { getBrowserCaseDirPath } from '../unit/path';
 class JSXCollector extends Visitor {
   public jsxTagNames = new Set<string>();
   public jsxElements = new Set<JSXElement>();
@@ -38,32 +41,6 @@ class JSXCollector extends Visitor {
   }
 }
 
-
-function genKeyValueProperty(key: PropertyName, value: Expression): KeyValueProperty {
-  return {
-    type: 'KeyValueProperty',
-    key,
-    value,
-  }
-}
-
-function genIdentifier(span: Span, value: string): Identifier {
-  return {
-    type: 'Identifier',
-    span,
-    value,
-    optional: false,
-  }
-}
-
-function genStringLiteral(span: Span, value: string): StringLiteral {
-  return {
-    type: 'StringLiteral',
-    span,
-    value: value,
-    hasEscape: false,
-  }
-}
 class NodeJSCaseCoder extends Visitor {
   public importDeclarations = new Set<ImportDeclaration>()
 
@@ -79,7 +56,10 @@ class NodeJSCaseCoder extends Visitor {
           if (!addComponent) {
             addComponent = true;
             const newImportDecorationNode: ImportDeclaration = JSON.parse(JSON.stringify(n));
-            newImportDecorationNode.source.value = path.join(this.filename, newImportDecorationNode.source.value)
+            newImportDecorationNode.source.value = path.join(
+              path.dirname(this.filename),
+              newImportDecorationNode.source.value
+            )
             this.importDeclarations.add(newImportDecorationNode)
           }
           // @ts-ignore
@@ -99,7 +79,7 @@ class NodeJSCaseCoder extends Visitor {
         type: 'ObjectExpression',
         span: n.span,
         properties: [
-          genKeyValueProperty(genIdentifier(span, 'type'), genStringLiteral(span, tagName)),
+          genKeyValueProperty(genIdentifier('type', span), genStringLiteral(tagName, span)),
         ]
       }
     }
@@ -122,6 +102,12 @@ class NodeJSCaseCoder extends Visitor {
   }
 }
 
+class BrowserCoder extends Visitor {
+  constructor(public importDeclarations: Set<ImportDeclaration>) {
+    super();
+  }
+}
+
 export function transformJSX(sourceCode: string, filename: string) {
   const program = parseSync(sourceCode, {
     ...tsParserConfig,
@@ -132,16 +118,47 @@ export function transformJSX(sourceCode: string, filename: string) {
   jsxCollector.visitProgram(program);
 
   const nodeJsCaseCoder = new NodeJSCaseCoder(jsxCollector.jsxTagNames, filename)
-  const outputProgram = nodeJsCaseCoder.visitProgram(program)
+  const nodeJsProgram = nodeJsCaseCoder.visitProgram(program)
 
-  const { code, map } = transformSync(outputProgram, {
+  const jsxElements = jsxCollector.jsxElements;
+  const importDeclarations = nodeJsCaseCoder.importDeclarations;
+
+  const browserProgram: Module = {
+    // @ts-ignore
+    interpreter: null,
+    type: 'Module',
+    span: genEmptySpan(),
+    body: [
+      ...Array.from(importDeclarations),
+      ...Array.from(
+        jsxElements
+      ).map((jsxElement, idx) => genVariableDeclaration(
+        (filename + '_' + idx).replace(/[^\w_\d]/g, '_'), jsxElement
+      )),
+    ]
+  }
+  const { code: nodeJSCode, map: nodeJSMap } = transformSync(nodeJsProgram, {
     module: {
       type: 'commonjs'
     },
     jsc: jscConfig,
   });
+
+  const { code: browserCode, map: browserMap } = transformSync(browserProgram, {
+    module: {
+      type: 'commonjs'
+    },
+    jsc: jscConfig,
+  });
+
+
+  const browserCaseDir = getBrowserCaseDirPath(filename);
+
+  fs.ensureDirSync(browserCaseDir)
+  fs.writeFileSync(path.join(browserCaseDir, 'index.js'), browserCode);
+
   return {
-    code,
-    map,
+    code: nodeJSCode,
+    map: nodeJSMap,
   }
 }
