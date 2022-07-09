@@ -1576,7 +1576,7 @@ export class Visitor {
   }
 
   visitTsType(n: TsType): TsType {
-    throw new Error("Method visitTsType not implemented.");
+    return n;
   }
 
   visitPatterns(nodes: Pattern[]): Pattern[] {
