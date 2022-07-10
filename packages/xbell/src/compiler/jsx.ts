@@ -22,21 +22,25 @@ import { Visitor } from './visitor';
 import { tsParserConfig, jscConfig } from './config';
 import { genKeyValueProperty, genIdentifier, genStringLiteral, genEmptySpan, genVariableDeclaration } from './ast';
 import { getBrowserCaseDirPath } from '../unit/path';
+
+function genXBellJSXKey(num: number) {
+  return '__xbell_get_jsx_' + num;
+}
+
+type JSXCollection = {
+  name: string;
+  ast: JSXElement
+}
 class JSXCollector extends Visitor {
-  public jsxTagNames = new Set<string>();
-  public jsxElements = new Set<JSXElement>();
+  public jsxCollections: JSXCollection[] = [];
 
   visitJSXElement(n: JSXElement): JSXElement {
-    this.jsxElements.add(
-      JSON.parse(JSON.stringify(n))
-    );
     if (n.opening.name.type === 'Identifier') {
-      this.jsxTagNames.add(n.opening.name.value);
+      this.jsxCollections.push({
+        ast: JSON.parse(JSON.stringify(n)),
+        name: n.opening.name.value,
+      });
     }
-    return n;
-  }
-
-  visitTsType(n: TsType): TsType {
     return n;
   }
 }
@@ -44,7 +48,7 @@ class JSXCollector extends Visitor {
 class NodeJSCaseCoder extends Visitor {
   public importDeclarations = new Set<ImportDeclaration>()
 
-  constructor(public componentNames: Set<string>, public filename: string) {
+  constructor(public jsxCollections: JSXCollection[], public filename: string) {
     super();
   }
 
@@ -52,7 +56,7 @@ class NodeJSCaseCoder extends Visitor {
     let addComponent = false;
     for (const specifier of n.specifiers) {
       if (specifier.type === 'ImportDefaultSpecifier' || specifier.type === 'ImportSpecifier' || specifier.type === 'ImportNamespaceSpecifier') {
-        if (this.componentNames.has(specifier.local.value)) {
+        if (this.jsxCollections.find(jsxCollection => specifier.local.value === jsxCollection.name)) {
           if (!addComponent) {
             addComponent = true;
             const newImportDecorationNode: ImportDeclaration = JSON.parse(JSON.stringify(n));
@@ -117,10 +121,10 @@ export function transformJSX(sourceCode: string, filename: string) {
 
   jsxCollector.visitProgram(program);
 
-  const nodeJsCaseCoder = new NodeJSCaseCoder(jsxCollector.jsxTagNames, filename)
+  const nodeJsCaseCoder = new NodeJSCaseCoder(jsxCollector.jsxCollections, filename)
   const nodeJsProgram = nodeJsCaseCoder.visitProgram(program)
 
-  const jsxElements = jsxCollector.jsxElements;
+  const jsxCollections = jsxCollector.jsxCollections;
   const importDeclarations = nodeJsCaseCoder.importDeclarations;
 
   const browserProgram: Module = {
@@ -131,9 +135,9 @@ export function transformJSX(sourceCode: string, filename: string) {
     body: [
       ...Array.from(importDeclarations),
       ...Array.from(
-        jsxElements
-      ).map((jsxElement, idx) => genVariableDeclaration(
-        (filename + '_' + idx).replace(/[^\w_\d]/g, '_'), jsxElement
+        jsxCollections
+      ).map((jsxCollection, idx) => genVariableDeclaration(
+        genXBellJSXKey(idx), jsxCollection.ast
       )),
     ]
   }
