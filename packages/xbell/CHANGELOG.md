@@ -1,5 +1,11 @@
 # xbell
 
+## 0.4.0-alpha.0
+
+### Minor Changes
+
+- 3ebefab: browser testing
+
 ## 0.3.6
 
 ### Patch Changes
