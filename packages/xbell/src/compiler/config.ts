@@ -8,5 +8,9 @@ export const tsParserConfig: TsParserConfig = {
 
 export const jscConfig: JscConfig = {
   parser: tsParserConfig,
-  target: 'es2017',
+  transform: {
+    decoratorMetadata: true,
+    legacyDecorator: true,
+  },
+  target: 'es2020',
 };

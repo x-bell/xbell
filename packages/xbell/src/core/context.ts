@@ -1,15 +1,21 @@
 import { Browser, Locator, Page, PageScreenshotOptions } from 'playwright-core';
 import { expect as jexpect, Expect as JExpect } from 'expect';
-import { ExpectType } from '../types';
-import { getMetadataKeys } from '../utils';
-import { MetaDataType } from '../constants';
+// import type { WebSocket } from 'vite';
+import { ExpectType } from '../types/index';
+import { getMetadataKeys } from '../utils/index';
+import { MetaDataType } from '../constants/index';
 import { XBellLocator, XBellPage } from '../types/page';
 import { toMatchSnapshot, ToMatchSnapshotOptions, ScreenshotTarget } from './snapshot';
+import { BrowserFunction } from './browser';
+import { join } from 'path';
+import { ViteDevServer } from 'vite';
+import { transformBrowserCode } from '../compiler/browser-transform';
 
 type Step<T> = <R>(stepDescription: string, callback: (v: T) => R) => Promise<Step<Awaited<R>>>
 export class Context {
 
   protected _currentStep?: string;
+  protected _isStartServer = false;
   protected prevPages: Page[] = []
 
   public page: XBellPage;
@@ -26,7 +32,9 @@ export class Context {
       caseName: string;
       groupIndex: number;
       caseIndex: number;
-    }
+      filename: string;
+    },
+    public devServer: Promise<ViteDevServer>
   ) {
     this.expect = this._extendExpect(jexpect);
     this.page = this._extendPage(page);
@@ -50,6 +58,7 @@ export class Context {
         // @ts-ignore
         instance[propertyKey] = isInjectCtx ? this : this.createInstance(InjectConstructor);
       } catch(error) {
+        console.log((error as any).message)
         console.log(`${constructor.name} 实例 ${propertyKey.toString()}  属性初始化失败，检查是否由 Inject 使用错误引起`)
         throw error;
       }
@@ -168,6 +177,74 @@ export class Context {
     return page as XBellPage;
   }
 
-  public step = this._genStep(undefined)
-}
+  protected async initDevServer() {
+    // TODO: return promise
+    const server = await this.devServer;
+    const addressInfo = server.httpServer?.address()!;
+    const { port } = addressInfo as Exclude<typeof addressInfo, string>;
+    const rawUrl = `http://localhost:${port}/xbell`;
+    // const testUrl = 'http://xbell.test';
+    const html = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vite App</title>
+      </head>
+      <body>
+        <div id="root"></div>
+      </body>
+    </html>
+    `;
+    let finalHtml = await server.transformIndexHtml(rawUrl, html);
+    // finalHtml = finalHtml.replace('<div id="root"></div>', `<script type="module">
+    //   import React from '/node_modules/.vite/deps/react.js';
+    //   window.React = React;
+    // </script><div id="root"></div>`)
+    this.page.route(rawUrl, (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: finalHtml,
+      })
+    })
+    // this.page.route(url => {
+    //   const ret = /\/xbell/.test(url.pathname);
+    //   return ret;
+    // }, async (route, request) => {
+    //   const requestUrl = request.url();
+    //   const targetUrl = requestUrl.replace(testUrl, rawUrl);
+    //   route.continue({
+    //     url: targetUrl,
+    //     headers: await request.allHeaders()
+    //   })
+    // })
+    await this.page.goto(rawUrl);
+    return server;
+  }
 
+  public step = this._genStep(undefined)
+
+  // public async mount(obj: any) {
+  //   await startServer();
+  // }
+
+
+  public async runBrowserCode<A, R>(
+    browserFunction: BrowserFunction<A, R>,
+    arg: A
+  ): Promise<R> {
+    const server = await this.initDevServer();
+    const targetCode = await transformBrowserCode(
+      browserFunction.toString(),
+      this.caseInfo.filename,
+      server,
+    );
+
+    const funcBody = `return (${targetCode.replace(/\}\;[\s\S]*$/, '}')})`;
+    const func = new Function(funcBody);
+    // @ts-ignore
+    return this.page.evaluate(func(), arg);
+  }
+}

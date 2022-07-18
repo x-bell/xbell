@@ -1,18 +1,20 @@
 import 'reflect-metadata';
 import * as fs from 'fs';
 import { resolve, join } from 'path';
-import { container, Context } from './core';
-import { MetaDataType } from './constants';
-import { sleep, prettyPrint } from './utils';
+import { container } from './core/container';
+import { MetaDataType } from './constants/index';
+import { sleep, prettyPrint } from './utils/index';
 import { Command } from 'commander';
-import glob = require('glob');
+import glob from 'glob';
+
 import { checkDownloadSpeed } from './utils/network';
-import { registerTransfomer } from './compiler/transform';
-const pwServer = require('playwright-core/lib/server');
+// import { registerTransfomer } from './compiler/transform';
+// @ts-ignore
+import * as pwServer from 'playwright-core/lib/server';
 const program = new Command();
 
 
-registerTransfomer();
+// registerTransfomer();
 
 interface CommandOptions {
   file?: string;
@@ -48,24 +50,27 @@ program
   .action(async (commandOptions: CommandOptions) => {
     const rootDir = process.cwd();
     // 启动 IoC
-    container.initConfig(rootDir, {
+    await container.initConfig(rootDir, {
       groupName: commandOptions.group,
       caseName: commandOptions.case,
       debug: commandOptions.debug,
       env: commandOptions.env,
     });
+    await container.startDevServer()
     const caseFiles = glob.sync('**/*(*.spec.ts|*.test.ts|*.spec.tsx|*.test.tsx)', { cwd: rootDir });
     // TODO: 支持参数指定文件名 + case 名
     for (const caseFile of caseFiles) {
       const isExec = commandOptions.file ? caseFile.includes(commandOptions.file): true;
       if (isExec) {
-        const exports = require(resolve(rootDir, caseFile));
+        container._currentFilename = join(rootDir, caseFile)
+        const exports = await import(join(rootDir, caseFile));
         container.addExports(exports);
       }
     }
 
     // 运行所有环境
     await container.runAllEnvs();
+    await container.stopDevServer();
   });
 
 program

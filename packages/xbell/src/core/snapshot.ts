@@ -4,9 +4,9 @@ import {  MatcherFunctionWithState } from 'expect';
 import { PageScreenshotOptions } from 'playwright-core';
 import { Context } from './context';
 import { PNG } from 'pngjs'
-import filenamify = require('filenamify');
-import pixcelMatch = require('pixelmatch');
-import chalk = require('chalk');
+import filenamify from 'filenamify';
+import pixcelMatch from 'pixelmatch';
+import chalk  from 'chalk';
 
 export function getSnapshotPath(rootDir: string, groupName: string, caseName: string, env: string, imgName = 'default') {
   return path.join(rootDir, '__snapshots__', filenamify(groupName), filenamify(caseName), filenamify(imgName) + `[${env}]` + '.png');

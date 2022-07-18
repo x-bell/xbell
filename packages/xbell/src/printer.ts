@@ -1,7 +1,7 @@
 import { Recorder } from './recorder';
 import { XBellCaseStatus } from 'xbell-reporter';
 import { getStringDisplayLength, isChinese } from './utils/char';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 export interface TableRow {
   Group: string;

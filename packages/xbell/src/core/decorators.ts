@@ -1,5 +1,5 @@
-import { genPropertyDecorator } from '../utils';
-import { MetaDataType } from '../constants';
+import { genPropertyDecorator } from '../utils/index';
+import { MetaDataType } from '../constants/index';
 
 export const BeforeEachCase = genPropertyDecorator(MetaDataType.BeforeEachCase);
 

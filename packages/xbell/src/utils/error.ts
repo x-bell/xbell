@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { codeFrameColumns } from '@babel/code-frame';
-import StackUtils = require('stack-utils');
-import { dim } from 'colors/safe';
+import StackUtils  from 'stack-utils';
+import chalk from 'chalk';
 import { XBellErrorRecord } from 'xbell-reporter';
 
 const stackUtils = new StackUtils({
@@ -64,7 +64,7 @@ export function parseError(error: Error): XBellErrorRecord | void {
       originError: error,
       message,
       codeFrame,
-      firstFrame: codeLines?.length ? dim(codeLines[0]) : undefined,
+      firstFrame: codeLines?.length ? chalk.dim(codeLines[0]) : undefined,
     }
   }
 

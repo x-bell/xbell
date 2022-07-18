@@ -1,5 +1,5 @@
 import { container } from './container';
-import { PropertyKey } from '../types';
+import { PropertyKey } from '../types/index';
 import { MultiEnvData } from '../../src';
 
 export function Depend<G, K  extends keyof G>(

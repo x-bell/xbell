@@ -1,5 +1,5 @@
-import { genParameterDecorator } from '../utils';
-import { ParameterType } from '../constants';
+import { genParameterDecorator } from '../utils/index';
+import { ParameterType } from '../constants/index';
 // TODO:
 export function Fixture(): MethodDecorator {
   return (target, propertyKey) => {

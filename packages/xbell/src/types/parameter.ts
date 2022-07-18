@@ -1,4 +1,4 @@
-import { ParameterType } from '../constants'
+import { ParameterType } from '../constants/index'
 
 export interface IParameter {
   type: ParameterType;

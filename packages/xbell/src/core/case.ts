@@ -1,6 +1,6 @@
-import { MetaDataType } from '../constants';
+import { MetaDataType } from '../constants/index';
 import { container } from './container';
-import { PropertyKey } from '../types';
+import { PropertyKey } from '../types/index';
 
 export function Group(value: string): ClassDecorator {
   return (target) => {

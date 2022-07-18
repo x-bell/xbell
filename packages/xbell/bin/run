@@ -1,4 +1,0 @@
-#! /usr/bin/env node
-// const sourceMapSupport = require('@cspotcode/source-map-support');
-
-require('../dist/cli.js');

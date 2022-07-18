@@ -1,4 +1,4 @@
-import { XBellConfig, XBellBrowserType } from '../types'
+import { XBellConfig, XBellBrowserType } from '../types/index'
 
 export function RunBrowsers<T>(browsers: XBellBrowserType[] | XBellBrowserType): MethodDecorator | ClassDecorator {
   return (target: Object) => {

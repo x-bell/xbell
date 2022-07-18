@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk, { supportsColor } from 'chalk';
 
 export enum Status {
   Running = 'running',
@@ -157,7 +157,7 @@ export class Reporter {
   }
 
   public print() {
-    if (!chalk.supportsColor || this.debug) {
+    if (!supportsColor || this.debug) {
       return;
     }
     // TODO:

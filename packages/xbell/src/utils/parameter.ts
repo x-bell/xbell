@@ -1,5 +1,5 @@
-import { MetaDataType, ParameterType } from '../constants'
-import { IParameter } from '../types'
+import { MetaDataType, ParameterType } from '../constants/index'
+import { IParameter } from '../types/index'
 
 export function genParameterDecorator(parameterType: ParameterType): () => ParameterDecorator {
   return () => {

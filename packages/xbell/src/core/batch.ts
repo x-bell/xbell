@@ -1,6 +1,6 @@
-import { ParameterType, MetaDataType } from '../constants';
-import { genParameterDecorator } from '../utils';
-import { IBatchData, IBatchDataOptions, MultiEnvData } from '../types';
+import { ParameterType, MetaDataType } from '../constants/index';
+import { genParameterDecorator } from '../utils/index';
+import { IBatchData, IBatchDataOptions, MultiEnvData } from '../types/index';
 import { container } from './container';
 
 /**

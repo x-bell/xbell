@@ -1,19 +1,20 @@
 {
   "name": "xbell",
   "version": "0.3.6",
+  "type": "module",
   "description": "A Web end-to-end testing framework.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "xbell": "./bin/run"
+    "xbell": "./bin/run.js"
   },
   "files": [
     "dist",
     "bin"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node ./scripts/add-extension",
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -32,8 +33,7 @@
   "dependencies": {
     "@babel/code-frame": "^7.16.7",
     "@swc/core": "^1.2.208",
-    "chalk": "^4.1.2",
-    "colors": "^1.4.0",
+    "chalk": "^5.0.1",
     "commander": "^9.2.0",
     "expect": "^28.1.0",
     "filenamify": "^4.3.0",
@@ -47,7 +47,8 @@
     "reflect-metadata": "^0.1.13",
     "stack-utils": "^2.0.5",
     "typescript": "^4.6.4",
-    "vite": "^2.9.9",
+    "vite": "^3.0.1",
+    "vite-plugin-istanbul": "^2.9.0",
     "xbell-reporter": "workspace:*"
   },
   "devDependencies": {

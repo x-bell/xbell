@@ -1,17 +1,21 @@
 import { chromium } from 'playwright-core';
-import * as fs from 'fs';
+import fs from 'fs-extra';
+
 import { XBellCaseRecord, XBellGroupRecord, generateHTML } from 'xbell-reporter';
-import { MetaDataType, ParameterType } from '../constants';
-import { getParameters, getMetadataKeys, prettyPrint } from '../utils';
+import { MetaDataType, ParameterType } from '../constants/index';
+import { getParameters, getMetadataKeys, prettyPrint } from '../utils/index';
 import { Context } from './context';
-import { XBellConfig, IBatchData, PropertyKey, MultiEnvData } from '../types';
+import { XBellConfig, IBatchData, PropertyKey, MultiEnvData } from '../types/index';
 // import { Reporter, Status, CaseRecord, GroupRecord } from './reporter';
 import { CreateDecorateorCallback } from './custom';
-import filenamify = require('filenamify');
+import filenamify from 'filenamify';
 import * as path from 'path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
+import { startServer } from '../unit/server';
 import { Recorder } from '../recorder';
 import { Printer } from '../printer';
+import { ViteDevServer } from 'vite';
+
 
 const defaultXBellConfig: Partial<XBellConfig> = {
   viewport: {
@@ -25,6 +29,7 @@ interface ICase {
 }
 
 interface IGroup {
+  filename: string;
   groupName: PropertyKey;
   constructor: Function
 }
@@ -52,6 +57,8 @@ class Container {
   public debug!: boolean;
   public recorder!: Recorder;
   public printer!: Printer;
+  public devServer!: Promise<ViteDevServer>;
+  public _currentFilename!: string;
   // public envConfig: EnvConfig;
   // public reporterMap: Map<EnvConfig['ENV'], Reporter> = new Map();
   protected bellConfig!: XBellConfig;
@@ -89,6 +96,7 @@ class Container {
     this.groups.push({
       groupName,
       constructor,
+      filename: this._currentFilename,
     });
   }
 
@@ -240,7 +248,8 @@ class Container {
         groupName: target.groupName as string,
         caseName: caseName as string,
         groupIndex,
-        caseIndex
+        caseIndex,
+        filename: target.filename,
       });
       // try {
       //   // prettyPrint.caseRuning(caseName);
@@ -263,12 +272,14 @@ class Container {
     groupName,
     caseName,
     groupIndex,
-    caseIndex
+    caseIndex,
+    filename
   }: {
     groupName: string
     caseName: string
     groupIndex: number
     caseIndex: number
+    filename: string
   }) {
     // const batchData = this.getBatchData(constructor, propertyKey, envConfig.ENV);
     // if (batchData) {
@@ -280,6 +291,7 @@ class Container {
         caseName,
         groupIndex,
         caseIndex,
+        filename,
         config: this.getMethodConfig(constructor, propertyKey),
       });
 
@@ -294,7 +306,11 @@ class Container {
             isDepend: false,
             // batchDataIndex
           });
+          // const coverageData = await ctx.page.evaluate(() => {
+          //   return window.__coverage__;
+          // });
           this.recorder.finishCase(envConfig.ENV, groupIndex, caseIndex);
+
           // reporter.finishCase(groupIndex, caseIndex);
 
         } catch(error: any) {
@@ -395,12 +411,14 @@ class Container {
     caseName,
     groupIndex,
     caseIndex,
-    config
+    config,
+    filename
   }: {
     groupName: string;
     caseName: string;
     groupIndex: number;
     caseIndex: number;
+    filename: string;
     config: XBellConfig;
   }) {
     const { viewport, headless } = config;
@@ -424,7 +442,8 @@ class Container {
       groupName,
       caseIndex,
       groupIndex,
-    });
+      filename,
+    }, this.devServer);
     return ctx;
   }
 
@@ -485,7 +504,7 @@ class Container {
       console.log(chalk.red('启动环境未定义，请配置 xbell.config.ts 文件中 runEnvs 属性'));
       return;
     }
-
+    await this.devServer;
     const recordData = runEnvs.reduce((acc, env) => {
       acc[env] = this.initRecord(env);
       return acc;
@@ -521,15 +540,16 @@ class Container {
 
     // gen html
     const html = generateHTML(this.recorder.records);
+    fs.ensureDirSync(path.join(this.htmlReportPath))
     fs.writeFileSync(path.join(this.htmlReportPath, 'index.html'), html, 'utf-8');
 
     // remove .xbell folder
-    fs.rmSync(path.join(this.projectDirPath, '.xbell'), { recursive: true, force: true });
+    // fs.rmSync(path.join(this.projectDirPath, '.xbell'), { recursive: true, force: true });
   }
 
-  public loadXBellConfig(): XBellConfig {
+  public async loadXBellConfig(): Promise<XBellConfig> {
     const bellConfigPath = path.join(this.projectDirPath, './xbell.config.ts');
-    const fileExports = require(bellConfigPath);
+    const fileExports =  await import (bellConfigPath);
     const config = fileExports?.default ?? fileExports;
     // 检验
     return {
@@ -546,7 +566,7 @@ class Container {
   //   return config;
   // }
 
-  public initConfig(
+  public async initConfig(
     projectDirPath: string,
     { groupName, caseName, debug, env }: Partial<{ groupName: string, caseName: string, debug?: boolean, env?: string }>
   ) {
@@ -554,7 +574,7 @@ class Container {
     this.targetCaseName = caseName;
     this.targetGroupName = groupName;
     this.debug = !!debug;
-    const config = this.loadXBellConfig();
+    const config = await this.loadXBellConfig();
     this.bellConfig = {
       ...config,
       runEnvs: env ? [env as EnvConfig['ENV']] : config.runEnvs,
@@ -585,6 +605,26 @@ class Container {
     });
 
     return groupRecord;
+  }
+
+  public async startDevServer(): Promise<ViteDevServer> {
+    if (this.devServer) {
+      return this.devServer;
+    }
+    this.devServer = startServer(this.projectDirPath);
+    // (await this.devServer).pluginContainer.resolveId()
+    // const protocol = server.httpServer?.protocol;
+    
+    return this.devServer;
+  }
+
+  public async stopDevServer() {
+    if (!this.devServer) {
+      return;
+    }
+
+    const server = await this.devServer;
+    server.close();
   }
 }
 

@@ -17,16 +17,16 @@ export {
   RunBrowsers,
   Sleep,
   defineDecorator,
-} from './core';
+} from './core/index';
 
 export {
   sleep
-} from './utils';
+} from './utils/index';
 
 export {
   XBellConfig,
   MultiEnvData
-} from './types';
+} from './types/index';
 
 export {
   Page,

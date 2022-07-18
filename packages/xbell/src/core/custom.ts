@@ -1,6 +1,6 @@
 import { Context } from './context'
 import { container } from './container'
-import { sleep } from '../utils';
+import { sleep } from '../utils/index';
 
 type NextFunction = () => Promise<any>;
 
