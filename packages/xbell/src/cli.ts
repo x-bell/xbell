@@ -6,6 +6,7 @@ import { MetaDataType } from './constants';
 import { sleep, prettyPrint } from './utils';
 import { Command } from 'commander';
 import { checkDownloadSpeed } from './utils/network';
+import { glob } from 'glob';
 
 const pwServer = require('playwright-core/lib/server');
 const program = new Command();
@@ -53,14 +54,11 @@ program
       env: commandOptions.env,
     });
     // load cases
-    const caseDir = join(rootDir, 'src/cases');
-    const caseFiles = fs.readdirSync(caseDir);
-    // TODO: 支持参数指定文件名 + case 名
+    const caseFiles = glob.sync('**/*.{spec,test}.{ts,tsx}', { cwd: rootDir });
     for (const caseFile of caseFiles) {
-      const isTS = /\.ts$/.test(caseFile);
-      const isExec = commandOptions.file ? isTS && caseFile.includes(commandOptions.file): isTS;
+      const isExec = commandOptions.file ? caseFile.includes(commandOptions.file): true;
       if (isExec) {
-        const exports = require(resolve(caseDir, caseFile));
+        const exports = require(resolve(rootDir, caseFile));
         container.addExports(exports);
       }
     }

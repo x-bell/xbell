@@ -18,7 +18,10 @@ const defaultXBellConfig: Partial<XBellConfig> = {
     width: 1380,
     height: 720,
   },
+  browsers: ['chromium'],
+  headless: false,
 };
+
 interface ICase {
   caseName: PropertyKey,
   propertyKey: PropertyKey
