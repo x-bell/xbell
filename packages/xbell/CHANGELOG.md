@@ -1,5 +1,11 @@
 # xbell
 
+## 0.4.0
+
+### Minor Changes
+
+- bec63f8: support any test file
+
 ## 0.3.6
 
 ### Patch Changes
