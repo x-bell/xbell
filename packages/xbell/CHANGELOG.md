@@ -1,5 +1,11 @@
 # xbell
 
+## 0.4.1
+
+### Patch Changes
+
+- 907f22a: fix bugs in existed project
+
 ## 0.4.0
 
 ### Minor Changes
