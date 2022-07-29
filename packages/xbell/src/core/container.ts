@@ -1,5 +1,5 @@
 import { chromium } from 'playwright-core';
-import * as fs from 'fs';
+import * as fs from 'fs-extra'
 import { XBellCaseRecord, XBellGroupRecord, generateHTML } from 'xbell-reporter';
 import { MetaDataType, ParameterType } from '../constants';
 import { getParameters, getMetadataKeys, prettyPrint } from '../utils';
@@ -524,6 +524,7 @@ class Container {
 
     // gen html
     const html = generateHTML(this.recorder.records);
+    fs.ensureDirSync(this.htmlReportPath)
     fs.writeFileSync(path.join(this.htmlReportPath, 'index.html'), html, 'utf-8');
 
     // remove .xbell folder
