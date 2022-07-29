@@ -4,6 +4,10 @@
 require('ts-node').register({
   typeCheck: false,
   transpileOnly: true,
+  compilerOptions: {
+    experimentalDecorators: true,
+    emitDecoratorMetadata: true,
+  }
 });
 
 require('../dist/cli.js');
