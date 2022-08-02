@@ -1,0 +1,10 @@
+{
+  "name": "@xbell/test-node-basic",
+  "private": true,
+  "scripts": {
+    "test": "xbell"
+  },
+  "devDependencies": {
+    "xbell": "workspace:*"
+  }
+}
