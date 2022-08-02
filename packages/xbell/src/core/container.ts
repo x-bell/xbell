@@ -22,7 +22,10 @@ const defaultXBellConfig: Partial<XBellConfig> = {
     width: 1380,
     height: 720,
   },
+  browsers: ['chromium'],
+  headless: false,
 };
+
 interface ICase {
   caseName: PropertyKey,
   propertyKey: PropertyKey
@@ -540,7 +543,7 @@ class Container {
 
     // gen html
     const html = generateHTML(this.recorder.records);
-    fs.ensureDirSync(path.join(this.htmlReportPath))
+    fs.ensureDirSync(this.htmlReportPath)
     fs.writeFileSync(path.join(this.htmlReportPath, 'index.html'), html, 'utf-8');
 
     // remove .xbell folder

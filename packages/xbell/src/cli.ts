@@ -5,7 +5,7 @@ import { container } from './core/container';
 import { MetaDataType } from './constants/index';
 import { sleep, prettyPrint } from './utils/index';
 import { Command } from 'commander';
-import glob from 'glob';
+import { glob } from 'glob';
 
 import { checkDownloadSpeed } from './utils/network';
 // import { registerTransfomer } from './compiler/transform';
@@ -57,13 +57,13 @@ program
       env: commandOptions.env,
     });
     await container.startDevServer()
-    const caseFiles = glob.sync('**/*(*.spec.ts|*.test.ts|*.spec.tsx|*.test.tsx)', { cwd: rootDir });
-    // TODO: 支持参数指定文件名 + case 名
+    // load cases
+    const caseFiles = glob.sync('**/*.{spec,test}.{ts,tsx}', { cwd: rootDir });
     for (const caseFile of caseFiles) {
       const isExec = commandOptions.file ? caseFile.includes(commandOptions.file): true;
       if (isExec) {
         container._currentFilename = join(rootDir, caseFile)
-        const exports = await import(join(rootDir, caseFile));
+        const exports = require(resolve(rootDir, caseFile));
         container.addExports(exports);
       }
     }
