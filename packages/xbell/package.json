@@ -27,7 +27,7 @@
     "multi-environment",
     "ddt"
   ],
-  "author": "lianghang",
+  "author": "Hang Liang <xlianghang@163.com>",
   "license": "MIT",
   "dependencies": {
     "@babel/code-frame": "^7.16.7",
