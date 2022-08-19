@@ -1,5 +1,11 @@
 # create-xbell
 
+## 0.4.2
+
+### Patch Changes
+
+- 5410895: support download folders
+
 ## 0.4.1
 
 ### Patch Changes
