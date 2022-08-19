@@ -408,7 +408,8 @@ class Container {
   }) {
     const { viewport, headless } = config;
     const browser = await chromium.launch({
-      headless: !!headless
+      headless: !!headless,
+      downloadsPath: path.join(this.projectDirPath, '__downloads__'),
     });
     const context = await browser.newContext({
       viewport,
@@ -420,8 +421,15 @@ class Container {
         //   height: 800,
         // }
       },
-    })
+    });
     const page = await context.newPage();
+
+    page.on('download', (download) => {
+      download.saveAs(
+        path.join(this.projectDirPath, '__downloads__', download.suggestedFilename())
+      )
+    });
+
     const ctx = new Context(envConfig, browser, page, this.projectDirPath, {
       caseName,
       groupName,
