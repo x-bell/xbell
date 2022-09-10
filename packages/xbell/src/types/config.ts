@@ -33,6 +33,7 @@ export type XBellTaskConfig = Partial<
 
 export type XBellRuntimeOptions = Partial<{
   browserCallbacks: Array<(...args: any) => any>;
+  args?: object
 }>;
 
 

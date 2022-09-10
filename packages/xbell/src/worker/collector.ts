@@ -6,6 +6,8 @@ import type {
   XBellTestGroup,
   XBellTestGroupFunction,
   XBellRuntimeOptions,
+  XBellCaseTagInfo,
+  XBellRuntime,
 } from '../types';
 import { workerContext } from './worker-context';
 
@@ -69,15 +71,28 @@ export class Collector {
   }
 
   protected createCase<NodeJSExtensionArg, BrowserExtensionArg>(
+   {
+    caseDescription,
+    testCaseFunction,
+    config,
+    runtime,
+    runtimeOptions,
+    tagInfo
+   }: {
     caseDescription: string,
-    testFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>,
+    testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>,
     config: XBellTaskConfig,
-    runtimeOptions: XBellRuntimeOptions
+    runtime: XBellRuntime,
+    runtimeOptions: XBellRuntimeOptions,
+    tagInfo: XBellCaseTagInfo,
+   }
   ): XBellTestCase<NodeJSExtensionArg, BrowserExtensionArg> {
     return {
       type: 'case',
+      runtime,
       caseDescription,
-      testFunction,
+      testFunction: testCaseFunction,
+      tagInfo,
       filename: this.currentFile!.filename,
       groupDescription: this.currentGroup?.groupDescription,
       status: 'waiting',
@@ -99,12 +114,30 @@ export class Collector {
   }
 
   public async collectCase<NodeJSExtensionArg, BrowserExtensionArg>(
-    caseDescription: string,
-    testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>,
-    config: XBellTaskConfig,
-    runtimeOptions: XBellRuntimeOptions
+    {
+      caseDescription,
+      testCaseFunction,
+      tagInfo,
+      config,
+      runtimeOptions,
+      runtime
+    }: {
+      caseDescription: string,
+      testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>,
+      tagInfo: XBellCaseTagInfo,
+      config: XBellTaskConfig,
+      runtimeOptions: XBellRuntimeOptions,
+      runtime: XBellRuntime,
+    }
   ) {
-    const testCase = this.createCase(caseDescription, testCaseFunction, config, runtimeOptions)
+    const testCase = this.createCase({
+      caseDescription,
+      tagInfo,
+      runtimeOptions,
+      runtime,
+      testCaseFunction,
+      config,
+    })
     if (this.currentGroup) {
       this.currentGroup.cases.push(testCase);
     } else {

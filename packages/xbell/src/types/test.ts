@@ -73,18 +73,77 @@ export interface XBellTestGroup {
   runtimeOptions: XBellRuntimeOptions;
 }
 
-export type XBellCaseTag =
+export type XBellCaseTagName =
   | 'normal'
   | 'todo'
+  | 'only'
   | 'each'
   | 'batch'
   | 'skip'
   | 'config'
 
+interface XBellCaseCommonTagInfo {
+  tag: XBellCaseTagName;
+  options?: any;
+}
+
+export interface XBellCaseNormalTagInfo extends XBellCaseCommonTagInfo {
+  tag: 'normal'
+  options?: void;
+}
+
+export interface XBellCaseTodoTagInfo extends XBellCaseCommonTagInfo {
+  tag: 'todo'
+  options?: void;
+}
+
+export interface XBellCaseSkipTagInfo extends XBellCaseCommonTagInfo {
+  tag: 'skip'
+  options?: void;
+}
+
+
+export interface XBellCaseOnlyTagInfo extends XBellCaseCommonTagInfo {
+  tag: 'only'
+  options?: void;
+}
+
+export interface XBellCaseEachTagInfo extends XBellCaseCommonTagInfo {
+  tag: 'each'
+  options: {
+    item: any
+  };
+}
+
+export interface XBellCaseBatchTagInfo extends XBellCaseCommonTagInfo {
+  tag: 'batch'
+  options: {
+    items: any[]
+  };
+}
+
+export interface XBellCaseConfigTagInfo extends XBellCaseCommonTagInfo {
+  tag: 'config'
+  options: XBellTaskConfig;
+}
+
+export type XBellCaseTagInfo =
+  | XBellCaseNormalTagInfo
+  | XBellCaseTodoTagInfo
+  | XBellCaseSkipTagInfo
+  | XBellCaseOnlyTagInfo
+  | XBellCaseBatchTagInfo
+  | XBellCaseEachTagInfo
+  | XBellCaseConfigTagInfo;
+
+export type XBellRuntime =
+  | 'browser'
+  | 'node'
 
 export interface XBellTestCase<NodeJSExtensionArg, BrowserExtensionArg> {
   type: 'case';
-  tag: XBellCaseTag;
+  runtime: XBellRuntime;
+  tagInfo: XBellCaseTagInfo;
   uuid: string;
   filename: string;
   groupDescription?: string;
