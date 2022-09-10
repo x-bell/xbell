@@ -1,4 +1,4 @@
-import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellWorkerUpdateTaskMessage, XBellPage, XBellLocator } from '../types';
+import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask } from '../types';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
@@ -27,6 +27,14 @@ export class Executor {
   }
 
   async runCase(c: XBellTestCase<any, any>) {
+    if (c.runtime === 'node') {
+      this.runCaseInNode(c);
+    } else {
+      this.runCaseInBrowser(c);
+    }
+  }
+
+  async runCaseInNode(c: XBellTestCase<any, any>) {
     const { runtimeOptions, testFunction } = c;
     let _lazyPage: Page;
     const getLazyPage = async () => {
@@ -92,11 +100,23 @@ export class Executor {
       })
     }
       
-    // console.timeEnd('case');
 
     // @ts-ignore
     if (_lazyPage) {
       await proxyPage.close();
     }
+  }
+
+  async runCaseInBrowser(c: XBellTestCase<any, any>) {
+    const browser = await lazyBrowser.newContext('chromium', {
+      headless: false,
+    });
+
+    const browserContext = await browser.newContext();
+    const page = await Page.from(browserContext, c.filename)
+    await page.evaluate(c.testFunction, {});
+    await page.close();
+    await browserContext.close();
+    await browser.close();
   }
 }

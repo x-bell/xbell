@@ -13,7 +13,7 @@
     "bin"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node ./scripts/build.mjs",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

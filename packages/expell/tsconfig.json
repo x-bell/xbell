@@ -16,8 +16,7 @@
     "extendedDiagnostics": false
   },
   "include": [
-    "./src",
-    "./tests"
+    "./src"
   ],
   "exclude": [
     "dist",
