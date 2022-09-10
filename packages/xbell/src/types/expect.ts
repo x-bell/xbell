@@ -1,5 +1,5 @@
 import { BaseExpect, Matchers as JMatcher, AsymmetricMatchers } from 'expect';
-import { ToMatchSnapshotOptions } from '../core/snapshot';
+import { ToMatchSnapshotOptions } from '../core-ioc/snapshot';
 
 type Matchers<R extends void | Promise<void>> = JMatcher<R> & SnapshotMatchers;
 

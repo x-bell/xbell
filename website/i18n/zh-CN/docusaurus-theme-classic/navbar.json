@@ -1,0 +1,14 @@
+{
+  "title": {
+    "message": "XBell"
+  },
+  "item.label.Docs": {
+    "message": "文档"
+  },
+  "item.label.API": {
+    "message": "API"
+  },
+  "item.label.GitHub": {
+    "message": "Github"
+  }
+}

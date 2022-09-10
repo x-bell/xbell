@@ -10,31 +10,29 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: '多功能装饰器',
-    src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-decorators.svg',
-    description: (
-      <>
-        在这，你几乎能通过装饰器干一切事
-        <br />
-        例如：通过装饰器声明每个用例的断言，使断言一目了然
-      </>
-    ),
-  },
-  {
-    title: 'POM & 模块化',
+    title: 'Test integration',
     src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-mods.svg',
     description: (
       <>
-        让你像前后端开发一样，通过模块化的方式组织你的用例
+        Write unit tests and e2e tests with the same mind.
       </>
     ),
   },
   {
-    title: '协作',
+    title: 'node & browser',
     src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-cooperation.svg',
     description: (
       <>
-        对 bug 自动生成视频录制，快速同步开发 & 产品经理
+        You can freely switch between Node.js and Browser environments to test your code.
+      </>
+    ),
+  },
+  {
+    title: 'Decorator Mode',
+    src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-decorators.svg',
+    description: (
+      <>
+        In decorator mode, you can easily do any test.
       </>
     ),
   },

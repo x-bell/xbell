@@ -6,7 +6,8 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: rgb(115, 165, 233);
+  /* --ifm-color-primary: rgb(115, 165, 233); */
+  --ifm-color-primary: rgb(87, 166, 238);
   --ifm-color-primary-dark: #29784c;
   --ifm-color-primary-darker: #277148;
   --ifm-color-primary-darkest: #205d3b;

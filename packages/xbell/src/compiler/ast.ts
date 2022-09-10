@@ -1,4 +1,4 @@
-import {
+import type {
   PropertyName,
   Expression,
   KeyValueProperty,
@@ -7,7 +7,15 @@ import {
   StringLiteral,
   VariableDeclaration,
   VariableDeclarator,
-  JSXElement
+  AwaitExpression,
+  ObjectPattern,
+  ObjectPatternProperty,
+  Pattern,
+  CallExpression,
+  Super,
+  Import,
+  Argument,
+  KeyValuePatternProperty
 } from '@swc/core';
 
 export function genKeyValueProperty(key: PropertyName, value: Expression): KeyValueProperty {
@@ -18,21 +26,32 @@ export function genKeyValueProperty(key: PropertyName, value: Expression): KeyVa
   }
 }
 
-export function genIdentifier(value: string, span: Span): Identifier {
+export function genIdentifier(args: {
+  value: string;
+  span: Span;
+}): Identifier {
   return {
     type: 'Identifier',
-    span,
-    value,
+    span: args.span,
+    value: args.value,
     optional: false,
   }
 }
 
-export function genStringLiteral(value: string, span: Span): StringLiteral {
+export function genStringLiteral(args: {
+  value: string,
+  span: Span
+}): StringLiteral {
   return {
     type: 'StringLiteral',
-    span,
-    value: value,
+    span: args.span,
+    value: args.value,
     hasEscape: false,
+    // @ts-ignore
+    kind: {
+      type: 'normal',
+      containsQuote: true,
+    }
   }
 }
 
@@ -44,25 +63,108 @@ export function genEmptySpan(): Span {
   };
 }
 
-// 暂仅支持 jsx
-export function genVariableDeclarator(variableName: string, jsxElement: JSXElement): VariableDeclarator {
+
+export function genObjectPattern(args: {
+  span: Span;
+  properties: ObjectPatternProperty[]
+}): ObjectPattern {
   return {
-    type: 'VariableDeclarator',
-    span: genEmptySpan(),
-    id: genIdentifier(variableName, genEmptySpan()),
-    definite: false,
-    init: jsxElement
+    type: 'ObjectPattern',
+    span: args.span,
+    properties: args.properties,
+    // @ts-ignore
+    optional: false,
   }
 }
 
-export function genVariableDeclaration(variableName: string, jsxElement: JSXElement): VariableDeclaration {
+export function genVariableDeclarator(args: {
+  init: Expression;
+  span: Span;
+  id: Pattern;
+}): VariableDeclarator {
+  return {
+    type: 'VariableDeclarator',
+    span: args.span,
+    id: args.id,
+    init: args.init,
+    definite: false,
+  }
+}
+
+// export function genObjectPattern(args: {
+//   span: Span
+//   properties: ObjectPatternProperty[]
+// }): ObjectPattern {
+//   return {
+//     type: 'ObjectPattern',
+//     span: args.span,
+//     properties: args.properties,
+//   }
+// }
+
+export function genVariableDeclaration(
+  args: {
+    span: Span;
+    declarations: VariableDeclarator[]
+  }  
+): VariableDeclaration {
   return {
     type: 'VariableDeclaration',
-    span: genEmptySpan(),
+    span: args.span,
     kind: 'const',
     declare: false,
-    declarations: [
-      genVariableDeclarator(variableName, jsxElement)
-    ]
+    declarations: args.declarations,
   }
+}
+
+export function genCallExpression(args: {
+  span: Span;
+  callee: Expression | Super | Import;
+  arguments: Argument[];
+}): CallExpression {
+  return {
+    type: 'CallExpression',
+    span: args.span,
+    callee: args.callee,
+    arguments: args.arguments,
+  }
+}
+
+export function genImport(args: {
+  span: Span;
+}): Import {
+  return {
+    type: 'Import',
+    span: args.span,
+  }
+}
+
+export function genAwaitExpression(args: {
+  argument: Expression;
+  span: Span
+}): AwaitExpression {
+  return {
+    type: 'AwaitExpression',
+    span: args.span,
+    argument: args.argument,
+  }
+}
+
+export function genArgument(args: {
+  expression: Expression
+}): Argument {
+  return {
+    expression: args.expression,
+  };
+}
+
+export function genKeyValuePatternProperty(args: {
+  key: Identifier;
+  value: Identifier;
+}): KeyValuePatternProperty {
+  return {
+    type: 'KeyValuePatternProperty',
+    key: args.key,
+    value: args.value,
+  };
 }

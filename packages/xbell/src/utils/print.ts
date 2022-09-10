@@ -5,6 +5,7 @@ import chalk, { supportsColor } from 'chalk';
 // import * as path from 'path';
 // import { dim } from 'colors/safe';
 import { parseError } from './error';
+import stripAnis from 'strip-ansi';
 
 
 const FAIL_TEXT = '失败';
@@ -70,7 +71,7 @@ class PrettyPrint {
   }
 
   public startLoading(content: string = '') {
-    const frames =   ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚']
+    const frames = ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚']
 
     let x = 0;
     this.loadingTimer = setInterval(() => {
@@ -98,6 +99,8 @@ class PrettyPrint {
       if (ret.firstFrame) console.log(ret.firstFrame);
     }
   }
+
+  
 
   // public printErrorStack(error: Error) {
   //   if (!error.stack) {
@@ -130,3 +133,5 @@ class PrettyPrint {
 
 
 export const prettyPrint = new PrettyPrint()
+
+// console.log(prettyPrint.getCenterText('XBell', { symbol: '-' }))

@@ -19,13 +19,15 @@ const sidebars = {
     'motivation',
     {
       type: 'category',
-      label: '新手指南',
+      label: 'Guide',
       link: {
         type: 'generated-index',
       },
       collapsed: false,
       items: [
         'get-started',
+        'unit-testing',
+        'e2e-testing',
         'pom',
         'multi-env',
         'ddt',
@@ -34,18 +36,43 @@ const sidebars = {
     },
     {
       type: 'category',
-      label: '进阶',
+      label: 'Adavanced',
       link: {
         type: 'generated-index',
       },
       collapsed: false,
       items: [
+        'adavanced/decorator-mode',
         'debug/index',
         'diy-decorator'
       ],
     }
   ],
   api: [
+    'api/test',
+    'api/expect',
+    'api/page',
+    'api/locator',
+    'api/mouse',
+    'api/keyboard',
+    'api/element-handle',
+    {
+      type: 'category',
+      label: 'Decorators',
+      link: {
+        type: 'generated-index',
+      },
+      collapsed: false,
+      items: [
+        // 'api/expect',
+        'api/decorators',
+        'api/decorator',
+        'api/expect-decorator',
+        'api/query',
+      ]
+    },
+  ],
+  examples: [
     {
       type: 'category',
       label: '装饰器',

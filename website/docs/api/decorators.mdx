@@ -1,0 +1,107 @@
+---
+title: Decorators
+---
+
+## @Test()
+
+**Example**
+
+```typescript
+import { expect } from 'xbell';
+import { Test } from 'xbell/decorators';
+
+@Test()
+class TestCase {
+  it_should_to_be_2() {
+    expect(1 + 1).toBe(2);
+  }
+}
+```
+
+## @Description(desc)
+
+**Example**
+
+```typescript
+import { expect } from 'xbell';
+import { Test } from 'xbell/decorators';
+
+@Test()
+class TestCase {
+
+  @Description('it should equal to 2')
+  it_should_to_be_2() {
+    expect(1 + 1).toBe(2);
+  }
+
+}
+```
+```bash
+- i
+```
+## @BeforeEach()
+
+## @AfterEach()
+
+## @EachCase(items, description)
+
+- `items` : <type>{ Array&lt;T&gt; }</type>
+- `description` : <type>{ (item: T) => string }</type>
+
+*Example*
+
+```typescript
+@Test()
+class TestCase {
+
+  @Each([1, 2, 3], (num) => `case ${num}`)
+  it_should_to_be_2(item: number) {
+    expect(item).toBeDefined();
+  }
+
+}
+```
+
+
+## @List(items)
+- `items` : <type>{ Array&lt;T&gt; }</type>
+*Example*
+
+```typescript
+@Test()
+class TestCase {
+
+  @List([1, 2, 3])
+  it_should_to_be_2(item: number) {
+    expect(item).toBeDefined();
+  }
+
+}
+```
+
+## @Timeout(time)
+
+
+- `time` : <type>{ number }</type> duration
+
+```typescript
+@Test()
+class TestCase {
+
+  @Timeout(3000)
+  click_button(@Page.Param() page: Page) {
+    const button = page.locateByText('button')
+    // over 3 000 ms will throw timeout error
+    await button.click()
+  }
+
+}
+```
+
+## @Prop()
+
+
+
+## @Repeat(count)
+
+- `count` : <type>{ number }</type>

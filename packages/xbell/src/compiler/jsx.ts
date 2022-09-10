@@ -20,7 +20,7 @@ import * as path from 'path';
 import fs from 'fs-extra';
 import { Visitor } from './visitor';
 import { tsParserConfig, jscConfig } from './config';
-import { genKeyValueProperty, genIdentifier, genStringLiteral, genEmptySpan, genVariableDeclaration } from './ast';
+// import { genKeyValueProperty, genIdentifier, genStringLiteral, genEmptySpan, genVariableDeclaration } from './ast';
 import { getBrowserCaseDirPath } from '../unit/path';
 
 // function genXBellJSXKey(num: number) {

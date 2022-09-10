@@ -5,7 +5,7 @@
     alt="xbell"
     src="https://raw.githubusercontent.com/x-bell/xbell-assets/main/logo/xbell-logo.svg"
   />
-<h2>A Web testing framework.</h2>
+<h2>Make web testing easy.</h2>
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/x-bell/xbell/blob/main/LICENSE)
 [![npm version](https://img.shields.io/npm/v/xbell.svg?color=73a5e9)](https://www.npmjs.com/package/xbell)
@@ -13,9 +13,9 @@
 </div>
 
 
-## Features 🎐
-- Multi browser environment based on playwright-core
-- Real browser environment for components testing
+XBell is a web testing framework that combines unit testing with end-to-end testing.
+
+## 🎐 Features
+- Write unit tests and e2e tests with the same mind.
+- Freely switch between Node.js and Browser environments to test your code.
 - Easy to use decorator mode based on Typescript & IoC
-- Screenshot testing
-- Practical test reports（can watch video record, snapshot, console, network）

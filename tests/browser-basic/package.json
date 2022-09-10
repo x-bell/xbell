@@ -2,7 +2,7 @@
   "name": "@xbell/test-browser-basic",
   "private": true,
   "scripts": {
-    "test": "xbell"
+    "test": "xbell fun"
   },
   "devDependencies": {
     "xbell": "workspace:*"

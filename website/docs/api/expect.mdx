@@ -1,0 +1,337 @@
+---
+title: Expect
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## expect&lt;any&gt;
+
+
+### toBe(value)<tag type="node.js" /><tag type="browser" />
+
+- `value` <type>{ any }</type>
+
+"toBe" is used to compare whether the primitive values are equal or whether objects belong to the same reference.
+
+<Tabs>
+  <TabItem value="node.js" label="node.js">
+
+  ```javascript
+  import { test, expect } from 'xbell';
+
+  const man = {
+    name: 'Mike',
+    bag: ['vodka'],
+  };
+
+  test('check primitives value', () => {
+    expect(man.name).toBe('Mike');
+  });
+
+  test('check reference value', () => {
+    const bagRef = man.bag;
+
+    expect(man.bag).toBe(bagRef);
+    expect(man.bag).not.toBe(['vodka']);
+  });
+
+  ```
+
+  </TabItem>
+
+  <TabItem value="browser" label="browser">
+
+  ```javascript title="man.js"
+  export const man = {
+    name: 'Mike',
+    bag: ['vodka'],
+  };
+  ```
+
+  ```javascript title="man.test.js"
+  import { test } from 'xbell';
+
+  test.browser('check primitives value', ({ expect }) => {
+    const { man } = await import('./man');
+
+    expect(man.name).toBe('Mike');
+  });
+
+  test.browser('check reference value', ({ expect }) => {
+    const { man } = await import('./man');
+
+    const bagRef = man.bag;
+
+    expect(man.bag).toBe(bagRef);
+    expect(man.bag).not.toBe(['vodka']);
+  });
+  ```
+  </TabItem>
+
+  <TabItem value="mixed" label="mixed">
+
+  ```javascript title="man.js"
+  export const man = {
+    name: 'Mike',
+    bag: ['vodka'],
+  };
+  ```
+
+  ```javascript title="man.test.js"
+  import { test, expect } from 'xbell';
+
+  test('check primitives value', async ({ page }) => {
+    const nameHandle = await page.evaluate(async () => {
+      const { man } = await import('./man');
+      return man.name;
+    });
+    expect(nameHandle.toValue()).toBe('Mike');
+  });
+
+  test('check reference value', async ({ page }) => {
+    const bagHanlde = await page.evaluate(async () => {
+      const { man } = await import('./man');
+      return man.bag;
+    });
+    
+    expect(bagHanlde.toValue()).not.toBe(['vodka']);
+    // NOTE: should use equal
+    expect(bagHanlde.toValue()).toEqual(['vodka']);
+  });
+  ```
+  </TabItem>
+
+</Tabs>
+
+### toBeDefined() <tag type="node.js" /><tag type="browser" />
+
+`toBeDefined()` is used to assert that the value is not equal to `undefined` , same as `.not.toBe(undefined)` .
+
+Usually used to check if a function has a return value.
+
+```javascript
+import { test, expect } from 'xbell';
+
+function createSomething() {
+  return Math.random();
+}
+
+test('it always creates something', () => {
+  expect(createSomething()).toBeDefined();
+});
+```
+
+### toBeUndefined() <tag type="node.js" /><tag type="browser" />
+`toBeUndefined()` is used to assert that the value is `undefined` , same as `toBe(undefined)` .
+
+Usually used to check if a function returns undefined.
+```javascript
+import { test, expect } from 'xbell';
+
+function getName(person) {
+  return person?.name;
+}
+
+test('getName returns undefined when passed a empty value', () => {
+  expect(getName()).toBeUndefined();
+});
+```
+
+### toBeNull() <tag type="node.js" /><tag type="browser" />
+`toBeNull()` asserts that the value is `null` , same as `toBe(null)` .
+
+<Tabs>
+  <TabItem value="node.js" label="node.js">
+
+  ```javascript
+  import { test, expect } from 'xbell';
+
+  function getSomething(make) {
+    if (make) {
+      return Math.random();
+    }
+
+    return null;
+  }
+
+  test('get something is null', () => {
+    expect(getSomething()).toBeNull();
+  });
+  ```
+
+  </TabItem>
+
+  <TabItem value="browser" label="browser">
+
+  ```javascript title="something.js"
+  export function getSomething(make) {
+    if (make) {
+      return Math.random();
+    }
+
+    return null;
+  }
+  ```
+
+  ```javascript title="something.test.js"
+  import { test } from 'xbell';
+
+  test.browser('get something is null', ({ expect }) => {
+    const { getSomething } = await import('./something');
+
+    expect(getSomething()).toBeNull();
+  });
+  ```
+  </TabItem>
+</Tabs>
+
+### toBeTruthy()
+
+<Tabs>
+  <TabItem value="node.js" label="node.js">
+
+  ```javascript
+  import { test, expect } from 'xbell';
+
+  function createSomething() {
+    return 1 + Math.random();
+  }
+
+  test('createSomething returns value to be truthy', () => {
+    expect(createSomething()).toBeTruthy();
+  });
+  ```
+
+  </TabItem>
+
+  <TabItem value="browser" label="browser">
+
+  ```javascript title="something.js"
+  export function createSomething() {
+    return 1 + Math.random();
+  }
+  ```
+
+  ```javascript title="something.test.js"
+  import { test } from 'xbell';
+
+  test.browser('createSomething returns value to be truthy', ({ expect }) => {
+    const { createSomething } = await import('./something');
+
+    expect(createSomething()).toBeTruthy();
+  });
+  ```
+  </TabItem>
+</Tabs>
+
+### toBeFalsy()
+
+
+<Tabs>
+  <TabItem value="node.js" label="node.js">
+
+  ```javascript
+  import { test, expect } from 'xbell';
+
+  function createNothing() {
+    return null;
+  }
+
+  test('createSomething returns value to be falsy', () => {
+    expect(createNothing()).toBeFalsy();
+  });
+  ```
+
+  </TabItem>
+
+  <TabItem value="browser" label="browser">
+
+  ```javascript title="something.js"
+  export function createNothing() {
+    return null;
+  }
+  ```
+
+  ```javascript title="something.test.js"
+  import { test } from 'xbell';
+
+  test.browser('createSomething returns value to be truthy', ({ expect }) => {
+    const { createNothing } = await import('./something');
+
+    expect(createNothing()).toBeFalsy();
+  });
+  ```
+  </TabItem>
+</Tabs>
+
+### toBeTypeOf(type)
+- `type` <type>{'function' | 'number' | 'string' | 'object' | 'boolean' | 'undefined' | 'symbol' | 'bigint'}</type>
+
+
+
+
+
+
+<Tabs>
+  <TabItem value="nodejs" label="nodejs">
+
+  ```javascript
+    import { test } from 'xbell';
+
+    class Dog {
+      eat() {}
+    }
+
+    test('the dog has a method of eating', ({ expect }) => {
+      const dog = new Dog();
+
+      expect(dog.eat).toBeTypeOf('function');
+    });
+  ```
+
+  </TabItem>
+
+  <TabItem value="browser" label="browser">
+
+  ```javascript title="uploader.js"
+  export class Uploader {
+    upload(file) {
+      return Promise.resolve(URL.createObjectURL(file));
+    }
+  }
+  ```
+
+  ```javascript title="uploader.test.js"
+  import { test } from 'xbell';
+
+  test.browser('upload property is a function', ({ expect }) => {
+    const { Uploader } = await import('./uploader');
+    const uploader = new Uploader();
+
+    expect(uploader.upload).toBeTypeOf('function');
+  });
+  ```
+  </TabItem>
+</Tabs>
+
+
+## expect&lt;number&gt;
+
+### toBeLessThan(number)
+
+### toBeLessThanOrEqual(number)
+
+### toBeNaN()
+
+### toHaveProperty(key, value?)
+- `key` <type>{ string }</type> object's key
+- `value?` <type>{ any }</type>
+
+
+
+## expect &lt;Locator | ElementHandle&gt;
+
+### isVisible() <tag type="node.js" />
+
+- *returns* <type>Promsie&lt;boolean&gt;</type>

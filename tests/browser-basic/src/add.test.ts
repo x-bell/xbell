@@ -1,18 +1,17 @@
-import { it, expect } from 'xbell';
+import { test, expect } from 'xbell';
+
+const sleep = () => new Promise(resolve => setTimeout(resolve, 115000));
 
 
-it('#inside: expect in browser', async ({ page }) => {
-  await page.execute(async () => {
-    const { expect } = await import('xbell/browser');
-    const { add } = await import('./add');
-    expect(add(1, 1)).toBe(2);
+test('#inside: expect in nodejs', async ({ page }) => {
+  await page.goto('https://www.baidu.com', {
+    html: '<div id="root">nihao</div>'
   });
-});
 
-it('#inside: expect in nodejs', async ({ page }) => {
-  const result = await page.execute(async () => {
+  const result = await page.evaluate(async () => {
     const { add } = await import('./add');
     return add(1, 1);
   });
   expect(result).toBe(2);
+  await sleep();
 });

@@ -1,0 +1,15 @@
+{
+  "name": "@xbell/format",
+  "type": "module",
+  "version": "0.1.0",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && node ./scripts/build.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.4",
+    "fast-glob": "^3.2.11"
+  }
+}

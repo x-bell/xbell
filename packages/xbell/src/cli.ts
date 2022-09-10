@@ -1,17 +1,21 @@
 import 'reflect-metadata';
 import * as fs from 'fs';
 import { resolve, join } from 'path';
-import { container } from './core/container';
+import { container } from './core-ioc/container';
 import { MetaDataType } from './constants/index';
 import { sleep, prettyPrint } from './utils/index';
 import { Command } from 'commander';
-import { glob } from 'glob';
+import glob from 'fast-glob';
 
 import { checkDownloadSpeed } from './utils/network';
 // import { registerTransfomer } from './compiler/transform';
 // @ts-ignore
 import * as pwServer from 'playwright-core/lib/server';
+import { xbell } from './core/xbell';
+// import { init } from './console';
 const program = new Command();
+
+// init();
 
 
 // registerTransfomer();
@@ -73,6 +77,17 @@ program
     await container.stopDevServer();
   });
 
+  program
+  .command('fun', { isDefault: true })
+  .option('-f, --file <type>', '指定测试文件')
+  .option('-g, --group <type>', '指定测试 group')
+  .option('-c, --case <type>', '指定测试 case')
+  .option('-e, --env <type>', '指定 env 环境')
+  .option('-d, --debug', '调试模式: 不会清空打印等')
+  .action(async (commandOptions: CommandOptions) => {
+    await xbell.runTest();
+  });
+
 program
   .command('install [browser...]')
   .action(async (browsers: string[]) => {
@@ -84,5 +99,6 @@ program
     await pwServer.registry.install(executables, false);
     process.exit(0);
   });
+
 
 program.parse();

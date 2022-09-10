@@ -1,5 +1,6 @@
 import { transformSync } from '@swc/core';
 import { jscConfig } from './config';
+
 export async function transformNodeCode(
   sourceCode: string,
 ) {
@@ -7,6 +8,7 @@ export async function transformNodeCode(
     module: {
       type: 'nodenext'
     },
+    sourceMaps: 'inline',
     jsc: {
       ...jscConfig,
     },

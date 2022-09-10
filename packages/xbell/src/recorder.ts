@@ -1,7 +1,7 @@
 import { XBellEnvRecord } from 'xbell-reporter';
 import { parseError } from './utils/error';
 
-type Env =  EnvConfig['ENV'];
+type Env = XBellEnv['name'];
 
 export class Recorder {
 

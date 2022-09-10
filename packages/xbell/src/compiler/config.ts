@@ -11,6 +11,9 @@ export const jscConfig: JscConfig = {
   transform: {
     decoratorMetadata: true,
     legacyDecorator: true,
+    react: {
+      runtime: 'classic',
+    }
   },
   target: 'es2020',
 };

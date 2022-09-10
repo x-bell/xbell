@@ -10,7 +10,7 @@ export interface TableRow {
 }
 
 export class Printer {
-  activeEnv!: EnvConfig['ENV'];
+  activeEnv!: XBellEnv['name'];
   timer?: NodeJS.Timer;
   frames = ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'];
 
@@ -43,7 +43,7 @@ export class Printer {
 
   }
 
-  public setActiveEnv(env: EnvConfig['ENV']) {
+  public setActiveEnv(env: XBellEnv['name']) {
     this.activeEnv = env;
   }
 

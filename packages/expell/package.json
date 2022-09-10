@@ -1,0 +1,19 @@
+{
+  "name": "expell",
+  "version": "0.1.0",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && node ./scripts/build.mjs"
+  },
+  "dependencies": {
+    "@types/node": "^18.7.14",
+    "@xbell/format": "workspace:*",
+    "picocolors": "^1.0.0"
+  },
+  "devDependencies": {
+    "fast-glob": "^3.2.11",
+    "typescript": "^4.6.4"
+  }
+}

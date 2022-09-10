@@ -1,12 +1,18 @@
-import { container } from "../core/container";
-import { transformNodeCode } from "../compiler/node-transform";
-import { readFileSync } from "node:fs";
+
+import process from 'node:process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from "node:url";
+import { compiler } from "../compiler/compiler";
+
+// @ts-ignore
+process.setSourceMapsEnabled(true);
 
 export async function load(url: string, context: any, nextLoad: any) {
   if (/\.(tsx|ts)$/.test(url)) {
-    const code = await transformNodeCode(
-      readFileSync(fileURLToPath(url), "utf-8")
+    const filePath = fileURLToPath(url);
+    const { code } = await compiler.compileNodeJSCode(
+      readFileSync(filePath, "utf-8"),
+      filePath
     );
 
     return {
@@ -15,6 +21,5 @@ export async function load(url: string, context: any, nextLoad: any) {
       source: code,
     };
   }
-
   return nextLoad(url, context);
 }
