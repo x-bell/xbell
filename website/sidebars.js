@@ -50,6 +50,7 @@ const sidebars = {
   ],
   api: [
     'api/test',
+    'api/config',
     'api/expect',
     'api/page',
     'api/locator',
@@ -73,19 +74,7 @@ const sidebars = {
     },
   ],
   examples: [
-    {
-      type: 'category',
-      label: '装饰器',
-      link: {
-        type: 'generated-index',
-      },
-      collapsed: false,
-      items: [
-        'api/decorator',
-        'api/expect-decorator',
-        'api/query',
-      ]
-    }
+    'examples/multi-envs'
   ]
 
   // But you can create a sidebar manually
