@@ -41,3 +41,7 @@ export {
   expect
   // exp
 } from './func';
+
+export type {
+  FixtureFunction
+} from './types';

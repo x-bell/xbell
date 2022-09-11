@@ -16,6 +16,26 @@
     "build": "tsc && node ./scripts/build.mjs",
     "prepublishOnly": "npm run build"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./decorators": {
+      "type": "./dist/decorators.d.ts",
+      "import": "./dist/decorators.mjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./dist/index"
+      ],
+      "decorators": [
+        "./dist/decorators/index"
+      ]
+    }
+  },
   "keywords": [
     "end-to-end",
     "testing",

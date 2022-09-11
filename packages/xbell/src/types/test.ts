@@ -199,12 +199,12 @@ export interface XBellPage<BrowserExtensionArg> {
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
 }
 
-interface XBellTestCaseFunctionArg<BrowserExtensionArg> {
+export interface XBellTestCaseFunctionArguments<BrowserExtensionArg> {
   page: XBellPage<BrowserExtensionArg>;
 }
 
 export interface XBellTestCaseFunction<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> {
-  (args: XBellTestCaseFunctionArg<BrowserExtensionArg> & NodeJSExtensionArg): void
+  (args: XBellTestCaseFunctionArguments<BrowserExtensionArg> & NodeJSExtensionArg): void
 }
 
 export interface XBellBrowserTestCaseFunction<BrowserExtensionArg = {}> {

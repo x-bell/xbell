@@ -1,44 +1,49 @@
-import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, } from './types';
+import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments } from './types';
 import { collector } from './worker/collector';
 
-interface XBellBrowserTest<BrowserExtensionArg = {}> {
-  (caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtensionArg>): void;
+interface XBellBrowserTest<BrowserExtArgs = {}> {
+  (caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
 
-  only(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtensionArg>): void;
+  only(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
 
-  skip(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtensionArg>): void;
+  skip(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
 
-  todo(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtensionArg>): void;
+  todo(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
 
   each<T>(items: T[]): (caseDescription: string | ((item: T) => string), testCaseFunction: XBellBrowserTestCaseFunction & { item: T }) => void;
 
-  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtensionArg & { item: T }>) => void;
+  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtArgs & { item: T }>) => void;
 }
 
-interface XBellTest<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> {
+interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
   /** group */
   describe(groupDescription: string, testGroupFunction: XBellTestGroupFunction): void;
-  extendBrowser<T extends (args: BrowserExtensionArg) => any>(browserCallback: T): XBellTest<NodeJSExtensionArg, BrowserExtensionArg & ReturnType<T>>;
+  extend<T extends (args: XBellTestCaseFunctionArguments<BrowserExtArgs>) => any>(nodeJSCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs>;
+  extendBrowser<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, BrowserExtArgs & Awaited<ReturnType<T>>>;
    /** case */
-   (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>): void;
+   (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
 
-  only(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>): void;
+  only(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
 
-  skip(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>): void;
+  skip(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
 
-  todo(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>): void;
+  todo(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
 
-  each<T>(items: T[]): (caseDescription: string | ((item: T) => string), testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg & { item: T }, BrowserExtensionArg>) => void;
+  each<T>(items: T[]): (caseDescription: string | ((item: T) => string), testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T }, BrowserExtArgs>) => void;
 
-  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg & { item: T }, BrowserExtensionArg>) => void;
+  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T }, BrowserExtArgs>) => void;
 
-  browser: XBellBrowserTest<BrowserExtensionArg>
+  browser: XBellBrowserTest<BrowserExtArgs>
 }
 
-export function createTest<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> (
+export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
+  nodejsCallbacks: Array<(...args: any[]) => any> = [],
   browserCallbacks: Array<(...args: any[]) => any> = [],
-): XBellTest<NodeJSExtensionArg, BrowserExtensionArg> {
-  const test: XBellTest<NodeJSExtensionArg, BrowserExtensionArg> = (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>) => {
+): XBellTest<NodeJSExtArgs, BrowserExtArgs> {
+  const test: XBellTest<NodeJSExtArgs, BrowserExtArgs> = (
+    caseDescription: string,
+    testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>
+  ) => {
     collector.collectCase({
       caseDescription,
       testCaseFunction,
@@ -144,14 +149,21 @@ export function createTest<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> (
     collector.collectGroup(groupDescription, testGroupFunction, {}, {});
   };
 
-  test.extendBrowser = <T extends (args: BrowserExtensionArg) => any>(browserCallback: T): XBellTest<NodeJSExtensionArg, BrowserExtensionArg & ReturnType<T>> => {
-    return createTest([
+  test.extendBrowser = <T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, BrowserExtArgs & Awaited<ReturnType<T>>> => {
+    return createTest(nodejsCallbacks, [
       ...browserCallbacks,
       browserCallback,
     ]);
   };
 
-  const browser: XBellBrowserTest<BrowserExtensionArg> = (caseDescription, testCaseFunction) => {
+  test.extend = <T extends (args: XBellTestCaseFunctionArguments<NodeJSExtArgs>) => any>(nodejsCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs> => {
+    return createTest([
+      ...nodejsCallbacks,
+      nodejsCallback
+    ], browserCallbacks)
+  }
+
+  const browser: XBellBrowserTest<BrowserExtArgs> = (caseDescription, testCaseFunction) => {
     collector.collectCase({
       caseDescription,
       testCaseFunction,
@@ -259,7 +271,8 @@ export function createTest<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> (
   return test;
 }
 
-export const test = createTest();
+export const test = createTest<{}, {}>();
 
 export const describe = test.describe;
+
 export { expell as expect } from 'expell';
