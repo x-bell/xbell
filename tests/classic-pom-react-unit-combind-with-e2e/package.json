@@ -1,0 +1,17 @@
+{
+  "name": "@xbell/classic-pom-unit-combind-with-e2e",
+  "private": true,
+  "scripts": {
+    "test": "xbell"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "xbell": "workspace:*",
+    "vite": "^3.1.0"
+  }
+}
