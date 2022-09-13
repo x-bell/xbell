@@ -21,7 +21,9 @@ import type {
   Rect,
   TimeoutOptions,
   Response,
-  LifecycleEvent
+  LifecycleEvent,
+  PageScreenshotOptions,
+  ElementHandleScreenshotOptions
 } from '../types/pw'
 import { workerContext } from './worker-context';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
@@ -77,6 +79,10 @@ class ElementHandle implements XBellElementHandle {
   boundingBox(): Promise<Rect | null> {
     return this._elementHandle.boundingBox();
   }
+
+  screenshot(options?: ElementHandleScreenshotOptions | undefined): Promise<Buffer> {
+    return this._elementHandle.screenshot(options);
+  }
 }
 
 class Locator implements XBellLocator {
@@ -124,6 +130,10 @@ class Locator implements XBellLocator {
 
   boundingBox(options?: TimeoutOptions | undefined): Promise<Rect | null> {
     return this._locator.boundingBox(options);
+  }
+
+  screenshot(options?: ElementHandleScreenshotOptions | undefined): Promise<Buffer> {
+    return this._locator.screenshot(options);
   }
 }
 
@@ -235,5 +245,9 @@ export class Page implements XBellPage<any> {
 
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'> | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<void> {
     return this._page.waitForLoadState(state, options); 
+  }
+
+  screenshot(options?: PageScreenshotOptions | undefined): Promise<Buffer> {
+    return this._page.screenshot(options);
   }
 }

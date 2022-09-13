@@ -10,7 +10,9 @@ import type {
   Rect,
   FrameGotoOptions,
   Response,
-  LifecycleEvent
+  LifecycleEvent,
+  PageScreenshotOptions,
+  ElementHandleScreenshotOptions
 } from './pw';
 
 export type XBellError = { name: string; message: string; stack?: string };
@@ -199,6 +201,7 @@ export interface XBellElementHandle {
   isDisabled(): Promise<boolean>;
   isHidden(): Promise<boolean>;
   boundingBox(): Promise<Rect | null>;
+  screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
 }
 
 export interface XBellLocator {
@@ -213,15 +216,17 @@ export interface XBellLocator {
   isDisabled(options?: TimeoutOptions): Promise<boolean>;
   isHidden(options?: TimeoutOptions): Promise<boolean>;
   boundingBox(options?: TimeoutOptions): Promise<Rect | null>;
+  screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
 }
 
-export interface XBellPage<BrowserExtensionArg> {
+export interface XBellPage<BrowserExtensionArg = {}> {
   evaluate: <Args>(func: XBellPageExecutor<BrowserExtensionArg & Args>, args?: Args) => void;
   locateByText(text: string): XBellLocator;
   queryByText(text: string): Promise<XBellElementHandle | null>;
   close(): Promise<void>;
   goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
+  screenshot(options?: PageScreenshotOptions): Promise<Buffer>
 }
 
 export interface XBellTestCaseFunctionArguments<BrowserExtensionArg> {

@@ -58,7 +58,6 @@ export type ElementHandleUncheckOptions = {
 
 export type LifecycleEvent = 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
 
-
 export type FrameGotoOptions = {
   timeout?: number,
   waitUntil?: LifecycleEvent,
@@ -66,3 +65,26 @@ export type FrameGotoOptions = {
   html?: string;
 };
 
+export type ElementHandleScreenshotOptions = {
+  timeout?: number,
+  type?: 'png' | 'jpeg',
+  quality?: number,
+  omitBackground?: boolean,
+  caret?: 'hide' | 'initial',
+  animations?: 'disabled' | 'allow',
+  scale?: 'css' | 'device',
+  path?: string,
+};
+
+export type PageScreenshotOptions = {
+  timeout?: number,
+  type?: 'png' | 'jpeg',
+  quality?: number,
+  fullPage?: boolean,
+  clip?: Rect,
+  omitBackground?: boolean,
+  caret?: 'hide' | 'initial',
+  animations?: 'disabled' | 'allow',
+  scale?: 'css' | 'device',
+  path?: string,
+};
