@@ -1,4 +1,4 @@
-import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask, XBellTestCaseStandard } from '../types';
+import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask, XBellTestCaseStandard, XBellTestCaseClassic } from '../types';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
@@ -32,48 +32,61 @@ export class Executor {
   }
 
   async runCase(c: XBellTestCase<any, any>) {
-    if (c.runtime === 'node') {
-      this.runCaseInNode(c);
-    } else {
-      // TODO:
-      this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
+    try {
+      if (c.runtime === 'node') {
+        this.runCaseInNode(c);
+      } else {
+        // TODO:
+        this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
+      }
+    } catch(error) {
+
     }
   }
 
-  protected getTestFunction(c: XBellTestCase<any, any>): Function {
-    if (isStandardCase(c)) {
-      return c.testFunction;
-    } else {
-      const ctx = new ClassicContext(c, genLazyPage(c.filename));
-      const cls = ctx.createInstance(c.class as new() => any);
-      return cls[c.propertyKey];
-    }
-  }
-
-  async runCaseInNode(c: XBellTestCase<any, any>) {
-    let wasUsedPage = false;
-    const { runtimeOptions } = c;
-    const testFunction = await this.getTestFunction(c);
+  protected async runClassicCaseInNode(c: XBellTestCaseClassic) {
     const lazyPage = genLazyPage(c.filename);
-    
+    const ctx = new ClassicContext(c, lazyPage);
+    const instance = ctx.createInstance(c.class as new() => any);
+    workerContext.channel.emit('onCaseExecuteStart', {
+      uuid: c.uuid,
+    });
+    // TODO: params
+    await instance[c.propertyKey]();
+
+    workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
+
+    await lazyPage.close();
+  }
+
+  protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>) {
+    const { runtimeOptions, testFunction } = c;
+
+    const lazyPage = genLazyPage(c.filename);
+
     const caseArgsProxy = new Proxy({}, {
       get(target, propKey) {
         if (propKey === 'page') {
-          wasUsedPage = true;
           return lazyPage
         }
       }
     });
+    workerContext.channel.emit('onCaseExecuteStart', { uuid: c.uuid });
 
-    workerContext.channel.emit('onCaseExecuteStart', {
-      uuid: c.uuid,
-    })
+    await testFunction(caseArgsProxy);
 
+    workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
+    
+    await lazyPage.close();
+  }
+
+  async runCaseInNode(c: XBellTestCase<any, any>) {
     try {
-      await testFunction(caseArgsProxy);
-      workerContext.channel.emit('onCaseExecuteSuccessed', {
-        uuid: c.uuid,
-      })
+      if (isStandardCase(c)) {
+        await this.runStandardCaseInNode(c);
+      } else {
+        await this.runClassicCaseInNode(c);
+      }
     } catch(err: any) {
       workerContext.channel.emit('onCaseExecuteFailed', {
         uuid: c.uuid,
@@ -83,12 +96,6 @@ export class Executor {
           stack: err?.stack,
         }
       })
-    }
-      
-
-    // @ts-ignore
-    if (wasUsedPage) {
-      await lazyPage.close();
     }
   }
 

@@ -13,6 +13,9 @@ import type {
 } from '../types';
 import { workerContext } from './worker-context';
 import { ClassicCollector } from './classic-collector';
+import debug from 'debug';
+
+const debugCollector = debug('xbell:collector');
 
 export interface XBellCollector {
   testFiles: Promise<XBellTestFile[]>;
@@ -47,7 +50,12 @@ export class Collector {
       this.currentFile = this.createFile(filename);
       this.classic.startFileCollection(this.currentFile);
       await import(filename);
-      this.classic.finishFileCollection();
+      const tasksFromClassic = this.classic.finishFileCollection();
+      debugCollector(tasksFromClassic);
+      this.currentFile.tasks = [
+        ...this.currentFile.tasks,
+        ...tasksFromClassic,
+      ]
       return this.currentFile;
   }
 

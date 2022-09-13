@@ -155,6 +155,7 @@ class Printer {
 
   protected getFileError(file: XBellTestFileRecord) {
     if (file.error) {
+      // print stack
       return pc.bold(pc.red(pc.italic('Error:'))) + `\n${file.error.name || ''}: ${file.error.message || ''}\n${file.error.stack || ''}`
     }
 
@@ -237,18 +238,21 @@ class Printer {
   }
 
   print(testFileRecords: XBellTestFileRecord[]) {
+    if (process.env.DEBUG) {
+      return;
+    }
     this.files = testFileRecords;
     this.currentFrame++;
     const { text, fileStatusCounter, caseStatusCounter, caseErrors } = this.getAllFileInfo();
     const summaryText = this.getSummary({ fileStatusCounter, caseStatusCounter });
     const errorText = caseErrors.map((text, idx, arr) => {
       const total = arr.length;
-      const title = pc.bold(pc.red(this.getCenterText(
+      const title = pc.bold(pc.magenta(this.getCenterText(
         (` Failed Cases [${idx + 1}/${total}] `), { symbol: '-'})
         ));
-      return `${title}\n${text}`
+      return `${title}\n${pc.red(text)}`
     }).join('\n') + (
-      caseErrors.length ? `\n${pc.bold(pc.red(this.getCenterText('End', { symbol: '-'})))}` : ''
+      caseErrors.length ? `\n${pc.bold(pc.magenta(this.getCenterText('End', { symbol: '-'})))}` : ''
     );
     // const startLine = this.getCenterText(), { symbol: pc.cyan('-') });
     // const endLine = this.getCenterText(pc.bold(pc.inverse(pc.cyan(' END '))), { symbol: pc.cyan('-') });

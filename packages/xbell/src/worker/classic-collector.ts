@@ -1,6 +1,10 @@
 import type { XBellCaseTagInfo, XBellProject, XBellTestCase, XBellTestCaseClassic, XBellTestFile, XBellTestGroup } from '../types';
 import type { Collector } from './collector';
+import debug from 'debug';
 
+
+const debugCreateCase = debug('xbell:createCase');
+const debugSetCaseDecorators = debug('xbell:SetCaseDecorators');
 export interface XBellTestGroupClassic {
   displayName?: string;
 }
@@ -50,8 +54,9 @@ export class ClassicCollector {
   }
 
   finishFileCollection() {
-    this.genTasks()
+    const tasks = this.genTasks()
     this.currentFile = undefined;
+    return tasks;
   }
 
   setCaseDecorators({
@@ -68,10 +73,11 @@ export class ClassicCollector {
     const c: XBellTestCaseDecorators = existedCase ?? {
       propertyKey,
     };
+
+    Object.assign(c, decorators);
+
     if (!existedCase) {
       clsInfo.cases.push(c);
-    } else {
-      Object.assign(c, decorators);
     }
   }
 
@@ -139,6 +145,11 @@ export class ClassicCollector {
   }
 
   protected createCases(cls: Function, caseDecorators: XBellTestCaseDecorators): XBellTestCaseClassic[] {
+    debugCreateCase(caseDecorators);
+    if (!caseDecorators.test) {
+      return []
+    }
+
     if (caseDecorators.each) {
       return caseDecorators.each.items.map((item, index) => {
         const c: XBellTestCaseClassic = {

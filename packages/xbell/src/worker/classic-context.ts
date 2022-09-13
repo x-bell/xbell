@@ -1,5 +1,5 @@
 import { XBellTestCaseClassic } from '../types/index';
-import { getMetadataKeys } from '../utils/index';
+import { getMetadataKeys } from '../utils/property';
 import { MetaDataType } from '../constants/index';
 import { XBellPage } from '../types';
 import { Page } from './page';
@@ -28,7 +28,10 @@ export class ClassicContext {
     injectKeys.forEach((propertyKey) => {
       try {
         // @ts-ignore
-        instance[propertyKey] = isInjectCtx ? this : this.createInstance(InjectConstructor);
+        instance[propertyKey] = this._getInectValue({
+          instance,
+          propertyKey,
+        });
       } catch(error: any) {
         const err = new Error();
         err.message = [
@@ -50,12 +53,12 @@ export class ClassicContext {
     return instance;
   }
 
-  protected getInectValue({
+  protected _getInectValue({
     instance,
     propertyKey,
   }: {
     instance: any;
-    propertyKey: string;
+    propertyKey: string | symbol;
   }) {
     const InjectConstructor = Reflect.getMetadata('design:type', instance, propertyKey);
     const injectValue = this._injectMap.get(InjectConstructor) ?? this._initInjectValue({
@@ -71,7 +74,7 @@ export class ClassicContext {
     propertyKey,
   }: {
     instance: any;
-    propertyKey: string;
+    propertyKey: string | symbol;
   }) {
     const InjectConstructor = Reflect.getMetadata('design:type', instance, propertyKey);
     const isInjectCtx = InjectConstructor === ClassicContext;
@@ -80,6 +83,6 @@ export class ClassicContext {
     }
 
     return this._internalMap.get(InjectConstructor) ?? this.createInstance(InjectConstructor);
-
   }
+
 }

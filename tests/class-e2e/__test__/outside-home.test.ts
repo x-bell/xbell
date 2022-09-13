@@ -1,6 +1,6 @@
 import { Test, expect, Page, Inject } from 'xbell';
 
-class TestCase {
+class OutsideTestCase {
   @Inject()
   page: Page;
 

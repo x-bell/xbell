@@ -196,6 +196,7 @@ importers:
       '@babel/code-frame': ^7.16.7
       '@swc/core': ^1.2.208
       '@types/babel__code-frame': ^7.0.3
+      '@types/debug': ^4.1.7
       '@types/fs-extra': ^9.0.13
       '@types/lodash': ^4.14.182
       '@types/node': ^17.0.33
@@ -206,6 +207,7 @@ importers:
       '@vitejs/plugin-vue': ^3.0.3
       chalk: ^5.0.1
       commander: ^9.2.0
+      debug: ^4.3.4
       expect: ^28.1.0
       expell: workspace:*
       fast-glob: ^3.2.11
@@ -231,6 +233,7 @@ importers:
       '@vitejs/plugin-vue': registry.npmmirror.com/@vitejs/plugin-vue/3.0.3_vite@3.0.9
       chalk: registry.npmmirror.com/chalk/5.0.1
       commander: registry.npmmirror.com/commander/9.3.0
+      debug: registry.npmmirror.com/debug/4.3.4
       expect: registry.npmmirror.com/expect/28.1.0
       expell: link:../expell
       fast-glob: registry.npmmirror.com/fast-glob/3.2.11
@@ -252,6 +255,7 @@ importers:
       xbell-reporter: link:../xbell-reporter
     devDependencies:
       '@types/babel__code-frame': registry.npmmirror.com/@types/babel__code-frame/7.0.3
+      '@types/debug': registry.npmmirror.com/@types/debug/4.1.7
       '@types/fs-extra': registry.npmmirror.com/@types/fs-extra/9.0.13
       '@types/lodash': registry.npmmirror.com/@types/lodash/4.14.182
       '@types/node': registry.npmmirror.com/@types/node/17.0.36
@@ -346,7 +350,7 @@ importers:
       vue-tsc: registry.npmmirror.com/vue-tsc/0.39.5_typescript@4.8.2
       xbell: link:../../packages/xbell
 
-  tests/class-basic:
+  tests/class-e2e:
     specifiers:
       xbell: workspace:*
     devDependencies:
@@ -7280,7 +7284,6 @@ packages:
     version: 4.1.7
     dependencies:
       '@types/ms': registry.npmmirror.com/@types/ms/0.7.31
-    dev: false
 
   registry.npmmirror.com/@types/eslint-scope/3.7.3:
     resolution: {integrity: sha512-PB3ldyrcnAicT35TWPs5IcwKD8S333HMaa2VVv4+wdvebJkjWuW/xESoB8IwRcog8HYVYamb1g/R31Qv5Bx03g==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/eslint-scope/-/eslint-scope-3.7.3.tgz}
@@ -7497,7 +7500,6 @@ packages:
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/ms/-/ms-0.7.31.tgz}
     name: '@types/ms'
     version: 0.7.31
-    dev: false
 
   registry.npmmirror.com/@types/node/12.20.54:
     resolution: {integrity: sha512-CFMnEPkSXWALI73t1oIWyb8QOmVrp6RruAqIx349sd+1ImaFwzlKcz55mwrx/yLyOyz1gkq/UKuNOigt27PXqg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/node/-/node-12.20.54.tgz}

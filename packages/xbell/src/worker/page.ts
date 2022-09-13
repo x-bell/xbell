@@ -26,6 +26,10 @@ import type {
 import { workerContext } from './worker-context';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
+import debug from 'debug';
+
+const debugPage = debug('xbell:page');
+
 class ElementHandle implements XBellElementHandle {
   constructor(protected _elementHandle: PWElementHandle<SVGElement | HTMLElement>) {
   }
@@ -137,7 +141,7 @@ export class Page implements XBellPage<any> {
   async _setting() {
     const { port } = await workerContext.channel.request('queryServerPort',);
     this._page.route((new RegExp(XBELL_BUNDLE_PREFIX)), async (route, request) => {
-      const url = request.url()
+      const url = request.url();
       // if (url.includes('@vite/client')) {
       //   route.continue()
       //   // route.fulfill({
@@ -196,6 +200,7 @@ export class Page implements XBellPage<any> {
       await this._settingGotoRoute(url, options.html);
     }
     const { html, ...otherOptons } = options || {};
+    debugPage('goto', url);
     // TODO: playwright version
     // @ts-ignore
     return this._page.goto(url, otherOptons);
