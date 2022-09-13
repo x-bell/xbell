@@ -1,8 +1,13 @@
-import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask } from '../types';
+import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask, XBellTestCaseStandard } from '../types';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
+import { ClassicContext } from './classic-context';
+import { genLazyPage } from './lazy-page';
 
+function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
+  return typeof c.testFunction === 'function'
+}
 
 export class Executor {
   async run(file: XBellTestFile) {
@@ -30,55 +35,35 @@ export class Executor {
     if (c.runtime === 'node') {
       this.runCaseInNode(c);
     } else {
-      this.runCaseInBrowser(c);
+      // TODO:
+      this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
+    }
+  }
+
+  protected getTestFunction(c: XBellTestCase<any, any>): Function {
+    if (isStandardCase(c)) {
+      return c.testFunction;
+    } else {
+      const ctx = new ClassicContext(c, genLazyPage(c.filename));
+      const cls = ctx.createInstance(c.class as new() => any);
+      return cls[c.propertyKey];
     }
   }
 
   async runCaseInNode(c: XBellTestCase<any, any>) {
-    const { runtimeOptions, testFunction } = c;
-    let _lazyPage: Page;
-    const getLazyPage = async () => {
-      if (_lazyPage) {
-        return _lazyPage;
-      }
-
-
-      const browser = await lazyBrowser.newContext('chromium', {
-        headless: false,
-      });
-      const browserContext = await browser.newContext();
-      _lazyPage = await Page.from(browserContext, c.filename)
-
-      return _lazyPage;
-    };
-
-    const proxyPage = new Proxy({}, {
-      get(target, propKey: keyof XBellPage<any>) {
-        return (...args: any[]) => {
-          if (propKey.startsWith('locat')) {
-            return new Proxy({}, {
-              get(target, locatorKey: keyof XBellLocator) {
-                return (...locatorArgs: any[]) => getLazyPage().then((lazyPage) => {
-                  const locator = Reflect.apply(lazyPage[propKey], _lazyPage, args);
-                  return Reflect.apply(locator[locatorKey], locator, locatorArgs);
-                });
-              }
-            });
-          }
-          return getLazyPage().then((lazyPage) => {
-            return Reflect.apply(lazyPage[propKey], _lazyPage, args);
-          });
-          }
-      }
-    }) as Page;
-
+    let wasUsedPage = false;
+    const { runtimeOptions } = c;
+    const testFunction = await this.getTestFunction(c);
+    const lazyPage = genLazyPage(c.filename);
+    
     const caseArgsProxy = new Proxy({}, {
       get(target, propKey) {
         if (propKey === 'page') {
-          return proxyPage
+          wasUsedPage = true;
+          return lazyPage
         }
       }
-    })
+    });
 
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,
@@ -102,12 +87,12 @@ export class Executor {
       
 
     // @ts-ignore
-    if (_lazyPage) {
-      await proxyPage.close();
+    if (wasUsedPage) {
+      await lazyPage.close();
     }
   }
 
-  async runCaseInBrowser(c: XBellTestCase<any, any>) {
+  async runCaseInBrowser(c: XBellTestCaseStandard<any, any>) {
     const browser = await lazyBrowser.newContext('chromium', {
       headless: false,
     });

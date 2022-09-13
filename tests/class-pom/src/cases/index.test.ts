@@ -1,10 +1,9 @@
-import { Test } from 'xbell';
+import { Test, Prop } from 'xbell/decorators';
 
 
 @Test()
 class TestCase {
-  @Inject()
-  ctx: Context;
+  @Prop() ctx: Context;
 
   @Viewport({ width: 1300, height: 1000 })
   @Expect.ToMatchSnapshot({ name: 'xbell-homepage' })

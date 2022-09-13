@@ -1,5 +1,5 @@
-import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments } from './types';
-import { collector } from './worker/collector';
+import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments, FixtureFunction } from '../types';
+import { collector } from './collector';
 
 interface XBellBrowserTest<BrowserExtArgs = {}> {
   (caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
@@ -52,17 +52,15 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
         browserCallbacks,
       },
       config: {},
-      tagInfo: {
-        tag: 'normal',
-      }
+      options: {}
     });
   };
 
   test.todo = (caseDescription, testCaseFunction) => {
     collector.collectCase({
       caseDescription, testCaseFunction, 
-      tagInfo: {
-        tag: 'todo',
+      options: {
+        todo: true,
       },
       config: {},
       runtime: 'node',
@@ -76,8 +74,8 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     collector.collectCase({
       caseDescription,
       testCaseFunction,
-      tagInfo: {
-        tag: 'skip',
+      options: {
+        skip: true,
       },
       config: {},
       runtime: 'node',
@@ -91,8 +89,8 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     collector.collectCase({
       caseDescription,
       testCaseFunction,
-      tagInfo: {
-        tag: 'only',
+      options: {
+        only: true,
       },
       config: {},
       runtime: 'node',
@@ -104,16 +102,16 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
 
   test.each = (items) => {
     return (caseDescriptionArg, testCaseFunction) => {
-      items.forEach((item) => {
+      items.forEach((item, index) => {
         const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item) : caseDescriptionArg;
         collector.collectCase({
           caseDescription,
           testCaseFunction,
-          tagInfo: {
-            tag: 'each',
-            options: {
+          options: {
+            each: {
               item,
-            },
+              index,
+            }
           },
           config: {},
           runtime: 'node',
@@ -130,9 +128,8 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
       collector.collectCase({
         caseDescription,
         testCaseFunction,
-        tagInfo: {
-          tag: 'batch',
-          options: {
+        options: {
+          batch: {
             items,
           }
         },
@@ -172,17 +169,15 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
         browserCallbacks,
       },
       config: {},
-      tagInfo: {
-        tag: 'normal'
-      }
+      options: {},
     });
   }
 
   browser.todo = (caseDescription, testCaseFunction) => {
     collector.collectCase({
-      caseDescription, testCaseFunction, 
-      tagInfo: {
-        tag: 'todo',
+      caseDescription, testCaseFunction,
+      options: {
+        todo: true,
       },
       config: {},
       runtime: 'browser',
@@ -196,8 +191,8 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     collector.collectCase({
       caseDescription,
       testCaseFunction,
-      tagInfo: {
-        tag: 'skip',
+      options: {
+        skip: true,
       },
       config: {},
       runtime: 'browser',
@@ -211,8 +206,8 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     collector.collectCase({
       caseDescription,
       testCaseFunction,
-      tagInfo: {
-        tag: 'only',
+      options: {
+        only: true,
       },
       config: {},
       runtime: 'browser',
@@ -224,15 +219,15 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
 
   browser.each = (items) => {
     return (caseDescriptionArg, testCaseFunction) => {
-      items.forEach((item) => {
+      items.forEach((item, index) => {
         const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item) : caseDescriptionArg;
         collector.collectCase({
           caseDescription,
           testCaseFunction,
-          tagInfo: {
-            tag: 'each',
-            options: {
+          options: {
+            each: {
               item,
+              index
             },
           },
           config: {},
@@ -250,9 +245,8 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
       collector.collectCase({
         caseDescription,
         testCaseFunction,
-        tagInfo: {
-          tag: 'batch',
-          options: {
+        options: {
+          batch: {
             items,
           }
         },

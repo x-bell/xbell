@@ -8,8 +8,11 @@ import type {
   XBellRuntimeOptions,
   XBellCaseTagInfo,
   XBellRuntime,
+  XBellOptions,
+  XBellTestCaseStandard,
 } from '../types';
 import { workerContext } from './worker-context';
+import { ClassicCollector } from './classic-collector';
 
 export interface XBellCollector {
   testFiles: Promise<XBellTestFile[]>;
@@ -34,14 +37,17 @@ export class Collector {
   currentFile?: XBellTestFile;
   currentGroup?: XBellTestGroup;
   protected uuid: number = 1;
+  public classic = new ClassicCollector(this);
 
-  protected genUuid() {
+  public genUuid() {
     return String(workerContext.workerData.workerId) + '-' + String(this.uuid ++);
   }
 
   public async collect(filename: string) {
       this.currentFile = this.createFile(filename);
+      this.classic.startFileCollection(this.currentFile);
       await import(filename);
+      this.classic.finishFileCollection();
       return this.currentFile;
   }
 
@@ -66,39 +72,40 @@ export class Collector {
       filename: this.currentFile!.filename,
       cases: [],
       config,
-      runtimeOptions
+      runtimeOptions,
+      options: {}
     }
   }
 
-  protected createCase<NodeJSExtensionArg, BrowserExtensionArg>(
+  protected createCase(
    {
     caseDescription,
     testCaseFunction,
     config,
     runtime,
     runtimeOptions,
-    tagInfo
+    options,
    }: {
     caseDescription: string,
-    testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>,
+    testCaseFunction: XBellTestCaseFunction<any, any>,
     config: XBellTaskConfig,
     runtime: XBellRuntime,
     runtimeOptions: XBellRuntimeOptions,
-    tagInfo: XBellCaseTagInfo,
+    options: XBellOptions,
    }
-  ): XBellTestCase<NodeJSExtensionArg, BrowserExtensionArg> {
+  ): XBellTestCaseStandard<any, any> {
     return {
       type: 'case',
       runtime,
       caseDescription,
       testFunction: testCaseFunction,
-      tagInfo,
       filename: this.currentFile!.filename,
       groupDescription: this.currentGroup?.groupDescription,
       status: 'waiting',
       config,
       runtimeOptions,
       uuid: this.genUuid(),
+      options,
     }
   }
 
@@ -113,18 +120,18 @@ export class Collector {
     this.currentGroup = undefined;
   }
 
-  public async collectCase<NodeJSExtensionArg, BrowserExtensionArg>(
+  public async collectCase(
     {
       caseDescription,
       testCaseFunction,
-      tagInfo,
+      options,
       config,
       runtimeOptions,
       runtime
     }: {
       caseDescription: string,
-      testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>,
-      tagInfo: XBellCaseTagInfo,
+      testCaseFunction: XBellTestCaseFunction<any, any>,
+      options: XBellOptions,
       config: XBellTaskConfig,
       runtimeOptions: XBellRuntimeOptions,
       runtime: XBellRuntime,
@@ -132,11 +139,11 @@ export class Collector {
   ) {
     const testCase = this.createCase({
       caseDescription,
-      tagInfo,
       runtimeOptions,
       runtime,
       testCaseFunction,
       config,
+      options,
     })
     if (this.currentGroup) {
       this.currentGroup.cases.push(testCase);

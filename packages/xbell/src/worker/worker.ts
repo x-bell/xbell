@@ -25,7 +25,7 @@ export async function run(workData: XBellWorkerTaskPayload) {
           message: error?.message || 'Unknow Error',
           stack: error?.stack,
         },
-      })
+      });
     }
   }))).filter(Boolean) as XBellTestFile[]
   for (const testFile of testFiles) {

@@ -63,6 +63,19 @@ export interface XBellTestFile {
   logs: XBellWorkerLog[];
 }
 
+export interface XBellOptions {
+  skip?: boolean;
+  todo?: boolean;
+  only?: boolean;
+  each?: {
+    item: any;
+    index: number;
+  }
+  batch?: {
+    items?: any[];
+  }
+}
+
 export interface XBellTestGroup {
   type: 'group';
   uuid: string;
@@ -70,6 +83,7 @@ export interface XBellTestGroup {
   groupDescription: string;
   cases: XBellTestTask[];
   config: XBellTaskConfig;
+  options: XBellOptions;
   runtimeOptions: XBellRuntimeOptions;
 }
 
@@ -140,19 +154,30 @@ export type XBellRuntime =
   | 'browser'
   | 'node'
 
-export interface XBellTestCase<NodeJSExtensionArg, BrowserExtensionArg> {
+interface XBellTestCaseCommon {
   type: 'case';
   runtime: XBellRuntime;
-  tagInfo: XBellCaseTagInfo;
+  // tagInfo: XBellCaseTagInfo;
   uuid: string;
   filename: string;
   groupDescription?: string;
   caseDescription: string;
   status: XBellTestCaseStatus;
-  testFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>;
   config: XBellTaskConfig;
   runtimeOptions: XBellRuntimeOptions;
+  options: XBellOptions;
 }
+export interface XBellTestCaseStandard<NodeJSExtensionArg, BrowserExtensionArg> extends XBellTestCaseCommon {
+  testFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>;
+}
+
+export interface XBellTestCaseClassic extends XBellTestCaseCommon {
+  class: Function;
+  propertyKey: string;
+}
+
+export type XBellTestCase<NodeJSExtensionArg, BrowserExtensionArg> = XBellTestCaseStandard<NodeJSExtensionArg, BrowserExtensionArg> | XBellTestCaseClassic;
+
 
 export interface XBellTestGroupFunction {
   (): void

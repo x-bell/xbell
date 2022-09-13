@@ -1,5 +1,5 @@
 {
-  "name": "@xbell/test-class-basic",
+  "name": "@xbell/test-class-e2e",
   "private": true,
   "scripts": {
     "test": "xbell"

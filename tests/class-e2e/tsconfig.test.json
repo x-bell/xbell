@@ -10,8 +10,6 @@
   "include": [
     "xbell-env.d.ts",
     "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
+    "**/*.spec.ts"
   ]
 }

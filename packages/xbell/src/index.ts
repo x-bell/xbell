@@ -28,19 +28,37 @@
 //   MultiEnvData
 // } from './types/index';
 
-export type {
-  Page,
-  FrameLocator,
-  Locator,
-  ElementHandle
-} from 'playwright-core';
+// export type {
+//   Page,
+//   FrameLocator,
+//   Locator,
+//   ElementHandle
+// } from 'playwright-core';
+
 
 export {
   test,
   describe,
-  expect
+  expect,
   // exp
-} from './func';
+} from './worker/standard';
+
+export {
+  Inject,
+  Test,
+  Todo,
+  Only,
+  Skip,
+  SkipProjects,
+  Each,
+  Batch,
+  Fixtrue,
+  DisplayName,
+} from './worker/classic-decorators';
+
+export {
+  Page
+} from './worker/page';
 
 export type {
   FixtureFunction
