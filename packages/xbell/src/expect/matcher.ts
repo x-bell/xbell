@@ -1,5 +1,6 @@
 import { defineMatcher } from 'expell';
 import { XBellLocator, XBellElementHandle, XBellPage } from '../types';
+import { _matchImageSnapshot } from './match-image-snapshot';
 
 const elementMatcher = defineMatcher({
   async toBeChecked(received: XBellLocator | XBellElementHandle) {
@@ -30,7 +31,8 @@ const elementMatcher = defineMatcher({
       message: () => ``,
     }
   },
-  async toMatchScreenshot(received: XBellLocator | XBellElementHandle | XBellPage) {
-    const buffer = received.screenshot();
+  async toMatchScreenshot(received: XBellLocator | XBellElementHandle | XBellPage, options: { name: string } ) {
+    // TODO: projectName (test info)
+    return _matchImageSnapshot('', received, options);
   },
 })
