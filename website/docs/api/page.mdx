@@ -3,14 +3,14 @@ title: Page
 ---
 
 ## page.goto(url, options?)
-- `url` : <type>{ string }</type> The target URL address. e.g. https://github.com 
-- `options?` : <type>{ object }</type>
-  - `timeout?` : <type>{ number }</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
-  - `waitUnitil?` : <type>{ "load" | "documentloaded" | "networkidle" | "commit" }</type> When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
+- `url` : <type>string</type> The target URL address. e.g. https://github.com 
+- `options?` : <type>object</type>
+  - `timeout?` : <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+  - `waitUnitil?` : <type>"load" | "documentloaded" | "networkidle" | "commit"</type> When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `'load'` : consider navigation to be finished when the load event is fired.
     - `'domcontentloaded'` : consider navigation to be finished when the DOMContentLoaded event is fired.
     - `'networkidle'` : consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
-- *Returns* <type>{ Promise<HTTPResponse | null> }</type>
+- *Returns* <type>Promise<HTTPResponse | null></type>
 
 
 > Example
@@ -19,14 +19,14 @@ await page.goto('https://github.com')
 ```
 
 ## page.goForward(options?)
-- `options?` <type>{ object }</type>
-  - `timeout?` <type>{ number }</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+- `options?` <type>object</type>
+  - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
   - `waitUntil?` When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `'load'` consider navigation to be finished when the load event is fired.
     - `'domcontentloaded'` : consider navigation to be finished when the DOMContentLoaded event is fired.
     - `'networkidle'` : consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
 
-- *Returns* <type>{ Promise<HTTPResponse | null> }</type>
+- *Returns* <type>Promise<HTTPResponse | null></type>
 
 This method navigate to the next page in history.
 
@@ -36,7 +36,7 @@ await page.goForward();
 ```
 
 ## page.goBack(options?)
- - `timeout?` <type>{ number }</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+ - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
   - `waitUntil?` When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `'load'` consider navigation to be finished when the load event is fired.
     - `'domcontentloaded'` : consider navigation to be finished when the DOMContentLoaded event is fired.
@@ -47,15 +47,15 @@ This method navigate to the previous page in history.
 
 ## page.content()
 
-- *Returns* <type>{ Promise&lt;string&gt; }</type>
+- *Returns* <type>Promise&lt;string&gt;</type>
 
 The full HTML contents of the frame, including the DOCTYPE.
 
 ## page.evaluate(pageFunction, args?)
-- `pageFunction` <type>{ Function | string }</type> a function that is run within the page
+- `pageFunction` <type>Function | string</type> a function that is run within the page
 - `args?` arguments to be passed to the pageFunction
 
-- *Returns* <type>{ Promise&lt;Awaited&lt;ReturnType&lt;typeof pageFunction&gt;&gt;&gt; }</type> the return value of pageFunction.
+- *Returns* <type>Promise&lt;Awaited&lt;ReturnType&lt;typeof pageFunction&gt;&gt;&gt;</type> the return value of pageFunction.
 
 Evaluates a function in the page's context and Returns the result.
 
@@ -65,69 +65,85 @@ If the function passed to page.evaluteHandle Returns a Promise, the function wil
 - *Returns* Promise&lt;HandleFor&lt;Awaited&lt;ReturnType&lt;typeof pageFunction&gt;&gt;&gt;&gt;
 
 ## page.screenshot(options?)
-- `options?` <type>{ object }</type>
-  - `path?` <type>{ string }</type>  The file path to save the image to. The screenshot type will be inferred from file extension. If path is a relative path, then it is resolved relative to current working directory. If no path is provided, the image won't be saved to the disk.
-  - `quality?` <type>{ number }</type> The quality of the image, between 0-100. Not applicable to png images.
-  - `fullPage?` <type>{ boolean }</type> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
-  - `type?` <type>{ 'png' | 'jpeg' }</type> Specify screenshot type, can be either jpeg or png. Defaults to `'png'`.
-  - `clip?` <type>{ object }</type> An object which specifies clipping region of the page. Should have the following fields:
-    - `x` <type>{ number }</type> x-coordinate of top-left corner of clip area.
-    - `y`  <type>{ number }</type> y-coordinate of top-left corner of clip area.
-    - `width` <type>{ number }</type> width of clipping area.
-    - `height` <type>{ number }</type> height of clipping area.
-  - `omitBackground?` <type>{ boolean }</type>  Hides default white background and allows capturing screenshots with transparency. Defaults to false.
+- `options?` <type>object</type>
+  - `path?` <type>string</type>  The file path to save the image to. The screenshot type will be inferred from file extension. If path is a relative path, then it is resolved relative to current working directory. If no path is provided, the image won't be saved to the disk.
+  - `quality?` <type>number</type> The quality of the image, between 0-100. Not applicable to png images.
+  - `fullPage?` <type>boolean</type> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
+  - `type?` <type>'png' | 'jpeg'</type> Specify screenshot type, can be either jpeg or png. Defaults to `'png'`.
+  - `clip?` <type>object</type> An object which specifies clipping region of the page. Should have the following fields:
+    - `x` <type>number</type> x-coordinate of top-left corner of clip area.
+    - `y`  <type>number</type> y-coordinate of top-left corner of clip area.
+    - `width` <type>number</type> width of clipping area.
+    - `height` <type>number</type> height of clipping area.
+  - `omitBackground?` <type>boolean</type>  Hides default white background and allows capturing screenshots with transparency. Defaults to false.
 - *Returns* Promise<Buffer | string>;
 
 ## page.click(selector, options?)
-- `selector` <type>{ string }</type> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked
-- `options?` <type>{ object }</type>
-  -  `delay?` <type>{ number }</type> Time to wait between mousedown and mouseup in milliseconds.
-  - `button?` <type>{ 'left' | 'right' | 'middle' }</type> Defaults to `'left'`.
-  - `clickCount?` <type>{ number }</type> Count of button clicks, defaults to `1`.
-  - `position?` <type>{ object }</type> Offset for the clickable point relative to the top-left corder of the border box.
-    - `x` <type>{ number }</type> x-offset for the clickable point relative to the top-left corder of the border box.
-    - `y` <type>{ number }</type> y-offset for the clickable point relative to the top-left corder of the border box.
+- `selector` <type>string</type> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked
+- `options?` <type>object</type>
+  -  `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds.
+  - `button?` <type>'left' | 'right' | 'middle'</type> Defaults to `'left'`.
+  - `clickCount?` <type>number</type> Count of button clicks, defaults to `1`.
+  - `position?` <type>object</type> Offset for the clickable point relative to the top-left corder of the border box.
+    - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
+    - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
 
-- *Returns* <type>{ Promise&lt;void&gt; }</type>
+- *Returns* <type>Promise&lt;void&gt;</type>
 
 This method fetches an element with selector, scrolls it into view if needed, and then uses Page.mouse to click in the center of the element. If there's no element matching selector, the method throws an error.
 
 ## page.dblclick(selector, options?)
-- `selector` <type>{ string }</type> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked
-- `options?` <type>{ object }</type>
-  -  `delay?` <type>{ number }</type> Time to wait between mousedown and mouseup in milliseconds.
-  - `button?` <type>{ 'left' | 'right' | 'middle' }</type> Defaults to `'left'`.
-  - `clickCount?` <type>{ number }</type> Count of button clicks, defaults to `1`.
-  - `position?` <type>{ object }</type> Offset for the clickable point relative to the top-left corder of the border box.
-    - `x` <type>{ number }</type> x-offset for the clickable point relative to the top-left corder of the border box.
-    - `y` <type>{ number }</type> y-offset for the clickable point relative to the top-left corder of the border box.
+- `selector` <type>string</type> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked
+- `options?` <type>object</type>
+  -  `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds.
+  - `button?` <type>'left' | 'right' | 'middle'</type> Defaults to `'left'`.
+  - `clickCount?` <type>number</type> Count of button clicks, defaults to `1`.
+  - `position?` <type>object</type> Offset for the clickable point relative to the top-left corder of the border box.
+    - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
+    - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
 
-- *Returns* <type>{ Promise&lt;void&gt; }</type>
+- *Returns* <type>Promise&lt;void&gt;</type>
 
 This method fetches an element with selector, scrolls it into view if needed, and then uses Page.mouse to dbclick in the center of the element. If there's no element matching selector, the method throws an error.
 
 ## page.focus(selector)
-- `selector` <type>{ string }</type> A selector of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
-- *Returns* <type>{ Promise&lt;void&gt; }</type>
+- `selector` <type>string</type> A selector of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- *Returns* <type>Promise&lt;void&gt;</type>
 This method fetches an element with selector and focuses it. If there's no element matching selector, the method throws an error.
 
 ## page.locateByText(text)
-- `text` <type>{ string }</type> The label text.
-- *Returns* <type>{ Locator }</type>
+- `text` <type>string</type> The label text.
+- *Returns* <type>Locator</type>
 
-### 
+## page.locateByClass(className)
+- `className` <type>string</type>
+- *Returns* <type>Locator</type>
 
-## page.query()
+## page.locateByTestId(testId)
+- `testId` <type>string</type>
+- *Returns* <type>Locator</type>
+
+## page.queryByText(text)
+- `text` <type>string</type>
+- *Returns* <type>ElementHandle</type>
+
+## page.queryByClass(className)
+- `className` <type>string</type>
+- *Returns* <type>ElementHandle</type>
+
+## page.queryByTestId(testId)
+- `testId` <type>string</type>
+- *Returns* <type>ElementHandle</type>
 
 ## page.waitForNavigation(options?)
-- `options?` <type>{ object }</type>
-  - `timeout?` <type>{ number }</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+- `options?` <type>object</type>
+  - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
   - `waitUntil?` When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `'load'` consider navigation to be finished when the load event is fired.
     - `'domcontentloaded'` : consider navigation to be finished when the DOMContentLoaded event is fired.
     - `'networkidle'` : consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
     
-- *Returns*: <type>{ Promise<HTTPResponse | null> }</type>
+- *Returns*: <type>Promise<HTTPResponse | null></type>
 Waits for the page to navigate to a new URL or to reload. It is useful when you run code that will indirectly cause the page to navigate.
 
 **Example**

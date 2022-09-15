@@ -45,8 +45,8 @@ class TestCase {
 
 ## @EachCase(items, description)
 
-- `items` : <type>{ Array&lt;T&gt; }</type>
-- `description` : <type>{ (item: T) => string }</type>
+- `items` : <type>Array&lt;T&gt;</type>
+- `description` : <type>(item: T) => string</type>
 
 *Example*
 
@@ -64,7 +64,7 @@ class TestCase {
 
 
 ## @List(items)
-- `items` : <type>{ Array&lt;T&gt; }</type>
+- `items` : <type>Array&lt;T&gt;</type>
 *Example*
 
 ```typescript
@@ -82,7 +82,7 @@ class TestCase {
 ## @Timeout(time)
 
 
-- `time` : <type>{ number }</type> duration
+- `time` : <type>number</type> duration
 
 ```typescript
 @Test()
@@ -104,4 +104,4 @@ class TestCase {
 
 ## @Repeat(count)
 
-- `count` : <type>{ number }</type>
+- `count` : <type>number</type>

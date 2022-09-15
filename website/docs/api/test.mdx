@@ -4,24 +4,62 @@ title: Test
 
 ## test
 
-### test(displayName, func)
+### test(displayName, testFunction)
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
 
-### test.todo()
+```typescript
+import test from 'xbell';
 
-### test.only()
+test('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
 
-### test.skip()
+### test.each(items)(displayName, testFunction)
+- `items` <type>T[]</type>
+- `displayName` <type>(item: T) => string</type> case name
+- `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
 
-### test.each
 
 ### test.batch
 
-- *Returns* <type>{ void }</type>
+### test.todo(displayName, testFunction)
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.todo('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.only(displayName, testFunction)
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.only('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.skip(displayName, testFunction)
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.only('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+- *Returns* <type>void</type>
 
 ## describe(description, func)
 
-- `description` : <type>{ string }</type>
-- `func` : <type>{ () => void; }</type>
+- `description` : <type>string</type>
+- `func` : <type>() => void;</type>
 
 
 ### describe.skip(description, func)

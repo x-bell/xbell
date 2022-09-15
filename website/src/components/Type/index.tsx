@@ -5,7 +5,7 @@ const Type = ({
   children
 }) => {
   return (
-    <span className={styles.text}>{children}</span>
+    <span className={styles.text}>&lt;{children}&gt;</span>
   );
 }
 
