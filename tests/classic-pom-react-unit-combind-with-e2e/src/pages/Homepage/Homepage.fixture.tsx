@@ -1,5 +1,5 @@
 import { Fixture, Inject } from 'xbell/decorators';
-import { ButtonFixture } from '../../components/Button/Button.test.fixture';
+import { ButtonFixture } from '../../components/Button/Button.fixture';
 
 // const feature = defineFixture(ButtonFixture);
 

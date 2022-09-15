@@ -1,5 +1,5 @@
-import { Test, Inject, BeforeEach, Project, Page } from 'xbell/decorators';
-import { HomepageFixture } from './Homepage.test.fixture';
+import { Test, Inject, BeforeEach, Project, Page } from 'xbell';
+import { HomepageFixture } from './Homepage.fixture';
 
 @Test()
 class HomepageUnitTest {

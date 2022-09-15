@@ -1,4 +1,4 @@
-import { HomepageFixture } from '../src/views/Homepage/Homepage.test.fixture';
+import { HomepageFixture } from '../src/views/Homepage/Homepage.fixture';
 import { Test, Inject,  } from 'xbell/decorators';
 import { Page, Project } from 'xbell';
 

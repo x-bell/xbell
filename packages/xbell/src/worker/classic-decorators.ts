@@ -2,6 +2,8 @@ import { collector } from './collector';
 import type { XBellProject } from '../types';
 import { genPropertyDecorator } from '../utils/property';
 import { MetaDataType } from '../constants/metadata';
+import { genParameterDecorator } from '../utils';
+import { ParameterType } from '../constants';
 
 
 export const Test: () => PropertyDecorator = () => {
@@ -16,9 +18,11 @@ export const Test: () => PropertyDecorator = () => {
   }
 }
 
-export const Inject = genPropertyDecorator(MetaDataType.Inject);
+// export const Inject = genPropertyDecorator(MetaDataType.Inject);
 
 export const Fixtrue = genPropertyDecorator(MetaDataType.Fixtrue);
+
+export const PageParam = genParameterDecorator(ParameterType.Page)
 
 export const DisplayName = (name: string) => {
   const cb: ClassDecorator | PropertyDecorator = (target, propertyKey) => {

@@ -1,5 +1,5 @@
 import { Inject, Test, Page, expect } from 'xbell/decorators';
-import { ButtonFixture } from './Button.test.fixture';
+import { ButtonFixture } from './Button.fixture';
 
 
 @Test()

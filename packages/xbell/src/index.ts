@@ -44,7 +44,6 @@ export {
 } from './worker/standard';
 
 export {
-  Inject,
   Test,
   Todo,
   Only,
