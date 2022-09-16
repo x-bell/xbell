@@ -4,104 +4,111 @@ title: Decorators
 
 ## @Test()
 
+Denotes that a method is a test method.
+
 **Example**
 
 ```typescript
-import { expect } from 'xbell';
-import { Test } from 'xbell/decorators';
+import { Test, expect } from 'xbell';
 
-@Test()
-class TestCase {
+class TestCases {
+  @Test()
   it_should_to_be_2() {
     expect(1 + 1).toBe(2);
   }
 }
 ```
 
-## @Description(desc)
+## @DisplayName(text)
+- `text` <type>string</type>
+
+Set the name of the test case.
 
 **Example**
 
 ```typescript
-import { expect } from 'xbell';
-import { Test } from 'xbell/decorators';
+import { Test, DisplayName, expect } from 'xbell';
 
-@Test()
-class TestCase {
-
-  @Description('it should equal to 2')
+class TestCases {
+  @Test()
+  @DisplayName('it should to be two')
   it_should_to_be_2() {
     expect(1 + 1).toBe(2);
+  }
+}
+```
+
+## @Each(items, displayNameFunction)
+- `items` <type>T[]</type>
+- `displayNameFunction` <type>(item: T, index: number) => string</type>
+
+Generate multiple test cases.
+
+**Example**
+```typescript
+import { Test, Batch, expect, TestEachArguments } from 'xbell';
+
+class TestCases {
+
+  @Test()
+  @Batch([1, 2, 3], (item, index) => `case data is ${item}, index is ${index}`)
+  testCase({ item, index }: TestEachArguments<number>) {
+    expect(item).toBe(index + 1);
   }
 
 }
 ```
-```bash
-- i
+
+## @Batch(items)
+- `items` <type>T[]</type>
+
+Unlike `@Each` ,  `@Batch` only generates one test case, so if one item fails, this test case will fail.
+
+**Example**
+```typescript
+import { Test, expect, TestBatchArguments } from 'xbell';
+
+class TestCases {
+  @Test()
+  @DisplayName('item is equal to the index plus one')
+  @Batch([1, 2, 3])
+  testCase({ item, index }: TestBatchArguments<number>) {
+    expect(item).toBe(index + 1);
+  }
+}
+
 ```
+
 ## @BeforeEach()
+
+**Exmaple**
+```typescript
+import { Test, BeforeEach, TestArguments } from 'xbell';
+
+class TestCases {
+  accountLocator!: number;
+
+  @BeforeEach()
+  async init({ page }: TestArguments) {
+    await page.goto('http://github.com');
+    this.accountLocator = page.locateByText('account');
+  }
+
+  @Test()
+  case1() {
+    await this.accountLocator.click();
+  }
+
+  @Test()
+  case2() {
+    await this.accountLocator.hover();
+  }
+}
+
+
+```
+
 
 ## @AfterEach()
 
-## @EachCase(items, description)
-
-- `items` : <type>Array&lt;T&gt;</type>
-- `description` : <type>(item: T) => string</type>
-
-*Example*
-
-```typescript
-@Test()
-class TestCase {
-
-  @Each([1, 2, 3], (num) => `case ${num}`)
-  it_should_to_be_2(item: number) {
-    expect(item).toBeDefined();
-  }
-
-}
-```
-
-
-## @List(items)
-- `items` : <type>Array&lt;T&gt;</type>
-*Example*
-
-```typescript
-@Test()
-class TestCase {
-
-  @List([1, 2, 3])
-  it_should_to_be_2(item: number) {
-    expect(item).toBeDefined();
-  }
-
-}
-```
-
-## @Timeout(time)
-
-
-- `time` : <type>number</type> duration
-
-```typescript
-@Test()
-class TestCase {
-
-  @Timeout(3000)
-  click_button(@Page.Param() page: Page) {
-    const button = page.locateByText('button')
-    // over 3 000 ms will throw timeout error
-    await button.click()
-  }
-
-}
-```
-
-## @Prop()
-
-
-
-## @Repeat(count)
-
-- `count` : <type>number</type>
+## @Feature()
