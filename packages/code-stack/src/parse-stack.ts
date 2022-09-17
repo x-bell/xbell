@@ -27,12 +27,14 @@ export function parseStack(stack: string): {
     const isFilter = _filterStackLine(location);
     if (!isFilter) {
       return {
-        location,
+        location: location!,
         message,
         codeLines,
       };
     }
   }
+
+  return null;
 }
 
 

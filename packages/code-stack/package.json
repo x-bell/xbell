@@ -6,7 +6,10 @@
     "email": "xlianghang@163.com",
     "url": "https://github.com/xlianghang"
   },
-  "devDependencies": {
-    "@types/node": "^18.7.18"
-  }
+  "scripts": {
+    "build": "node ../../scripts/build.mjs"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts"
 }

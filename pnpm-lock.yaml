@@ -5,18 +5,24 @@ importers:
   .:
     specifiers:
       '@changesets/cli': ^2.22.0
+      '@types/node': ^18.7.18
       eslint: ^7.32.0
       eslint-config-xbell: workspace:*
+      fast-glob: ^3.2.11
       gh-pages: ^4.0.0
       prettier: ^2.5.1
       turbo: latest
+      typescript: ^4.6.4
     devDependencies:
       '@changesets/cli': registry.npmmirror.com/@changesets/cli/2.22.0
+      '@types/node': registry.npmmirror.com/@types/node/18.7.18
       eslint: registry.npmmirror.com/eslint/7.32.0
       eslint-config-xbell: link:packages/eslint-config-xbell
+      fast-glob: registry.npmmirror.com/fast-glob/3.2.11
       gh-pages: registry.npmmirror.com/gh-pages/4.0.0
       prettier: registry.npmmirror.com/prettier/2.6.2
       turbo: registry.npmmirror.com/turbo/1.4.7
+      typescript: registry.npmmirror.com/typescript/4.8.2
 
   examples/basic:
     specifiers:
@@ -57,7 +63,10 @@ importers:
       vite: registry.npmmirror.com/vite/3.0.9
       xbell: link:../../packages/xbell
 
-  packages/code:
+  packages/code-stack:
+    specifiers: {}
+
+  packages/color:
     specifiers: {}
 
   packages/create-xbell:
@@ -205,6 +214,7 @@ importers:
       '@types/reflect-metadata': ^0.1.0
       '@types/stack-utils': ^2.0.1
       '@vitejs/plugin-vue': ^3.0.3
+      '@xbell/code-stack': workspace:*
       chalk: ^5.0.1
       commander: ^9.2.0
       debug: ^4.3.4
@@ -231,6 +241,7 @@ importers:
       '@babel/code-frame': registry.npmmirror.com/@babel/code-frame/7.16.7
       '@swc/core': registry.npmmirror.com/@swc/core/1.2.208
       '@vitejs/plugin-vue': registry.npmmirror.com/@vitejs/plugin-vue/3.0.3_vite@3.0.9
+      '@xbell/code-stack': link:../code-stack
       chalk: registry.npmmirror.com/chalk/5.0.1
       commander: registry.npmmirror.com/commander/9.3.0
       debug: registry.npmmirror.com/debug/4.3.4

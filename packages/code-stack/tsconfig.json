@@ -16,12 +16,12 @@
     "extendedDiagnostics": false
   },
   "include": [
-    "./src"
+    "src"
   ],
   "exclude": [
     "dist",
+    "__test__",
     "build",
     "node_modules"
-  ],
-  "references": [{ "path": "./tsconfig.test.json" }]
+  ]
 }

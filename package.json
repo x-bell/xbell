@@ -19,6 +19,9 @@
     "eslint-config-xbell": "workspace:*",
     "gh-pages": "^4.0.0",
     "prettier": "^2.5.1",
-    "turbo": "latest"
+    "turbo": "latest",
+    "fast-glob": "^3.2.11",
+    "typescript": "^4.6.4",
+    "@types/node": "^18.7.18"
   }
 }
