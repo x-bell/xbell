@@ -2,7 +2,6 @@ import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLoca
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
-import { ClassicContext } from './classic-context';
 import { genLazyPage } from './lazy-page';
 
 function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
@@ -46,13 +45,13 @@ export class Executor {
 
   protected async runClassicCaseInNode(c: XBellTestCaseClassic) {
     const lazyPage = genLazyPage(c.filename);
-    const ctx = new ClassicContext(c, lazyPage);
-    const instance = ctx.createInstance(c.class as new() => any);
+    const cls = c.class as new () => any;
+    const instance = new cls();
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,
     });
     // TODO: params
-    await instance[c.propertyKey]();
+    await instance[c.propertyKey]({ page: lazyPage });
 
     workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
 

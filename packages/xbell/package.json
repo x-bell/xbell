@@ -52,7 +52,11 @@
     "multi-environment",
     "ddt"
   ],
-  "author": "Hang Liang <xlianghang@163.com>",
+  "author": {
+    "name": "Hang Liang",
+    "email": "xlianghang@163.com",
+    "url": "https://github.com/xlianghang"
+  },
   "license": "MIT",
   "dependencies": {
     "@babel/code-frame": "^7.16.7",
@@ -79,7 +83,8 @@
     "typescript": "^4.6.4",
     "vite": "^3.0.7",
     "vite-plugin-istanbul": "^2.9.0",
-    "xbell-reporter": "workspace:*"
+    "xbell-reporter": "workspace:*",
+    "@xbell/code-stack": "workspace:*"
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.0.3",
