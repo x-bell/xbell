@@ -1,0 +1,12 @@
+{
+  "name": "@xbell/code-stack",
+  "version": "0.1.0",
+  "author": {
+    "name": "Hang Liang",
+    "email": "xlianghang@163.com",
+    "url": "https://github.com/xlianghang"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.18"
+  }
+}
