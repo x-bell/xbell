@@ -2,8 +2,8 @@ import { collector } from './collector';
 import type { XBellProject } from '../types';
 import { genPropertyDecorator } from '../utils/property';
 import { MetaDataType } from '../constants/metadata';
-import { genParameterDecorator } from '../utils';
-import { ParameterType } from '../constants';
+import { genParameterDecorator } from '../utils/parameter';
+import { ParameterType } from '../constants/parameter';
 
 
 export const Test: () => PropertyDecorator = () => {

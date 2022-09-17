@@ -4,7 +4,9 @@ import pc from 'picocolors';
 import { PNG } from 'pngjs'
 import pixcelMatch from 'pixelmatch';
 import { PageScreenshotOptions, ElementHandleScreenshotOptions } from '../types/pw';
+import debug from 'debug';
 
+const snapshotDebug = debug('xbell:snapshot');
 export interface ToMatchSnapshotOptions {
   /**
    * Image name
@@ -34,35 +36,40 @@ export function getSnapshotPath({
   imgName
 }: {
   rootDir: string;
-  projectName: string;
+  projectName?: string;
   imgName: string;
 }) {
-  return path.join(rootDir, '__snapshots__', imgName, `.[${projectName}]` + '.png');
+  return path.join(
+    rootDir,
+    '__snapshots__',
+    imgName.replace(/\.png$/, '') + (projectName ? `.[${projectName}]` : '') + '.png'
+  );
 }
 
 export interface ScreenshotTarget {
   screenshot(options: PageScreenshotOptions | ElementHandleScreenshotOptions): Promise<Buffer>
 }
 
-export async function _matchImageSnapshot(projectName: string, screenshotTarget: ScreenshotTarget, options: ToMatchSnapshotOptions) {
+export async function _matchImageSnapshot(
+  buffer: Buffer,
+  options: ToMatchSnapshotOptions,
+  projectName?: string
+) {
+  snapshotDebug('_matchImageSnapshot');
   const { maxDiffPixels, maxDiffPixelRatio, name, threshold = 0.2 } = options;
   const messages: string[] = [];
-  if (typeof screenshotTarget?.screenshot !== 'function') {
-    throw new Error('toMatchSnapshot: The received object is missing the "sreenshot" method');
-  }
-
-  const buffer = await screenshotTarget.screenshot({
-    type: 'png'
-  });
-
   const snapshotPath = getSnapshotPath({
     rootDir: process.cwd(),
-    projectName,
     imgName: name,
+    projectName,
   });
-
-  if (!fs.existsSync(snapshotPath)) {
-    fs.mkdirSync(path.dirname(snapshotPath));
+  const isFirstSnapshot = fs.existsSync(snapshotPath);
+  snapshotDebug('snapshotPath', snapshotPath, isFirstSnapshot);
+  const dirPath = path.dirname(snapshotPath);
+  if (!isFirstSnapshot) {
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath);
+    }
     fs.writeFileSync(snapshotPath, buffer)
   } else {
     const originSnatshot = PNG.sync.read(fs.readFileSync(snapshotPath))
@@ -71,7 +78,7 @@ export async function _matchImageSnapshot(projectName: string, screenshotTarget:
     const diffPNG = new PNG({ width, height });
     const diff = pixcelMatch(originSnatshot.data, currentSnapshot.data, diffPNG.data, width, height, {
       threshold,
-    })
+    });
     const expectDiffCount = (() => {
       if (typeof maxDiffPixels === 'number') return maxDiffPixels;
       if (typeof maxDiffPixelRatio === 'number') return width * height * maxDiffPixelRatio;

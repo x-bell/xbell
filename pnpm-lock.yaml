@@ -385,6 +385,12 @@ importers:
     devDependencies:
       xbell: link:../../packages/xbell
 
+  tests/standard-e2e:
+    specifiers:
+      xbell: workspace:*
+    dependencies:
+      xbell: link:../../packages/xbell
+
   website:
     specifiers:
       '@docusaurus/core': ^2.0.1

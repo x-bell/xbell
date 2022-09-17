@@ -6,6 +6,8 @@ export const ParameterType = {
   Fixture: Symbol('fixture'),
   Page: Symbol('page'),
   Project: Symbol('project'),
+  BatchData: Symbol('batchData'),
+  Data: Symbol('data'),
 } as const
 
 export type ParameterType = ValueOf<typeof ParameterType>

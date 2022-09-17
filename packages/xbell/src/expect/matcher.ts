@@ -2,7 +2,7 @@ import { defineMatcher } from 'expell';
 import { XBellLocator, XBellElementHandle, XBellPage } from '../types';
 import { _matchImageSnapshot } from './match-image-snapshot';
 
-const elementMatcher = defineMatcher({
+export const elementMatcher = defineMatcher({
   async toBeChecked(received: XBellLocator | XBellElementHandle) {
     const pass = await received.isChecked();
     return {
@@ -28,11 +28,17 @@ const elementMatcher = defineMatcher({
     const pass = await received.isHidden();
     return {
       pass,
-      message: () => ``,
+      message: ({ not }) => ``,
     }
   },
   async toMatchScreenshot(received: XBellLocator | XBellElementHandle | XBellPage, options: { name: string } ) {
-    // TODO: projectName (test info)
-    return _matchImageSnapshot('', received, options);
+    if (typeof received?.screenshot !== 'function') {
+      throw new Error('toMatchScreenshot: The received object is missing the "sreenshot" method');
+    }
+  
+    const buffer = await received.screenshot({
+      type: 'png'
+    });
+    return _matchImageSnapshot(buffer, options);
   },
 })

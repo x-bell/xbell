@@ -1,5 +1,7 @@
+import { expell } from 'expell';
 import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments, FixtureFunction } from '../types';
 import { collector } from './collector';
+import { elementMatcher } from '../expect/matcher';
 
 interface XBellBrowserTest<BrowserExtArgs = {}> {
   (caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
@@ -269,4 +271,5 @@ export const test = createTest<{}, {}>();
 
 export const describe = test.describe;
 
-export { expell as expect } from 'expell';
+export const expect = expell.extend(elementMatcher);
+
