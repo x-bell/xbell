@@ -115,18 +115,11 @@ importers:
 
   packages/expell:
     specifiers:
-      '@types/node': ^18.7.18
+      '@xbell/color': workspace:*
       '@xbell/format': workspace:*
-      fast-glob: ^3.2.11
-      picocolors: ^1.0.0
-      typescript: ^4.6.4
     dependencies:
-      '@types/node': registry.npmmirror.com/@types/node/18.7.18
+      '@xbell/color': link:../color
       '@xbell/format': link:../format
-      picocolors: registry.npmmirror.com/picocolors/1.0.0
-    devDependencies:
-      fast-glob: registry.npmmirror.com/fast-glob/3.2.11
-      typescript: registry.npmmirror.com/typescript/4.7.2
 
   packages/format:
     specifiers:
@@ -208,13 +201,13 @@ importers:
       '@types/debug': ^4.1.7
       '@types/fs-extra': ^9.0.13
       '@types/lodash': ^4.14.182
-      '@types/node': ^18.7.18
       '@types/pixelmatch': ^5.2.4
       '@types/pngjs': ^6.0.1
       '@types/reflect-metadata': ^0.1.0
       '@types/stack-utils': ^2.0.1
       '@vitejs/plugin-vue': ^3.0.3
       '@xbell/code-stack': workspace:*
+      '@xbell/color': workspace:*
       chalk: ^5.0.1
       commander: ^9.2.0
       debug: ^4.3.4
@@ -225,7 +218,6 @@ importers:
       fs-extra: ^10.1.0
       lodash: ^4.17.21
       log-update: ^5.0.1
-      picocolors: ^1.0.0
       pirates: ^4.0.5
       pixelmatch: ^5.3.0
       playwright-core: ^1.22.0
@@ -233,7 +225,6 @@ importers:
       reflect-metadata: ^0.1.13
       stack-utils: ^2.0.5
       strip-ansi: ^7.0.1
-      typescript: ^4.6.4
       vite: ^3.0.7
       vite-plugin-istanbul: ^2.9.0
       xbell-reporter: workspace:*
@@ -242,6 +233,7 @@ importers:
       '@swc/core': registry.npmmirror.com/@swc/core/1.2.208
       '@vitejs/plugin-vue': registry.npmmirror.com/@vitejs/plugin-vue/3.0.3_vite@3.0.9
       '@xbell/code-stack': link:../code-stack
+      '@xbell/color': link:../color
       chalk: registry.npmmirror.com/chalk/5.0.1
       commander: registry.npmmirror.com/commander/9.3.0
       debug: registry.npmmirror.com/debug/4.3.4
@@ -252,7 +244,6 @@ importers:
       fs-extra: registry.npmmirror.com/fs-extra/10.1.0
       lodash: registry.npmmirror.com/lodash/4.17.21
       log-update: registry.npmmirror.com/log-update/5.0.1
-      picocolors: registry.npmmirror.com/picocolors/1.0.0
       pirates: registry.npmmirror.com/pirates/4.0.5
       pixelmatch: registry.npmmirror.com/pixelmatch/5.3.0
       playwright-core: registry.npmmirror.com/playwright-core/1.22.2
@@ -260,7 +251,6 @@ importers:
       reflect-metadata: registry.npmmirror.com/reflect-metadata/0.1.13
       stack-utils: registry.npmmirror.com/stack-utils/2.0.5
       strip-ansi: registry.npmmirror.com/strip-ansi/7.0.1
-      typescript: registry.npmmirror.com/typescript/4.7.2
       vite: registry.npmmirror.com/vite/3.0.9
       vite-plugin-istanbul: registry.npmmirror.com/vite-plugin-istanbul/2.9.0
       xbell-reporter: link:../xbell-reporter
@@ -269,7 +259,6 @@ importers:
       '@types/debug': registry.npmmirror.com/@types/debug/4.1.7
       '@types/fs-extra': registry.npmmirror.com/@types/fs-extra/9.0.13
       '@types/lodash': registry.npmmirror.com/@types/lodash/4.14.182
-      '@types/node': registry.npmmirror.com/@types/node/18.7.18
       '@types/pixelmatch': registry.npmmirror.com/@types/pixelmatch/5.2.4
       '@types/pngjs': registry.npmmirror.com/@types/pngjs/6.0.1
       '@types/reflect-metadata': registry.npmmirror.com/@types/reflect-metadata/0.1.0
@@ -19497,12 +19486,6 @@ packages:
     name: react-dev-utils
     version: 12.0.1
     engines: {node: '>=14'}
-    peerDependencies:
-      typescript: '>=2.7'
-      webpack: '>=4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
     dependencies:
       '@babel/code-frame': registry.npmmirror.com/@babel/code-frame/7.16.7
       address: registry.npmmirror.com/address/1.2.0
@@ -19533,7 +19516,9 @@ packages:
     transitivePeerDependencies:
       - eslint
       - supports-color
+      - typescript
       - vue-template-compiler
+      - webpack
     dev: false
 
   registry.npmmirror.com/react-dev-utils/12.0.1_igkzj7o3o5ugyo5oxz5n6lvldq:
@@ -19542,12 +19527,6 @@ packages:
     name: react-dev-utils
     version: 12.0.1
     engines: {node: '>=14'}
-    peerDependencies:
-      typescript: '>=2.7'
-      webpack: '>=4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
     dependencies:
       '@babel/code-frame': registry.npmmirror.com/@babel/code-frame/7.16.7
       address: registry.npmmirror.com/address/1.2.0
@@ -19578,7 +19557,9 @@ packages:
     transitivePeerDependencies:
       - eslint
       - supports-color
+      - typescript
       - vue-template-compiler
+      - webpack
     dev: false
 
   registry.npmmirror.com/react-dom/17.0.2_react@17.0.2:
