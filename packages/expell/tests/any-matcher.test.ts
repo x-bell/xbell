@@ -1,6 +1,5 @@
 import { expell } from '../src';
 import { test } from './internal-test';
-import pc from 'picocolors';
 import { format } from '@xbell/format';
 
 test('#toBe: does not throw', () => {

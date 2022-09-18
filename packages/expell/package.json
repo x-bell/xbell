@@ -8,12 +8,7 @@
     "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs"
   },
   "dependencies": {
-    "@types/node": "^18.7.18",
     "@xbell/format": "workspace:*",
-    "picocolors": "^1.0.0"
-  },
-  "devDependencies": {
-    "fast-glob": "^3.2.11",
-    "typescript": "^4.6.4"
+    "@xbell/color": "workspace:*"
   }
 }

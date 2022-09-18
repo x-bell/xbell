@@ -1,4 +1,4 @@
-import pc from 'picocolors';
+import color from '@xbell/color';
 import { format } from '@xbell/format';
 
 type ColorType =
@@ -19,7 +19,7 @@ export function getMatcherMessage({
   isNot?: boolean;
   ignoreExpected?: boolean;
 }): string {
-  return `${pc.magenta('AssertionError:')} ${pc.gray('expect(')}${pc.red('received')}${pc.gray(')')}${isNot ? '.not' : ''}.${assertionName}(${ignoreExpected ? '' : pc.green('expected')})`;
+  return `${color.magenta('AssertionError:')} ${color.gray('expect(')}${color.red('received')}${color.gray(')')}${isNot ? '.not' : ''}.${assertionName}(${ignoreExpected ? '' : color.green('expected')})`;
 }
 
 export function getAssertionMessage(options: {
@@ -85,8 +85,8 @@ export function getAssertionMessage({
     '',
     getMatcherMessage({ assertionName, isNot, ignoreExpected }),
     '',
-    !ignoreExpected && `${expectedLabel}: ${pc.green(expectedMessage ?? format(expected))}`,
-    `${receivedLabel}: ${pc.red(receivedMessage ?? format(received))}`,
+    !ignoreExpected && `${expectedLabel}: ${color.green(expectedMessage ?? format(expected))}`,
+    `${receivedLabel}: ${color.red(receivedMessage ?? format(received))}`,
     additionalMessage
   ].filter(Boolean).join('\n')
 }
