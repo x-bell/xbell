@@ -34,7 +34,7 @@ const AnsiColors = {
 
 type AnsiColorsKeys = keyof typeof AnsiColors;
 
-type MethodKeys = 'rgb' | 'hex' | 'bgRgb' | 'bgHex' | 'gradient' | 'rainbow';
+type MethodKeys = AnsiColorsKeys | 'rgb' | 'hex' | 'bgRgb' | 'bgHex' | 'gradient' | 'rainbow';
 
 const RainbowColor = {
   Start: '#11b8db',
