@@ -13,7 +13,7 @@
     "bin"
   ],
   "scripts": {
-    "build": "node ../../scripts/build.mjs",
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
     "prepublishOnly": "npm run build"
   },
   "exports": {

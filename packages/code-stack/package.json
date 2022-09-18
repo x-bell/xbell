@@ -7,7 +7,7 @@
     "url": "https://github.com/xlianghang"
   },
   "scripts": {
-    "build": "node ../../scripts/build.mjs"
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",

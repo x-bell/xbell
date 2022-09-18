@@ -1,18 +1,12 @@
 import { readFileSync, existsSync, writeFileSync, renameSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
 import glob from 'fast-glob';
-
-
-const compile = () => import('typescript/lib/tsc.js');
 
 const fixExt = () => {
   const distPath = join(process.cwd(), './dist');
   const files = glob.sync('**/*.js', {
-    cwd: process.cwd()
+    cwd: distPath,
   });
-
   files.forEach((name) => {
     const filename = join(distPath, name);
     const code = readFileSync(filename, 'utf-8');
@@ -27,15 +21,13 @@ const fixExt = () => {
     });
 
     writeFileSync(filename, finalCode, 'utf-8');
-  })
+  });
+
 
   files.forEach((name) => {
     const filename = join(distPath, name);
     renameSync(filename, filename.replace(/\.js$/, '.mjs'))
   });
-
 }
-
-await compile()
 
 fixExt();

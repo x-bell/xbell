@@ -5,7 +5,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "node ../../scripts/build.mjs"
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs"
   },
   "dependencies": {
     "@types/node": "^18.7.18",
