@@ -1,8 +1,6 @@
 import { test } from 'node:test';
 import * as assert from 'assert';
-import color from '../src/index';
-import { AnsiColors } from './fixture';
-
+import color from '../dist/index';
 
 test('support automatic casting to string', () => {
 	assert.equal(color.bold(['foo', 'bar']), '\x1b[1mfoo,bar\x1b[22m');
@@ -80,22 +78,34 @@ test('rbg', () => {
 	assert.equal(color.hex('#FF0000')('hello'), '\x1b[38;2;255;0;0mhello\x1b[39m');
 });
 
-// test('properly convert RGB to 256 colors on basic color terminals', () => {
-// 	assert.equal(new Chalk({level: 2}).hex('#FF0000')('hello'), '\x1b[38;5;196mhello\x1b[39m');
-// 	assert.equal(new Chalk({level: 2}).bgHex('#FF0000')('hello'), '\x1b[48;5;196mhello\x1b[49m');
-// 	assert.equal(new Chalk({level: 3}).bgHex('#FF0000')('hello'), '\x1b[48;2;255;0;0mhello\x1b[49m');
-// });
 
-// test('don\'t emit RGB codes if level is 0', () => {
-// 	assert.equal(new Chalk({level: 0}).hex('#FF0000')('hello'), 'hello');
-// 	assert.equal(new Chalk({level: 0}).bgHex('#FF0000')('hello'), 'hello');
-// });
-
-// test('supports blackBright color', () => {
-// 	assert.equal(color.blackBright('foo'), '\x1b[90mfoo\x1b[39m');
-// });
-
-// test('sets correct level for colorStderr and respects it', () => {
-// 	assert.equal(colorStderr.level, 3);
-// 	assert.equal(colorStderr.red.bold('foo'), '\x1b[31m\x1b[1mfoo\x1b[22m\x1b[39m');
-// });
+test('demo no throws', () => {
+	console.log(
+		color.bold.italic.red('hello')
+	);
+	
+	console.log(
+		color.bold.italic.bgRed('hello')
+	);
+	
+	// custom color
+	console.log(
+		color.rgb(255, 0, 0)('hello')
+	);
+	console.log(
+		color.hex('#FF0000')('hello')
+	);
+	
+	// gradient color
+	console.log(
+		color.bold.gradient('#FF0000', '#00FF00')('hello')
+	);
+	console.log(
+		color.bold.gradient([255, 0, 0], [0, 255, 0])('hello')
+	);
+	
+	// radinbow color(internal gradient)
+	console.log(
+		color.bold.rainbow('hello')
+	);
+});

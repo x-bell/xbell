@@ -5,5 +5,11 @@
     "name": "Hang Liang",
     "email": "xlianghang@163.com",
     "url": "https://github.com/xlianghang"
-  }
+  },
+  "scripts": {
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts"
 }

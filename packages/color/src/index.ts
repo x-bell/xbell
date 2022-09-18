@@ -1,4 +1,4 @@
-type RGB = { r: number; g: number; b: number; }
+type RGB = [number, number, number];
 type HEX = string;
 
 const FE_END_FLAG = '\x1b[39m';
@@ -13,23 +13,23 @@ const AnsiColors = {
   inverse: ['\x1b[7m', '\x1b[27m'],
   hidden: ['\x1b[8m', '\x1b[28m'],
   strikethrough: ['\x1b[9m', '\x1b[29m'],
-  black: ['\x1b[30m', '\x1b[39m'],
-  red: ['\x1b[31m', '\x1b[39m'],
-  green: ['\x1b[32m', '\x1b[39m'],
-  yellow: ['\x1b[33m', '\x1b[39m'],
-  blue: ['\x1b[34m', '\x1b[39m'],
-  magenta: ['\x1b[35m', '\x1b[39m'],
-  cyan: ['\x1b[36m', '\x1b[39m'],
-  white: ['\x1b[37m', '\x1b[39m'],
-  gray: ['\x1b[90m', '\x1b[39m'],
-  bgBlack: ['\x1b[40m', '\x1b[49m'],
-  bgRed: ['\x1b[41m', '\x1b[49m'],
-  bgGreen: ['\x1b[42m', '\x1b[49m'],
-  bgYellow: ['\x1b[43m', '\x1b[49m'],
-  bgBlue: ['\x1b[44m', '\x1b[49m'],
-  bgMagenta: ['\x1b[45m', '\x1b[49m'],
-  bgCyan: ['\x1b[46m', '\x1b[49m'],
-  bgWhite: ['\x1b[47m', '\x1b[49m'],
+  black: ['\x1b[30m', FE_END_FLAG],
+  red: ['\x1b[31m', FE_END_FLAG],
+  green: ['\x1b[32m', FE_END_FLAG],
+  yellow: ['\x1b[33m', FE_END_FLAG],
+  blue: ['\x1b[34m', FE_END_FLAG],
+  magenta: ['\x1b[35m', FE_END_FLAG],
+  cyan: ['\x1b[36m', FE_END_FLAG],
+  white: ['\x1b[37m', FE_END_FLAG],
+  gray: ['\x1b[90m', FE_END_FLAG],
+  bgBlack: ['\x1b[40m', BG_END_FLAG],
+  bgRed: ['\x1b[41m', BG_END_FLAG],
+  bgGreen: ['\x1b[42m', BG_END_FLAG],
+  bgYellow: ['\x1b[43m', BG_END_FLAG],
+  bgBlue: ['\x1b[44m', BG_END_FLAG],
+  bgMagenta: ['\x1b[45m', BG_END_FLAG],
+  bgCyan: ['\x1b[46m', BG_END_FLAG],
+  bgWhite: ['\x1b[47m', BG_END_FLAG],
 } as const;
 
 type AnsiColorsKeys = keyof typeof AnsiColors;
@@ -47,14 +47,11 @@ function addColorByFlag(str: string, startFlag: string, endFlag: string): string
 
 function addColorByType(str: string, type: AnsiColorsKeys): string {
   const [startFlag, endFlag] = AnsiColors[type];
-  console.log('startFlag', startFlag);
-  console.log('startFlag', endFlag);
   return addColorByFlag(str, startFlag, endFlag);
 };
 
-function addColorByRgb(str: string, [r, g, b]: [number, number, number], isBg = false): string {
-  console.log('addColorByRgb', r, g, b, isBg);
-  return addColorByFlag(str, `\x1b[38;2;${r};${g};${b}0m`, isBg ? BG_END_FLAG : FE_END_FLAG);
+function addColorByRgb(str: string, [r, g, b]: RGB, isBg = false): string {
+  return addColorByFlag(str, '\x1b[38;2;' + `${r};${g};${b}m`, isBg ? BG_END_FLAG : FE_END_FLAG);
 }
 
 function addColorByHex(str: string, hex: HEX, isBg = false): string {
@@ -67,8 +64,8 @@ function addColorByGradient(str: string, startColor: HEX | RGB, endColor: HEX | 
     throw new Error('@xbell/color: gradient requires start/end color');
   }
   const length = str.length;
-  const startRGB = typeof startColor === 'string' ? hexToRgb(startColor) : [startColor.r, startColor.g, startColor.b];
-  const endRGB = typeof endColor === 'string' ? hexToRgb(endColor) : [endColor.r, endColor.g, endColor.b];
+  const startRGB = typeof startColor === 'string' ? hexToRgb(startColor) : startColor;
+  const endRGB = typeof endColor === 'string' ? hexToRgb(endColor) : endColor;
   let ret = '';
   str.split('').map((char, charIndex) => {
     const [r, g, b] = startRGB.map((s, idx) => Math.floor(s + (endRGB[idx] - s) * charIndex / (length - 1)));
@@ -114,7 +111,7 @@ const removeEndFlag = (
 
 interface Color extends Record<AnsiColorsKeys, Color> {
   (str: any): string;
-  gradient(startColor: HEX | RGB, endColor: HEX | RGB): Color;
+  gradient(start: HEX | RGB, end: HEX | RGB): Color;
   rainbow: Color;
   rgb(r: number, g: number, b: number): Color;
   bgRgb(r: number, g: number, b: number): Color;
@@ -122,7 +119,7 @@ interface Color extends Record<AnsiColorsKeys, Color> {
   bgHex(hex: string): Color;
 }
 
-const CUSTOM_METHODS = new Set<string | symbol>([
+const NEED_ARGS_METHODS = new Set<string | symbol>([
   'rgb',
   'hex',
   'gradient',
@@ -132,7 +129,8 @@ const CUSTOM_METHODS = new Set<string | symbol>([
 
 const SUPPORT_METHODS = new Set<string | symbol>([
   ...Object.keys(AnsiColors),
-  ...CUSTOM_METHODS,
+  ...NEED_ARGS_METHODS,
+  'rainbow'
 ]);
 
 function hexToRgb(hex: HEX):[number, number, number] {
@@ -158,7 +156,7 @@ function genColorProxy(method?: MethodKeys, args = []): Color {
     },
     apply(_, __, args) {
       const lastOne = chain[chain.length - 1];
-      if (CUSTOM_METHODS.has(lastOne?.method) && !lastOne.record) {
+      if (NEED_ARGS_METHODS.has(lastOne?.method) && !lastOne.record) {
         lastOne.args = args;
         lastOne.record = true;
         return proxy;
