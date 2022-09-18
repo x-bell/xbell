@@ -75,7 +75,6 @@ function addColorByGradient(str: string, startColor: HEX | RGB, endColor: HEX | 
 }
 
 function addColor(str: string, method: MethodKeys, args: any[] = []): string {
-  console.log('addColor', method, str);
   switch (method) {
     case 'hex':
       return addColorByHex(str, args[0], false);

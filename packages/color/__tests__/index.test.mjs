@@ -1,6 +1,6 @@
-import { test } from 'node:test';
+import { test, it } from 'node:test';
 import * as assert from 'assert';
-import color from '../dist/index';
+import color from '../dist/index.mjs';
 
 test('support automatic casting to string', () => {
 	assert.equal(color.bold(['foo', 'bar']), '\x1b[1mfoo,bar\x1b[22m');

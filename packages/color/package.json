@@ -7,8 +7,13 @@
     "url": "https://github.com/xlianghang"
   },
   "scripts": {
-    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs"
+    "test": "node --test __tests__",
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "prepublishOnly": "pnpm build && pnpm test"
   },
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts"
