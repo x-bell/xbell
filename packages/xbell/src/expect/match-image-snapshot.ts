@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import pc from 'picocolors';
+import color from '@xbell/color';
 import { PNG } from 'pngjs'
 import pixcelMatch from 'pixelmatch';
 import { PageScreenshotOptions, ElementHandleScreenshotOptions } from '../types/pw';
@@ -95,9 +95,9 @@ export async function _matchImageSnapshot(
         diffPngPath,
         PNG.sync.write(diffPNG)
       );
-      messages.push(`Expected: ${pc.yellow(snapshotPath)}`)
-      messages.push(`Received: ${pc.red(newPngPath)}`)
-      messages.push(`    Diff: ${pc.yellow(diffPngPath)}`)
+      messages.push(`Expected: ${color.yellow(snapshotPath)}`)
+      messages.push(`Received: ${color.red(newPngPath)}`)
+      messages.push(`    Diff: ${color.yellow(diffPngPath)}`)
       return {
         pass: false,
         message: () => messages.join('\n'),

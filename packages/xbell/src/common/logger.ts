@@ -1,4 +1,4 @@
-import pc from 'picocolors';
+import color from '@xbell/color';
 
 export interface XBellLogger {
   debugTime(trigger: string): void;
@@ -11,7 +11,7 @@ export class Logger implements XBellLogger {
 
   debugLog(trigger: string, message: any) {
     console.log(
-      `${pc.yellow(trigger + ':')}`, message
+      `${color.yellow(trigger + ':')}`, message
     )
   }
 
@@ -23,13 +23,13 @@ export class Logger implements XBellLogger {
     const date = this.timeMap.get(trigger)
     if (!date) {
       console.log(
-        `${pc.yellow(trigger + ':')} ${pc.red('ensure invoke debugTime(...) before debugTimeEnd(...)')}`
+        `${color.yellow(trigger + ':')} ${color.red('ensure invoke debugTime(...) before debugTimeEnd(...)')}`
       )
       return;
     }
 
     console.log(
-      `${pc.yellow(trigger + ':')} ${pc.white(Date.now() - date)}ms`
+      `${color.yellow(trigger + ':')} ${color.white(Date.now() - date)}ms`
     );
     this.timeMap.delete(trigger);
   }

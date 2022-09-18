@@ -1,4 +1,4 @@
-import pc from 'picocolors';
+import color from '@xbell/color';
 import stripAnis from 'strip-ansi';
 import {
   XBellTestCaseStatus,
@@ -98,10 +98,10 @@ const SPACES = ' '.repeat(INDENT);
 
 class Printer {
   static StatusIcon: Record<XBellTestCaseStatus, string | string[]> = {
-    successed: pc.green('✓'),
-    failed: pc.red('×'),
-    waiting: pc.yellow('●'),
-    running: pc.yellow('●'),
+    successed: color.green('✓'),
+    failed: color.red('×'),
+    waiting: color.yellow('●'),
+    running: color.yellow('●'),
     // running: ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚']
   }
   protected timer?: NodeJS.Timer;
@@ -145,18 +145,18 @@ class Printer {
   protected getFileLogs(file: XBellTestFileRecord) {
     const logText = file.logs.map(log => {
       if (log.type === 'stdout') {
-        return pc.gray(log.content);
+        return color.gray(log.content);
       }
-      return pc.red(log.content);
+      return color.red(log.content);
     }).join('');
 
-    return logText ? pc.bold(pc.magenta(pc.italic('Logs:'))) + `\n${logText}` : '';
+    return logText ? color.bold.magenta.italic('Logs:') + `\n${logText}` : '';
   }
 
   protected getFileError(file: XBellTestFileRecord) {
     if (file.error) {
       // print stack
-      return pc.bold(pc.red(pc.italic('Error:'))) + `\n${file.error.name || ''}: ${file.error.message || ''}\n${file.error.stack || ''}`
+      return color.bold.italic.red('Error:') + `\n${file.error.name || ''}: ${file.error.message || ''}\n${file.error.stack || ''}`
     }
 
     return '';
@@ -195,7 +195,7 @@ class Printer {
         status: 'failed',
       } as const : this.getTaskInfo(file.tasks, 0, caseStatusCounter, caseErrors);
       fileStatusCounter[status]++;
-      return this.getStatusLabel(status) + ' ' + pc.white(this.getFilename(file.filename)) + (status === 'successed' ? '' : this.startWithNewLine(text)) + this.startWithNewLine(this.getFileLogs(file)) + this.startWithNewLine(this.getFileError(file));
+      return this.getStatusLabel(status) + ' ' + color.white(this.getFilename(file.filename)) + (status === 'successed' ? '' : this.startWithNewLine(text)) + this.startWithNewLine(this.getFileLogs(file)) + this.startWithNewLine(this.getFileError(file));
     }).join('\n\n');
 
     return {
@@ -210,7 +210,7 @@ class Printer {
     const relativePath = filepath.split(process.cwd()).pop()!;
     const paths = relativePath.split('/');
     const filename = paths.pop();
-    return pc.gray(paths.join('') + '/') + filename;
+    return color.gray(paths.join('') + '/') + filename;
   }
 
   protected getStatusIcon(status: XBellTestCaseStatus) {
@@ -221,19 +221,19 @@ class Printer {
 
   protected getStatusLabel(status: XBellCaseStatus) {
     if (status === 'waiting') {
-      return pc.bold(pc.inverse(pc.yellow(' WAIT ')));
+      return color.bold.inverse.yellow(' WAIT ');
     }
 
     if (status === 'running') {
-      return pc.bold(pc.inverse(pc.yellow(' RUNS ')));
+      return color.bold.inverse.yellow(' RUNS ');
     }
 
     if (status === 'successed') {
-      return pc.bold(pc.inverse(pc.green(' PASS ')));
+      return color.bold.inverse.green(' PASS ');
     }
 
     if (status === 'failed') {
-      return pc.bold(pc.inverse(pc.red(' FAIL ')));
+      return color.bold.inverse.red(' FAIL ');
     }
   }
 
@@ -247,21 +247,19 @@ class Printer {
     const summaryText = this.getSummary({ fileStatusCounter, caseStatusCounter });
     const errorText = caseErrors.map((text, idx, arr) => {
       const total = arr.length;
-      const title = pc.bold(pc.magenta(this.getCenterText(
+      const title = color.bold.magenta(this.getCenterText(
         (` Failed Cases [${idx + 1}/${total}] `), { symbol: '-'})
-        ));
-      return `${title}\n${pc.red(text)}`
+        );
+      return `${title}\n${color.red(text)}`
     }).join('\n') + (
-      caseErrors.length ? `\n${pc.bold(pc.magenta(this.getCenterText('End', { symbol: '-'})))}` : ''
+      caseErrors.length ? `\n${color.bold.magenta(this.getCenterText('End', { symbol: '-'}))}` : ''
     );
     // const startLine = this.getCenterText(), { symbol: pc.cyan('-') });
     // const endLine = this.getCenterText(pc.bold(pc.inverse(pc.cyan(' END '))), { symbol: pc.cyan('-') });
     // log(startLine + '\n' + text + '\n\n' + summaryText + '\n\n' + errorText + '\n' + endLine);
     log(
       [
-        pc.bold(
-          pc.cyan('[XBELL TESTING]')
-        ) + ' 🎐',
+        color.bold.cyan('[XBELL TESTING]') + ' 🎐',
         // this.getRainbowText('[XBELL TESTING]') + ' 🎐',
         text,
         errorText,
@@ -302,19 +300,19 @@ class Printer {
 
   getColorTextByStatus(status: XBellCaseStatus, text: string) {
     if (status === 'failed') {
-      return pc.red(text);
+      return color.red(text);
     }
 
     if (status === 'successed') {
-      return pc.green(text);
+      return color.green(text);
     }
 
     if (status === 'running') {
-      return pc.yellow(text);
+      return color.yellow(text);
     }
 
     if (status === 'waiting') {
-      return pc.yellow(text);
+      return color.yellow(text);
     }
   }
 
@@ -346,10 +344,10 @@ class Printer {
   getTotals(counter: Record<XBellCaseStatus, number>): string {
     const total = Object.entries(counter).reduce((acc, [key, num]) => acc + num, 0);
     return [
-      counter.failed ? pc.bold(pc.red(counter.failed + ' failed')) : undefined,
-      counter.waiting ? pc.bold(pc.yellow(counter.waiting + ' waiting')) : undefined,
-      counter.running ? pc.bold(pc.yellow(counter.running + ' running')) : undefined,
-      pc.bold(pc.green(counter.successed + ' passed')),
+      counter.failed ? color.bold.red(counter.failed + ' failed') : undefined,
+      counter.waiting ? color.bold.yellow(counter.waiting + ' waiting') : undefined,
+      counter.running ? color.bold.yellow(counter.running + ' running') : undefined,
+      color.bold.green(counter.successed + ' passed'),
       total + ' total',
     ].filter(Boolean).join(', ')
   }
@@ -368,7 +366,7 @@ class Printer {
       this.getFilename(c.filename),
       (c.groupDescription || ''),
       c.caseDescription,
-    ].filter(Boolean).join(pc.gray(' > '))
+    ].filter(Boolean).join(color.gray(' > '))
   }
 }
 
