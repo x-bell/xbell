@@ -1,6 +1,3 @@
-type RGB = [number, number, number];
-type HEX = string;
-
 const FE_END_FLAG = '\x1b[39m';
 const BG_END_FLAG = '\x1b[49m';
 
@@ -31,6 +28,10 @@ const AnsiColors = {
   bgCyan: ['\x1b[46m', BG_END_FLAG],
   bgWhite: ['\x1b[47m', BG_END_FLAG],
 } as const;
+
+type RGB = [number, number, number];
+
+type HEX = string;
 
 type AnsiColorsKeys = keyof typeof AnsiColors;
 
