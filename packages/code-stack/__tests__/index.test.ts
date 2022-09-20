@@ -6,7 +6,7 @@ import { throwError } from './fixture'
 test('format', () => {
   try {
     throwError()
-  } catch(err) {
+  } catch (err) {
     const formatResult = formatError(err);
     const expectResult = `  1 | export function throwError() {
   2 |   // ...
@@ -14,6 +14,6 @@ test('format', () => {
               ^
   4 | }
   5 | `;
-    equal(formatResult, expectResult);
+    equal(formatResult!.stack, expectResult);
   }
 });

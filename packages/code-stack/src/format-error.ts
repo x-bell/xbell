@@ -1,12 +1,13 @@
+import type { FormatOptions } from './types';
 import { formatStack } from './format-stack';
 import { parseStack } from './parse-stack';
 
-export function formatError(error: Error): string | null {
+export function formatError(error: Error, opts: FormatOptions = {}) {
   const { stack } = error || {};
   if (!stack)
     return null;
 
-  const parsed = parseStack(stack)
+  const parsed = parseStack(stack, opts);
 
   if (!parsed)
     return null;
@@ -14,8 +15,13 @@ export function formatError(error: Error): string | null {
   const {
     columns,
     lines,
-    filename
+    filename,
   } = parsed.location;
-
-  return formatStack(filename, { columns, lines });
+  const ret = formatStack(filename, { columns, lines });
+  return {
+    filename,
+    stack: ret,
+    message: parsed.message,
+    codeLines: parsed.codeLines,
+  };
 }

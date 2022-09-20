@@ -3,3 +3,7 @@ export interface Location {
   columns: number;
   filename: string;
 }
+
+export interface FormatOptions {
+  includes?: RegExp | string | Array<RegExp | string>;
+}

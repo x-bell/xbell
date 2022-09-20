@@ -1,4 +1,4 @@
-import type { Location } from './types';
+import type { FormatOptions, Location } from './types';
 
 const FILTER_FILENAME_REG = [
   /node_modules/,
@@ -7,7 +7,7 @@ const FILTER_FILENAME_REG = [
 
 const STACK_LINE_REG = /\((.+?):(\d+):(\d+)\)$/;
 
-export function parseStack(stack: string): {
+export function parseStack(stack: string, opts: FormatOptions = {}): {
   location: Location;
   message: string;
   codeLines: string[];
@@ -16,6 +16,7 @@ export function parseStack(stack: string): {
     return null;
 
   const lines = stack.split('\n')
+
   let firstCodeLineIndex = lines.findIndex(line => line.startsWith('    at '));
   if (firstCodeLineIndex === -1) {
     firstCodeLineIndex = lines.length - 1;
@@ -24,8 +25,9 @@ export function parseStack(stack: string): {
   const codeLines = lines.slice(firstCodeLineIndex);
   for (const line of codeLines) {
     const location = _parseStackLine(line);
-    const isFilter = _filterStackLine(location);
-    if (!isFilter) {
+    const isIgnore = _isIgnoreLine(location, opts);
+    console.log('location', isIgnore, location);
+    if (!isIgnore) {
       return {
         location: location!,
         message,
@@ -38,8 +40,24 @@ export function parseStack(stack: string): {
 }
 
 
-function _filterStackLine(location: Location | null) {
-  return !location || !location.filename || FILTER_FILENAME_REG.some(reg => reg.test(location.filename));
+function _isIgnoreLine(location: Location | null, opts: FormatOptions = {}) {
+  const includes = (() => {
+    if (!opts.includes) return [];
+    if (Array.isArray(opts.includes)) return opts.includes!;
+    return [opts.includes!]
+  })();
+  return !location ||
+    !location.filename ||
+    FILTER_FILENAME_REG.some(reg => reg.test(location.filename)) ||
+    (
+      includes.length
+        ? includes.every(
+          reg => typeof reg === 'string'
+            ? !reg.includes(location!.filename)
+            : !reg.test(location!.filename)
+        )
+        : false
+    );
 }
 
 function _getRelativeFilename (filename: string, cwd = process.cwd()) {

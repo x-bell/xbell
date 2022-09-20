@@ -3,7 +3,10 @@ import { existsSync, readFileSync } from 'fs';
 
 const NEW_LINE_REG = /[\r\n\u2028\u2029]|\r\n/;
 
-export function formatStack(sourceCodeOrFilename: string, loc: Omit<Location, 'filename'>): string {
+export function formatStack(
+  sourceCodeOrFilename: string,
+  loc: Omit<Location, 'filename'>,
+): string {
   const isFilename = existsSync(sourceCodeOrFilename);
   const sourceCode = isFilename ? readFileSync(sourceCodeOrFilename, 'utf-8') : sourceCodeOrFilename;
   const codes = sourceCode.split(NEW_LINE_REG);
