@@ -26,7 +26,7 @@ export function parseStack(stack: string, opts: FormatOptions = {}): {
   for (const line of codeLines) {
     const location = _parseStackLine(line);
     const isIgnore = _isIgnoreLine(location, opts);
-    console.log('location', isIgnore, location);
+
     if (!isIgnore) {
       return {
         location: location!,
@@ -46,16 +46,17 @@ function _isIgnoreLine(location: Location | null, opts: FormatOptions = {}) {
     if (Array.isArray(opts.includes)) return opts.includes!;
     return [opts.includes!]
   })();
+
   return !location ||
     !location.filename ||
     FILTER_FILENAME_REG.some(reg => reg.test(location.filename)) ||
     (
       includes.length
         ? includes.every(
-          reg => typeof reg === 'string'
-            ? !reg.includes(location!.filename)
-            : !reg.test(location!.filename)
-        )
+            reg => typeof reg === 'string'
+              ? !location!.filename.includes(reg)
+              : !reg.test(location!.filename)
+          )
         : false
     );
 }
