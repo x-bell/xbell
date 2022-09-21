@@ -1,3 +1,4 @@
+import { join } from 'path';
 import type { FormatOptions, Location } from './types';
 
 const FILTER_FILENAME_REG = [
@@ -47,15 +48,17 @@ function _isIgnoreLine(location: Location | null, opts: FormatOptions = {}) {
     return [opts.includes!]
   })();
 
+  const filename = location?.filename ? join(process.cwd(), location.filename) : undefined;
+
   return !location ||
     !location.filename ||
-    FILTER_FILENAME_REG.some(reg => reg.test(location.filename)) ||
+    FILTER_FILENAME_REG.some(reg => reg.test(filename!)) ||
     (
       includes.length
         ? includes.every(
             reg => typeof reg === 'string'
-              ? !location!.filename.includes(reg)
-              : !reg.test(location!.filename)
+              ? !filename!.includes(reg)
+              : !reg.test(filename!)
           )
         : false
     );
