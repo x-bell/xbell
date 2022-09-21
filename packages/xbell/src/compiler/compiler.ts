@@ -65,11 +65,9 @@ export class Compiler {
           target: 'es2020',
         },
       });
-      // console.log('targetcode', code);
       return {
         code,
       }
-      // return { code: isAsyncFunc ?   };
   }
 }
 

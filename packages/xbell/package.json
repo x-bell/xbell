@@ -9,8 +9,9 @@
     "xbell": "./bin/run.mjs"
   },
   "files": [
+    "bin",
     "dist",
-    "bin"
+    "loader"
   ],
   "scripts": {
     "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
@@ -26,10 +27,10 @@
       "import": "./dist/decorators.mjs"
     },
     "./loader/ignore-warning.cjs": {
-      "require": "./dist/loader/ignore-warning.cjs"
+      "require": "./loader/ignore-warning.cjs"
     },
     "./loader/loader.mjs": {
-      "import": "./dist/loader/loader.mjs"
+      "import": "./loader/loader.mjs"
     }
   },
   "typesVersions": {

@@ -6,10 +6,11 @@ const warnings = [
 const originEmit = process.emit;
 
 // @ts-ignore
-process.emit = function (event: string, code: any, ...otherArgs) {
+process.emit = function (event, code, ...otherArgs) {
 	if (event === 'warning' && warnings.includes(code?.message)) {
 		return;
 	}
 
 	return Reflect.apply(originEmit, process, [event, code, ...otherArgs]);
 };
+

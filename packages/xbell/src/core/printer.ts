@@ -12,7 +12,9 @@ import { XBellCaseStatus } from 'xbell-reporter';
 import { recorder } from './recorder';
 import { relative } from 'node:path';
 import { createLogUpdate } from 'log-update';
+import { formatError } from '@xbell/code-stack';
 const FOLD_ARROW = '❯';
+
 
 
 const log = createLogUpdate(process.stdout);
@@ -241,6 +243,9 @@ class Printer {
     if (process.env.DEBUG) {
       return;
     }
+
+    console.clear();
+
     this.files = testFileRecords;
     this.currentFrame++;
     const { text, fileStatusCounter, caseStatusCounter, caseErrors } = this.getAllFileInfo();
@@ -257,7 +262,8 @@ class Printer {
     // const startLine = this.getCenterText(), { symbol: pc.cyan('-') });
     // const endLine = this.getCenterText(pc.bold(pc.inverse(pc.cyan(' END '))), { symbol: pc.cyan('-') });
     // log(startLine + '\n' + text + '\n\n' + summaryText + '\n\n' + errorText + '\n' + endLine);
-    log(
+
+    console.log(
       [
         color.bold.cyan('[XBELL TESTING]') + ' 🎐',
         // this.getRainbowText('[XBELL TESTING]') + ' 🎐',
@@ -353,12 +359,18 @@ class Printer {
   }
 
   getCaseError(c: XBellTestCaseRecord): string {
-    if (!c.error) return ''
+    if (!c.error?.stack) {
+      return '';
+    }
+
+    const errInfo = formatError(c.error, {
+      includes: process.cwd(),
+    });
 
     return [
-      this.getCasePath(c),
-      c.error.message
-    ].join('\n\n');
+      errInfo?.message,
+      errInfo?.stack,
+    ].filter(Boolean).join('\n\n');
   }
 
   getCasePath(c: XBellTestCaseRecord): string {

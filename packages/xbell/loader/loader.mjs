@@ -2,12 +2,11 @@
 import process from 'node:process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from "node:url";
-import { compiler } from "../compiler/compiler";
+import { compiler } from "../dist/compiler/compiler.mjs";
 
-// @ts-ignore
 process.setSourceMapsEnabled(true);
 
-export async function load(url: string, context: any, nextLoad: any) {
+export async function load(url, context, nextLoad) {
   if (/\.(tsx|ts)$/.test(url)) {
     const filePath = fileURLToPath(url);
     const { code } = await compiler.compileNodeJSCode(

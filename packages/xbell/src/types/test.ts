@@ -217,16 +217,26 @@ export interface XBellLocator {
   isHidden(options?: TimeoutOptions): Promise<boolean>;
   boundingBox(options?: TimeoutOptions): Promise<Rect | null>;
   screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
+  locateByText(text: string): XBellLocator;
+  locateByTestId(testId: string): XBellLocator;
+  locateByClass(className: string): XBellLocator;
+  queryByText(text: string): Promise<XBellElementHandle | null>;
+  queryByTestId(testId: string): Promise<XBellElementHandle | null>;
+  queryByClass(className: string): Promise<XBellElementHandle | null>;
 }
 
 export interface XBellPage<BrowserExtensionArg = {}> {
   evaluate: <Args>(func: XBellPageExecutor<BrowserExtensionArg & Args>, args?: Args) => void;
-  locateByText(text: string): XBellLocator;
-  queryByText(text: string): Promise<XBellElementHandle | null>;
   close(): Promise<void>;
   goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
   screenshot(options?: PageScreenshotOptions): Promise<Buffer>
+  locateByText(text: string): XBellLocator;
+  locateByTestId(testId: string): XBellLocator;
+  locateByClass(className: string): XBellLocator;
+  queryByText(text: string): Promise<XBellElementHandle | null>;
+  queryByTestId(testId: string): Promise<XBellElementHandle | null>;
+  queryByClass(className: string): Promise<XBellElementHandle | null>;
 }
 
 export interface XBellTestCaseFunctionArguments<BrowserExtensionArg> {
@@ -253,7 +263,6 @@ export interface XBellTestCaseLifecycle {
 
 export interface XBellWorkerLifecycle {
   onLog(log: XBellWorkerLog & { filename: string }): void;
-  // onFileCollectStart(file: XBellTestFileRecord): void;
   onFileCollectSuccesed(file: XBellTestFileRecord): void;
   onFileCollectFailed(file: XBellTestFileRecord): void;
   onCaseExecuteStart(c: { uuid: string }): void;

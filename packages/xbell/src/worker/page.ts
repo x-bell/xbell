@@ -135,6 +135,36 @@ class Locator implements XBellLocator {
   screenshot(options?: ElementHandleScreenshotOptions | undefined): Promise<Buffer> {
     return this._locator.screenshot(options);
   }
+  
+  locateByText(text: string): XBellLocator {
+    return new Locator(this._locator.locator(`text=${text}`));
+  }
+
+  locateByTestId(testId: string): XBellLocator {
+    return new Locator(this._locator.locator(`data-testid=${testId}`));
+  }
+
+  locateByClass(className: string): XBellLocator {
+    const cls = className.startsWith('.') ? className : `.${className}`;
+    return new Locator(this._locator.locator(cls));
+  }
+  
+  async queryByText(text: string): Promise<XBellElementHandle | null> {
+    const handle = await this._locator.elementHandle();
+    return handle?.$(`text=${text}`) ?? null;
+  }
+
+  async queryByTestId(testId: string): Promise<XBellElementHandle | null> {
+    const handle = await this._locator.elementHandle();
+    return handle?.$(`data-testid=${testId}`) ?? null;
+  }
+
+  async queryByClass(className: string): Promise<XBellElementHandle | null> {
+    const handle = await this._locator.elementHandle();
+    const cls = className.startsWith('.') ? className : `.${className}`;
+
+    return handle?.$(cls) ?? null;
+  }
 }
 
 export class Page implements XBellPage<any> {
@@ -144,8 +174,9 @@ export class Page implements XBellPage<any> {
   }
 
   protected _settingPromise: Promise<void>;
+
   constructor(protected _page: PWPage, protected _filename: string) {
-    this._settingPromise = this._setting()
+    this._settingPromise = this._setting();
   }
 
   async _setting() {
@@ -224,8 +255,28 @@ export class Page implements XBellPage<any> {
     return new Locator(this._page.locator(`text=${text}`));
   }
 
+  locateByClass(className: string): XBellLocator {
+    const cls = className.startsWith('.') ? className : `.${className}`;
+    return new Locator(this._page.locator(cls));
+  }
+
+  locateByTestId(testId: string): XBellLocator {
+    return new Locator(this._page.locator(`data-testid=${testId}`));
+  }
+
   async queryByText(text: string): Promise<XBellElementHandle | null> {
     const elmentHandle = await this._page.$(`text=${text}`);
+    return elmentHandle ? new ElementHandle(elmentHandle) : null;
+  }
+
+  async queryByClass(className: string): Promise<XBellElementHandle | null> {
+    const cls = className.startsWith('.') ? className : `.${className}`;
+    const elmentHandle = await this._page.$(cls);
+    return elmentHandle ? new ElementHandle(elmentHandle) : null;
+  }
+
+  async queryByTestId(testId: string): Promise<XBellElementHandle | null> {
+    const elmentHandle = await this._page.$(`data-testid=${testId}`);
     return elmentHandle ? new ElementHandle(elmentHandle) : null;
   }
 

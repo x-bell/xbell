@@ -45,7 +45,7 @@ export class Context {
    * @param constructor 类
    * @returns 实例
    */
-  public createInstance<T>(constructor: new () => T): T {
+  public createInstance<T extends Object>(constructor: new () => T): T {
     const instance = new constructor()
     const initKeys = getMetadataKeys(MetaDataType.Init, instance)
     const injectKeys = getMetadataKeys(MetaDataType.Inject, instance)
