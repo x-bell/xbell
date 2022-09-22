@@ -10,6 +10,10 @@ interface ColorText {
   text: Array<string | ColorText>;
 }
 
+export function formatAssertionName() {
+  
+}
+
 export function getMatcherMessage({
   assertionName,
   isNot,
@@ -19,7 +23,7 @@ export function getMatcherMessage({
   isNot?: boolean;
   ignoreExpected?: boolean;
 }): string {
-  return `${color.magenta('AssertionError:')} ${color.gray('expect(')}${color.red('received')}${color.gray(')')}${isNot ? '.not' : ''}.${assertionName}(${ignoreExpected ? '' : color.green('expected')})`;
+  return `${color.gray('expect(')}${color.red('received')}${color.gray(')')}${isNot ? '.not' : ''}.${assertionName}(${ignoreExpected ? '' : color.green('expected')})`;
 }
 
 export function getAssertionMessage(options: {
@@ -87,7 +91,8 @@ export function getAssertionMessage({
     '',
     !ignoreExpected && `${expectedLabel}: ${color.green(expectedMessage ?? format(expected))}`,
     `${receivedLabel}: ${color.red(receivedMessage ?? format(received))}`,
+    additionalMessage ? '' : undefined,
     additionalMessage
-  ].filter(Boolean).join('\n')
+  ].filter(item => item != null).join('\n')
 }
 

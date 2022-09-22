@@ -10,7 +10,7 @@ export const numberMatcher = defineMatcher({
         isNot: not,
         assertionName: 'toBeLessThan',
         received,
-        expectedMessage: `${not ? ' not' : ''} < ${format(expected)}`,
+        expectedMessage: `${not ? ' not ' : ''}< ${format(expected)}`,
       }),
     }
   },
@@ -21,7 +21,7 @@ export const numberMatcher = defineMatcher({
         isNot: not,
         assertionName: 'toBeLessThanOrEqual',
         received,
-        expectedMessage: `${not ? ' not' : ''} <= ${format(expected)}`,
+        expectedMessage: `${not ? ' not ' : ''}<= ${format(expected)}`,
       }),
     }
   },
@@ -32,7 +32,7 @@ export const numberMatcher = defineMatcher({
         isNot: not,
         assertionName: 'toBeGreaterThan',
         received,
-        expectedMessage: `${not ? ' not' : ''} > ${format(expected)}`,
+        expectedMessage: `${not ? ' not ' : ''}> ${format(expected)}`,
       }),
     }
   },
@@ -43,7 +43,7 @@ export const numberMatcher = defineMatcher({
         isNot: not,
         assertionName: 'toBeGreaterThanOrEqual',
         received,
-        expectedMessage: `${not ? ' not' : ''} >= ${format(expected)}`,
+        expectedMessage: `${not ? ' not ' : ''}>= ${format(expected)}`,
       }),
     }
   },
@@ -70,8 +70,8 @@ export const numberMatcher = defineMatcher({
         assertionName: 'toBeCloseTo',
         received,
         additionalMessage: [
-          `Expected difference: ${not ? 'not ' : ''} < ${expectedDiff}`,
-          `Received difference: ${not ? '    ' : ''}  ${receivedDiff}`
+          `Expected difference: ${not ? 'not ' : ''}< ${expectedDiff}`,
+          `Received difference: ${receivedDiff}`
         ].join('\n')
       })
     }

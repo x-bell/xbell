@@ -16,12 +16,11 @@ test('#toBe: does not throw', () => {
   expell(BigInt(1)).toBe(BigInt(1));
 });
 
-
 [
   [true, false],
   [1, 2],
   [0, -0],
-  [0, Number.MIN_VALUE], // issues/7941
+  [0, Number.MIN_VALUE],
   [Number.MIN_VALUE, 0],
   [0, new Number(0)],
   [new Number(0), 0],
@@ -189,7 +188,85 @@ test('#toBe: does not throw', () => {
   test(`{pass: false} expect(${format(a)}).toEqual(${format(
     b,
   )})`, () => {
-    // expect(() => expell(a).toEqual(b)).toThrowErrorMatchingSnapshot();
-    expell(a).toEqual(b);
+    expell(a).not.toEqual(b);
   });
 });
+
+test('#toBeFalsy()', () => {
+  expell(0).toBeFalsy();
+  expell(null).toBeFalsy();
+  expell(undefined).toBeFalsy();
+  expell(false).toBeFalsy();
+  expell(NaN).toBeFalsy();
+});
+
+test('#toBeTruthy()', () => {
+  expell(1).toBeTruthy();
+  expell(-1).toBeTruthy();
+  expell(true).toBeTruthy();
+  expell({}).toBeTruthy();
+  expell([]).toBeTruthy();
+});
+
+test('#toBeDefined()', () => {
+  expell({}).toBeDefined();
+  expell([]).toBeDefined();
+  expell('').toBeDefined();
+  expell(null).toBeDefined();
+});
+
+test('#toBeUndefined()', () => {
+  expell(undefined).toBeUndefined();
+  expell({}).not.toBeUndefined();
+});
+
+test('toBeInstanceOf', () => {
+  class A {}
+  class B {}
+  class C extends B {}
+  class D extends C {}
+  class E extends D {}
+
+  class SubHasStaticNameMethod extends B {
+    constructor() {
+      super();
+    }
+    static name() {}
+  }
+
+  class HasStaticNameMethod {
+    constructor() {}
+    static name() {}
+  }
+
+  function DefinesNameProp() {}
+  Object.defineProperty(DefinesNameProp, 'name', {
+    configurable: true,
+    enumerable: false,
+    value: '',
+    writable: true,
+  });
+  class SubHasNameProp extends DefinesNameProp {}
+
+  [
+    [new Map(), Map],
+    [[], Array],
+    [new A(), A],
+    [new C(), B], // C extends B
+    [new E(), B], // E extends … extends B
+    [new SubHasNameProp(), DefinesNameProp], // omit extends
+    [new SubHasStaticNameMethod(), B], // Received
+    [new HasStaticNameMethod(), HasStaticNameMethod], // Expected
+  ].forEach(([a, b]) => {
+    test(`passing ${format(a)} and ${format(b)}`, () => {
+      expell(a).toBeInstanceOf(b);
+    });
+  })
+});
+
+test('#toBeNull', () => {
+  expell(null).toBeNull();
+  expell(undefined).not.toBeNull();
+});
+
+

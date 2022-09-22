@@ -72,18 +72,18 @@ export const anyMatcher = defineMatcher({
   },
   toBeDefined(received: unknown) {
     return {
-      pass: received === undefined,
+      pass: received !== undefined,
       message: ({ not }) => getAssertionMessage({
         isNot: not,
         assertionName: 'toBeDefined',
         received,
         ignoreExpected: true,
       }),
-    }
+    };
   },
   toBeUndefined(received: unknown) {
     return {
-      pass: received !== undefined,
+      pass: received === undefined,
       message: ({ not }) => getAssertionMessage({
         isNot: not,
         assertionName: 'toBeUndefined',
@@ -169,7 +169,4 @@ export const anyMatcher = defineMatcher({
       }
     }
   },
-})
-
-// as Record<keyof ExpellAnyAssertion, ExpellMatchFunction | ExpellMatchPromiseFunction>
-
+});

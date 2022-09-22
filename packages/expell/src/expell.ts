@@ -109,7 +109,8 @@ export function createExpell<MatchObject extends ExpellMatchObject, Type = any, 
               const rawPass = typeof innerRet.pass === 'function' ? innerRet.pass(state) : innerRet.pass;
               const pass = state.not ? !rawPass : rawPass;
               if (!pass) {
-                const err = new Error(innerRet.message(state))
+                const msg = innerRet.message(state);
+                const err = new Error(msg)
                 err.name = 'AssertionError';
                 throw err;
               }
