@@ -17,9 +17,9 @@ const snapshotError = genSnapshotError('number-matcher.test.ts');
   test(`{pass: true} expect(${n1}).toBeCloseTo(${n2})`, () => {
     expell(n1).toBeCloseTo(n2);
   });
-  snapshotError(`toBeCloseTo-${idx}`, () => {
-    expell(n1).not.toBeCloseTo(n2);
-  });
+  // snapshotError(`toBeCloseTo-${idx}`, () => {
+  //   expell(n1).not.toBeCloseTo(n2);
+  // });
 });
 
 [
@@ -31,7 +31,7 @@ const snapshotError = genSnapshotError('number-matcher.test.ts');
   [-Infinity, -1.23],
 ].forEach(([n1, n2]) => {
 test(`{pass: false} expect(${n1}).toBeCloseTo(${n2})`, () => {
-  expell(n1).not.toBeCloseTo(n2);
+    expell(n1).not.toBeCloseTo(n2);
   });
 });
 
@@ -54,11 +54,17 @@ test(`{pass: false} expect(${n1}).toBeCloseTo(${n2})`, () => {
     expell(n1).toBeCloseTo(n2, p);
   });
 });
-
-test('#toBeGreaterThan()', () => {
-  expell(2).toBeGreaterThan(1);
-  expell(0).toBeGreaterThan(-1);
-  expell(-1).toBeGreaterThan(-2);
+[
+  [2, -1],
+  [0, -1],
+  [-1, -2]
+].forEach(([n1, n2], idx) => {
+  test(`{pass: true} expect(${n1}).toBeGreaterThan(${n2})`, () => {
+    expell(n1).toBeGreaterThan(n2);
+    snapshotError(`toBeGreaterThan-${idx}`, () => {
+      expell(n1).not.toBeGreaterThan(n2);
+    });
+  });
 });
 
 test('#toBeGreaterThanOrEqual()', () => {

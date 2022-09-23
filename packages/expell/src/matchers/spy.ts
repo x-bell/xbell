@@ -21,13 +21,13 @@ export const spyMatcher = defineMatcher({
   toHaveBeenCalled(received: ExpellSpy) {
     return {
       pass: received.calls.length > 0,
-      message: ({ not }) => getAssertionMessage({
+      message: (state) => getAssertionMessage({
         assertionName: 'toHaveBeenCalled',
         expectedLabel: 'Expected number of calls',
         receivedLabel: 'Received number of calls',
         expected: 0,
         received: received.calls.length,
-        isNot: not,
+        ...state,
       }),
     }
   },

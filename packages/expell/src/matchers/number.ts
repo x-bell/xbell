@@ -6,44 +6,44 @@ export const numberMatcher = defineMatcher({
   toBeLessThan(received: number | bigint, expected: number | bigint) {
     return {
       pass: received < expected,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeLessThan',
         received,
-        expectedMessage: `${not ? ' not ' : ''}< ${format(expected)}`,
+        expectedMessage: `${state.not ? ' not ' : ''}< ${format(expected)}`,
       }),
     }
   },
   toBeLessThanOrEqual(received: number | bigint, expected: number | bigint) {
     return {
       pass: received <= expected,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeLessThanOrEqual',
         received,
-        expectedMessage: `${not ? ' not ' : ''}<= ${format(expected)}`,
+        expectedMessage: `${state.not ? ' not ' : ''}<= ${format(expected)}`,
       }),
     }
   },
   toBeGreaterThan(received: number | bigint, expected: number | bigint) {
     return {
       pass: received > expected,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeGreaterThan',
         received,
-        expectedMessage: `${not ? ' not ' : ''}> ${format(expected)}`,
+        expectedMessage: `${state.not ? 'not ' : ''}> ${format(expected)}`,
       }),
     }
   },
   toBeGreaterThanOrEqual(received: number | bigint, expected: number | bigint) {
     return {
       pass: received >= expected,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeGreaterThanOrEqual',
         received,
-        expectedMessage: `${not ? ' not ' : ''}>= ${format(expected)}`,
+        expectedMessage: `${state.not ? ' not ' : ''}>= ${format(expected)}`,
       }),
     }
   },
@@ -65,12 +65,13 @@ export const numberMatcher = defineMatcher({
 
     return {
       pass,
-      message: ({ not }) => getAssertionMessage({
+      message: (state) => getAssertionMessage({
+        ...state,
         expected,
         assertionName: 'toBeCloseTo',
         received,
         additionalMessage: [
-          `Expected difference: ${not ? 'not ' : ''}< ${expectedDiff}`,
+          `Expected difference: ${state.not ? 'not ' : ''}< ${expectedDiff}`,
           `Received difference: ${receivedDiff}`
         ].join('\n')
       })

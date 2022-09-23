@@ -35,8 +35,8 @@ export const anyMatcher = defineMatcher({
     const pass = Object.is(received, expected);
     return {
       pass,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBe',
         received,
         expected
@@ -46,11 +46,11 @@ export const anyMatcher = defineMatcher({
   toEqual(received: unknown, expected: unknown) {
     return {
       pass: equals(received, expected, [iterableEquality]),
-      message: ({ not }) => getAssertionMessage({
+      message: (state) => getAssertionMessage({
         assertionName: 'toEqual',
-        isNot: not,
         expected,
         received,
+        ...state,
       }),
     }
   },
@@ -62,9 +62,9 @@ export const anyMatcher = defineMatcher({
         sparseArrayEquality,
         arrayBufferEquality,
       ]),
-      message: ({ not }) => getAssertionMessage({
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toStrictEqual',
-        isNot: not,
         received,
         expected,
       })
@@ -73,8 +73,8 @@ export const anyMatcher = defineMatcher({
   toBeDefined(received: unknown) {
     return {
       pass: received !== undefined,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeDefined',
         received,
         ignoreExpected: true,
@@ -84,8 +84,8 @@ export const anyMatcher = defineMatcher({
   toBeUndefined(received: unknown) {
     return {
       pass: received === undefined,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeUndefined',
         received,
         ignoreExpected: true,
@@ -95,8 +95,8 @@ export const anyMatcher = defineMatcher({
   toBeNull(received: unknown) {
     return {
       pass: received === null,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeNull',
         received,
         expected: null,
@@ -106,8 +106,8 @@ export const anyMatcher = defineMatcher({
   toBeFalsy(received: unknown) {
     return {
       pass: !received,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeFalsy',
         received,
         ignoreExpected: true,
@@ -117,8 +117,8 @@ export const anyMatcher = defineMatcher({
   toBeTruthy(received: unknown) {
     return {
       pass: !!received,
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeTruthy',
         received,
         ignoreExpected: true,
@@ -128,8 +128,8 @@ export const anyMatcher = defineMatcher({
   toBeNaN(received: unknown) {
     return {
       pass: Number.isNaN(received),
-      message: ({ not }) => getAssertionMessage({
-        isNot: not,
+      message: (state) => getAssertionMessage({
+        ...state,
         assertionName: 'toBeNaN',
         received,
         expected: NaN,
@@ -139,13 +139,13 @@ export const anyMatcher = defineMatcher({
   toBeInstanceOf(received: unknown, expected: Function) {
     return {
       pass: received instanceof expected,
-      message: ({ not }) => {
+      message: (state) => {
         const isPrimitiveType = Object(received) !== received;
         const isNoPrototype = Object.getPrototypeOf(received) === null;
         if (isPrimitiveType || isNoPrototype) {
           return [
             '',
-            getMatcherMessage({ assertionName: 'toBeInstanceOf', isNot: not }),
+            getMatcherMessage({ assertionName: 'toBeInstanceOf', ...state, }),
             '',
 
           ].join('\n')
@@ -160,7 +160,7 @@ export const anyMatcher = defineMatcher({
         });
         return getAssertionMessage({
           assertionName: 'toBeInstanceOf',
-          isNot: not,
+          ...state,
           receivedMessage: receivedConstructorName ?? format(received),
           expectedMessage: expectedConstructorName ?? format(expected),
           receivedLabel: receivedConstructorName ? 'Received Constructor' : 'Received Value',
