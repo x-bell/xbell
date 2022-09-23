@@ -28,10 +28,6 @@ const sidebars = {
         'get-started',
         'unit-testing',
         'e2e-testing',
-        'pom',
-        'multi-env',
-        'ddt',
-        'snapshot',
       ],
     },
     {
