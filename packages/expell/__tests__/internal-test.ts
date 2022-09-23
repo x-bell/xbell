@@ -35,7 +35,7 @@ export const genSnapshotError = (filename: string) => (name: string, func: Funct
   const formatError = [
     '<<name>>\n' + err.name,
     '<<message>>\n' + err.message,
-  ].join('\n\n') + '\n';
+  ].join('\n\n');
 
   fs.mkdirSync(snapshotDir, {
     mode: 0o777,
