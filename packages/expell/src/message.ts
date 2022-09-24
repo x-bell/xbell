@@ -85,7 +85,6 @@ export function getAssertionMessage({
   expectedLabel?: string;
 } & ExpellMatchState): string {
   return [
-    '',
     getMatcherMessage({ assertionName, ignoreExpected, not, rejects, resolves }),
     '',
     !ignoreExpected && `${expectedLabel}: ${color.green(expectedMessage ?? format(expected))}`,

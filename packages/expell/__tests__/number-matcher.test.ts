@@ -61,18 +61,42 @@ test(`{pass: false} expect(${n1}).toBeCloseTo(${n2})`, () => {
 ].forEach(([n1, n2], idx) => {
   test(`{pass: true} expect(${n1}).toBeGreaterThan(${n2})`, () => {
     expell(n1).toBeGreaterThan(n2);
-    snapshotError(`toBeGreaterThan-${idx}`, () => {
+
+    // snap
+    snapshotError(`toBeGreaterThan-error-not-${idx}`, () => {
       expell(n1).not.toBeGreaterThan(n2);
+    });
+
+    // snap
+    snapshotError(`toBeGreaterThan-error-${idx}`, () => {
+      expell(n2).toBeGreaterThan(n1);
     });
   });
 });
 
-test('#toBeGreaterThanOrEqual()', () => {
-  expell(2).toBeGreaterThanOrEqual(2);
-  expell(2).toBeGreaterThanOrEqual(1);
-  expell(0).toBeGreaterThanOrEqual(-1);
-  expell(-1).toBeGreaterThanOrEqual(-2);
-});
+await Promise.all([
+  [2, 1],
+  [0, -1],
+  [-1, -2],
+  [2, 2],
+].map(([n1, n2], idx) => {
+  return test(`{pass: true} expect(${n1}).toBeGreaterThanOrEqual(${n2})`, async () => {
+    expell(n1).toBeGreaterThanOrEqual(n2);
+    await expell(Promise.resolve(n1)).resolves.toBeGreaterThanOrEqual(n2);
+    await expell(Promise.reject<number>(n1)).rejects.toBeGreaterThanOrEqual(n2);
+
+    // snap
+    snapshotError(`toBeGreaterThanOrEqual-error-not-${idx}`, () => {
+      expell(n1).not.toBeGreaterThanOrEqual(n2);
+    });
+    if (n1 != n2) {
+      // snap
+      snapshotError(`toBeGreaterThanOrEqual-error-${idx}`, () => {
+        expell(n2).toBeGreaterThanOrEqual(n1);
+      });
+    }
+  });
+}));
 
 
 test('#toBeLessThan()', () => {

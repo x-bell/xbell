@@ -6,4 +6,3 @@ dist
 .vscode-test/
 *.vsix
 .DS_Store
-__snapshots__

@@ -3,9 +3,9 @@ import * as path from 'node:path';
 import * as url from 'url';
 
 const dirname = url.fileURLToPath(new URL('.', import.meta.url));
-export const test = (description: string, cb: Function) => {
+export const test = async (description: string, cb: Function) => {
   try {
-    cb();
+    await cb();
   } catch(error: unknown) {
     console.error(`Case Failed: ${description}\n${error instanceof Error ? error.message: ''}`)
   }
