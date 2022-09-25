@@ -161,8 +161,8 @@ export const anyMatcher = defineMatcher({
         return getAssertionMessage({
           assertionName: 'toBeInstanceOf',
           ...state,
-          receivedMessage: receivedConstructorName ?? format(received),
-          expectedMessage: expectedConstructorName ?? format(expected),
+          receivedFormat: receivedConstructorName ?? format(received),
+          expectedFormat: expectedConstructorName ?? format(expected),
           receivedLabel: receivedConstructorName ? 'Received Constructor' : 'Received Value',
           expectedLabel: receivedConstructorName ? 'Expected Constructor' : 'Expected Value',
         });

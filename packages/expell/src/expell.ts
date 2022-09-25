@@ -108,6 +108,7 @@ export function createExpell<MatchObject extends ExpellMatchObject, Type = any, 
             } else {
               const rawPass = typeof innerRet.pass === 'function' ? innerRet.pass(state) : innerRet.pass;
               const pass = state.not ? !rawPass : rawPass;
+
               if (!pass) {
                 const msg = innerRet.message(state);
                 const err = new Error(msg)
