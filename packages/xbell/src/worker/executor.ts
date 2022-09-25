@@ -1,10 +1,8 @@
 import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask, XBellTestCaseStandard, XBellTestCaseClassic } from '../types';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
-import { genLazyPage } from './lazy-page';
+import { ArgumentManager } from './args';
 
 function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
   return typeof c.testFunction === 'function'
@@ -46,45 +44,32 @@ export class Executor {
   }
 
   protected async runClassicCaseInNode(c: XBellTestCaseClassic) {
-    const lazyPage = genLazyPage();
     const cls = c.class as new () => any;
     const instance = new cls();
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,
     });
-    // TODO: params
-    await instance[c.propertyKey]({ page: lazyPage });
+    const argumentManger = new ArgumentManager();
+    await instance[c.propertyKey](argumentManger.getArguments());
 
     workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
-    const coverage = await lazyPage.evaluate(() => {
-      return window.__coverage__;
-    });
-    // @ts-ignore
-    if (coverage) {
-      fs.writeFileSync(path.join(process.cwd(), '__coverage__.json'), JSON.stringify(coverage), 'utf-8');
-    }
-    await lazyPage.close();
+    
+    await argumentManger.genCoverage();
+    await argumentManger.terdown();
   }
 
   protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>) {
     const { runtimeOptions, testFunction } = c;
+    const argManager = new ArgumentManager();
 
-    const lazyPage = genLazyPage();
-
-    const caseArgsProxy = new Proxy({}, {
-      get(target, propKey) {
-        if (propKey === 'page') {
-          return lazyPage
-        }
-      }
-    });
     workerContext.channel.emit('onCaseExecuteStart', { uuid: c.uuid });
 
-    await testFunction(caseArgsProxy);
+    await testFunction(argManager.getArguments());
 
     workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
     
-    await lazyPage.close();
+    await argManager.genCoverage();
+    await argManager.terdown();
   }
 
   async runCaseInNode(c: XBellTestCase<any, any>) {

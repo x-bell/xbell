@@ -1,5 +1,8 @@
-import { join } from 'path';
 import type { FormatOptions, Location } from './types';
+import { resolve } from 'path';
+import debug from 'debug';
+
+const debugParseStack = debug('xbell:parse-stack');
 
 const FILTER_FILENAME_REG = [
   /node_modules/,
@@ -24,6 +27,7 @@ export function parseStack(stack: string, opts: FormatOptions = {}): {
   }
   const message = lines.slice(0, firstCodeLineIndex).join('\n');
   const codeLines = lines.slice(firstCodeLineIndex);
+  debugParseStack('codeLines', codeLines);
   for (const line of codeLines) {
     const location = _parseStackLine(line);
     const isIgnore = _isIgnoreLine(location, opts);
@@ -47,9 +51,8 @@ function _isIgnoreLine(location: Location | null, opts: FormatOptions = {}) {
     if (Array.isArray(opts.includes)) return opts.includes!;
     return [opts.includes!]
   })();
-
-  const filename = location?.filename ? join(process.cwd(), location.filename) : undefined;
-
+  const filename = location?.filename ? resolve(process.cwd(), location.filename) : undefined;
+  debugParseStack('isIgnoreLine', filename, location?.filename);
   return !location ||
     !location.filename ||
     FILTER_FILENAME_REG.some(reg => reg.test(filename!)) ||
@@ -64,7 +67,12 @@ function _isIgnoreLine(location: Location | null, opts: FormatOptions = {}) {
     );
 }
 
+const FILE_PREFIX = 'file://';
+
 function _getRelativeFilename (filename: string, cwd = process.cwd()) {
+  if (filename.startsWith(FILE_PREFIX)) {
+    filename = filename.slice(filename.length);
+  }
   filename = filename.replace(/\\/g, '/');
   if (filename.startsWith(`${cwd}/`)) {
     filename = filename.slice(cwd.length + 1);

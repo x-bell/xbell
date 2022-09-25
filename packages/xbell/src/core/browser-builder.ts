@@ -12,15 +12,11 @@ import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import vue from '@vitejs/plugin-vue';
 import type { XBellWorkerQueryModuleUrl } from '../types';
 import { get } from '../utils/http';
-// import type { Channel } from '../common/channel';
 
-// const viteConfigNames = [
-//   'vite.config.ts',
-// ];
 
 class BrowserBuilder {
   protected _server?: Promise<{
-    queryUrl(path: string, importer: string): Promise<string | undefined>;
+    queryUrl(path: string, importer?: string): Promise<string | undefined>;
     port: number;
   }>;
 

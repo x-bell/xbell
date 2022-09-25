@@ -15,56 +15,7 @@ import { createLogUpdate } from 'log-update';
 import { formatError } from '@xbell/code-stack';
 const FOLD_ARROW = '❯';
 
-
-
 const log = createLogUpdate(process.stdout);
-
-
-
-// const fileRecords: XBellTestFileRecord[] = [
-//   {
-//     filename: 'a.test.tsx',
-//     tasks: [
-//       {
-//         type: 'group',
-//         filename: 'a.test.tsx',
-//         groupDescription: 'group1 desc',
-//         uuid: '1',
-//         cases: [
-//           {
-//             type: 'case',
-//             filename: 'a.test.tsx',
-//             groupDescription: 'group1 desc',
-//             caseDescription: 'case1 desc',
-//             status: 'running',
-//             uuid: '2',
-//           },
-//           {
-//             type: 'case',
-//             filename: 'b.test.tsx',
-//             groupDescription: 'group1 desc',
-//             caseDescription: 'case1 desc',
-//             status: 'running',
-//             uuid: '3',
-//           }
-//         ]
-//       }
-//     ]
-//   },
-//   {
-//     filename: 'b.test.tsx',
-//     tasks: [
-//       {
-//         type: 'case',
-//         filename: 'a.test.tsx',
-//         groupDescription: 'group1 desc',
-//         caseDescription: 'case1 desc',
-//         status: 'successed',
-//         uuid: '3'
-//       }
-//     ]
-//   }
-// ];
 
 
 function getUpLevelStatus({
@@ -104,7 +55,6 @@ class Printer {
     failed: color.red('×'),
     waiting: color.yellow('●'),
     running: color.yellow('●'),
-    // running: ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚']
   }
   protected timer?: NodeJS.Timer;
   protected currentFrame = 0;
@@ -240,11 +190,11 @@ class Printer {
   }
 
   print(testFileRecords: XBellTestFileRecord[]) {
-    if (process.env.DEBUG) {
-      return;
-    }
+    // if (process.env.DEBUG) {
+    //   return;
+    // }
 
-    console.clear();
+    // console.clear();
 
     this.files = testFileRecords;
     this.currentFrame++;
@@ -263,14 +213,15 @@ class Printer {
     // const endLine = this.getCenterText(pc.bold(pc.inverse(pc.cyan(' END '))), { symbol: pc.cyan('-') });
     // log(startLine + '\n' + text + '\n\n' + summaryText + '\n\n' + errorText + '\n' + endLine);
 
-    console.log(
+    // console.log(
       [
         color.bold.cyan('[XBELL TESTING]') + ' 🎐',
         // this.getRainbowText('[XBELL TESTING]') + ' 🎐',
         text,
         errorText,
         summaryText,
-      ].filter(Boolean).join('\n\n'));
+      ].filter(Boolean).join('\n\n')
+    // );
   }
 
   startPrint() {

@@ -6,7 +6,7 @@ import type { Browser, BrowserContext } from 'playwright-core';
 
 const debugLazyPage = debug('xbell:lazyPage');
 
-export function genLazyPage(): XBellPage {
+export function genLazyPage(): XBellPage & { used: boolean } {
   let _lazyPage: Page;
   let _lazyContext: BrowserContext;
   let _lazyBrowser: Browser;
@@ -36,8 +36,11 @@ export function genLazyPage(): XBellPage {
   };
 
   const proxyPage = new Proxy({}, {
-    get(target, propKey: keyof XBellPage<any>) {
+    get(target, propKey: keyof XBellPage | 'used') {
       debugLazyPage('get.propKey', propKey);
+      if (propKey === 'used') {
+        return usedFlag;
+      }
       return (...args: any[]) => {
         if (propKey.startsWith('locat')) {
           return new Proxy({}, {
@@ -67,7 +70,9 @@ export function genLazyPage(): XBellPage {
         });
       }
     }
-  }) as XBellPage<any>;
+  }) as XBellPage & {
+    used: boolean;
+  };
 
   return proxyPage;
 }

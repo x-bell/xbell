@@ -1,8 +1,13 @@
 
-import { transformSync, parseSync } from '@swc/core';
+import * as path from 'node:path';
+import { transformSync, parseSync, Expression, Import, Super, CallExpression } from '@swc/core';
 import { jscConfig, tsParserConfig } from './config';
 import { ASTPathCollector } from './ast-path-collector';
 import { browserBuilder } from '../core/browser-builder';
+import { Visitor } from './visitor';
+import debug from 'debug';
+
+const debugCompiler = debug('xbell:compiler');
 
 export interface XBellCompilerDeps {
   queryResolveId(path: string, importer: string): Promise<string>;
@@ -10,30 +15,64 @@ export interface XBellCompilerDeps {
 
 export interface XBellCompiler {
   compileNodeJSCode(sourceCode: string, filename: string): Promise<{ code: string }>
-  compileBrowserCode(sourceCode: string, filename: string): Promise<{ code: string }>
+  compileBrowserCode(sourceCode: string): Promise<{ code: string }>
 }
 
+function resolvePath(modulePath: string, importerPath?: string) {
+
+  if (!modulePath) return null;
+
+  if (modulePath.includes('.') && importerPath) {
+    return path.resolve(importerPath, modulePath)
+  }
+
+  return null;
+}
 export interface XBellCompilerConstructor {
   new (desp: XBellCompilerDeps): XBellCompiler
 }
 
+class NodeJSvisitor extends Visitor {
+  constructor(protected _filename: string) {
+    super();
+  }
+  visitCallExpression(n: CallExpression): Expression {
+    debugCompiler('visitCallExpression');
+    const expression = n.arguments[0]?.expression;
+    if (n.callee.type === 'Import' && expression?.type === 'StringLiteral') {
+      const fullpath = resolvePath(expression.value, this._filename);
+      if (fullpath) {
+        expression.value = fullpath;
+        debugCompiler('fullpath', fullpath, expression.value, expression);
+        // @ts-ignore
+        delete expression.raw;
+      }
+    }
+    return super.visitCallExpression(n);
+  }
+}
 
 export class Compiler {
   public async compileNodeJSCode(sourceCode: string, filename: string): Promise<{ code: string; }> {
-    const { code } = transformSync(sourceCode, {
+    const program = parseSync(sourceCode, {
+      ...tsParserConfig,
+    });
+    const vistor = new NodeJSvisitor(filename);
+    const finalProgram = vistor.visitProgram(program);
+    const { code } = transformSync(finalProgram, {
       sourceMaps: 'inline',
-      filename,
       module: {
-        type: 'nodenext'
+        type: 'nodenext',
       },
       jsc: {
         ...jscConfig,
-      },
+      }
     });
+    debugCompiler('nodejs:code', code);
     return { code }; 
   }
 
-  public async compileBrowserCode(sourceCode: string, filename: string) {
+  public async compileBrowserCode(sourceCode: string) {
       const program = parseSync(sourceCode, {
         ...tsParserConfig,
       });
@@ -44,13 +83,14 @@ export class Compiler {
       const aliasMap = new Map<string, string>();
       const paths =  Array.from(pathCollector.paths);
       for (const path of paths) {
-        try {
-          const moduleUrl = await server.queryUrl(path, filename);
-          if (moduleUrl) {
-            aliasMap.set(path, moduleUrl);
-          }
-        } catch(err) {
-          console.log('error', err);
+        const moduleUrl = await server.queryUrl(path);
+        debugCompiler('queryUrl', path, moduleUrl);
+        if (moduleUrl) {
+          aliasMap.set(path, moduleUrl);
+        } else {
+          const err = new Error(`not found module: "${path}"`)
+          err.name = 'CompileError';
+          throw err;
         }
       }
     

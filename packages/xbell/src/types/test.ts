@@ -239,7 +239,7 @@ export interface XBellPage<BrowserExtensionArg = {}> {
   queryByClass(className: string): Promise<XBellElementHandle | null>;
 }
 
-export interface XBellTestCaseFunctionArguments<BrowserExtensionArg> {
+export interface XBellTestCaseFunctionArguments<BrowserExtensionArg = {}> {
   page: XBellPage<BrowserExtensionArg>;
 }
 

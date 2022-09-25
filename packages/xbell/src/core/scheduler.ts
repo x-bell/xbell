@@ -33,8 +33,8 @@ export class Scheduler {
         //     path: modulePath,
         //   })))
         // },
-        async transformBrowserCode({ code: sourceCode, filename }) {
-          const { code } = await compiler.compileBrowserCode(sourceCode, filename)
+        async transformBrowserCode({ code: sourceCode }) {
+          const { code } = await compiler.compileBrowserCode(sourceCode);
           return {
             code,
           }
