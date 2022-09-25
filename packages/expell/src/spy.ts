@@ -25,7 +25,7 @@ interface ExpellSpyState<Arg extends any[], ReturnType> {
   }[];
 }
 
-export const spy = <Args extends any[], ReturnType>(callback: (...args: Args) => ReturnType): ExpellSpy<Args, ReturnType> => {
+export const spy = <Args extends any[], ReturnType>(callback: (...args: Args) => ReturnType = ((n => n) as (...args: any[]) => any)): ExpellSpy<Args, ReturnType> => {
   const handler: ExpellSpy<Args, ReturnType> = function handler(...args: Args) {
     handler.calls.push(args);
     try {

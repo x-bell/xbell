@@ -10,7 +10,7 @@ export const numberMatcher = defineMatcher({
         ...state,
         assertionName: 'toBeLessThan',
         received,
-        expectedMessage: `${state.not ? ' not ' : ''}< ${format(expected)}`,
+        expectedFormat: `${state.not ? ' not ' : ''}< ${format(expected)}`,
       }),
     }
   },
@@ -21,7 +21,7 @@ export const numberMatcher = defineMatcher({
         ...state,
         assertionName: 'toBeLessThanOrEqual',
         received,
-        expectedMessage: `${state.not ? ' not ' : ''}<= ${format(expected)}`,
+        expectedFormat: `${state.not ? ' not ' : ''}<= ${format(expected)}`,
       }),
     }
   },
@@ -32,7 +32,7 @@ export const numberMatcher = defineMatcher({
         ...state,
         assertionName: 'toBeGreaterThan',
         received,
-        expectedMessage: `${state.not ? 'not ' : ''}> ${format(expected)}`,
+        expectedFormat: `${state.not ? '>=' : '<'} ${format(expected)}`,
       }),
     }
   },
@@ -43,7 +43,7 @@ export const numberMatcher = defineMatcher({
         ...state,
         assertionName: 'toBeGreaterThanOrEqual',
         received,
-        expectedMessage: `${state.not ? ' not ' : ''}>= ${format(expected)}`,
+        expectedFormat: `${state.not ? '<' : '>='} ${format(expected)}`,
       }),
     }
   },

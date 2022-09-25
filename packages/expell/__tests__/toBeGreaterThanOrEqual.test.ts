@@ -1,4 +1,4 @@
-import { expell } from '../dist/index.mjs';
+import { expell } from '../dist';
 import { test, genSnapshotError } from './internal-test';
 
 const snapshotError = genSnapshotError('toBeGreaterThanOrEqual.test.ts');

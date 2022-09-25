@@ -20,12 +20,16 @@ export function getMatcherMessage({
   ignoreExpected,
   not,
   rejects,
-  resolves
+  resolves,
+  matcherReceived = 'received',
+  matcherExpected = 'expected'
 }: {
   assertionName: string;
   ignoreExpected?: boolean;
+  matcherReceived?: string;
+  matcherExpected?: string;
 } & ExpellMatchState): string {
-  return `${color.gray('expect(')}${color.red('received')}${color.gray(')')}${not ? '.not' : ''}.${assertionName}(${ignoreExpected ? '' : color.green('expected')})`;
+  return `${color.gray('expect(')}${color.red(matcherReceived)}${color.gray(')')}${resolves ? '.resolves' : ''}${rejects ? '.rejects' : ''}${not ? '.not' : ''}.${assertionName}(${(ignoreExpected || !matcherExpected) ? '' : color.green(matcherExpected)})`;
 }
 
 export function getAssertionMessage(options: {
@@ -35,15 +39,19 @@ export function getAssertionMessage(options: {
   additionalMessage?: string;
   receivedLabel?: string;
   expectedLabel?: string;
+  matcherReceived?: string;
+  matcherExpected?: string;
 } & ExpellMatchState): string;
 
 export function getAssertionMessage(options: {
   assertionName: string;
-  receivedMessage: string;
-  expectedMessage: string;
+  receivedFormat: string;
+  expectedFormat: string;
   ignoreExpected?: false;
   receivedLabel?: string;
   expectedLabel?: string;
+  matcherReceived?: string;
+  matcherExpected?: string;
 } & ExpellMatchState): string;
 export function getAssertionMessage(options: {
   received: any;
@@ -51,44 +59,52 @@ export function getAssertionMessage(options: {
   assertionName: string;
   receivedLabel?: string;
   expectedLabel?: string;
+  matcherReceived?: string;
+  matcherExpected?: string;
 } & ExpellMatchState): string;
 export function getAssertionMessage(options: {
   assertionName: string;
-  expectedMessage: string;
+  expectedFormat: string;
   ignoreExpected?: false;
   received: any;
   receivedLabel?: string;
   expectedLabel?: string;
+  matcherReceived?: string;
+  matcherExpected?: string;
 } & ExpellMatchState): string;
 export function getAssertionMessage({
   received,
   expected,
-  expectedMessage,
+  expectedFormat,
   assertionName,
   ignoreExpected,
   additionalMessage,
-  receivedMessage,
+  receivedFormat,
   receivedLabel = 'Received',
   expectedLabel = 'Expected',
+  matcherReceived = 'received',
   not,
   resolves,
   rejects,
+  matcherExpected
 }: {
   assertionName: string,
   received?: any,
-  expectedMessage?: string;
-  receivedMessage?: string;
+  expectedFormat?: string;
+  receivedFormat?: string;
   expected?: any,
   ignoreExpected?: boolean;
   additionalMessage?: string
   receivedLabel?: string;
   expectedLabel?: string;
+  matcherReceived?: string;
+  matcherExpected?: string;
 } & ExpellMatchState): string {
   return [
-    getMatcherMessage({ assertionName, ignoreExpected, not, rejects, resolves }),
+    getMatcherMessage({ assertionName, ignoreExpected, matcherReceived, matcherExpected, not, rejects, resolves }),
     '',
-    !ignoreExpected && `${expectedLabel}: ${color.green(expectedMessage ?? format(expected))}`,
-    `${receivedLabel}: ${color.red(receivedMessage ?? format(received))}`,
+    !ignoreExpected && `${expectedLabel}: ${color.green(expectedFormat ?? format(expected))}`,
+    `${receivedLabel}: ${color.red(receivedFormat ?? format(received))}`,
     additionalMessage ? '' : undefined,
     additionalMessage
   ].filter(item => item != null).join('\n')
