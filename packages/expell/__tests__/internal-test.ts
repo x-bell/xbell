@@ -3,11 +3,12 @@ import * as path from 'node:path';
 import * as url from 'url';
 
 const dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
 export const test = async (description: string, cb: Function) => {
   try {
     await cb();
   } catch(error: unknown) {
-    console.error(`Case Failed: ${description}\n${error instanceof Error ? error.message: ''}`)
+    console.error(`Case Failed: ${description}\n${error instanceof Error ? error.message: error}`)
   }
 }
 
@@ -19,11 +20,10 @@ function writeSnapshot(filename: string, content: string) {
   ].join('\n') + '\n', 'utf-8');
 }
 
-export const genSnapshotError = (filename: string) => (name: string, func: Function) => {
+export const genSnapshotError = (filename: string) => async (name: string, func: Function) => {
   let err;
   try {
-    func();
-    console.log('func');
+    await func();
   } catch (e) {
     err = e;
   }
@@ -48,7 +48,7 @@ export const genSnapshotError = (filename: string) => (name: string, func: Funct
     const existErrorCode = fs.readFileSync(snapshotFilepath, 'utf-8');
     const existErrorString = existErrorCode.match(/export default `\n([\s\S]*?)\n`;\n/)![1];
     if (formatError !== existErrorString) {
-      const newSnapshotFilepath = path.join(snapshotDir, `${name}.js.new.snap`);
+      const newSnapshotFilepath = path.join(snapshotDir, `${name}.new.js.snap`);
       writeSnapshot(newSnapshotFilepath, formatError);
     }
   } else {
