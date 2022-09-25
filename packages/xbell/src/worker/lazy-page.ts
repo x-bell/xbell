@@ -6,7 +6,7 @@ import type { Browser, BrowserContext } from 'playwright-core';
 
 const debugLazyPage = debug('xbell:lazyPage');
 
-export function genLazyPage(filename: string): XBellPage<any> {
+export function genLazyPage(): XBellPage {
   let _lazyPage: Page;
   let _lazyContext: BrowserContext;
   let _lazyBrowser: Browser;
@@ -27,7 +27,7 @@ export function genLazyPage(filename: string): XBellPage<any> {
     const browserContext = await browser.newContext();
     _lazyContext = browserContext;
     _lazyBrowser = browser;
-    _lazyPage = await Page.from(browserContext, filename)
+    _lazyPage = await Page.from(browserContext)
     return {
       page: _lazyPage,
       context: _lazyContext,

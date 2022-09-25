@@ -368,7 +368,7 @@ class Printer {
     });
 
     return [
-      errInfo?.message,
+      c.error?.message,
       errInfo?.stack,
     ].filter(Boolean).join('\n\n');
   }

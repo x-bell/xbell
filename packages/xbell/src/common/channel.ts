@@ -4,8 +4,6 @@ import { EventEmitter } from 'events';
 import { randomUUID } from 'crypto';
 import { compiler } from '../compiler/compiler';
 
-
-
 type XBellWorkerRequestId = string;
 
 interface XBellWorkerMessageCommon {
@@ -15,7 +13,7 @@ interface XBellWorkerMessageCommon {
 
 interface XBellWorkerRequests {
   // queryModuleUrl(modules: string[]): Promise<{ url: string; path: string }[]>;
-  transformBrowserCode(data: { code: string; filename: string }): Promise<{ code: string; }>;
+  transformBrowserCode(data: { code: string; }): Promise<{ code: string; }>;
   queryServerPort(): Promise<{ port: number }>;
   transformHtml(data: { html: string; url: string }): Promise<{ html: string }>;
 }

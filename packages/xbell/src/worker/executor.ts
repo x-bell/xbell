@@ -1,4 +1,6 @@
 import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask, XBellTestCaseStandard, XBellTestCaseClassic } from '../types';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
@@ -44,7 +46,7 @@ export class Executor {
   }
 
   protected async runClassicCaseInNode(c: XBellTestCaseClassic) {
-    const lazyPage = genLazyPage(c.filename);
+    const lazyPage = genLazyPage();
     const cls = c.class as new () => any;
     const instance = new cls();
     workerContext.channel.emit('onCaseExecuteStart', {
@@ -54,14 +56,20 @@ export class Executor {
     await instance[c.propertyKey]({ page: lazyPage });
 
     workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
-
+    const coverage = await lazyPage.evaluate(() => {
+      return window.__coverage__;
+    });
+    // @ts-ignore
+    if (coverage) {
+      fs.writeFileSync(path.join(process.cwd(), '__coverage__.json'), JSON.stringify(coverage), 'utf-8');
+    }
     await lazyPage.close();
   }
 
   protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>) {
     const { runtimeOptions, testFunction } = c;
 
-    const lazyPage = genLazyPage(c.filename);
+    const lazyPage = genLazyPage();
 
     const caseArgsProxy = new Proxy({}, {
       get(target, propKey) {
@@ -104,7 +112,7 @@ export class Executor {
     });
 
     const browserContext = await browser.newContext();
-    const page = await Page.from(browserContext, c.filename)
+    const page = await Page.from(browserContext)
     await page.evaluate(c.testFunction, {});
     await page.close();
     await browserContext.close();

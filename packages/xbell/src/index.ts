@@ -60,5 +60,7 @@ export {
 } from './worker/page';
 
 export type {
-  FixtureFunction
+  FixtureFunction,
+  XBellConfig,
+  XBellProject as Project,
 } from './types';

@@ -167,15 +167,15 @@ class Locator implements XBellLocator {
   }
 }
 
-export class Page implements XBellPage<any> {
-  static async from(browserContext: PWBroContext, filename: string) {
+export class Page implements XBellPage {
+  static async from(browserContext: PWBroContext) {
     const page = await browserContext.newPage();
-    return new Page(page, filename);
+    return new Page(page);
   }
 
   protected _settingPromise: Promise<void>;
 
-  constructor(protected _page: PWPage, protected _filename: string) {
+  constructor(protected _page: PWPage) {
     this._settingPromise = this._setting();
   }
 
@@ -287,7 +287,7 @@ export class Page implements XBellPage<any> {
   async evaluate<Args>(browserFunction: Function, args: Args) {
     const { code: targetCode } = await workerContext.channel.request(
       'transformBrowserCode',
-      { code: browserFunction.toString(), filename: this._filename }
+      { code: browserFunction.toString() }
     );
     const funcBody = `return (${targetCode.replace(/\}\;[\s\S]*$/, '}')})`;
     const func = new Function(funcBody);
