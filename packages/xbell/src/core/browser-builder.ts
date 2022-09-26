@@ -44,7 +44,8 @@ class BrowserBuilder {
         vue(),
         istanbul({
           exclude: ['node_modules', 'test/'],
-          extension: ['.js', '.ts', '.jsx', '.tsx', '.mjs', 'cjs'],
+          extension: ['.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs', '.vue'],
+          requireEnv: false,
         }),
       ],
       build: {

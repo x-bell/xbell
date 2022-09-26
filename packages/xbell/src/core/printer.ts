@@ -190,11 +190,11 @@ class Printer {
   }
 
   print(testFileRecords: XBellTestFileRecord[]) {
-    // if (process.env.DEBUG) {
-    //   return;
-    // }
+    if (process.env.DEBUG) {
+      return;
+    }
 
-    // console.clear();
+    console.clear();
 
     this.files = testFileRecords;
     this.currentFrame++;
@@ -213,7 +213,7 @@ class Printer {
     // const endLine = this.getCenterText(pc.bold(pc.inverse(pc.cyan(' END '))), { symbol: pc.cyan('-') });
     // log(startLine + '\n' + text + '\n\n' + summaryText + '\n\n' + errorText + '\n' + endLine);
 
-    // console.log(
+    console.log(
       [
         color.bold.cyan('[XBELL TESTING]') + ' 🎐',
         // this.getRainbowText('[XBELL TESTING]') + ' 🎐',
@@ -221,7 +221,7 @@ class Printer {
         errorText,
         summaryText,
       ].filter(Boolean).join('\n\n')
-    // );
+    );
   }
 
   startPrint() {

@@ -43,42 +43,30 @@ export class Executor {
     }
   }
 
-  protected async runClassicCaseInNode(c: XBellTestCaseClassic) {
+  protected async runClassicCaseInNode(c: XBellTestCaseClassic, argManager: ArgumentManager) {
     const cls = c.class as new () => any;
     const instance = new cls();
-    workerContext.channel.emit('onCaseExecuteStart', {
-      uuid: c.uuid,
-    });
-    const argumentManger = new ArgumentManager();
-    await instance[c.propertyKey](argumentManger.getArguments());
-
-    workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
-    
-    await argumentManger.genCoverage();
-    await argumentManger.terdown();
+    await instance[c.propertyKey](argManager.getArguments());
   }
 
-  protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>) {
+  protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>, argManager: ArgumentManager) {
     const { runtimeOptions, testFunction } = c;
-    const argManager = new ArgumentManager();
-
-    workerContext.channel.emit('onCaseExecuteStart', { uuid: c.uuid });
 
     await testFunction(argManager.getArguments());
-
-    workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
-    
-    await argManager.genCoverage();
-    await argManager.terdown();
   }
 
   async runCaseInNode(c: XBellTestCase<any, any>) {
+    const argManager = new ArgumentManager();
+    workerContext.channel.emit('onCaseExecuteStart', {
+      uuid: c.uuid,
+    });
     try {
       if (isStandardCase(c)) {
-        await this.runStandardCaseInNode(c);
+        await this.runStandardCaseInNode(c, argManager);
       } else {
-        await this.runClassicCaseInNode(c);
+        await this.runClassicCaseInNode(c, argManager);
       }
+      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
     } catch(err: any) {
       workerContext.channel.emit('onCaseExecuteFailed', {
         uuid: c.uuid,
@@ -88,6 +76,9 @@ export class Executor {
           stack: err?.stack,
         }
       })
+    } finally {
+      await argManager.genCoverage();
+      await argManager.terdown();
     }
   }
 

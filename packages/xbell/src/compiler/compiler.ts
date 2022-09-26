@@ -23,7 +23,10 @@ function resolvePath(modulePath: string, importerPath?: string) {
   if (!modulePath) return null;
 
   if (modulePath.includes('.') && importerPath) {
-    return path.resolve(importerPath, modulePath)
+    return path.resolve(
+      path.dirname(importerPath),
+      modulePath
+    )
   }
 
   return null;
@@ -42,8 +45,8 @@ class NodeJSvisitor extends Visitor {
     if (n.callee.type === 'Import' && expression?.type === 'StringLiteral') {
       const fullpath = resolvePath(expression.value, this._filename);
       if (fullpath) {
+        debugCompiler('fullpath', fullpath, expression.value, this._filename);
         expression.value = fullpath;
-        debugCompiler('fullpath', fullpath, expression.value, expression);
         // @ts-ignore
         delete expression.raw;
       }
