@@ -46,13 +46,13 @@ Generate multiple test cases.
 
 **Example**
 ```typescript
-import { Test, Batch, expect, TestEachArguments } from 'xbell';
+import { Test, Batch, TestEachArguments } from 'xbell';
 
 class TestCases {
 
   @Test()
   @Batch([1, 2, 3], (item, index) => `case data is ${item}, index is ${index}`)
-  testCase({ item, index }: TestEachArguments<number>) {
+  testCase({ item, index, expect }: TestEachArguments<number>) {
     expect(item).toBe(index + 1);
   }
 
@@ -66,13 +66,13 @@ Unlike `@Each` ,  `@Batch` only generates one test case, so if one item fails, t
 
 **Example**
 ```typescript
-import { Test, expect, TestBatchArguments } from 'xbell';
+import { Test, TestBatchArguments } from 'xbell';
 
 class TestCases {
   @Test()
   @DisplayName('item is equal to the index plus one')
   @Batch([1, 2, 3])
-  testCase({ item, index }: TestBatchArguments<number>) {
+  testCase({ item, index, expect }: TestBatchArguments<number>) {
     expect(item).toBe(index + 1);
   }
 }

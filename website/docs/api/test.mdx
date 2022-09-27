@@ -11,7 +11,7 @@ title: Test
 ```typescript
 import test from 'xbell';
 
-test('goto github', async (page) => {
+test('goto github', async ({ page }) => {
   await page.goto('https://github.com');
 });
 ```
@@ -21,8 +21,36 @@ test('goto github', async (page) => {
 - `displayName` <type>(item: T) => string</type> case name
 - `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
 
+Generate multiple test cases.
 
-### test.batch
+```typescript
+import { test } from 'xbell';
+
+test.each([1, 2, 3])(
+  (item, index) => `case data is ${item}, index is ${index}`,
+  ({ expect, item }) => {
+    expect(item).toBe(index + 1);
+  }
+);
+```
+
+### test.batch(items)(displayName, testFunction)
+- `items` <type>T[]</type>
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
+
+Unlike `@Each` ,  `@Batch` only generates one test case, so if one item fails, this test case will fail.
+
+```typescript
+import { test } from 'xbell';
+
+test.batch([1, 2, 3])(
+  'item is equal to the index plus one',
+  ({ expect, item }) => {
+    expect(item).toBe(index + 1);
+  }
+);
+```
 
 ### test.todo(displayName, testFunction)
 - `displayName` <type>string</type> case name
