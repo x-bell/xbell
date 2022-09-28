@@ -39,7 +39,7 @@ test.each([1, 2, 3])(
 - `displayName` <type>string</type> case name
 - `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
 
-Unlike `@Each` ,  `@Batch` only generates one test case, so if one item fails, this test case will fail.
+Unlike `test.each` ,  `test.batch` only generates one test case, so if one item fails, this test case will fail.
 
 ```typescript
 import { test } from 'xbell';
@@ -77,12 +77,92 @@ test.only('goto github', async (page) => {
 - `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
 
 ```typescript
-test.only('goto github', async (page) => {
+test.skip('goto github', async (page) => {
   await page.goto('https://github.com');
 });
 ```
 
-- *Returns* <type>void</type>
+## test.browser
+
+### test.browser(displayName, testFunction)
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+import { test } from 'xbell';
+
+test.browser('one plus one equals two', async ({ page, expect }) => {
+  const { add } = await import('./add.ts');
+  expect(add(1, 1)).toBe(2);
+});
+```
+
+### test.browser.each(items)(displayName, testFunction)
+- `items` <type>T[]</type>
+- `displayName` <type>(item: T) => string</type> case name
+- `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
+
+Generate multiple test cases.
+
+```typescript
+import { test } from 'xbell';
+
+test.browser.each([1, 2, 3])(
+  (item, index) => `case data is ${item}, index is ${index}`,
+  ({ expect, item }) => {
+    expect(item).toBe(index + 1);
+  }
+);
+```
+
+
+### test.browser.batch(items)(displayName, testFunction)
+- `items` <type>T[]</type>
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
+
+Unlike `test.each` ,  `test.batch` only generates one test case, so if one item fails, this test case will fail.
+
+```typescript
+import { test } from 'xbell';
+
+test.browser.batch([1, 2, 3])(
+  'item is equal to the index plus one',
+  ({ expect, item }) => {
+    expect(item).toBe(index + 1);
+  }
+);
+```
+
+### test.browser.todo(displayName, testFunction)
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.browser.todo('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.browser.only(displayName, testFunction)
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.browser.only('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.browser.skip(displayName, testFunction)
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.browser.skip('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
 
 ## describe(description, func)
 
