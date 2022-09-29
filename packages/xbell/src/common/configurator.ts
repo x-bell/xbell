@@ -1,19 +1,37 @@
 import { existsSync } from 'node:fs';
-import type { XBellConfig, XBellTaskConfig } from '../types'
+import { mergeConfig } from 'vite';
+import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig } from '../types'
 
 interface XBellConfigurator {
   globalConfig: Promise<XBellConfig>;
   queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig>
 }
 
+function _mergeConfig (config1: XBellConfig, config2: XBellConfig): XBellConfig {
+  return {
+    ...config1,
+    ...config2,
+    browser: {
+      ...config1.browser,
+      ...config2.browser,
+    }
+  }
+}
+
 export class Configurator implements XBellConfigurator {
-  static XBellDefaultConfig: XBellConfig = {
+  static XBellDefaultBrowserConfig: Required<XBellBrowserConfig> = {
     headless: true,
-    envs: [{ name: 'default' }],
     viewport: {
       width: 1280,
       height: 500,
-    },
+    }
+  };
+
+  static XBellDefaultConfig: XBellConfig = {
+    projects: [
+      { name: 'default' }
+    ],
+    browser: this.XBellDefaultBrowserConfig,
   }
 
   static XBellConfigFilePaths = [
@@ -37,16 +55,13 @@ export class Configurator implements XBellConfigurator {
       return XBellDefaultConfig;
     }
     
-    const { default: config } = await import(targetConfigFilePath)
-    return config;
+    const { default: userConfig } = await import(targetConfigFilePath);
+    return mergeConfig(XBellDefaultConfig, userConfig);
   }
 
   public async queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig> {
     const globalConfig = await this.globalConfig
-    return {
-      ...JSON.parse(JSON.stringify(globalConfig)),
-      ...caseConfig,
-    }
+    return _mergeConfig(globalConfig, caseConfig);
   }
 }
 

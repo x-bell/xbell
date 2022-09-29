@@ -1,33 +1,32 @@
+import { XBellProject } from './project';
+
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
-export interface XBellConfig {
-  /** envs */
-  envs: XBellEnv[];
-  /** browser type */
-  browsers?: XBellBrowserType[];
-  /** browser headless mode */
+export interface XBellBrowserConfig {
   headless?: boolean;
   /** browser viewport */
-  viewport: {
+  viewport?: {
     width: number;
     height: number;
   }
+}
+
+export interface XBellConfig {
+  /** browser config */
+  browser?: XBellBrowserConfig;
+  /** browser headless mode */
   retries?: number;
-  /**
-   * threads
-   */
+  /** threads */
   threads?: boolean | number;
   /** test root dir */
   testDir?: string;
-};
+  /** projects */
+  projects?: XBellProject[];
+}
 
 export type XBellTaskConfig = Partial<
   Pick<
-    XBellConfig,
-    | 'browsers'
-    | 'headless'
-    | 'retries'
-    | 'viewport'
+    XBellConfig, 'browser' | 'retries'
   >
 >;
 

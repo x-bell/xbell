@@ -15,13 +15,14 @@ interface XBellBrowserTest<BrowserExtArgs = {}> {
   each<T>(items: T[]): (caseDescription: string | ((item: T) => string), testCaseFunction: XBellBrowserTestCaseFunction & { item: T }) => void;
 
   batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtArgs & { item: T }>) => void;
+
+  extend<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<BrowserExtArgs & Awaited<ReturnType<T>>>;
 }
 
 interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
   /** group */
   describe(groupDescription: string, testGroupFunction: XBellTestGroupFunction): void;
   extend<T extends (args: XBellTestCaseFunctionArguments<BrowserExtArgs>) => any>(nodeJSCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs>;
-  extendBrowser<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, BrowserExtArgs & Awaited<ReturnType<T>>>;
    /** case */
    (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
 
@@ -36,6 +37,118 @@ interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
   batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T }, BrowserExtArgs>) => void;
 
   browser: XBellBrowserTest<BrowserExtArgs>
+}
+
+export function createBrowserTest<BrowserExtArgs = {}>(
+  browserCallbacks: Array<(...args: any[]) => any> = [],
+): XBellBrowserTest<BrowserExtArgs> {
+  const browser: XBellBrowserTest<BrowserExtArgs> = (caseDescription, testCaseFunction) => {
+    collector.collectCase({
+      caseDescription,
+      testCaseFunction,
+      runtime: 'browser',
+      runtimeOptions: {
+        browserCallbacks,
+      },
+      config: {},
+      options: {},
+    });
+  }
+
+  browser.todo = (caseDescription, testCaseFunction) => {
+    collector.collectCase({
+      caseDescription, testCaseFunction,
+      options: {
+        todo: true,
+      },
+      config: {},
+      runtime: 'browser',
+      runtimeOptions: {
+        browserCallbacks
+      }
+    });
+  }
+
+  browser.skip = (caseDescription, testCaseFunction) => {
+    collector.collectCase({
+      caseDescription,
+      testCaseFunction,
+      options: {
+        skip: true,
+      },
+      config: {},
+      runtime: 'browser',
+      runtimeOptions: {
+        browserCallbacks
+      }
+    });
+  }
+
+  browser.only = (caseDescription, testCaseFunction) => {
+    collector.collectCase({
+      caseDescription,
+      testCaseFunction,
+      options: {
+        only: true,
+      },
+      config: {},
+      runtime: 'browser',
+      runtimeOptions: {
+        browserCallbacks
+      }
+    });
+  }
+
+  browser.each = (items) => {
+    return (caseDescriptionArg, testCaseFunction) => {
+      items.forEach((item, index) => {
+        const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item) : caseDescriptionArg;
+        collector.collectCase({
+          caseDescription,
+          testCaseFunction,
+          options: {
+            each: {
+              item,
+              index
+            },
+          },
+          config: {},
+          runtime: 'browser',
+          runtimeOptions: {
+            browserCallbacks,
+          },
+        });
+      })
+    }
+  }
+
+  browser.batch = (items) => {
+    return (caseDescription, testCaseFunction) => {
+      collector.collectCase({
+        caseDescription,
+        testCaseFunction,
+        options: {
+          batch: {
+            items,
+          }
+        },
+        config: {},
+        runtime: 'browser',
+        runtimeOptions: {
+          browserCallbacks,
+        }
+      });
+    }
+  }
+
+  browser.extend = <T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<BrowserExtArgs & Awaited<ReturnType<T>>> => {
+    return createBrowserTest([
+      ...browserCallbacks,
+      browserCallback,
+    ]);
+  };
+
+  return browser;
 }
 
 export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
@@ -148,12 +261,6 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     collector.collectGroup(groupDescription, testGroupFunction, {}, {});
   };
 
-  test.extendBrowser = <T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, BrowserExtArgs & Awaited<ReturnType<T>>> => {
-    return createTest(nodejsCallbacks, [
-      ...browserCallbacks,
-      browserCallback,
-    ]);
-  };
 
   test.extend = <T extends (args: XBellTestCaseFunctionArguments<NodeJSExtArgs>) => any>(nodejsCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs> => {
     return createTest([
@@ -162,107 +269,8 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     ], browserCallbacks)
   }
 
-  const browser: XBellBrowserTest<BrowserExtArgs> = (caseDescription, testCaseFunction) => {
-    collector.collectCase({
-      caseDescription,
-      testCaseFunction,
-      runtime: 'browser',
-      runtimeOptions: {
-        browserCallbacks,
-      },
-      config: {},
-      options: {},
-    });
-  }
-
-  browser.todo = (caseDescription, testCaseFunction) => {
-    collector.collectCase({
-      caseDescription, testCaseFunction,
-      options: {
-        todo: true,
-      },
-      config: {},
-      runtime: 'browser',
-      runtimeOptions: {
-        browserCallbacks
-      }
-    });
-  }
-
-  browser.skip = (caseDescription, testCaseFunction) => {
-    collector.collectCase({
-      caseDescription,
-      testCaseFunction,
-      options: {
-        skip: true,
-      },
-      config: {},
-      runtime: 'browser',
-      runtimeOptions: {
-        browserCallbacks
-      }
-    });
-  }
-
-  browser.only = (caseDescription, testCaseFunction) => {
-    collector.collectCase({
-      caseDescription,
-      testCaseFunction,
-      options: {
-        only: true,
-      },
-      config: {},
-      runtime: 'browser',
-      runtimeOptions: {
-        browserCallbacks
-      }
-    });
-  }
-
-  browser.each = (items) => {
-    return (caseDescriptionArg, testCaseFunction) => {
-      items.forEach((item, index) => {
-        const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item) : caseDescriptionArg;
-        collector.collectCase({
-          caseDescription,
-          testCaseFunction,
-          options: {
-            each: {
-              item,
-              index
-            },
-          },
-          config: {},
-          runtime: 'browser',
-          runtimeOptions: {
-            browserCallbacks,
-          },
-        });
-      })
-    }
-  }
-
-  browser.batch = (items) => {
-    return (caseDescription, testCaseFunction) => {
-      collector.collectCase({
-        caseDescription,
-        testCaseFunction,
-        options: {
-          batch: {
-            items,
-          }
-        },
-        config: {},
-        runtime: 'browser',
-        runtimeOptions: {
-          browserCallbacks,
-        }
-      });
-    }
-  }
-
-  test.browser = browser;
-
+  
+  test.browser = createBrowserTest(browserCallbacks);
 
   return test;
 }
