@@ -14,4 +14,6 @@ export interface XBellWorkerTask {
 export interface XBellWorkerData {
   port: MessagePort;
   workerId: number;
+  globalConfig: XBellConfig;
+  projectName: XBellProjects['names'];
 }

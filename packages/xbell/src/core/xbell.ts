@@ -11,26 +11,38 @@ import { printer } from './printer';
 import { prompter } from '../prompter';
 
 class XBell {
-  setup() {
+  async setup() {
+    await configurator.setup();
+    await scheduler.setup();
+
     recorder.subscribe((records) => {
       printer.print(records);
     });
   }
 
   async runTest() {
-    this.setup();
     recorder.setStartTime(Date.now());
-    const globalConfig = await configurator.globalConfig;
-    const testDir = globalConfig.testDir || process.cwd();
-    const testFilepaths = glob.sync('**/*.{spec,test}.{cjs,mjs,js,jsx,ts,tsx}', {
-      cwd: testDir,
-      ignore: ['node_modules', 'dist', 'build', '.git', '.cache', '.idea'],
-    }).map(relativeFilepath => join(testDir, relativeFilepath));
-    if (!testFilepaths.length) {
+    const testFiles = await this.findTestFiles()
+
+    if (!testFiles.length) {
       prompter.displayError('NotFoundTestFiles');
+    } else {
+      await scheduler.run(testFiles);
     }
-    await scheduler.init();
-    await scheduler.run(testFilepaths);
+
+  }
+
+  async findTestFiles() {
+    const { globalConfig } = configurator;
+    const testDir = globalConfig.testDir || process.cwd();
+    const testFiles = glob.sync(
+      '**/*.{spec,test}.{cjs,mjs,js,jsx,ts,tsx}', {
+        cwd: testDir,
+        ignore: ['node_modules', 'dist', 'build', '.git', '.cache', '.idea'],
+      }
+    ).map(relativeFilepath => join(testDir, relativeFilepath));
+
+    return testFiles;
   }
 }
 

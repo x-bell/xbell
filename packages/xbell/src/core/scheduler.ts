@@ -11,7 +11,6 @@ import { browserBuilder } from './browser-builder';
 import { pathManager } from './path-manager';
 import { compiler } from '../compiler/compiler';
 
-
 export interface XBellScheduler  {
   runTest(): Promise<void>
 }
@@ -21,7 +20,7 @@ export interface XBellSchedulerConstructor {
 }
 
 export class Scheduler {
-  init() {
+  async setup() {
     const { workers } = workerPool;
     workers.forEach((worker) => {
       // requests
@@ -42,7 +41,6 @@ export class Scheduler {
         async transformHtml({ html, url }) {
           // const server = await browserBuilder.server;
           // const finalHtml = await server.transformIndexHtml(url, html);
-          // console.log('finalHtml', finalHtml);
           return { html };
         },
         async queryServerPort() {

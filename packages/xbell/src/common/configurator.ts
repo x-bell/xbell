@@ -3,7 +3,7 @@ import { mergeConfig } from 'vite';
 import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig } from '../types'
 
 interface XBellConfigurator {
-  globalConfig: Promise<XBellConfig>;
+  globalConfig: XBellConfig;
   queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig>
 }
 
@@ -41,10 +41,10 @@ export class Configurator implements XBellConfigurator {
     'xbell.config.cjs',
   ];
 
-  globalConfig: Promise<XBellConfig>;
+  globalConfig!: XBellConfig;
 
-  constructor() {
-    this.globalConfig = this.loadGlobalConfig()
+  async setup() {
+    this.globalConfig = await this.loadGlobalConfig()
   }
 
   protected async loadGlobalConfig() {

@@ -1,4 +1,4 @@
-import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask, XBellTestCaseStandard, XBellTestCaseClassic } from '../types';
+import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellPage, XBellLocator, XBellTestTask, XBellTestCaseStandard, XBellTestCaseClassic, XBellConfig, XBellProject } from '../types';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
@@ -9,6 +9,14 @@ function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
 }
 
 export class Executor {
+  protected _project: XBellProject;
+  constructor(protected _deps: {
+    globalConfig: XBellConfig;
+    projectName: XBellProjects['names']
+  }) {
+    this._project = _deps.globalConfig.projects!.find(project => project.name === _deps.projectName)!;
+  }
+
   async run(file: XBellTestFile) {
     const { tasks } = file;
     for (const task of tasks) {

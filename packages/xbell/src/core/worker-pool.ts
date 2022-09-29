@@ -1,6 +1,7 @@
 import type {
   XBellWorkerTask,
   XBellWorkerData,
+  XBellProject,
 } from '../types';
 
 import { Worker, MessageChannel, isMainThread } from 'node:worker_threads';
@@ -8,7 +9,7 @@ import { Worker, MessageChannel, isMainThread } from 'node:worker_threads';
 import { cpus } from 'node:os';
 import { Channel } from '../common/channel';
 import { pathManager } from './path-manager';
-
+import { configurator } from '../common/configurator';
 interface XBellWorkerItem {
   worker: Worker;
   busy: boolean;
@@ -18,18 +19,22 @@ interface XBellWorkerItem {
 
 export class WorkerPool {
   protected queue: XBellWorkerTask[] = []
-  public workers: XBellWorkerItem[] = [];
+  public workers!: XBellWorkerItem[];
 
   constructor(
     public workPath: string,
-    public threads = cpus().length,
-  ) {
-    this.workers = this.genWorkers();
+    // public threads = cpus().length,
+  ) {}
+
+  async setup() {
+    const { globalConfig } = configurator;
+    const projects = globalConfig.projects!
+    this.workers = this.genWorkers(projects);
   }
 
-  protected genWorkers(): XBellWorkerItem[] {
+  protected genWorkers(projects: XBellProject[]): XBellWorkerItem[] {
     // const { workerPort } = this.channel;
-    return Array.from(new Array(this.threads), (_, idx) => {
+    return Array.from(new Array(projects.length), (_, idx) => {
       const { port1: mainPort, port2: workerPort } = new MessageChannel();
       const channel = new Channel(mainPort);
 
