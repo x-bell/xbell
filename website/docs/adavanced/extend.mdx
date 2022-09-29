@@ -1,0 +1,54 @@
+---
+title: Extend
+---
+`Extend` is used to extend your test environment for better testing.
+
+Take the `React component testing` as an example, and the following code is before `extend` is used.
+
+```typescript
+import { test } from 'xbell';
+
+test.browser('react tests', async ({ page }) => {
+  const { default: React } = await import('react');
+  const { default: ReactDOM } = await import('react-dom');
+
+  const mount = (reactElement) => {
+    ReactDOM.render(reactElement, document.getElementById('root'));
+  };
+
+  await page.goto('https://my-custom-url.com', {
+    html: '<div></div>'
+  });
+
+  // for jsx
+  window.React = React;
+
+  mount(<div>hello xbell</div>);
+});
+```
+## Use Extend
+```typescript
+const testReact = test.browser.extend(async ({ page }) => {
+  const { default: React } = await import('react');
+  const { default: ReactDOM } = await import('react-dom');
+
+  const mount = (reactElement) => {
+    ReactDOM.render(reactElement, document.getElementById('root'));
+  };
+
+  await page.goto('https://my-custom-url.com', {
+    html: '<div></div>'
+  });
+
+  // for jsx
+  window.React = React;
+
+  return { mount };
+});
+
+// use extend to test
+testReact('react tests', ({ mount }) => {
+    mount(<div>hello xbell</div>);
+});
+```
+

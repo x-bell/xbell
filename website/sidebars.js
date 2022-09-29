@@ -39,8 +39,7 @@ const sidebars = {
       collapsed: false,
       items: [
         'adavanced/decorator-mode',
-        'debug/index',
-        'diy-decorator'
+        'adavanced/extend',
       ],
     }
   ],
