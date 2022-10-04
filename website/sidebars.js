@@ -27,6 +27,7 @@ const sidebars = {
       items: [
         'get-started',
         'unit-testing',
+        'component-testing',
         'e2e-testing',
       ],
     },

@@ -1,0 +1,100 @@
+---
+sidebar_position: 1
+---
+
+# 单元测试
+
+XBell 具备浏览器和 Node.js 代码单元测试的能力。
+
+以测试一个 add 函数为目的，分别讲解如何使用浏览器和 Node.js 环境运行：
+```javascript title="add.ts"
+export function add(a: number, b: number) {
+  return a + b;
+}
+```
+
+## Node.js
+```javascript
+import { test } from 'xbell';
+import { add } from './add';
+
+test('nodejs example', ({ expect }) => {
+  expect(add(1, 1)).toBe(2);
+});
+
+```
+
+
+## Browser
+
+```javascript
+import { test } from 'xbell';
+
+test.browser('browser example', async ({ expect }) => {
+  /** 改函数内的代码块会运行在浏览器环境中 */
+
+  // 从浏览器环境中导入 add 函数
+  const { add } = await import('./add');
+
+  expect(add(1, 1)).toBe(2);
+});
+
+```
+
+:::caution
+
+以下用法将会报错：
+
+:::
+
+```javascript
+import { test } from 'xbell';
+// add 属于 nodejs 环境变量
+import { add } from './add';
+
+test.browser('bad case of browser', async ({ expect }) => {
+  // 在浏览器环境使用了 nodejs 环境的 add，将会报错 "add is not defined"
+  expect(add(1, 1)).toBe(2);
+});
+```
+
+## React
+```javascript
+import { test } from 'xbell';
+
+test('#react demo', ({ page }) => {
+  // create root element
+  await page.goto('https://my-custom.com', { mockHtml: '<div id="root"></div>' });
+
+  await page.evalute(async () => {
+     // for jsx program
+    const { default: React } = await import('react'); 
+    const { default: ReactDOM } = await import('react-dom');
+    const { default: App } = await import('./App');
+    ReactDOM.render(<App />, document.getElementById('root'));
+  });
+
+  await page.localByText('link').click()
+});
+```
+
+You can see Adavance React to learn more.
+
+## Vue
+
+```javascript
+import { test } from 'xbell';
+
+test('#vue demo', ({ page }) => {
+  // create root element
+  await page.goto('https://my-custom.com', { mockHtml: '<div id="root"></div>' });
+
+  await page.evalute(async () => {
+    const { default: App } = await import('./App.vue');
+    const { createApp } = await import('vue');
+    createApp(App).mount('#app');
+  });
+
+  await page.localByText('link').click()
+});
+```

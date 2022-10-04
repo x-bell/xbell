@@ -5,6 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
+    "start:zh": "docusaurus start --locale zh-CN",
     "buildaa": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "clear": "docusaurus clear",

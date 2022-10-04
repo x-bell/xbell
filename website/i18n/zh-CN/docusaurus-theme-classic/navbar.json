@@ -1,14 +1,22 @@
 {
   "title": {
-    "message": "XBell"
+    "message": "XBell",
+    "description": "The title in the navbar"
   },
   "item.label.Docs": {
-    "message": "文档"
+    "message": "文档",
+    "description": "Navbar item with label Docs"
   },
   "item.label.API": {
-    "message": "API"
+    "message": "API",
+    "description": "Navbar item with label API"
+  },
+  "item.label.Examples": {
+    "message": "示例",
+    "description": "Navbar item with label Examples"
   },
   "item.label.GitHub": {
-    "message": "Github"
+    "message": "Github",
+    "description": "Navbar item with label GitHub"
   }
 }

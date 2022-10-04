@@ -4,5 +4,8 @@
   },
   "homepage.getStarted": {
     "message": "Get Started - 5min ⏱️"
+  },
+  "docs.guide": {
+    "message": "使用指南"
   }
 }
