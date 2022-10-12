@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { mergeConfig } from 'vite';
-import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig } from '../types'
+import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig } from '../types';
 
 interface XBellConfigurator {
   globalConfig: XBellConfig;
@@ -24,14 +25,16 @@ export class Configurator implements XBellConfigurator {
     viewport: {
       width: 1280,
       height: 500,
-    }
+    },
   };
 
-  static XBellDefaultConfig: XBellConfig = {
+  static XBellDefaultConfig: Required<XBellConfig> = {
     projects: [
       { name: 'default' }
     ],
     browser: this.XBellDefaultBrowserConfig,
+    include: ['**/*.{spec,test}.{cjs,mjs,js,jsx,ts,tsx}'],
+    exclude: ['**/node_modules/**', '**/dist/**'],
   }
 
   static XBellConfigFilePaths = [
@@ -41,22 +44,23 @@ export class Configurator implements XBellConfigurator {
     'xbell.config.cjs',
   ];
 
-  globalConfig!: XBellConfig;
+  globalConfig!: Required<XBellConfig>;
 
   async setup() {
     this.globalConfig = await this.loadGlobalConfig()
   }
 
-  protected async loadGlobalConfig() {
-    // todo project dir
+  protected async loadGlobalConfig(): Promise<Required<XBellConfig>> {
+    const projectDir = process.cwd();
     const { XBellConfigFilePaths, XBellDefaultConfig } = Configurator;
-    const targetConfigFilePath = XBellConfigFilePaths.find((filepath) => existsSync(filepath))
+    const fullPaths = XBellConfigFilePaths.map(filepath => join(projectDir, filepath))
+    const targetConfigFilePath = fullPaths.find((filepath) => existsSync(filepath))
     if (!targetConfigFilePath) {
       return XBellDefaultConfig;
     }
     
     const { default: userConfig } = await import(targetConfigFilePath);
-    return mergeConfig(XBellDefaultConfig, userConfig);
+    return mergeConfig(XBellDefaultConfig, userConfig) as Required<XBellConfig>;
   }
 
   public async queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig> {

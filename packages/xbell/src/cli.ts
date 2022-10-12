@@ -86,6 +86,7 @@ async function tryToDownlaod1M(sourceUrl: string) {
     .option('-e, --env <type>', '指定 env 环境')
     .option('-d, --debug', '调试模式: 不会清空打印等')
     .action(async (commandOptions: CommandOptions) => {
+      await xbell.setup();
       await xbell.runTest();
     });
 

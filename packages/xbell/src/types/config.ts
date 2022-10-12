@@ -6,38 +6,33 @@ export interface XBellBrowserConfig {
   viewport?: {
     width: number;
     height: number;
-  }
+  },
 }
 
 export interface XBellConfig {
   /** browser config */
   browser?: XBellBrowserConfig;
-  /** browser headless mode */
-  retries?: number;
-  /** threads */
-  threads?: boolean | number;
-  /** test root dir */
-  testDir?: string;
   /** projects */
   projects?: XBellProject[];
+  /** include */
+  include?: string[];
+  /** exclude */
+  exclude?: string[];
 }
 
 export type XBellTaskConfig = Partial<
   Pick<
-    XBellConfig, 'browser' | 'retries'
+    XBellConfig, 'browser'
   >
 >;
 
 export type XBellProject = {
   name: XBellProjects['names'];
   config?: XBellConfig;
-} & Omit<XBellProjects, 'names'>
+} & Omit<XBellProjects, 'names'>;
 
 
 export type XBellRuntimeOptions = Partial<{
   browserCallbacks: Array<(...args: any) => any>;
   args?: object
 }>;
-
-
-export type MultiEnvData<T> = Partial<Record<XBellEnv['name'], T>>;

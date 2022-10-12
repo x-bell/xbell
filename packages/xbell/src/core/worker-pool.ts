@@ -10,6 +10,7 @@ import { cpus } from 'node:os';
 import { Channel } from '../common/channel';
 import { pathManager } from './path-manager';
 import { configurator } from '../common/configurator';
+
 interface XBellWorkerItem {
   worker: Worker;
   busy: boolean;
@@ -34,7 +35,7 @@ export class WorkerPool {
 
   protected genWorkers(projects: XBellProject[]): XBellWorkerItem[] {
     // const { workerPort } = this.channel;
-    return Array.from(new Array(projects.length), (_, idx) => {
+    return projects.map((project, idx) => {
       const { port1: mainPort, port2: workerPort } = new MessageChannel();
       const channel = new Channel(mainPort);
 
@@ -45,6 +46,8 @@ export class WorkerPool {
           workerData: <XBellWorkerData>{
             port: workerPort,
             workerId,
+            globalConfig: configurator.globalConfig,
+            projectName: project.name,
           },
         }),
         busy: false,
@@ -54,19 +57,6 @@ export class WorkerPool {
     });
   }
 
-  public addTasks(tasks: XBellWorkerTask[]) {
-    this.queue = [
-      ...this.queue,
-      ...tasks,
-    ];
-  }
-
-  public runAllTasks() {
-    return new Promise<void>((resolve, reject) => {
-      this.checkQueue(resolve, reject);
-    })
-  }
-
   protected checkQueue(resolve: () => void, reject: () => void) {
     if (!this.queue.length) {
       const isAllFinished = this.workers.every(worker => !worker.busy)
@@ -74,7 +64,6 @@ export class WorkerPool {
         // TODO:
         resolve();
         console.log('work-pool:exit');
-        // process.exit();
       }
       return;
     }
@@ -89,12 +78,28 @@ export class WorkerPool {
       worker.once('message', () => {
         this.finishedTask(workerItem, resolve, reject);
       });
-      worker.once('error', () => {
-        this.finishedTask(workerItem, resolve, reject);
+      worker.once('error', (err) => {
+        console.log('An untractable error was encountered, please report it to https://github.com/x-bell/xbell/issues');
+        console.log(err);
+        process.exit(0);
+        // this.finishedTask(workerItem, resolve, reject);
       });
       const task = this.queue.shift();
       worker.postMessage(task);
     }
+  }
+
+  public addTasks(tasks: XBellWorkerTask[]) {
+    this.queue = [
+      ...this.queue,
+      ...tasks,
+    ];
+  }
+
+  public runAllTasks() {
+    return new Promise<void>((resolve, reject) => {
+      this.checkQueue(resolve, reject);
+    })
   }
 
   public finishedTask(workerItem: XBellWorkerItem, resolve: () => void, reject: () => void) {

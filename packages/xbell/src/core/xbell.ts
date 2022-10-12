@@ -9,10 +9,12 @@ import process from 'node:process';
 import { recorder } from './recorder';
 import { printer } from './printer';
 import { prompter } from '../prompter';
+import { workerPool } from './worker-pool';
 
 class XBell {
   async setup() {
     await configurator.setup();
+    await workerPool.setup();
     await scheduler.setup();
 
     recorder.subscribe((records) => {
@@ -34,11 +36,12 @@ class XBell {
 
   async findTestFiles() {
     const { globalConfig } = configurator;
-    const testDir = globalConfig.testDir || process.cwd();
+    const testDir = process.cwd();
     const testFiles = glob.sync(
-      '**/*.{spec,test}.{cjs,mjs,js,jsx,ts,tsx}', {
+      globalConfig.include,
+      {
         cwd: testDir,
-        ignore: ['node_modules', 'dist', 'build', '.git', '.cache', '.idea'],
+        ignore: globalConfig.exclude,
       }
     ).map(relativeFilepath => join(testDir, relativeFilepath));
 

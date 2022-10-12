@@ -5,14 +5,12 @@ import { Executor } from './executor';
 import { collector } from './collector';
 import { workerContext } from './worker-context';
 import { toTestFileRecord } from '../utils/record';
-// console.log('workerContext22', String(workerContext));
-// const data = workerData as XBellWorkerData;
 
 export async function run(workData: XBellWorkerTaskPayload) {
   const testFiles = (await Promise.all(workData.testFilenames.map(async (filename) => {
     try {
       const ret = await collector.collect(filename);
-      workerContext.channel.emit('onFileCollectSuccesed', toTestFileRecord(ret))
+      workerContext.channel.emit('onFileCollectSuccesed', toTestFileRecord(ret));
       return ret;
     } catch(error: any) {
       // TODO: collect failed
@@ -27,7 +25,8 @@ export async function run(workData: XBellWorkerTaskPayload) {
         },
       });
     }
-  }))).filter(Boolean) as XBellTestFile[]
+  }))).filter(Boolean) as XBellTestFile[];
+
   for (const testFile of testFiles) {
     workerContext.setCurrentTestFile(testFile);
     const executor = new Executor({
