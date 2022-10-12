@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[1024],{831:e=>{e.exports=JSON.parse('{"title":"Guide","slug":"/category/guide","permalink":"/xbell/docs/category/guide","navigation":{"previous":{"title":"Motivation","permalink":"/xbell/docs/motivation"},"next":{"title":"Getting started","permalink":"/xbell/docs/get-started"}}}')}}]);
