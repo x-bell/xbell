@@ -1,40 +1,29 @@
 import React from 'react';
 import clsx from 'clsx';
+import Translate from '@docusaurus/Translate';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
   src: string;
-  description: JSX.Element;
+  description: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Test integration',
+    title: 'homepage.allInOneTesting',
     src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-mods.svg',
-    description: (
-      <>
-        Write unit tests and e2e tests with the same mind.
-      </>
-    ),
+    description: 'homepage.allInOneTesting.desc',
   },
   {
-    title: 'node & browser',
+    title: 'homepage.nodeAndBrowser',
     src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-cooperation.svg',
-    description: (
-      <>
-        You can freely switch between Node.js and Browser environments to test your code.
-      </>
-    ),
+    description: 'homepage.nodeAndBrowser.desc',
   },
   {
-    title: 'Decorator Mode',
+    title: 'homepage.decoratorMode',
     src: 'https://raw.githubusercontent.com/x-bell/xbell-assets/main/homepage/xbell-decorators.svg',
-    description: (
-      <>
-        In decorator mode, you can easily do any test.
-      </>
-    ),
+    description: 'homepage.decoratorMode.desc',
   },
 ];
 
@@ -45,8 +34,8 @@ function Feature({title, src, description}: FeatureItem) {
         <img className={styles.featureSvg} role="img" src={src} />
       </div>
       <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
+        <h3><Translate id={title} /></h3>
+        <p><Translate id={description} /></p>
       </div>
     </div>
   );

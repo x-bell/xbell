@@ -5,6 +5,24 @@
   "homepage.getStarted": {
     "message": "快速开始 - 5min ⏱️"
   },
+  "homepage.allInOneTesting": {
+    "message": "一体化测试"
+  },
+  "homepage.allInOneTesting.desc": {
+    "message": "使用同一种心智去写单元、集成、E2E测试代码"
+  },
+  "homepage.nodeAndBrowser": {
+    "message": "node + browser"
+  },
+  "homepage.nodeAndBrowser.desc": {
+    "message": "你可以自由地选择在 node 或浏览器中去测试"
+  },
+  "homepage.decoratorMode": {
+    "message": "装饰器模式"
+  },
+  "homepage.decoratorMode.desc": {
+    "message": "通过装饰器模式快速编写测试用例"
+  },
   "docs.guide": {
     "message": "上手指南"
   },
