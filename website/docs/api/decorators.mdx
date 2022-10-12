@@ -2,9 +2,11 @@
 title: Decorators
 ---
 
-## @Test()
+## @Test
 
-Denotes that a method is a test method.
+`@Test` Denotes that a method is a test method.
+
+**Signature: @Test()**
 
 **Example**
 
@@ -19,10 +21,13 @@ class TestCases {
 }
 ```
 
-## @DisplayName(text)
-- `text` <type>string</type>
+## @DisplayName
+**Signature: @DisplayName(text)**
 
-Set the name of the test case.
+- `text` <type>string</type> text of display name
+
+`@DisplayName` Set the name of the test case.
+
 
 **Example**
 
@@ -38,7 +43,9 @@ class TestCases {
 }
 ```
 
-## @Each(items, displayNameFunction)
+## @Each
+**Signature: @Each(items, displayNameFunction)**
+
 - `items` <type>T[]</type>
 - `displayNameFunction` <type>(item: T, index: number) => string</type>
 
@@ -59,7 +66,9 @@ class TestCases {
 }
 ```
 
-## @Batch(items)
+## @Batch
+**Signature: @Batch(items)**
+
 - `items` <type>T[]</type>
 
 Unlike `@Each` ,  `@Batch` only generates one test case, so if one item fails, this test case will fail.
@@ -79,7 +88,10 @@ class TestCases {
 
 ```
 
-## @BeforeEach()
+## @BeforeEach
+**Signature: @BeforeEach()**
+
+`@BeforeEach` Denotes that the annotated method should be executed before each `@Test`
 
 **Exmaple**
 ```typescript
@@ -105,10 +117,40 @@ class TestCases {
   }
 }
 
-
 ```
 
 
-## @AfterEach()
+## @AfterEach
+**Signature: @AfterEach()**
 
-## @Feature()
+`@AfterEach` Denotes that the annotated method should be executed after each `@Test`,
+**Exmaple**
+```typescript
+import { Test, BeforeEach, AfterEach, TestArguments } from 'xbell';
+
+class TestCases {
+  accountLocator!: number;
+
+  @BeforeEach()
+  async init({ page }: TestArguments) {
+    await page.goto('http://github.com');
+    this.accountLocator = page.locateByText('account');
+  }
+
+  @AfterEach()
+  async makeAssertion({ page, expect }: TestArguments) {
+    await expect(page).toMatchScreenshot('default-screenshot');
+  }
+
+  @Test()
+  case1() {
+    await this.accountLocator.click();
+  }
+
+  @Test()
+  case2() {
+    await this.accountLocator.hover();
+  }
+}
+
+```

@@ -53,7 +53,7 @@ const sidebars = {
     'api/mouse',
     'api/keyboard',
     'api/element-handle',
-    'api/decorator',
+    'api/decorators',
   ],
   examples: [
     'examples/multi-envs'
