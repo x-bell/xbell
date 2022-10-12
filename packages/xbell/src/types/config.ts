@@ -1,5 +1,3 @@
-import { XBellProject } from './project';
-
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
 export interface XBellBrowserConfig {
@@ -29,6 +27,12 @@ export type XBellTaskConfig = Partial<
     XBellConfig, 'browser' | 'retries'
   >
 >;
+
+export type XBellProject = {
+  name: XBellProjects['names'];
+  config?: XBellConfig;
+} & Omit<XBellProjects, 'names'>
+
 
 export type XBellRuntimeOptions = Partial<{
   browserCallbacks: Array<(...args: any) => any>;

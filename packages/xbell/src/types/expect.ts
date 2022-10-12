@@ -1,5 +1,26 @@
 import { BaseExpect, Matchers as JMatcher, AsymmetricMatchers } from 'expect';
-import { ToMatchSnapshotOptions } from '../core-ioc/snapshot';
+export interface ToMatchSnapshotOptions {
+  /**
+   * Image name
+   */
+  name: string;
+  /**
+   * 
+   * The number of different pixels.
+   * @default 0
+   */
+  maxDiffPixels?: number;
+  /**
+   * The ratio of different pixels, ranges from 0 to 1.
+   * @default undefined
+   */
+  maxDiffPixelRatio?: number;
+  /**
+   * Matching threshold, ranges from 0 to 1. Smaller values make the comparison more sensitive.
+   * @default 0.2
+   */
+  threshold?: number;
+}
 
 type Matchers<R extends void | Promise<void>> = JMatcher<R> & SnapshotMatchers;
 

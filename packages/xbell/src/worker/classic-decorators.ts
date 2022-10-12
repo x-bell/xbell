@@ -186,3 +186,7 @@ export const Each = <T>(items: T[], caseDisplayNameFunction: (item: T) => string
     });
   }
 }
+
+export const Depend = () => {
+
+};

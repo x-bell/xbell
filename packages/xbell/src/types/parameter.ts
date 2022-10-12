@@ -1,6 +1,6 @@
 import type { ParameterType } from '../constants/index'
 import type { XBellPage } from './test';
-import type { XBellProject } from './project';
+import type { XBellProject } from './config';
 
 export interface IParameter {
   type: ParameterType;

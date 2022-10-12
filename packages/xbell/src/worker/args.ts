@@ -1,5 +1,5 @@
 import type { XBellTestCaseFunctionArguments } from '../types/test';
-import type { XBellProject } from '../types/project';
+import type { XBellProject } from '../types/config';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { genLazyPage } from './lazy-page';

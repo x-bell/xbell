@@ -1,6 +1,5 @@
 import type { expell } from 'expell';
-import type { XBellTaskConfig, XBellRuntimeOptions } from './config';
-import type { XBellProject } from './project';
+import type { XBellTaskConfig, XBellRuntimeOptions, XBellProject } from './config';
 import type {
   TimeoutOptions,
   ElementHandleClickOptions,

@@ -30,7 +30,10 @@ export async function run(workData: XBellWorkerTaskPayload) {
   }))).filter(Boolean) as XBellTestFile[]
   for (const testFile of testFiles) {
     workerContext.setCurrentTestFile(testFile);
-    const executor = new Executor(); 
+    const executor = new Executor({
+      projectName:  workerContext.workerData.projectName,
+      globalConfig: workerContext.workerData.globalConfig,
+    }); 
     await executor.run(testFile);
   }
 }
