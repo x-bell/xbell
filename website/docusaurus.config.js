@@ -124,7 +124,9 @@ const config = {
             items: [
               {
                 label: 'Scenario testing',
-                href: '/xbell/test-site/',
+                // prependBaseUrlToHref: true,
+                href: 'https://x-bell.github.io/xbell/test-site/',
+                // to: '/xbell/test-site/'
               },
               {
                 label: 'Stack Overflow',

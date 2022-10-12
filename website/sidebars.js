@@ -53,21 +53,7 @@ const sidebars = {
     'api/mouse',
     'api/keyboard',
     'api/element-handle',
-    {
-      type: 'category',
-      label: 'Decorators',
-      link: {
-        type: 'generated-index',
-      },
-      collapsed: false,
-      items: [
-        // 'api/expect',
-        'api/decorators',
-        'api/decorator',
-        'api/expect-decorator',
-        'api/query',
-      ]
-    },
+    'api/decorator',
   ],
   examples: [
     'examples/multi-envs'
