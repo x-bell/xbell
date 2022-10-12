@@ -78,10 +78,7 @@ export default <XBellConfig>({
 
   @Test()
   class TestCase {
-    @Prop() page: Page;
-    @Prop() project: Project;
-
-    login_demo() {
+    login_demo({ page, test }) {
       const { page, project } = this;
       await page.goto(project.data.origin)
     }
