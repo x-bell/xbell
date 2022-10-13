@@ -5,6 +5,6 @@
     "xbell": "workspace:*"
   },
   "scripts": {
-    "test": "xbell fun"
+    "test": "xbell"
   }
 }

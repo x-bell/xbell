@@ -1,8 +1,8 @@
 import { test, expect } from 'xbell';
 
-test('xbell homepage', async ({ page }) => {
-  await page.goto('https://gaoding.com')
+test('goto example.com', async ({ page }) => {
+  await page.goto('https://example.com')
   await expect(page).toMatchScreenshot({
-    name: 'a'
+    name: 'default-screenshot'
   });
 });
