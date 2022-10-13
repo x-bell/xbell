@@ -30,7 +30,7 @@ export class Configurator implements XBellConfigurator {
 
   static XBellDefaultConfig: Required<XBellConfig> = {
     projects: [
-      { name: 'default' }
+      { name: '' }
     ],
     browser: this.XBellDefaultBrowserConfig,
     include: ['**/*.{spec,test}.{cjs,mjs,js,jsx,ts,tsx}'],

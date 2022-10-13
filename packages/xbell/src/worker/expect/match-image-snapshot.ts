@@ -3,7 +3,7 @@ import path from 'node:path';
 import color from '@xbell/color';
 import { PNG } from 'pngjs'
 import pixcelMatch from 'pixelmatch';
-import { PageScreenshotOptions, ElementHandleScreenshotOptions } from '../types/pw';
+import { PageScreenshotOptions, ElementHandleScreenshotOptions } from '../../types/pw';
 import debug from 'debug';
 
 const snapshotDebug = debug('xbell:snapshot');
@@ -33,16 +33,21 @@ export interface ToMatchSnapshotOptions {
 export function getSnapshotPath({
   projectName,
   rootDir,
-  imgName
+  imgName,
+  filename
 }: {
   rootDir: string;
   projectName?: string;
   imgName: string;
+  filename: string;
 }) {
   return path.join(
     rootDir,
     '__snapshots__',
-    imgName.replace(/\.png$/, '') + (projectName ? `.[${projectName}]` : '') + '.png'
+    filename,
+    imgName.replace(/\.png$/, '')
+      + (projectName ? `.[${projectName}]` : '')
+      + '.png'
   );
 }
 
@@ -50,11 +55,17 @@ export interface ScreenshotTarget {
   screenshot(options: PageScreenshotOptions | ElementHandleScreenshotOptions): Promise<Buffer>
 }
 
-export async function _matchImageSnapshot(
-  buffer: Buffer,
-  options: ToMatchSnapshotOptions,
-  projectName?: string
-) {
+export async function _matchImageSnapshot({
+  buffer,
+  options,
+  projectName,
+  filename,
+}: {
+  buffer: Buffer;
+  options: ToMatchSnapshotOptions;
+  projectName?: string;
+  filename: string;
+}) {
   snapshotDebug('_matchImageSnapshot');
   const { maxDiffPixels, maxDiffPixelRatio, name, threshold = 0.2 } = options;
   const messages: string[] = [];
@@ -62,13 +73,17 @@ export async function _matchImageSnapshot(
     rootDir: process.cwd(),
     imgName: name,
     projectName,
+    filename,
   });
   const isFirstSnapshot = fs.existsSync(snapshotPath);
   snapshotDebug('snapshotPath', snapshotPath, isFirstSnapshot);
   const dirPath = path.dirname(snapshotPath);
   if (!isFirstSnapshot) {
     if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
+      fs.mkdirSync(dirPath, {
+        recursive: true,
+        mode: 0o777,
+      });
     }
     fs.writeFileSync(snapshotPath, buffer)
   } else {

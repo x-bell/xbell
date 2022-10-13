@@ -39,9 +39,12 @@
 export {
   test,
   describe,
-  expect,
   // exp
 } from './worker/standard';
+
+export {
+  expect,
+} from './worker/expect/expect';
 
 export {
   Test,

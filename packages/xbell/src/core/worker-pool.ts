@@ -19,7 +19,7 @@ interface XBellWorkerItem {
 }
 
 export class WorkerPool {
-  protected queue: XBellWorkerTask[] = []
+  protected queue: XBellWorkerTask[][] = []
   public workers!: XBellWorkerItem[];
 
   constructor(
@@ -89,7 +89,7 @@ export class WorkerPool {
     }
   }
 
-  public addTasks(tasks: XBellWorkerTask[]) {
+  public addTasks(tasks: XBellWorkerTask[][]) {
     this.queue = [
       ...this.queue,
       ...tasks,

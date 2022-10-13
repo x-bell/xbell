@@ -4,6 +4,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { genLazyPage } from './lazy-page';
 import { workerContext } from './worker-context';
+import { expect } from './expect/expect';
 
 export class ArgumentManager {
   page = genLazyPage();
@@ -22,6 +23,7 @@ export class ArgumentManager {
     return {
       page: this.page,
       project: this.project,
+      expect,
     }
   }
 

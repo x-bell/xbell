@@ -1,6 +1,8 @@
+import * as path from 'node:path';
 import { defineMatcher } from 'expell';
-import { XBellLocator, XBellElementHandle, XBellPage } from '../types';
+import { XBellLocator, XBellElementHandle, XBellPage } from '../../types';
 import { _matchImageSnapshot } from './match-image-snapshot';
+import { stateManager } from '../state-manager';
 
 export const elementMatcher = defineMatcher({
   async toBeChecked(received: XBellLocator | XBellElementHandle) {
@@ -39,6 +41,12 @@ export const elementMatcher = defineMatcher({
     const buffer = await received.screenshot({
       type: 'png'
     });
-    return _matchImageSnapshot(buffer, options);
+    const state = stateManager.getCurrentState();
+    return _matchImageSnapshot({
+      buffer,
+      options,
+      projectName: state.projectName,
+      filename: path.basename(state.filepath),
+    });
   },
 })

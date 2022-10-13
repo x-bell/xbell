@@ -3,6 +3,7 @@ import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
 import { ArgumentManager } from './args';
+import { stateManager } from './state-manager';
 
 function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
   return typeof c.testFunction === 'function'
@@ -18,6 +19,7 @@ export class Executor {
   }
 
   async run(file: XBellTestFile) {
+    stateManager.setCurrentFilepath(file.filename);
     const { tasks } = file;
     for (const task of tasks) {
       if (task.type === 'group') {

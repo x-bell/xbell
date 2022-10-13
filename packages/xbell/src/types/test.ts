@@ -1,5 +1,6 @@
 import type { expell } from 'expell';
 import type { XBellTaskConfig, XBellRuntimeOptions, XBellProject } from './config';
+import type { Expect } from '../worker/expect/expect';
 import type {
   TimeoutOptions,
   ElementHandleClickOptions,
@@ -242,6 +243,7 @@ export interface XBellPage<BrowserExtensionArg = {}> {
 export interface XBellTestCaseFunctionArguments<BrowserExtensionArg = {}> {
   page: XBellPage<BrowserExtensionArg>;
   project: XBellProject;
+  expect: Expect;
 }
 
 export interface XBellTestCaseFunction<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> {
