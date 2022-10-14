@@ -1,4 +1,13 @@
 #! /usr/bin/env node
 // const sourceMapSupport = require('@cspotcode/source-map-support');
 
+require('ts-node').register({
+  typeCheck: false,
+  transpileOnly: true,
+  compilerOptions: {
+    experimentalDecorators: true,
+    emitDecoratorMetadata: true,
+  }
+});
+
 require('../dist/cli.js');

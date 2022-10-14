@@ -5,14 +5,13 @@ import { container, Context } from './core';
 import { MetaDataType } from './constants';
 import { sleep, prettyPrint } from './utils';
 import { Command } from 'commander';
-import glob = require('glob');
 import { checkDownloadSpeed } from './utils/network';
-import { registerTransfomer } from './compiler/transform';
+import { glob } from 'glob';
+
 const pwServer = require('playwright-core/lib/server');
 const program = new Command();
 
 
-registerTransfomer();
 
 interface CommandOptions {
   file?: string;
@@ -54,8 +53,8 @@ program
       debug: commandOptions.debug,
       env: commandOptions.env,
     });
-    const caseFiles = glob.sync('**/*(*.spec.ts|*.test.ts|*.spec.tsx|*.test.tsx)', { cwd: rootDir });
-    // TODO: 支持参数指定文件名 + case 名
+    // load cases
+    const caseFiles = glob.sync('**/*.{spec,test}.{ts,tsx}', { cwd: rootDir });
     for (const caseFile of caseFiles) {
       const isExec = commandOptions.file ? caseFile.includes(commandOptions.file): true;
       if (isExec) {

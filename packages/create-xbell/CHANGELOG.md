@@ -1,5 +1,23 @@
 # create-xbell
 
+## 0.4.2
+
+### Patch Changes
+
+- 5410895: support download folders
+
+## 0.4.1
+
+### Patch Changes
+
+- 907f22a: fix bugs in existed project
+
+## 0.4.0
+
+### Minor Changes
+
+- bec63f8: support any test file
+
 ## 0.3.6
 
 ### Patch Changes

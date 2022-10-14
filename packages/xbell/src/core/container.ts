@@ -1,5 +1,5 @@
 import { chromium } from 'playwright-core';
-import * as fs from 'fs';
+import * as fs from 'fs-extra'
 import { XBellCaseRecord, XBellGroupRecord, generateHTML } from 'xbell-reporter';
 import { MetaDataType, ParameterType } from '../constants';
 import { getParameters, getMetadataKeys, prettyPrint } from '../utils';
@@ -18,7 +18,10 @@ const defaultXBellConfig: Partial<XBellConfig> = {
     width: 1380,
     height: 720,
   },
+  browsers: ['chromium'],
+  headless: false,
 };
+
 interface ICase {
   caseName: PropertyKey,
   propertyKey: PropertyKey
@@ -405,7 +408,8 @@ class Container {
   }) {
     const { viewport, headless } = config;
     const browser = await chromium.launch({
-      headless: !!headless
+      headless: !!headless,
+      downloadsPath: path.join(this.projectDirPath, '__downloads__'),
     });
     const context = await browser.newContext({
       viewport,
@@ -417,8 +421,15 @@ class Container {
         //   height: 800,
         // }
       },
-    })
+    });
     const page = await context.newPage();
+
+    page.on('download', (download) => {
+      download.saveAs(
+        path.join(this.projectDirPath, '__downloads__', download.suggestedFilename())
+      )
+    });
+
     const ctx = new Context(envConfig, browser, page, this.projectDirPath, {
       caseName,
       groupName,
@@ -521,6 +532,7 @@ class Container {
 
     // gen html
     const html = generateHTML(this.recorder.records);
+    fs.ensureDirSync(this.htmlReportPath)
     fs.writeFileSync(path.join(this.htmlReportPath, 'index.html'), html, 'utf-8');
 
     // remove .xbell folder

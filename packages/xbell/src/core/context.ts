@@ -1,10 +1,12 @@
-import { Browser, Locator, Page, PageScreenshotOptions } from 'playwright-core';
+import { Browser, Download, Locator, Page, PageScreenshotOptions } from 'playwright-core';
 import { expect as jexpect, Expect as JExpect } from 'expect';
 import { ExpectType } from '../types';
 import { getMetadataKeys } from '../utils';
 import { MetaDataType } from '../constants';
 import { XBellLocator, XBellPage } from '../types/page';
 import { toMatchSnapshot, ToMatchSnapshotOptions, ScreenshotTarget } from './snapshot';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 
 type Step<T> = <R>(stepDescription: string, callback: (v: T) => R) => Promise<Step<Awaited<R>>>
 export class Context {
@@ -163,8 +165,29 @@ export class Context {
     return page as XBellPage | XBellLocator;
   }
 
+  protected _extendDownload(page: Page) {
+    const originWaitFor = page.waitForEvent.bind(page)
+    // @ts-ignore
+    page.waitForEvent = async (...args) => {
+      if (args[0] === 'download') {
+         // @ts-ignore
+        const ret: Download = await originWaitFor(...args);
+        const originPath = ret.path;
+        ret.path = async () => {
+          await originPath.apply(ret)
+          return join(this.rootDir, '__downloads__', ret.suggestedFilename())
+        }
+        return ret;
+
+      }
+      // @ts-ignore
+      return originWaitFor(...args);
+    }
+  }
+
   protected _extendPage(page: Page) {
     this._extendQuery(page);
+    this._extendDownload(page);
     return page as XBellPage;
   }
 

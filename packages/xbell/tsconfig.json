@@ -7,7 +7,7 @@
     "emitDecoratorMetadata": true,
     "allowJs": false,
     "declaration": true,
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "sourceMap": true,
     "strict": true,
     "outDir": "./dist"
