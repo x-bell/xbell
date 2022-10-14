@@ -28,12 +28,6 @@
 //   MultiEnvData
 // } from './types/index';
 
-// export type {
-//   Page,
-//   FrameLocator,
-//   Locator,
-//   ElementHandle
-// } from 'playwright-core';
 import type { TestArguments } from './types/parameter';
 export {
   test,
@@ -60,6 +54,14 @@ export {
 export {
   Page,
 } from './worker/page';
+
+export {
+  Locator,
+} from './worker/locator';
+
+export {
+  ElementHandle,
+} from './worker/element-handle';
 
 export {
   FixtureFunction,

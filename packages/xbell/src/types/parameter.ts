@@ -1,6 +1,7 @@
 import type { ParameterType } from '../constants/index'
-import type { XBellPage, XBellTestCaseFunctionArguments } from './test';
+import type { XBellTestCaseFunctionArguments } from './test';
 import type { XBellProject } from './config';
+import type { Page } from '../worker/page';
 
 export interface IParameter {
   type: ParameterType;
@@ -10,7 +11,7 @@ export interface IParameter {
 export type PropertyKey = symbol | string;
 
 export interface TestArguments<BrowserExtensionArg = {}> extends XBellTestCaseFunctionArguments<BrowserExtensionArg> {
-  page: XBellPage;
+  page: Page;
   project: XBellProject;
 }
 
