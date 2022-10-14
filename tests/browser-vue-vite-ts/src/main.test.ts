@@ -1,15 +1,19 @@
 import { test } from 'xbell';
 
-const sleep = () => new Promise(resolve => setTimeout(resolve, 115000));
+test('render app', async ({ page, expect }) => {
+  await page.goto('https://github.com', {
+    html: '<div id="app"></div>'
+  });
 
+  await page.evaluate(async () => {
+    await import ('./main');
+  });
 
-test('render vue app', async ({ page }) => {
-  // await page.goto('https://www.baidu.com', {
-  //   html: '<div id="app"></div>'
-  // });
-  // await page.evaluate(async () => {
-  //   await import('./main');
-  // });
+  await page.waitForLoadState('networkidle');
 
-  // await sleep();
-})
+  await expect(page.locateByText('User')).toBeVisible();
+  await expect(page.locateByText('Hang Liang')).toBeVisible();
+  await expect(page).toMatchScreenshot({
+    name: 'main-screenshot',
+  });
+});

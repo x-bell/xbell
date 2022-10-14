@@ -1,20 +1,22 @@
-import { test, expect } from 'xbell';
+import { test } from 'xbell';
 
-test('render user info', async ({ page }) => {
-
-  await page.goto('https://gd69519309.my-fat.gaoding.com/', {
+test('render user info component', async ({ page, expect }) => {
+  await page.goto('https://github.com', {
     html: '<div id="app"></div>'
   });
 
   await page.evaluate(async () => {
     const { default: UserInfo } = await import('./UserInfo.vue');
     const { createApp } = await import('vue');
-    createApp(UserInfo).mount('#app');
+    createApp(UserInfo, {
+      username: 'xlianghang',
+    }).mount('#app');
   });
 
-
   await page.waitForLoadState('networkidle');
-  const isVisible = await page.locateByText('凉寒').isVisible();
 
-  expect(isVisible).toBe(true);
+  await expect(page.locateByText('Hang Liang')).toBeVisible();
+  await expect(page).toMatchScreenshot({
+    name: 'user-info-screenshot',
+  });
 });

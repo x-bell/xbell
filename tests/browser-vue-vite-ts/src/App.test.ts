@@ -1,18 +1,21 @@
 import { test } from 'xbell';
 
-const sleep = () => new Promise(resolve => setTimeout(resolve, 2000));
+test('render app', async ({ page, expect }) => {
+  await page.goto('https://github.com', {
+    html: '<div id="app"></div>'
+  });
 
+  await page.evaluate(async () => {
+    const { default: UserInfo } = await import('./App.vue');
+    const { createApp } = await import('vue');
+    createApp(UserInfo).mount('#app');
+  });
 
-test('render App component', async ({ page }) => {
-  // await page.goto('https://www.baidu.com', {
-  //   html: '<div id="app"></div>'
-  // });
-  // console.log('App.test.ts文件 自己打印的...');
-  // await page.evaluate(async () => {
-  //   await import('./style.css');
-  //   const { default: App } = await import('./App.vue');
-  //   const { createApp } = await import('vue');
-  //   createApp(App).mount('#app');
-  // });
-  // await sleep();
-})
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.locateByText('User')).toBeVisible();
+  await expect(page.locateByText('Hang Liang')).toBeVisible();
+  await expect(page).toMatchScreenshot({
+    name: 'app-screenshot',
+  });
+});
