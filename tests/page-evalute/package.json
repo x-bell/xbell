@@ -1,8 +1,8 @@
 {
-  "name": "@xbell/test-browser-basic",
+  "name": "@xbell/test-page-evalute",
   "private": true,
   "scripts": {
-    "test": "xbell fun"
+    "test": "xbell"
   },
   "devDependencies": {
     "xbell": "workspace:*"
