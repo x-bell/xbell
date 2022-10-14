@@ -1,0 +1,10 @@
+{
+  "name": "@xbell/test-class-pom",
+  "private": true,
+  "scripts": {
+    "test": "xbell"
+  },
+  "devDependencies": {
+    "xbell": "workspace:*"
+  }
+}

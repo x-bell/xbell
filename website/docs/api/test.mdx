@@ -1,0 +1,200 @@
+---
+title: Test
+---
+
+## test
+
+**Signature: test(displayName, testFunction)**
+
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+import test from 'xbell';
+
+test('goto github', async ({ page }) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.each
+
+**Signature: test.each(items)(displayName, testFunction)**
+
+- `items` <type>T[]</type>
+- `displayName` <type>(item: T) => string</type> case name
+- `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
+
+Generate multiple test cases.
+
+```typescript
+import { test } from 'xbell';
+
+test.each([1, 2, 3])(
+  (item, index) => `case data is ${item}, index is ${index}`,
+  ({ expect, item }) => {
+    expect(item).toBe(index + 1);
+  }
+);
+```
+
+### test.batch
+
+**Signature: test.batch(items)(displayName, testFunction)**
+
+- `items` <type>T[]</type>
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
+
+Unlike `test.each` ,  `test.batch` only generates one test case, so if one item fails, this test case will fail.
+
+```typescript
+import { test } from 'xbell';
+
+test.batch([1, 2, 3])(
+  'item is equal to the index plus one',
+  ({ expect, item }) => {
+    expect(item).toBe(index + 1);
+  }
+);
+```
+
+### test.todo
+**Signature: test.todo(displayName, testFunction)**
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.todo('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.only
+**Signature: test.only(displayName, testFunction)**
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.only('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.skip
+**Signature: test.skip(displayName, testFunction)**
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.skip('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+## test.browser
+**Signature: test.browser(displayName, testFunction)**
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+import { test } from 'xbell';
+
+test.browser('one plus one equals two', async ({ page, expect }) => {
+  const { add } = await import('./add.ts');
+  expect(add(1, 1)).toBe(2);
+});
+```
+
+### test.browser.each
+**Signature: test.browser.each(items)(displayName, testFunction)**
+- `items` <type>T[]</type>
+- `displayName` <type>(item: T) => string</type> case name
+- `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
+
+Generate multiple test cases.
+
+```typescript
+import { test } from 'xbell';
+
+test.browser.each([1, 2, 3])(
+  (item, index) => `case data is ${item}, index is ${index}`,
+  ({ expect, item }) => {
+    expect(item).toBe(index + 1);
+  }
+);
+```
+
+
+### test.browser.batch
+**Signature: test.browser.batch(items)(displayName, testFunction)**
+- `items` <type>T[]</type>
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments & { item: T }) => void | Promise&lt;void&gt; </type> test function
+
+Unlike `test.each` ,  `test.batch` only generates one test case, so if one item fails, this test case will fail.
+
+```typescript
+import { test } from 'xbell';
+
+test.browser.batch([1, 2, 3])(
+  'item is equal to the index plus one',
+  ({ expect, item }) => {
+    expect(item).toBe(index + 1);
+  }
+);
+```
+
+### test.browser.todo
+**Signature: test.browser.todo(displayName, testFunction)**
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.browser.todo('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.browser.only
+**Signature: test.browser.only(displayName, testFunction)**
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.browser.only('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+### test.browser.skip
+**Signature: test.browser.skip(displayName, testFunction)**
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+test.browser.skip('goto github', async (page) => {
+  await page.goto('https://github.com');
+});
+```
+
+## describe
+**Signature: describe(description, testGroupFunction)**
+
+- `description` : <type>string</type>
+- `testGroupFunction` : <type>() => void;</type>
+
+### describe.skip
+**Signature: describe.skip(description, testGroupFunction)**
+- `description` : <type>string</type>
+- `testGroupFunction` : <type>() => void;</type>
+
+### describe.only
+**Signature: describe.only(description, testGroupFunction)**
+- `description` : <type>string</type>
+- `testGroupFunction` : <type>() => void;</type>
+
+### describe.todo
+**Signature: describe.todo(description, testGroupFunction)**
+- `description` : <type>string</type>
+- `testGroupFunction` : <type>() => void;</type>

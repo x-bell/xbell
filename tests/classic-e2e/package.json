@@ -1,0 +1,10 @@
+{
+  "name": "@xbell/test-class-e2e",
+  "private": true,
+  "scripts": {
+    "test": "xbell"
+  },
+  "devDependencies": {
+    "xbell": "workspace:*"
+  }
+}

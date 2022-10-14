@@ -1,0 +1,18 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.docs.category.Guide": {
+    "message": "使用指南",
+    "description": "The label for category Guide in sidebar docs"
+  },
+  "sidebar.docs.category.Adavanced": {
+    "message": "Adavanced",
+    "description": "The label for category Adavanced in sidebar docs"
+  },
+  "sidebar.api.category.Decorators": {
+    "message": "Decorators",
+    "description": "The label for category Decorators in sidebar api"
+  }
+}

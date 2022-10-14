@@ -1,10 +1,11 @@
-import * as chalk from 'chalk';
+import chalk, { supportsColor } from 'chalk';
 // import * as fs from 'fs';
 // import { codeFrameColumns } from '@babel/code-frame';
 
 // import * as path from 'path';
 // import { dim } from 'colors/safe';
 import { parseError } from './error';
+import stripAnis from 'strip-ansi';
 
 
 const FAIL_TEXT = '失败';
@@ -12,7 +13,7 @@ const PASS_TEXT = '成功';
 const RUNNING_TEXT = '运行中';
 
 function getColorTitle(title: string, color: 'green' | 'red' | 'yellow' | 'cyan' | 'white') {
-  return chalk.supportsColor ? chalk.reset.inverse.bold[color]?.(` ${title} `) + ' ' : `${title} `
+  return supportsColor ? chalk.reset.inverse.bold[color]?.(` ${title} `) + ' ' : `${title} `
 }
 
 const PASS = getColorTitle(PASS_TEXT, 'green')
@@ -30,7 +31,7 @@ class PrettyPrint {
   }
 
   public log(str: string) {
-    return chalk.supportsColor ? this.logStd(str) : this.logErr(str)
+    return supportsColor ? this.logStd(str) : this.logErr(str)
   }
 
   public running(...content: string[]) {
@@ -70,7 +71,7 @@ class PrettyPrint {
   }
 
   public startLoading(content: string = '') {
-    const frames =   ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚']
+    const frames = ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚']
 
     let x = 0;
     this.loadingTimer = setInterval(() => {
@@ -98,6 +99,8 @@ class PrettyPrint {
       if (ret.firstFrame) console.log(ret.firstFrame);
     }
   }
+
+  
 
   // public printErrorStack(error: Error) {
   //   if (!error.stack) {
@@ -130,3 +133,5 @@ class PrettyPrint {
 
 
 export const prettyPrint = new PrettyPrint()
+
+// console.log(prettyPrint.getCenterText('XBell', { symbol: '-' }))

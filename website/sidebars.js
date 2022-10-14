@@ -19,46 +19,44 @@ const sidebars = {
     'motivation',
     {
       type: 'category',
-      label: '新手指南',
+      label: 'Guide',
       link: {
         type: 'generated-index',
       },
       collapsed: false,
       items: [
         'get-started',
-        'pom',
-        'multi-env',
-        'ddt',
-        'snapshot',
+        'unit-testing',
+        'component-testing',
+        'e2e-testing',
       ],
     },
     {
       type: 'category',
-      label: '进阶',
+      label: 'Adavanced',
       link: {
         type: 'generated-index',
       },
       collapsed: false,
       items: [
-        'debug/index',
-        'diy-decorator'
+        'adavanced/decorator-mode',
+        'adavanced/extend',
       ],
     }
   ],
   api: [
-    {
-      type: 'category',
-      label: '装饰器',
-      link: {
-        type: 'generated-index',
-      },
-      collapsed: false,
-      items: [
-        'api/decorator',
-        'api/expect-decorator',
-        'api/query',
-      ]
-    }
+    'api/test',
+    'api/config',
+    'api/expect',
+    'api/page',
+    'api/locator',
+    'api/mouse',
+    'api/keyboard',
+    'api/element-handle',
+    'api/decorators',
+  ],
+  examples: [
+    'examples/multi-envs'
   ]
 
   // But you can create a sidebar manually

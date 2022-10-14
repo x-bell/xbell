@@ -1,20 +1,38 @@
-
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
-export type XBellConfig = {
-  /** 运行的环境 */
-  runEnvs: EnvConfig['ENV'][];
-  /** 浏览器类型 */
-  browsers?: XBellBrowserType[];
-  /** 是否无头模式 */
+export interface XBellBrowserConfig {
   headless?: boolean;
-  /** 环境变量配置 */
-  envConfig: Partial<Record<EnvConfig['ENV'], EnvConfig>>;
-  /** viewport 大小 */
-  viewport: {
+  /** browser viewport */
+  viewport?: {
     width: number;
     height: number;
-  }
-};
+  },
+}
 
-export type MultiEnvData<T> = Partial<Record<EnvConfig['ENV'], T>>;
+export interface XBellConfig {
+  /** browser config */
+  browser?: XBellBrowserConfig;
+  /** projects */
+  projects?: XBellProject[];
+  /** include */
+  include?: string[];
+  /** exclude */
+  exclude?: string[];
+}
+
+export type XBellTaskConfig = Partial<
+  Pick<
+    XBellConfig, 'browser'
+  >
+>;
+
+export type XBellProject = {
+  name: XBellProjects['names'];
+  config?: XBellConfig;
+} & Omit<XBellProjects, 'names'>;
+
+
+export type XBellRuntimeOptions = Partial<{
+  browserCallbacks: Array<(...args: any) => any>;
+  args?: object
+}>;

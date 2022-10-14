@@ -1,0 +1,49 @@
+---
+title: Config
+---
+
+
+```typescript title="xbell.config.ts"
+import type { XBellConfig } from 'xbell';
+
+export default <XBellConfig>({
+  headless: false,
+  timeout: 600000,
+  testDir: './tests',
+});
+```
+
+## config.include
+
+## config.exclude
+
+- type: <type>number</type>
+
+## config.threads
+
+- type: <type>number</type>
+
+## config.retries
+
+- type: <type>number</type>
+
+## config.repeat
+
+- type: <type>number</type>
+
+## config.browser
+
+- `type` <type>BrowserOptions</type>
+
+### BrowserOptions
+- `headless` <type>boolean</type> headless mode of browser.
+- `viewport` <type>object</type> viewport of browser.
+  - `width` <type>number</type> width of viewport.
+  - `height` <type>number</type> height of viewport.
+
+## config.projects
+
+- `type` <type>T[]</type>
+  - name
+  - config
+

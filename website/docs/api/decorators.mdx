@@ -1,0 +1,156 @@
+---
+title: Decorators
+---
+
+## @Test
+
+`@Test` Denotes that a method is a test method.
+
+**Signature: @Test()**
+
+**Example**
+
+```typescript
+import { Test, expect } from 'xbell';
+
+class TestCases {
+  @Test()
+  it_should_to_be_2() {
+    expect(1 + 1).toBe(2);
+  }
+}
+```
+
+## @DisplayName
+**Signature: @DisplayName(text)**
+
+- `text` <type>string</type> text of display name
+
+`@DisplayName` Set the name of the test case.
+
+
+**Example**
+
+```typescript
+import { Test, DisplayName, expect } from 'xbell';
+
+class TestCases {
+  @Test()
+  @DisplayName('it should to be two')
+  it_should_to_be_2() {
+    expect(1 + 1).toBe(2);
+  }
+}
+```
+
+## @Each
+**Signature: @Each(items, displayNameFunction)**
+
+- `items` <type>T[]</type>
+- `displayNameFunction` <type>(item: T, index: number) => string</type>
+
+Generate multiple test cases.
+
+**Example**
+```typescript
+import { Test, Batch, TestEachArguments } from 'xbell';
+
+class TestCases {
+
+  @Test()
+  @Batch([1, 2, 3], (item, index) => `case data is ${item}, index is ${index}`)
+  testCase({ item, index, expect }: TestEachArguments<number>) {
+    expect(item).toBe(index + 1);
+  }
+
+}
+```
+
+## @Batch
+**Signature: @Batch(items)**
+
+- `items` <type>T[]</type>
+
+Unlike `@Each` ,  `@Batch` only generates one test case, so if one item fails, this test case will fail.
+
+**Example**
+```typescript
+import { Test, TestBatchArguments } from 'xbell';
+
+class TestCases {
+  @Test()
+  @DisplayName('item is equal to the index plus one')
+  @Batch([1, 2, 3])
+  testCase({ item, index, expect }: TestBatchArguments<number>) {
+    expect(item).toBe(index + 1);
+  }
+}
+
+```
+
+## @BeforeEach
+**Signature: @BeforeEach()**
+
+`@BeforeEach` Denotes that the annotated method should be executed before each `@Test`
+
+**Exmaple**
+```typescript
+import { Test, BeforeEach, TestArguments } from 'xbell';
+
+class TestCases {
+  accountLocator!: number;
+
+  @BeforeEach()
+  async init({ page }: TestArguments) {
+    await page.goto('http://github.com');
+    this.accountLocator = page.locateByText('account');
+  }
+
+  @Test()
+  case1() {
+    await this.accountLocator.click();
+  }
+
+  @Test()
+  case2() {
+    await this.accountLocator.hover();
+  }
+}
+
+```
+
+
+## @AfterEach
+**Signature: @AfterEach()**
+
+`@AfterEach` Denotes that the annotated method should be executed after each `@Test`,
+**Exmaple**
+```typescript
+import { Test, BeforeEach, AfterEach, TestArguments } from 'xbell';
+
+class TestCases {
+  accountLocator!: number;
+
+  @BeforeEach()
+  async init({ page }: TestArguments) {
+    await page.goto('http://github.com');
+    this.accountLocator = page.locateByText('account');
+  }
+
+  @AfterEach()
+  async makeAssertion({ page, expect }: TestArguments) {
+    await expect(page).toMatchScreenshot('default-screenshot');
+  }
+
+  @Test()
+  case1() {
+    await this.accountLocator.click();
+  }
+
+  @Test()
+  case2() {
+    await this.accountLocator.hover();
+  }
+}
+
+```

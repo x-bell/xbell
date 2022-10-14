@@ -1,0 +1,22 @@
+.text {
+  color: var(--ifm-color-primary);
+  font-size: 12px;
+  display: inline-block;
+  border-radius: 4px;
+  padding: 2px 3px;
+  border: 1px solid var(--ifm-color-primary);
+  margin-left: 4px;
+  /* border-color: rgb(189, 147, 249); */
+  /* color: rgb(189, 147, 249); */
+}
+
+/* .secondary {
+  border-color: rgb(189, 147, 249);
+  border-color: rgb(189, 147, 249);
+} */
+
+.secondary {
+  border-color: rgb(223, 118, 205);
+  color: rgb(223, 118, 205);
+  /* color: #08979cde; */
+}

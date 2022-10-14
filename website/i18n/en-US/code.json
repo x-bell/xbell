@@ -1,0 +1,29 @@
+{
+  "xbell.slogan": {
+    "message": "Make testing easy."
+  },
+  "homepage.getStarted": {
+    "message": "Get Started - 5min ⏱️"
+  },
+  "homepage.allInOneTesting": {
+    "message": "All-in-one testing"
+  },
+  "homepage.allInOneTesting.desc": {
+    "message": "Write unit tests and e2e tests with the same mind."
+  },
+  "homepage.nodeAndBrowser": {
+    "message": "node & browser"
+  },
+  "homepage.nodeAndBrowser.desc": {
+    "message": "You can freely switch between Node.js and Browser environments to test your code."
+  },
+  "homepage.decoratorMode": {
+    "message": "Decorator Mode"
+  },
+  "homepage.decoratorMode.desc": {
+    "message": "In decorator mode, you can easily do any test."
+  },
+  "docs.guide": {
+    "message": "Guide"
+  }
+}

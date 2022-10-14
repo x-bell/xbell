@@ -1,0 +1,10 @@
+{
+  "name": "@xbell/test-page-evalute",
+  "private": true,
+  "scripts": {
+    "test": "xbell"
+  },
+  "devDependencies": {
+    "xbell": "workspace:*"
+  }
+}

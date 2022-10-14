@@ -1,0 +1,557 @@
+2022-09-08T09:27:31.543Z Browser setup start...
+2022-09-08T09:27:32.792Z channel::request >> {"method":"Target.setDiscoverTargets","params":{"discover":true,"filter":[{"type":"tab","exclude":true},{}]},"id":1}
+2022-09-08T09:27:32.793Z channel::request >> {"method":"Target.setAutoAttach","params":{"waitForDebuggerOnStart":true,"flatten":true,"autoAttach":true},"id":2}
+launch
+2022-09-08T09:27:32.828Z channel::event {
+  method: 'Target.targetCreated',
+  params: {
+    targetInfo: {
+      targetId: '2ef22bf8-b547-4f6f-bb64-a7a305aeebc2',
+      type: 'browser',
+      title: '',
+      url: '',
+      attached: true,
+      canAccessOpener: false
+    }
+  }
+}
+2022-09-08T09:27:32.834Z channel::event {
+  method: 'Target.targetCreated',
+  params: {
+    targetInfo: {
+      targetId: '5398EC0C1E4F5E986659A646EE29B9B3',
+      type: 'page',
+      title: '',
+      url: 'about:blank',
+      attached: false,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:32.835Z channel::response << { id: 1, result: {} }
+2022-09-08T09:27:32.836Z channel::event {
+  method: 'Target.targetInfoChanged',
+  params: {
+    targetInfo: {
+      targetId: '5398EC0C1E4F5E986659A646EE29B9B3',
+      type: 'page',
+      title: '',
+      url: 'about:blank',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:32.836Z channel::event {
+  method: 'Target.attachedToTarget',
+  params: {
+    sessionId: '0FB8E96F58CDE4970D18446419523909',
+    targetInfo: {
+      targetId: '5398EC0C1E4F5E986659A646EE29B9B3',
+      type: 'page',
+      title: '',
+      url: 'about:blank',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    },
+    waitingForDebugger: false
+  }
+}
+2022-09-08T09:27:32.853Z channel::request >> {"method":"Target.setAutoAttach","params":{"waitForDebuggerOnStart":true,"flatten":true,"autoAttach":true},"id":3,"sessionId":"0FB8E96F58CDE4970D18446419523909"}
+2022-09-08T09:27:32.855Z channel::request >> {"method":"Runtime.runIfWaitingForDebugger","id":4,"sessionId":"0FB8E96F58CDE4970D18446419523909"}
+2022-09-08T09:27:32.860Z channel::response << { id: 2, result: {} }
+2022-09-08T09:27:32.874Z Browser setup done!
+2022-09-08T09:27:32.875Z channel::request >> {"method":"Target.createTarget","params":{"url":"about:blank"},"id":5}
+2022-09-08T09:27:32.883Z channel::event {
+  method: 'Target.targetInfoChanged',
+  params: {
+    targetInfo: {
+      targetId: '5398EC0C1E4F5E986659A646EE29B9B3',
+      type: 'page',
+      title: 'about:blank',
+      url: 'about:blank',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:32.885Z channel::response << { id: 3, result: {}, sessionId: '0FB8E96F58CDE4970D18446419523909' }
+2022-09-08T09:27:32.885Z channel::response << { id: 4, result: {}, sessionId: '0FB8E96F58CDE4970D18446419523909' }
+2022-09-08T09:27:32.885Z channel::event {
+  method: 'Target.targetCreated',
+  params: {
+    targetInfo: {
+      targetId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+      type: 'page',
+      title: '',
+      url: 'about:blank',
+      attached: false,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:32.885Z channel::event {
+  method: 'Target.targetInfoChanged',
+  params: {
+    targetInfo: {
+      targetId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+      type: 'page',
+      title: '',
+      url: 'about:blank',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:32.885Z channel::event {
+  method: 'Target.attachedToTarget',
+  params: {
+    sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF',
+    targetInfo: {
+      targetId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+      type: 'page',
+      title: '',
+      url: 'about:blank',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    },
+    waitingForDebugger: true
+  }
+}
+2022-09-08T09:27:32.885Z channel::request >> {"method":"Target.setAutoAttach","params":{"waitForDebuggerOnStart":true,"flatten":true,"autoAttach":true},"id":6,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.885Z channel::request >> {"method":"Runtime.runIfWaitingForDebugger","id":7,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.885Z channel::response << { id: 5, result: { targetId: '4967B7CA43B6BC3D9820A9B1E58EFB10' } }
+2022-09-08T09:27:32.888Z channel::event {
+  method: 'Target.targetInfoChanged',
+  params: {
+    targetInfo: {
+      targetId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+      type: 'page',
+      title: 'about:blank',
+      url: 'about:blank',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:32.889Z FrameManager setup start...
+2022-09-08T09:27:32.889Z channel::request >> {"method":"Page.enable","id":8,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.889Z channel::request >> {"method":"Page.getFrameTree","id":9,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.889Z channel::request >> {"method":"Performance.enable","id":10,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.897Z channel::request >> {"method":"Log.enable","id":11,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.904Z channel::response << { id: 6, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.916Z channel::response << { id: 7, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.917Z channel::response << { id: 8, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.917Z channel::response << {
+  id: 9,
+  result: { frameTree: { frame: [Object] } },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:32.917Z channel::response << { id: 10, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.917Z channel::response << { id: 11, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.917Z FrameManager getFrameTree done!
+2022-09-08T09:27:32.917Z channel::request >> {"method":"Page.setLifecycleEventsEnabled","params":{"enabled":true},"id":12,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.917Z channel::request >> {"method":"Runtime.enable","id":13,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.929Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: '602110695CFC023F32214A0CF3F3DC19',
+    name: 'commit',
+    timestamp: 373775.803326
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:32.938Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: '602110695CFC023F32214A0CF3F3DC19',
+    name: 'DOMContentLoaded',
+    timestamp: 373775.803491
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:32.939Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: '602110695CFC023F32214A0CF3F3DC19',
+    name: 'load',
+    timestamp: 373775.80577
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:32.939Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: '602110695CFC023F32214A0CF3F3DC19',
+    name: 'networkAlmostIdle',
+    timestamp: 373775.806671
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:32.939Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: '602110695CFC023F32214A0CF3F3DC19',
+    name: 'networkIdle',
+    timestamp: 373775.806671
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:32.939Z channel::response << { id: 12, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.954Z channel::event {
+  method: 'Runtime.executionContextCreated',
+  params: {
+    context: {
+      id: 1,
+      origin: '://',
+      name: '',
+      uniqueId: '-3893704287107658530.-6979306533622364369',
+      auxData: [Object]
+    }
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:32.968Z channel::response << { id: 13, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.969Z FrameManager Page.setLifecycleEventsEnabled Runtime.enable
+2022-09-08T09:27:32.969Z FrameManager setMainFrame
+2022-09-08T09:27:32.969Z FrameManager setup done!
+2022-09-08T09:27:32.969Z channel::request >> {"method":"Performance.enable","id":14,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:32.969Z channel::request >> {"method":"Log.enable","id":15,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+newPage
+2022-09-08T09:27:32.970Z channel::response << { id: 14, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.971Z channel::response << { id: 15, result: {}, sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF' }
+2022-09-08T09:27:32.971Z channel::request >> {"method":"Page.navigate","params":{"url":"https://www.baidu.com","frameId":"4967B7CA43B6BC3D9820A9B1E58EFB10"},"id":16,"sessionId":"DEFC57A3AE8A1DF3D73930E3F9690CEF"}
+2022-09-08T09:27:33.855Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: '602110695CFC023F32214A0CF3F3DC19',
+    name: 'networkAlmostIdle',
+    timestamp: 373775.806671
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:33.855Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: '602110695CFC023F32214A0CF3F3DC19',
+    name: 'networkIdle',
+    timestamp: 373775.806671
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+goto
+page Page {
+  _deps: {
+    session: Session {
+      _events: [Object: null prototype],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      _deps: [Object],
+      sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF',
+      [Symbol(kCapture)]: false
+    },
+    FrameFactory: [class Frame],
+    FrameManagerFactory: [class FrameManager]
+  },
+  _frameManager: FrameManager {
+    _deps: { session: [Session], FrameFactory: [class Frame] },
+    _frames: Map(1) { '4967B7CA43B6BC3D9820A9B1E58EFB10' => [Frame] },
+    _mainFrame: Frame {
+      _deps: [Object],
+      childFrames: Set(0) {},
+      frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10'
+    }
+  }
+}
+2022-09-08T09:27:33.861Z channel::response << {
+  id: 16,
+  result: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7'
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:33.863Z channel::event {
+  method: 'Page.frameStartedLoading',
+  params: { frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10' },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:33.863Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'init',
+    timestamp: 373776.820341
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:33.873Z channel::event {
+  method: 'Target.targetInfoChanged',
+  params: {
+    targetInfo: {
+      targetId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+      type: 'page',
+      title: 'https://www.baidu.com',
+      url: 'https://www.baidu.com/',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:33.880Z channel::event {
+  method: 'Runtime.executionContextsCleared',
+  params: {},
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:33.880Z channel::event {
+  method: 'Page.frameNavigated',
+  params: {
+    frame: {
+      id: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+      loaderId: 'EA07A97464E46317130C827EA49568A7',
+      url: 'https://www.baidu.com/',
+      domainAndRegistry: 'baidu.com',
+      securityOrigin: 'https://www.baidu.com',
+      mimeType: 'text/html',
+      adFrameStatus: [Object],
+      secureContextType: 'Secure',
+      crossOriginIsolatedContextType: 'NotIsolated',
+      gatedAPIFeatures: []
+    },
+    type: 'Navigation'
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:33.880Z FrameManager setMainFrame
+2022-09-08T09:27:33.880Z channel::event {
+  method: 'Runtime.executionContextCreated',
+  params: {
+    context: {
+      id: 2,
+      origin: 'https://www.baidu.com',
+      name: '',
+      uniqueId: '9046633446966479200.7170001115924534707',
+      auxData: [Object]
+    }
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:34.927Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'firstPaint',
+    timestamp: 373777.881558
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:34.927Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'firstContentfulPaint',
+    timestamp: 373777.881558
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:34.928Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'firstMeaningfulPaintCandidate',
+    timestamp: 373777.881558
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:35.048Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'firstImagePaint',
+    timestamp: 373777.987864
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:35.337Z channel::event {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object] ],
+    executionContextId: 2,
+    timestamp: 1662629255321.378,
+    stackTrace: { callFrames: [Array] }
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:35.338Z channel::event {
+  method: 'Runtime.consoleAPICalled',
+  params: {
+    type: 'log',
+    args: [ [Object], [Object] ],
+    executionContextId: 2,
+    timestamp: 1662629255336.844,
+    stackTrace: { callFrames: [Array] }
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:35.492Z channel::event {
+  method: 'Page.domContentEventFired',
+  params: { timestamp: 373778.441256 },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:35.492Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'DOMContentLoaded',
+    timestamp: 373778.441256
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:35.854Z channel::event {
+  method: 'Page.loadEventFired',
+  params: { timestamp: 373778.81092 },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:35.855Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'load',
+    timestamp: 373778.81092
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:35.857Z channel::event {
+  method: 'Page.frameStoppedLoading',
+  params: { frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10' },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:36.130Z channel::event {
+  method: 'Target.targetCreated',
+  params: {
+    targetInfo: {
+      targetId: '802BC533C7A7C2173C03302F6F6CC099',
+      type: 'worker',
+      title: 'blob:https://www.baidu.com/275a7a86-4221-4373-9f39-d66f00bed868',
+      url: 'blob:https://www.baidu.com/275a7a86-4221-4373-9f39-d66f00bed868',
+      attached: false,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:36.135Z channel::event {
+  method: 'Target.targetInfoChanged',
+  params: {
+    targetInfo: {
+      targetId: '802BC533C7A7C2173C03302F6F6CC099',
+      type: 'worker',
+      title: 'blob:https://www.baidu.com/275a7a86-4221-4373-9f39-d66f00bed868',
+      url: 'blob:https://www.baidu.com/275a7a86-4221-4373-9f39-d66f00bed868',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:36.135Z channel::event {
+  method: 'Target.attachedToTarget',
+  params: {
+    sessionId: '47AA8E7C1EE09E74F4E886369CA33AAF',
+    targetInfo: {
+      targetId: '802BC533C7A7C2173C03302F6F6CC099',
+      type: 'worker',
+      title: 'blob:https://www.baidu.com/275a7a86-4221-4373-9f39-d66f00bed868',
+      url: 'blob:https://www.baidu.com/275a7a86-4221-4373-9f39-d66f00bed868',
+      attached: true,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    },
+    waitingForDebugger: true
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:36.135Z channel::request >> {"method":"Target.setAutoAttach","params":{"waitForDebuggerOnStart":true,"flatten":true,"autoAttach":true},"id":17,"sessionId":"47AA8E7C1EE09E74F4E886369CA33AAF"}
+2022-09-08T09:27:36.136Z channel::request >> {"method":"Runtime.runIfWaitingForDebugger","id":18,"sessionId":"47AA8E7C1EE09E74F4E886369CA33AAF"}
+2022-09-08T09:27:36.136Z channel::response << { id: 17, result: {}, sessionId: '47AA8E7C1EE09E74F4E886369CA33AAF' }
+2022-09-08T09:27:36.136Z channel::response << { id: 18, result: {}, sessionId: '47AA8E7C1EE09E74F4E886369CA33AAF' }
+2022-09-08T09:27:36.196Z channel::event {
+  method: 'Target.targetInfoChanged',
+  params: {
+    targetInfo: {
+      targetId: '802BC533C7A7C2173C03302F6F6CC099',
+      type: 'worker',
+      title: 'blob:https://www.baidu.com/275a7a86-4221-4373-9f39-d66f00bed868',
+      url: 'blob:https://www.baidu.com/275a7a86-4221-4373-9f39-d66f00bed868',
+      attached: false,
+      canAccessOpener: false,
+      browserContextId: '5CD76195AE50B9BBA6BF6B2F8ACA1A1F'
+    }
+  }
+}
+2022-09-08T09:27:36.197Z channel::event {
+  method: 'Target.detachedFromTarget',
+  params: {
+    sessionId: '47AA8E7C1EE09E74F4E886369CA33AAF',
+    targetId: '802BC533C7A7C2173C03302F6F6CC099'
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:36.197Z channel::event {
+  method: 'Target.targetDestroyed',
+  params: { targetId: '802BC533C7A7C2173C03302F6F6CC099' }
+}
+2022-09-08T09:27:36.876Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'networkAlmostIdle',
+    timestamp: 373779.085043
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:36.876Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'firstMeaningfulPaint',
+    timestamp: 373777.881558
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}
+2022-09-08T09:27:36.933Z channel::event {
+  method: 'Page.lifecycleEvent',
+  params: {
+    frameId: '4967B7CA43B6BC3D9820A9B1E58EFB10',
+    loaderId: 'EA07A97464E46317130C827EA49568A7',
+    name: 'networkIdle',
+    timestamp: 373779.349078
+  },
+  sessionId: 'DEFC57A3AE8A1DF3D73930E3F9690CEF'
+}

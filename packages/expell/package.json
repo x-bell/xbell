@@ -1,0 +1,16 @@
+{
+  "name": "expell",
+  "version": "0.1.0",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "test": "npm run build && node --loader ../../scripts/loader.mjs ../../scripts/test.mjs",
+    "prepublishOnly": "npm run test"
+  },
+  "dependencies": {
+    "@xbell/format": "workspace:*",
+    "@xbell/color": "workspace:*"
+  }
+}

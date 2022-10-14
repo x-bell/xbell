@@ -2,22 +2,23 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Default",
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ES2020",
+    "module": "ESNext",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowJs": false,
     "declaration": true,
-    "moduleResolution": "NodeNext",
-    "sourceMap": true,
+    "moduleResolution": "node",
     "strict": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "extendedDiagnostics": false
   },
   "include": [
-    "./src"
+    "src"
   ],
   "exclude": [
     "dist",
-    "build",
     "node_modules"
   ]
 }

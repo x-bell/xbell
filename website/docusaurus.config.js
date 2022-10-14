@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'X Bell',
+  title: 'XBell',
   tagline: '一款舒适的自动化测试框架',
   url: 'https://your-docusaurus-test-site.com',
   baseUrl: '/xbell/',
@@ -23,8 +23,23 @@ const config = {
   // metadata like html lang. For example, if your site is Chinese, you may want
   // to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: 'en-US',
+    locales: ['en-US', 'zh-CN'],
+    localeConfigs: {
+      'en-US': {
+        label: 'English',
+        direction: 'ltr',
+        htmlLang: 'en-US',
+        // path: 'en',
+        calendar: 'gregory',
+      },
+      'zh-CN': {
+        label: '中文',
+        direction: 'ltr',
+        // path: 'cn',
+        htmlLang: 'zh-CN',
+      }
+    }
   },
 
   presets: [
@@ -67,7 +82,7 @@ const config = {
             type: 'doc',
             docId: 'get-started',
             position: 'left',
-            label: '教程',
+            label: 'Docs',
           },
           {
             type: 'docSidebar',
@@ -76,8 +91,18 @@ const config = {
             label: 'API',
           },
           {
+            type: 'docSidebar',
+            position: 'left',
+            sidebarId: 'examples',
+            label: 'Examples',
+          },
+          {
             href: 'https://github.com/x-bell/xbell',
             label: 'GitHub',
+            position: 'right',
+          },
+          {
+            type: 'localeDropdown',
             position: 'right',
           },
         ],
@@ -86,20 +111,22 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: '文档',
+            title: 'Docs',
             items: [
               {
-                label: '快速开始',
+                label: 'Getting started',
                 to: '/docs/get-started',
               },
             ],
           },
           {
-            title: '生态',
+            title: 'Community',
             items: [
               {
-                label: '场景测试',
-                href: '/xbell/test-site/',
+                label: 'Scenario testing',
+                // prependBaseUrlToHref: true,
+                href: 'https://x-bell.github.io/xbell/test-site/',
+                // to: '/xbell/test-site/'
               },
               {
                 label: 'Stack Overflow',
@@ -108,7 +135,7 @@ const config = {
             ],
           },
           {
-            title: '更多',
+            title: 'More',
             items: [
               {
                 label: 'GitHub',

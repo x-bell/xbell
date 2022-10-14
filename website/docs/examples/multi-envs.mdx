@@ -1,0 +1,89 @@
+---
+title: Multi Environments
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+This is a multi-environment example that contains three environments called `dev` , `pre` , and `prod` .
+
+## Type hints
+Config to `xbell-env.d.ts` lets you get typescript hints.
+```typescript title="xbell-env.d.ts"
+
+interface XBellProjects {
+  names: 'dev' | 'pre' | 'prod';
+  data: {
+    origin: string;
+  }
+}
+```
+
+
+## Config
+```typescript title="xbell.config.ts"
+import type { XBellConfig } from 'xbell';
+
+export default <XBellConfig>({
+  browser: {
+    headless: true,
+  },
+  projects: [
+    {
+      name: 'dev',
+      data: {
+        origin: 'https://dev.example.com'
+      },
+    },
+    {
+      name: 'pre',
+      data: {
+        origin: 'https://pre.example.com'
+      }
+    },
+    {
+      name: 'prod',
+      data: {
+        origin: 'https://example.com'
+      },
+      config: {
+        browser: {
+          headless: false,
+        },
+      }
+    }
+  ],
+});
+```
+
+## Write Testing
+<Tabs>
+  <TabItem value="standard" label="standard">
+
+  ```typescript title="demo.test.ts"
+  import { test } from 'xbell';
+
+  test('login demo', async ({ page, project }) => {
+    await page.goto(project.data.origin);
+  });
+  ```
+
+  </TabItem>
+
+  <TabItem value="classic" label="classic">
+
+  ```typescript title="demo.test.ts"
+  import { Page, Project } from 'xbell';
+  import { Test, Prop } from 'xbell/decorators';
+
+  @Test()
+  class TestCase {
+    login_demo({ page, test }) {
+      const { page, project } = this;
+      await page.goto(project.data.origin)
+    }
+  }
+  ```
+
+  </TabItem>
+</Tabs>

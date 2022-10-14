@@ -6,4 +6,6 @@ dist
 .vscode-test/
 *.vsix
 .DS_Store
+deprecated
 __snapshots__
+

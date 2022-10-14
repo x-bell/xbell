@@ -1,3 +1,3 @@
-interface EnvConfig {
-  ENV: 'dev' | 'fat' | 'stage' | 'prod'
+interface XBellProjects {
+  names: string;
 }

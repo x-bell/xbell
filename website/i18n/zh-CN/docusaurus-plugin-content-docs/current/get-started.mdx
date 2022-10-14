@@ -1,0 +1,107 @@
+---
+sidebar_position: 2
+---
+
+# 快速开始
+
+## 简介
+XBell 是一个现代 Web 测试框架，它很好地结合了单元测试和 E2E 测试。
+
+同时你可以自由地选择在 Node.js 或浏览器中进行测试。
+
+
+## 安装
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+<TabItem value="npm" label="npm">
+
+```bash
+$ npm create xbell
+
+# install browsers
+$ npm run install:browser
+
+$ npm test
+```
+</TabItem>
+
+<TabItem value="yarn" label="yarn">
+
+```bash
+$ yarn create xbell
+
+# install browsers
+$ yarn install:browser
+
+$ yarn test
+```
+
+</TabItem>
+<TabItem value="pnpm" label="pnpm">
+
+```bash
+$ pnpm create xbell
+
+# install browsers
+$ pnpm install:browser
+
+$ pnpm test
+```
+
+</TabItem>
+</Tabs>
+
+## Writing Tests
+
+### Way 1: Node.js Testing 
+Test the code in nodejs
+
+```javascript title="test-nodejs.test.js"
+import { test, expect } from 'xbell';
+// import to nodejs
+import { add } from './add';
+
+test('test the code in nodejs', () => {
+  expect(add(1, 1)).toBe(2);
+});
+
+```
+
+### Way 2: Browser Testing
+Test the code in browser
+```javascript title="test-browser.test.js"
+import { test } from 'xbell';
+
+test.browser('test the code in browser', async ({ expect }) => {
+  // 1. import to browser
+  const { add } = await import('./add');
+  // 2. expect in browser
+  expect(add(1, 1)).toBe(2);
+});
+```
+
+### Way 3: Nodejs & Browser
+You can even run some code in NodeJS and some in the browser in just one case.
+
+Alternatively, you can run the code in browser, make assertions in nodejs.
+```javascript
+import { test } from 'xbell';
+
+test('test the code in browser', async ({ page }) => {
+  // browser page
+  await page.evalute(async () => {
+    // 1. import to browser
+    const { add } = await import('./add');
+    // 2. render to browser
+    document.body.innerHTML = `<div>result is ${result}</div>`;
+  });
+
+  // 3. assetion in nodejs
+  await expect(page).toMatchSnapShot({
+    name: 'result-screenshot'
+  });
+});
+```

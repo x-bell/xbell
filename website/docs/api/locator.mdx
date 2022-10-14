@@ -1,0 +1,22 @@
+---
+title: Locator
+---
+
+## locator.click(options?)
+- `options?` <type>object</type>
+  -  `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds.
+  - `button?` <type>'left' | 'right' | 'middle'</type> Defaults to `'left'`.
+  - `clickCount?` <type>number</type> Count of button clicks, defaults to `1`.
+  - `position?` <type>object</type> Offset for the clickable point relative to the top-left corder of the border box.
+    - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
+    - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
+  - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+
+## locator.check(options?)
+- `options?` <type>object</type>
+   - `position?` <type>object</type> Offset for the clickable point relative to the top-left corder of the border box.
+    - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
+    - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
+  - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+
+

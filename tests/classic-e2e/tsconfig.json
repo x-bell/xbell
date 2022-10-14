@@ -1,0 +1,8 @@
+{
+  "include": ["./src"],
+  "references": [
+    {
+      "path": "./tsconfig.test.json"
+    }
+  ]
+}

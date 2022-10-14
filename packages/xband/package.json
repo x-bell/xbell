@@ -1,0 +1,15 @@
+{
+  "name": "xband",
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/ws": "^8.5.3",
+    "debug": "^4.3.4",
+    "devtools-protocol": "0.0.1040073",
+    "ws": "^8.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.18"
+  }
+}

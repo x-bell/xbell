@@ -1,0 +1,28 @@
+---
+title: Config
+---
+
+
+```typescript title="xbell.config.ts"
+import type { XBellConfig } from 'xbell';
+
+export default <XBellConfig>({
+  browser: {
+    headless: false,
+  },
+  include: ['**/*.{test,spec}.{js,ts,jsx,tsx}']
+});
+```
+
+## config.include
+- type: <type>string[]</type>
+- default: `['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']`
+
+## config.browser
+浏览器配置
+
+### config.browser.headless
+- type: <type>boolean</type>
+- default: `true`
+
+是否使用无头模式

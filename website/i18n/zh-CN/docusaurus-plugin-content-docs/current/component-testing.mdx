@@ -1,0 +1,49 @@
+---
+sidebar_position: 2
+---
+
+# 组件测试
+
+此处的组件测试是指基于前端框架之上的单元测试，如 react、vue 等。
+
+
+## React
+
+XBell 提供了开箱即用的 react 插件。
+
+```bash
+$ npm install xbell @xbell/react
+```
+
+```jsx
+import { test } from '@xbell/react';
+
+test('react example', async ({ expect, fn, mount }) => {
+  const { default: Button } = await import('./Button');
+  const handleClick = fn();
+
+  mount(<Button onClick={handleClick}>按钮</Button>);
+
+  expect(handleClick).toHaveBeenCalled();
+});
+```
+
+## Vue
+XBell 提供了开箱即用的 vue 插件。
+
+```bash
+$ npm install xbell @xbell/vue
+```
+
+```jsx
+import { test } from '@xbell/vue';
+
+test('react example', async ({ expect, fn, mount }) => {
+  const { default: Button } = await import('./button');
+  const handleClick = fn();
+
+  mount(<Button onClick={handleClick}>按钮</Button>);
+
+  expect(handleClick).toHaveBeenCalled();
+});
+```

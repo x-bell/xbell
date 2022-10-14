@@ -1,0 +1,27 @@
+---
+title: Decorator Mode
+---
+
+## Overview
+
+The decorator mode is suitable for complex test scenarios and makes your test code easier to maintain.
+
+```javascript
+import { Test, Expect, Page } from 'xbell/decorator'
+
+class TestGroup {
+  @Test()
+  @List([1,2,3])
+  goto_github({ page, expect }) {
+    await this.page.goto('https://github.com');
+    expect()
+  }
+
+  @Test()
+  @Each([1, 2, 3], (item) => `case name is ${item}`)
+  goto_github({ page, expect }) {
+    await this.page.goto('https://github.com');
+    expect()
+  }
+}
+```
