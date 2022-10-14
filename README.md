@@ -18,4 +18,4 @@ XBell is a web testing framework that combines unit testing with end-to-end test
 ## 🎐 Features
 - Write unit tests and e2e tests with the same mind.
 - Freely switch between Node.js and Browser environments to test your code.
-- Easy to use decorator mode based on Typescript & IoC
+- Easy to use decorator mode based on Typescript.
