@@ -2,7 +2,7 @@ import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { getJsonFileSpaces } from './get-json-file-spaces';
 
-const XBELL_VERSION = '^0.4.1';
+const XBELL_VERSION = '^0.4.2';
 
 const SCRIPTS = {
   'test': 'xbell',
