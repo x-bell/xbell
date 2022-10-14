@@ -1,5 +1,5 @@
 import type { ParameterType } from '../constants/index'
-import type { XBellPage } from './test';
+import type { XBellPage, XBellTestCaseFunctionArguments } from './test';
 import type { XBellProject } from './config';
 
 export interface IParameter {
@@ -9,17 +9,17 @@ export interface IParameter {
 
 export type PropertyKey = symbol | string;
 
-export interface TestParams {
+export interface TestArguments<BrowserExtensionArg = {}> extends XBellTestCaseFunctionArguments<BrowserExtensionArg> {
   page: XBellPage;
   project: XBellProject;
 }
 
-export interface TestEachParams<T = any> extends TestParams {
+export interface TestEachArguments<T = any> extends TestArguments {
   item: T;
 }
 
-export interface TestBatchParams<T = any> extends TestParams {
+export interface TestBatchArguments<T = any> extends TestArguments {
   item: T;
 }
 
-export type TestFixtureParams<T = {}>  = TestParams & T;
+export type TestFixtureArguments<T = {}>  = TestArguments & T;

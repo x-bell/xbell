@@ -25,7 +25,6 @@ class XBell {
   async runTest() {
     recorder.setStartTime(Date.now());
     const testFiles = await this.findTestFiles()
-
     if (!testFiles.length) {
       prompter.displayError('NotFoundTestFiles');
     } else {

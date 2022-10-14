@@ -5,14 +5,20 @@ import { Executor } from './executor';
 import { collector } from './collector';
 import { workerContext } from './worker-context';
 import { toTestFileRecord } from '../utils/record';
+import debug from 'debug';
 
+const debugWorker = debug('xbell:worker');
 export async function run(workData: XBellWorkerTaskPayload) {
   const testFiles = (await Promise.all(workData.testFilenames.map(async (filename) => {
     try {
+      debugWorker('startCollect', filename);
       const ret = await collector.collect(filename);
-      workerContext.channel.emit('onFileCollectSuccesed', toTestFileRecord(ret));
+      const testRecord = toTestFileRecord(ret);
+      workerContext.channel.emit('onFileCollectSuccesed', testRecord);
+      debugWorker('startCollect.done', filename, testRecord);
       return ret;
     } catch(error: any) {
+      debugWorker('startCollect.failed', filename);
       // TODO: collect failed
       workerContext.channel.emit('onFileCollectFailed', {
         filename,
@@ -42,5 +48,8 @@ export async function run(workData: XBellWorkerTaskPayload) {
 parentPort!.on('message', async ({ type, payload }: XBellWorkerTask) => {
   if (type === 'run') {
     await run(payload);
+    parentPort?.postMessage({
+      type: 'finished',
+    });
   }
 });

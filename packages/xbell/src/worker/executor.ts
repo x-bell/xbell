@@ -43,10 +43,10 @@ export class Executor {
   async runCase(c: XBellTestCase<any, any>) {
     try {
       if (c.runtime === 'node') {
-        this.runCaseInNode(c);
+        await this.runCaseInNode(c);
       } else {
         // TODO:
-        this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
+        await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
       }
     } catch(error) {
 

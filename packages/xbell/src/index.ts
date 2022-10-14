@@ -34,8 +34,7 @@
 //   Locator,
 //   ElementHandle
 // } from 'playwright-core';
-
-
+import type { TestArguments } from './types/parameter';
 export {
   test,
   describe,
@@ -59,11 +58,19 @@ export {
 } from './worker/classic-decorators';
 
 export {
-  Page
+  Page,
 } from './worker/page';
 
-export type {
+export {
   FixtureFunction,
   XBellConfig,
   XBellProject as Project,
 } from './types';
+
+// @ts-ignore
+// resolve swc problem https://github.com/swc-project/swc/issues/1065
+const testArguments: TestArguments = {};
+
+export {
+  testArguments as TestArguments,
+};

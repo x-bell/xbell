@@ -1,10 +1,11 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import color from '@xbell/color';
 import { PNG } from 'pngjs'
 import pixcelMatch from 'pixelmatch';
 import { PageScreenshotOptions, ElementHandleScreenshotOptions } from '../../types/pw';
 import debug from 'debug';
+import { ensureDir } from '../../utils/fs';
 
 const snapshotDebug = debug('xbell:snapshot');
 export interface ToMatchSnapshotOptions {
@@ -34,17 +35,17 @@ export function getSnapshotPath({
   projectName,
   rootDir,
   imgName,
-  filename
+  filepath
 }: {
   rootDir: string;
   projectName?: string;
   imgName: string;
-  filename: string;
+  filepath: string;
 }) {
   return path.join(
-    rootDir,
+    path.dirname(filepath),
     '__snapshots__',
-    filename,
+    path.basename(filepath),
     imgName.replace(/\.png$/, '')
       + (projectName ? `.[${projectName}]` : '')
       + '.png'
@@ -59,12 +60,12 @@ export async function _matchImageSnapshot({
   buffer,
   options,
   projectName,
-  filename,
+  filepath,
 }: {
   buffer: Buffer;
   options: ToMatchSnapshotOptions;
   projectName?: string;
-  filename: string;
+  filepath: string;
 }) {
   snapshotDebug('_matchImageSnapshot');
   const { maxDiffPixels, maxDiffPixelRatio, name, threshold = 0.2 } = options;
@@ -73,18 +74,13 @@ export async function _matchImageSnapshot({
     rootDir: process.cwd(),
     imgName: name,
     projectName,
-    filename,
+    filepath,
   });
   const isFirstSnapshot = fs.existsSync(snapshotPath);
   snapshotDebug('snapshotPath', snapshotPath, isFirstSnapshot);
   const dirPath = path.dirname(snapshotPath);
   if (!isFirstSnapshot) {
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, {
-        recursive: true,
-        mode: 0o777,
-      });
-    }
+    ensureDir(dirPath);
     fs.writeFileSync(snapshotPath, buffer)
   } else {
     const originSnatshot = PNG.sync.read(fs.readFileSync(snapshotPath))
@@ -100,8 +96,16 @@ export async function _matchImageSnapshot({
       return 0;
     })();
     if (diff > expectDiffCount) {
-      const diffPngPath = snapshotPath.replace(/\.png$/, '.diff.png');
-      const newPngPath =  snapshotPath.replace(/\.png$/, '.new.png');
+      const diffDir = path.join(snapshotPath + '-diff');
+      if (fs.existsSync(diffDir)) {
+        fs.rmSync(diffDir, {
+          recursive: true,
+          force: true,
+        });
+      }
+      ensureDir(diffDir);
+      const diffPngPath = path.join(diffDir, 'diff.png');
+      const newPngPath = path.join(diffDir, path.basename(snapshotPath));
       fs.writeFileSync(
         newPngPath,
         buffer
@@ -110,9 +114,9 @@ export async function _matchImageSnapshot({
         diffPngPath,
         PNG.sync.write(diffPNG)
       );
-      messages.push(`Expected: ${color.yellow(snapshotPath)}`)
-      messages.push(`Received: ${color.red(newPngPath)}`)
-      messages.push(`    Diff: ${color.yellow(diffPngPath)}`)
+      messages.push(color.green('Expected: ') + color.green.underline(snapshotPath));
+      messages.push(color.red('Received: ') + color.red.underline(newPngPath));
+      messages.push(color.yellow('    Diff: ') + color.yellow.underline(diffPngPath));
       return {
         pass: false,
         message: () => messages.join('\n'),

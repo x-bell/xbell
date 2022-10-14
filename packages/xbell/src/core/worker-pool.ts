@@ -10,7 +10,9 @@ import { cpus } from 'node:os';
 import { Channel } from '../common/channel';
 import { pathManager } from './path-manager';
 import { configurator } from '../common/configurator';
+import debug from 'debug';
 
+const debugWorkerPool = debug('xbell:workerPool');
 interface XBellWorkerItem {
   worker: Worker;
   busy: boolean;
@@ -19,7 +21,7 @@ interface XBellWorkerItem {
 }
 
 export class WorkerPool {
-  protected queue: XBellWorkerTask[][] = []
+  protected queue: XBellWorkerTask[] = []
   public workers!: XBellWorkerItem[];
 
   constructor(
@@ -58,12 +60,14 @@ export class WorkerPool {
   }
 
   protected checkQueue(resolve: () => void, reject: () => void) {
+    // const hasTask = Object.entries(this.queueMap).some(([_, tasks]) => tasks.length)
+
     if (!this.queue.length) {
       const isAllFinished = this.workers.every(worker => !worker.busy)
       if (isAllFinished) {
         // TODO:
         resolve();
-        console.log('work-pool:exit');
+        debugWorkerPool('exit');
       }
       return;
     }
@@ -73,10 +77,13 @@ export class WorkerPool {
       if (!this.queue.length) {
         return;
       }
-      const worker = workerItem.worker;
+      const { worker } = workerItem;
       workerItem.busy = true;
-      worker.once('message', () => {
-        this.finishedTask(workerItem, resolve, reject);
+      worker.once('message', (event) => {
+        if (event?.type === 'finished') {
+          debugWorkerPool('finishedTask');
+          this.finishedTask(workerItem, resolve, reject);
+        }
       });
       worker.once('error', (err) => {
         console.log('An untractable error was encountered, please report it to https://github.com/x-bell/xbell/issues');
@@ -85,11 +92,12 @@ export class WorkerPool {
         // this.finishedTask(workerItem, resolve, reject);
       });
       const task = this.queue.shift();
+      debugWorkerPool('remove queue', task);
       worker.postMessage(task);
     }
   }
 
-  public addTasks(tasks: XBellWorkerTask[][]) {
+  addTasks(tasks: XBellWorkerTask[]) {
     this.queue = [
       ...this.queue,
       ...tasks,

@@ -1,6 +1,5 @@
-import * as path from 'node:path';
+import type { XBellLocator, XBellElementHandle, XBellPage } from '../../types';
 import { defineMatcher } from 'expell';
-import { XBellLocator, XBellElementHandle, XBellPage } from '../../types';
 import { _matchImageSnapshot } from './match-image-snapshot';
 import { stateManager } from '../state-manager';
 
@@ -46,7 +45,7 @@ export const elementMatcher = defineMatcher({
       buffer,
       options,
       projectName: state.projectName,
-      filename: path.basename(state.filepath),
+      filepath: state.filepath,
     });
   },
 })

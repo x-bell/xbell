@@ -70,7 +70,7 @@ export class Scheduler {
         testFilenames: [testFilename],
       },
     }));
-    workerPool.addTasks(globalConfig.projects.map(_ => tasks));
+    workerPool.addTasks(tasks);
     await workerPool.runAllTasks();
   }
 }

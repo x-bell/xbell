@@ -56,6 +56,7 @@ export class ClassicCollector {
   finishFileCollection() {
     const tasks = this.genTasks()
     this.currentFile = undefined;
+    this.decoratorsMapByCls.clear();
     return tasks;
   }
 
