@@ -1,3 +1,8 @@
 {
-  "references": [{ "path": "./tsconfig.xbell.json" }]
+  "include": ["./src"],
+  "references": [
+    {
+      "path": "./tsconfig.test.json"
+    }
+  ]
 }

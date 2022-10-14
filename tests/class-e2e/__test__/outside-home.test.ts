@@ -1,11 +1,10 @@
-import { Test, expect, Page, Inject } from 'xbell';
-
+import { Test, TestArguments } from 'xbell';
 class OutsideTestCase {
-  @Inject()
-  page: Page;
-
   @Test()
-  async testCase() {
-    await this.page.goto('https://github.com');
+  async testCase({ page, expect }: TestArguments) {
+    await page.goto('https://example.com');
+    await expect(page).toMatchScreenshot({
+      name: 'default-screenshot',
+    });
   }
 }
