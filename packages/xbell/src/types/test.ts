@@ -13,7 +13,8 @@ import type {
   Response,
   LifecycleEvent,
   PageScreenshotOptions,
-  ElementHandleScreenshotOptions
+  ElementHandleScreenshotOptions,
+  Request,
 } from './pw';
 
 export type XBellError = { name: string; message: string; stack?: string };
@@ -238,6 +239,19 @@ export interface XBellPage<BrowserExtensionArg = {}> {
   queryByText(text: string): Promise<XBellElementHandle | null>;
   queryByTestId(testId: string): Promise<XBellElementHandle | null>;
   queryByClass(className: string): Promise<XBellElementHandle | null>;
+  url(): Promise<string>;
+  waitForNavigation(options?: {
+    timeout?: number;
+    url?: string|RegExp|((url: URL) => boolean);
+    waitUntil?: "load"|"domcontentloaded"|"networkidle"|"commit";
+  }): Promise<null | Response>;
+  waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
+    timeout?: number;
+  }): Promise<Request>;
+  waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
+    timeout?: number;
+  }): Promise<Response>;
+
 }
 
 export interface XBellTestCaseFunctionArguments<BrowserExtensionArg = {}> {

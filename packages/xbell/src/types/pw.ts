@@ -1,4 +1,4 @@
-export type { Response } from 'playwright-core';
+export type { Response, Request } from 'playwright-core';
 
 export type Size = { width: number, height: number };
 export type Point = { x: number, y: number };

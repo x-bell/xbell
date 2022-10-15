@@ -1,6 +1,7 @@
 import type {
   BrowserContext as PWBroContext,
   Page as PWPage,
+  Request,
 } from 'playwright-core';
 
 import type {
@@ -149,11 +150,27 @@ export class Page implements XBellPage {
     return this._page.evaluate(func(), args);
   }
 
+  screenshot(options?: PageScreenshotOptions | undefined): Promise<Buffer> {
+    return this._page.screenshot(options);
+  }
+
+  async url(): Promise<string> {
+    return this._page.url();
+  }
+
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'> | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<void> {
     return this._page.waitForLoadState(state, options); 
   }
 
-  screenshot(options?: PageScreenshotOptions | undefined): Promise<Buffer> {
-    return this._page.screenshot(options);
+  waitForNavigation(options?: { timeout?: number | undefined; url?: string | RegExp | ((url: URL) => boolean) | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; } | undefined): Promise<Response | null> {
+    return this._page.waitForNavigation(options);
+  }
+
+  waitForResponse(urlOrPredicate: string | RegExp | ((response: Response) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Response> {
+    return this._page.waitForResponse(urlOrPredicate, options);
+  }
+
+  waitForRequest(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
+    return this._page.waitForRequest(urlOrPredicate, options);
   }
 }
