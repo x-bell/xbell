@@ -2,7 +2,9 @@
 title: Page
 ---
 
-## page.goto(url, options?)
+## page.goto
+
+**Signature: page.goto(url, options?)**
 - `url` : <type>string</type> The target URL address. e.g. https://github.com 
 - `options?` : <type>object</type>
   - `timeout?` : <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
@@ -18,7 +20,9 @@ title: Page
 await page.goto('https://github.com')
 ```
 
-## page.goForward(options?)
+## page.goForward
+**Signature: page.goForward(options?)**
+
 - `options?` <type>object</type>
   - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
   - `waitUntil?` When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
@@ -35,7 +39,9 @@ This method navigate to the next page in history.
 await page.goForward();
 ```
 
-## page.goBack(options?)
+## page.goBack
+**Signature: page.goBack(options?)**
+
  - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
   - `waitUntil?` When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `'load'` consider navigation to be finished when the load event is fired.
@@ -45,13 +51,24 @@ await page.goForward();
 
 This method navigate to the previous page in history.
 
-## page.content()
+## page.url
+**Signature: page.url()**
+
+- *Returns* <type>Promise&lt;string&gt;</type>
+
+Shortcut for page.mainFrame().url().
+
+
+## page.content
+**Signature: page.content()**
 
 - *Returns* <type>Promise&lt;string&gt;</type>
 
 The full HTML contents of the frame, including the DOCTYPE.
 
-## page.evaluate(pageFunction, args?)
+## page.evaluate
+**Signature: page.evaluate(pageFunction, args?)**
+
 - `pageFunction` <type>Function | string</type> a function that is run within the page
 - `args?` arguments to be passed to the pageFunction
 
@@ -61,7 +78,9 @@ Evaluates a function in the page's context and Returns the result.
 
 If the function passed to page.evaluteHandle Returns a Promise, the function will wait for the promise to resolve and return its value.
 
-## page.evaluateHandle(pageFunction, args?)
+## page.evaluateHandle
+**Signature: page.evaluateHandle(pageFunction, args?)**
+
 - *Returns* Promise&lt;HandleFor&lt;Awaited&lt;ReturnType&lt;typeof pageFunction&gt;&gt;&gt;&gt;
 
 ## page.screenshot(options?)
@@ -78,7 +97,9 @@ If the function passed to page.evaluteHandle Returns a Promise, the function wil
   - `omitBackground?` <type>boolean</type>  Hides default white background and allows capturing screenshots with transparency. Defaults to false.
 - *Returns* Promise<Buffer | string>;
 
-## page.click(selector, options?)
+## page.click
+**Signature: page.click(selector, options?)**
+
 - `selector` <type>string</type> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked
 - `options?` <type>object</type>
   -  `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds.
@@ -92,7 +113,9 @@ If the function passed to page.evaluteHandle Returns a Promise, the function wil
 
 This method fetches an element with selector, scrolls it into view if needed, and then uses Page.mouse to click in the center of the element. If there's no element matching selector, the method throws an error.
 
-## page.dblclick(selector, options?)
+## page.dblclick
+**Signature: page.dblclick(selector, options?)**
+
 - `selector` <type>string</type> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked
 - `options?` <type>object</type>
   -  `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds.
@@ -106,36 +129,52 @@ This method fetches an element with selector, scrolls it into view if needed, an
 
 This method fetches an element with selector, scrolls it into view if needed, and then uses Page.mouse to dbclick in the center of the element. If there's no element matching selector, the method throws an error.
 
-## page.focus(selector)
+## page.focus
+**Signature: page.focus(selector)**
+
 - `selector` <type>string</type> A selector of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - *Returns* <type>Promise&lt;void&gt;</type>
 This method fetches an element with selector and focuses it. If there's no element matching selector, the method throws an error.
 
-## page.locateByText(text)
+## page.locateByText
+**Signature: page.locateByText(text)**
+
 - `text` <type>string</type> The label text.
 - *Returns* <type>Locator</type>
 
-## page.locateByClass(className)
+## page.locateByClass
+**Signature: page.locateByClass(className)**
+
 - `className` <type>string</type>
 - *Returns* <type>Locator</type>
 
-## page.locateByTestId(testId)
+## page.locateByTestId
+**Signature: page.locateByTestId(testId)**
+
 - `testId` <type>string</type>
 - *Returns* <type>Locator</type>
 
-## page.queryByText(text)
+## page.queryByText
+**Signature: page.queryByText(text)**
+
 - `text` <type>string</type>
 - *Returns* <type>ElementHandle</type>
 
-## page.queryByClass(className)
+## page.queryByClass
+**Signature: page.queryByClass(className)**
+
 - `className` <type>string</type>
 - *Returns* <type>ElementHandle</type>
 
-## page.queryByTestId(testId)
+## page.queryByTestId
+**Signature: page.queryByTestId(testId)**
+
 - `testId` <type>string</type>
 - *Returns* <type>ElementHandle</type>
 
-## page.waitForNavigation(options?)
+## page.waitForNavigation
+**Signature: page.waitForNavigation(options?)**
+
 - `options?` <type>object</type>
   - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
   - `waitUntil?` When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
@@ -153,3 +192,32 @@ const [response] = await Promise.all([
   page.click('a.my-link'), // Clicking the link will indirectly cause a navigation
 ]);
 ```
+
+## page.waitForLoadState
+**Signature: page.waitForLoadState(state?, options?)**
+
+- `state?` <type>"load"|"domcontentloaded"|"networkidle"</type> Optional load state to wait for, defaults to load. If the state has been already reached while loading current document, the method resolves immediately. Can be one of:
+  - `load` wait for the load event to be fired.
+  - `domcontentloaded` wait for the DOMContentLoaded event to be fired.
+  - `networkidle` wait until there are no network connections for at least 500 ms.
+- `options?` <type>object</type>
+  - `timeout?` <type>number</type> Maximum operation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout.
+
+- *Returns* <type>Promise&lt;void&gt;</type>
+
+## page.waitForRequest
+
+**Signature: page.waitForRequest(urlOrPredicate, options?)**
+
+- `urlOrPredicate` <type>string | RegExp | function(Request):boolean | Promise&lt;boolean&gt;</type> Request URL string, regex or predicate receiving Request object.#
+- `options?` <type>object</type>
+  - `timeout?` <type>number</type> Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the page.setDefaultTimeout(timeout) method.
+- *Returns* <type>Promise&lt;Request&gt;</type>
+
+## page.waitForResponse
+**Signature: page.waitForResponse(urlOrPredicate, options?)**
+
+- `urlOrPredicate` <type>string | RegExp | function(Response):boolean | Promise&lt;boolean&gt;</type> Request URL string, regex or predicate receiving Response object. When a baseURL via the context options was provided and the passed URL is a path, it gets merged via the new URL() constructor.
+- `options?` <type>object</type>
+  - timeout? <type>number</type> Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
+- *Returns*: <type>Promise&lt;Response&gt;</type>
