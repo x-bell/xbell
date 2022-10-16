@@ -256,12 +256,12 @@ export type KeyInput =
   | 'VolumeUp';
 
 export interface Keyboard {
-  down(key: KeyInput): Promise<void>;
-  up(key: KeyInput): Promise<void>;
-  press(key: KeyInput, options?: {
+  down(keyInput: KeyInput): Promise<void>;
+  up(keyInput: KeyInput): Promise<void>;
+  press(keyInput: KeyInput, options?: {
     delay?: number;
   }): Promise<void>;
-  insertText(text: string): Promise<void>;
+  input(text: string): Promise<void>;
   type(text: string, options?: {
     delay?: number;
   }): Promise<void>;

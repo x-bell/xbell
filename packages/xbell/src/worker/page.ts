@@ -20,8 +20,8 @@ import { get } from '../utils/http';
 import debug from 'debug';
 import { Locator } from './locator';
 import { ElementHandle } from './element-handle';
-import type { Keyboard } from '../types/keyboard';
 import type { Mouse } from '../types/mouse';
+import { Keyboard } from './keyboard';
 
 const debugPage = debug('xbell:page');
 
@@ -39,7 +39,7 @@ export class Page implements XBellPage {
 
   constructor(protected _page: PWPage) {
     this._settingPromise = this._setting();
-    this.keyboard = this._page.keyboard;
+    this.keyboard = new Keyboard(this._page.keyboard);
     this.mouse = this._page.mouse;
   }
 
