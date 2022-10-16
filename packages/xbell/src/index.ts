@@ -28,7 +28,7 @@
 //   MultiEnvData
 // } from './types/index';
 
-import type { TestArguments } from './types/parameter';
+import type { TestArguments as TestArgumentsType } from './types/parameter';
 export {
   test,
   describe,
@@ -71,8 +71,10 @@ export {
 
 // @ts-ignore
 // resolve swc problem https://github.com/swc-project/swc/issues/1065
-const testArguments: TestArguments = {};
+const testArguments: TestArgumentsType = {};
 
 export {
   testArguments as TestArguments,
 };
+
+export type TestArguments = TestArgumentsType;
