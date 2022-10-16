@@ -28,7 +28,7 @@ class HomepageUnitTest {
 
   async open_page() {
     await this.render();
-    await this.page.locateByText('button')
+    await this.page.getByText('button')
   }
 }
 

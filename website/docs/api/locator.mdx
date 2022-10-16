@@ -15,7 +15,7 @@ title: Locator
     - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
   - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 This method scrolls element into view if needed, and then uses Page.mouse to click in the center of the element. If the element is detached from DOM, the method throws an error.
 
 ## locator.dblclick
@@ -30,7 +30,7 @@ This method scrolls element into view if needed, and then uses Page.mouse to cli
     - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
   - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 This method scrolls element into view if needed, and then uses Page.mouse to double click in the center of the element. If the element is detached from DOM, the method throws an error.
 
 ## locator.check
@@ -84,7 +84,7 @@ When all steps combined have not finished during the specified timeout, this met
 - `options?` <type>object</type>
   - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 
 Calls focus on the element.
 
@@ -99,7 +99,7 @@ Calls focus on the element.
   - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
   - `trial?` <type>boolean</type> When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it.
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 
 ## locator.isVisible
 
@@ -108,7 +108,7 @@ Calls focus on the element.
 - `options?` <type>object</type>
   - timeout? <type>number</type> DEPRECATED This option is ignored. `locator.isVisible(options?)` does not wait for the element to become visible and returns immediately.
 
-*Returns* <type>Promise&lt;boolean&gt;</type>
+**Returns** <type>Promise&lt;boolean&gt;</type>
 
 Returns whether the element is visible.
 
@@ -119,7 +119,7 @@ Returns whether the element is visible.
 - `options?` <type>object</type>
   - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
 
-*Returns* <type>Promise&lt;boolean&gt;</type>
+**Returns** <type>Promise&lt;boolean&gt;</type>
 
 Returns whether the element is checked. Throws if the element is not a checkbox or radio input.
 
@@ -131,52 +131,52 @@ Returns whether the element is checked. Throws if the element is not a checkbox 
 
 - `options?` <type>object</type>
   - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
-*Returns* <type>Promise&lt;boolean&gt;</type>
+**Returns** <type>Promise&lt;boolean&gt;</type>
 
 Returns whether the element is disabled, the opposite of enabled.
 
 ## locator.count
 **Signature: locator.count()**
 
-*Returns*: <type>Promise&lt;number&gt;</type>>
+**Returns**: <type>Promise&lt;number&gt;</type>>
 
 Returns the number of elements matching given selector.
 
-## locator.locateByText
+## locator.getByText
 
-**Signature: locator.locateByText(text)**
+**Signature: locator.getByText(text)**
 
 - `text` <type>string</type> The label text.
-- *Returns* <type>Locator</type>
+- **Returns** <type>Locator</type>
 
-## locator.locateByTestId
-**Signature: locator.locateByTestId(testId)**
+## locator.getByTestId
+**Signature: locator.getByTestId(testId)**
 
 - `testId` <type>string</type>
-- *Returns* <type>Locator</type>
+- **Returns** <type>Locator</type>
 
-## locator.locateByClass
+## locator.getByClass
 
 - `text` <type>string</type>
-- *Returns* <type>ElementHandle</type>
+- **Returns** <type>ElementHandle</type>
 
 ## locator.queryByText
 
 **Signature: locator.queryByText(text)**
 
 - `text` <type>string</type>
-- *Returns* <type>ElementHandle</type>
+- **Returns** <type>ElementHandle</type>
 
 ## locator.queryByTestId
 **Signature: locator.queryByTestId(testId)**
 
 - `testId` <type>string</type>
-- *Returns* <type>ElementHandle</type>
+- **Returns** <type>ElementHandle</type>
 
 ## locator.queryByClass
 
 **Signature: locator.queryByClass(className)**
 
 - `className` <type>string</type>
-- *Returns* <type>ElementHandle</type>
+- **Returns** <type>ElementHandle</type>
 

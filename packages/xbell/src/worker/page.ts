@@ -115,16 +115,16 @@ export class Page implements XBellPage {
     return this._page.goBack();
   }
 
-  locateByText(text: string): Locator {
+  getByText(text: string): Locator {
     return new Locator(this._page.locator(`text=${text}`));
   }
 
-  locateByClass(className: string): Locator {
+  getByClass(className: string): Locator {
     const cls = className.startsWith('.') ? className : `.${className}`;
     return new Locator(this._page.locator(cls));
   }
 
-  locateByTestId(testId: string): Locator {
+  getByTestId(testId: string): Locator {
     return new Locator(this._page.locator(`data-testid=${testId}`));
   }
 

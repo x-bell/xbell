@@ -15,7 +15,7 @@ test('render user info component', async ({ page, expect }) => {
 
   await page.waitForLoadState('networkidle');
 
-  await expect(page.locateByText('Hang Liang')).toBeVisible();
+  await expect(page.getByText('Hang Liang')).toBeVisible();
   await expect(page).toMatchScreenshot({
     name: 'user-info-screenshot',
   });

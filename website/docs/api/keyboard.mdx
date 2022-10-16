@@ -1,3 +1,65 @@
 ---
 title: Keyboard
 ---
+
+## keyboard.down
+**Signature: keyboard.down(keyInput)**
+
+- `keyInput` <type>KeyInput</type> Name of key to press, such as `ArrowLeft`. See KeyInput for a list of all key names.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+
+Dispatches a `keydown` event.
+
+
+## keyboard.up
+
+**Signature: keyboard.up(keyInput)**
+
+- `keyInput` <type>KeyInput</type> Name of key to press, such as `ArrowLeft`. See KeyInput for a list of all key names.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+
+Dispatches a `keyup` event.
+
+
+## keyboard.press
+
+**Signature: keyboard.press(keyInput, options?)**
+
+- `keyInput` <type>KeyInput</type> Name of key to press, such as `ArrowLeft`. See KeyInput for a list of all key names.
+- `options?` <type>object</type> An object of options.
+  - `delay?` <type>number</type> Time to wait between keydown and keyup in milliseconds. Defaults to 0.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+
+Shortcut for `Keyboard.down` and `Keyboard.up`.
+
+## keyboard.type
+
+**Signature: keyboard.type(text, options?)**
+
+- `text` <type>string</type> A text to type into a focused element.
+- `options?` <type>object</type> An object of options.
+  - `delay?` <type>number</type> Time to wait between keydown and keyup in milliseconds. Defaults to 0.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+**Example**
+
+```typescript
+await page.keyboard.type('Hello'); // Types instantly
+await page.keyboard.type('World', {delay: 100}); // Types slower, like a user
+```
+
+## keyboard.input
+
+**Signature: keyboard.input(text)**
+
+- `text` <type>string</type> Sets input to the specified text value.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+
+Dispatches only `input` event, does not emit the `keydown`, `keyup` or `keypress` events.

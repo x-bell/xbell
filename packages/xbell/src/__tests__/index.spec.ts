@@ -12,7 +12,7 @@ test('index:2', async ({
 }) => {
   console.log('index:2:inner');
   await page.goto('https://www.baidu.com');
-  const btn = page.locateByText('新闻')
+  const btn = page.getByText('新闻')
   await btn.click()
   await sleep(5000);
 });

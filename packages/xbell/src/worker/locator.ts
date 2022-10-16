@@ -74,15 +74,15 @@ export class Locator implements XBellLocator {
     return this._locator.screenshot(options);
   }
   
-  locateByText(text: string): Locator {
+  getByText(text: string): Locator {
     return new Locator(this._locator.locator(`text=${text}`));
   }
 
-  locateByTestId(testId: string): Locator {
+  getByTestId(testId: string): Locator {
     return new Locator(this._locator.locator(`data-testid=${testId}`));
   }
 
-  locateByClass(className: string): Locator {
+  getByClass(className: string): Locator {
     const cls = className.startsWith('.') ? className : `.${className}`;
     return new Locator(this._locator.locator(cls));
   }

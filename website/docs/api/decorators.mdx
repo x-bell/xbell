@@ -2,6 +2,8 @@
 title: Decorators
 ---
 
+Decorators are used in classic mode.
+
 ## @Test
 
 `@Test` Denotes that a method is a test method.
@@ -103,7 +105,7 @@ class TestCases {
   @BeforeEach()
   async init({ page }: TestArguments) {
     await page.goto('http://github.com');
-    this.accountLocator = page.locateByText('account');
+    this.accountLocator = page.getByText('account');
   }
 
   @Test()
@@ -134,7 +136,7 @@ class TestCases {
   @BeforeEach()
   async init({ page }: TestArguments) {
     await page.goto('http://github.com');
-    this.accountLocator = page.locateByText('account');
+    this.accountLocator = page.getByText('account');
   }
 
   @AfterEach()

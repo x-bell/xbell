@@ -29,9 +29,9 @@ export interface XBellLocator {
   isHidden(options?: TimeoutOptions): Promise<boolean>;
   boundingBox(options?: TimeoutOptions): Promise<Rect | null>;
   screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
-  locateByText(text: string): XBellLocator;
-  locateByTestId(testId: string): XBellLocator;
-  locateByClass(className: string): XBellLocator;
+  getByText(text: string): XBellLocator;
+  getByTestId(testId: string): XBellLocator;
+  getByClass(className: string): XBellLocator;
   queryByText(text: string): Promise<XBellElementHandle | null>;
   queryByTestId(testId: string): Promise<XBellElementHandle | null>;
   queryByClass(className: string): Promise<XBellElementHandle | null>;

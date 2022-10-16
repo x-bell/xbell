@@ -20,9 +20,9 @@ export interface XBellPage<BrowserExtensionArg = {}> {
   goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
   screenshot(options?: PageScreenshotOptions): Promise<Buffer>
-  locateByText(text: string): XBellLocator;
-  locateByTestId(testId: string): XBellLocator;
-  locateByClass(className: string): XBellLocator;
+  getByText(text: string): XBellLocator;
+  getByTestId(testId: string): XBellLocator;
+  getByClass(className: string): XBellLocator;
   queryByText(text: string): Promise<XBellElementHandle | null>;
   queryByTestId(testId: string): Promise<XBellElementHandle | null>;
   queryByClass(className: string): Promise<XBellElementHandle | null>;

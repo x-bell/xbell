@@ -12,7 +12,7 @@ title: Page
     - `'load'` : consider navigation to be finished when the load event is fired.
     - `'domcontentloaded'` : consider navigation to be finished when the DOMContentLoaded event is fired.
     - `'networkidle'` : consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
-- *Returns* <type>Promise<HTTPResponse | null></type>
+- **Returns** <type>Promise<HTTPResponse | null></type>
 
 
 > Example
@@ -30,7 +30,7 @@ await page.goto('https://github.com')
     - `'domcontentloaded'` : consider navigation to be finished when the DOMContentLoaded event is fired.
     - `'networkidle'` : consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
 
-- *Returns* <type>Promise<HTTPResponse | null></type>
+- **Returns** <type>Promise<HTTPResponse | null></type>
 
 This method navigate to the next page in history.
 
@@ -47,14 +47,14 @@ await page.goForward();
     - `'load'` consider navigation to be finished when the load event is fired.
     - `'domcontentloaded'` : consider navigation to be finished when the DOMContentLoaded event is fired.
     - `'networkidle'` : consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
-- *Returns* Promise<HTTPResponse | null>
+- **Returns** Promise<HTTPResponse | null>
 
 This method navigate to the previous page in history.
 
 ## page.url
 **Signature: page.url()**
 
-- *Returns* <type>Promise&lt;string&gt;</type>
+- **Returns** <type>Promise&lt;string&gt;</type>
 
 Shortcut for page.mainFrame().url().
 
@@ -62,7 +62,7 @@ Shortcut for page.mainFrame().url().
 ## page.content
 **Signature: page.content()**
 
-- *Returns* <type>Promise&lt;string&gt;</type>
+- **Returns** <type>Promise&lt;string&gt;</type>
 
 The full HTML contents of the frame, including the DOCTYPE.
 
@@ -72,7 +72,7 @@ The full HTML contents of the frame, including the DOCTYPE.
 - `pageFunction` <type>Function | string</type> a function that is run within the page
 - `args?` arguments to be passed to the pageFunction
 
-- *Returns* <type>Promise&lt;Awaited&lt;ReturnType&lt;typeof pageFunction&gt;&gt;&gt;</type> the return value of pageFunction.
+- **Returns** <type>Promise&lt;Awaited&lt;ReturnType&lt;typeof pageFunction&gt;&gt;&gt;</type> the return value of pageFunction.
 
 Evaluates a function in the page's context and Returns the result.
 
@@ -81,7 +81,7 @@ If the function passed to page.evaluteHandle Returns a Promise, the function wil
 ## page.evaluateHandle
 **Signature: page.evaluateHandle(pageFunction, args?)**
 
-- *Returns* Promise&lt;HandleFor&lt;Awaited&lt;ReturnType&lt;typeof pageFunction&gt;&gt;&gt;&gt;
+- **Returns** Promise&lt;HandleFor&lt;Awaited&lt;ReturnType&lt;typeof pageFunction&gt;&gt;&gt;&gt;
 
 ## page.screenshot(options?)
 - `options?` <type>object</type>
@@ -95,7 +95,7 @@ If the function passed to page.evaluteHandle Returns a Promise, the function wil
     - `width` <type>number</type> width of clipping area.
     - `height` <type>number</type> height of clipping area.
   - `omitBackground?` <type>boolean</type>  Hides default white background and allows capturing screenshots with transparency. Defaults to false.
-- *Returns* Promise<Buffer | string>;
+- **Returns** Promise<Buffer | string>;
 
 ## page.click
 **Signature: page.click(selector, options?)**
@@ -109,7 +109,7 @@ If the function passed to page.evaluteHandle Returns a Promise, the function wil
     - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
     - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
 
-- *Returns* <type>Promise&lt;void&gt;</type>
+- **Returns** <type>Promise&lt;void&gt;</type>
 
 This method fetches an element with selector, scrolls it into view if needed, and then uses Page.mouse to click in the center of the element. If there's no element matching selector, the method throws an error.
 
@@ -125,7 +125,7 @@ This method fetches an element with selector, scrolls it into view if needed, an
     - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
     - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
 
-- *Returns* <type>Promise&lt;void&gt;</type>
+- **Returns** <type>Promise&lt;void&gt;</type>
 
 This method fetches an element with selector, scrolls it into view if needed, and then uses Page.mouse to dbclick in the center of the element. If there's no element matching selector, the method throws an error.
 
@@ -133,44 +133,44 @@ This method fetches an element with selector, scrolls it into view if needed, an
 **Signature: page.focus(selector)**
 
 - `selector` <type>string</type> A selector of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
-- *Returns* <type>Promise&lt;void&gt;</type>
+- **Returns** <type>Promise&lt;void&gt;</type>
 This method fetches an element with selector and focuses it. If there's no element matching selector, the method throws an error.
 
-## page.locateByText
-**Signature: page.locateByText(text)**
+## page.getByText
+**Signature: page.getByText(text)**
 
 - `text` <type>string</type> The label text.
-- *Returns* <type>Locator</type>
+- **Returns** <type>Locator</type>
 
-## page.locateByClass
-**Signature: page.locateByClass(className)**
+## page.getByClass
+**Signature: page.getByClass(className)**
 
 - `className` <type>string</type>
-- *Returns* <type>Locator</type>
+- **Returns** <type>Locator</type>
 
-## page.locateByTestId
-**Signature: page.locateByTestId(testId)**
+## page.getByTestId
+**Signature: page.getByTestId(testId)**
 
 - `testId` <type>string</type>
-- *Returns* <type>Locator</type>
+- **Returns** <type>Locator</type>
 
 ## page.queryByText
 **Signature: page.queryByText(text)**
 
 - `text` <type>string</type>
-- *Returns* <type>ElementHandle</type>
+- **Returns** <type>ElementHandle</type>
 
 ## page.queryByClass
 **Signature: page.queryByClass(className)**
 
 - `className` <type>string</type>
-- *Returns* <type>ElementHandle</type>
+- **Returns** <type>ElementHandle</type>
 
 ## page.queryByTestId
 **Signature: page.queryByTestId(testId)**
 
 - `testId` <type>string</type>
-- *Returns* <type>ElementHandle</type>
+- **Returns** <type>ElementHandle</type>
 
 ## page.waitForNavigation
 **Signature: page.waitForNavigation(options?)**
@@ -182,7 +182,7 @@ This method fetches an element with selector and focuses it. If there's no eleme
     - `'domcontentloaded'` : consider navigation to be finished when the DOMContentLoaded event is fired.
     - `'networkidle'` : consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
     
-- *Returns*: <type>Promise<HTTPResponse | null></type>
+- **Returns**: <type>Promise<HTTPResponse | null></type>
 Waits for the page to navigate to a new URL or to reload. It is useful when you run code that will indirectly cause the page to navigate.
 
 **Example**
@@ -203,7 +203,7 @@ const [response] = await Promise.all([
 - `options?` <type>object</type>
   - `timeout?` <type>number</type> Maximum operation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout.
 
-- *Returns* <type>Promise&lt;void&gt;</type>
+- **Returns** <type>Promise&lt;void&gt;</type>
 
 ## page.waitForRequest
 
@@ -212,7 +212,7 @@ const [response] = await Promise.all([
 - `urlOrPredicate` <type>string | RegExp | function(Request):boolean | Promise&lt;boolean&gt;</type> Request URL string, regex or predicate receiving Request object.#
 - `options?` <type>object</type>
   - `timeout?` <type>number</type> Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the page.setDefaultTimeout(timeout) method.
-- *Returns* <type>Promise&lt;Request&gt;</type>
+- **Returns** <type>Promise&lt;Request&gt;</type>
 
 ## page.waitForResponse
 **Signature: page.waitForResponse(urlOrPredicate, options?)**
@@ -220,4 +220,4 @@ const [response] = await Promise.all([
 - `urlOrPredicate` <type>string | RegExp | function(Response):boolean | Promise&lt;boolean&gt;</type> Request URL string, regex or predicate receiving Response object. When a baseURL via the context options was provided and the passed URL is a path, it gets merged via the new URL() constructor.
 - `options?` <type>object</type>
   - timeout? <type>number</type> Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
-- *Returns*: <type>Promise&lt;Response&gt;</type>
+- **Returns**: <type>Promise&lt;Response&gt;</type>

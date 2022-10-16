@@ -1,3 +1,136 @@
 ---
 title: ElementHandle
 ---
+
+## elementHandle.click
+**Signature: elementHandle.click(options?)**
+
+- `options?` <type>object</type>
+  -  `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds.
+  - `button?` <type>'left' | 'right' | 'middle'</type> Defaults to `'left'`.
+  - `force?` <type>boolean</type> Whether to bypass the actionability checks. Defaults to `false`.
+  - `clickCount?` <type>number</type> Count of button clicks, defaults to `1`.
+  - `position?` <type>object</type> Offset for the clickable point relative to the top-left corder of the border box.
+    - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
+    - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
+  - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+This method scrolls element into view if needed, and then uses Page.mouse to click in the center of the element. If the element is detached from DOM, the method throws an error.
+
+## elementHandle.dblclick
+**Signature: elementHandle.dblclick(options?)**
+
+- `options?` <type>object</type>
+  -  `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds.
+  - `button?` <type>'left' | 'right' | 'middle'</type> Defaults to `'left'`.
+  - `force?` <type>boolean</type> Whether to bypass the actionability checks. Defaults to `false`.
+  - `position?` <type>object</type> Offset for the clickable point relative to the top-left corder of the border box.
+    - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
+    - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
+  - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+This method scrolls element into view if needed, and then uses Page.mouse to double click in the center of the element. If the element is detached from DOM, the method throws an error.
+
+## elementHandle.check
+
+**Signature: elementHandle.check(options?)**
+
+- `options?` <type>object</type>
+   - `position?` <type>object</type> Offset for the clickable point relative to the top-left corder of the border box.
+    - `x` <type>number</type> x-offset for the clickable point relative to the top-left corder of the border box.
+    - `y` <type>number</type> y-offset for the clickable point relative to the top-left corder of the border box.
+  - `timeout?` <type>number</type> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the Page.setDefaultNavigationTimeout() or Page.setDefaultTimeout() methods.
+
+This method checks the element by performing the following steps:
+
+1. Ensure that element is a checkbox or a radio input. If not, this method throws. If the element is already checked, this method returns immediately.
+2. Wait for actionability checks on the element, unless force option is set.
+3. Scroll the element into view if needed.
+4. Use page.mouse to click in the center of the element.
+5. Wait for initiated navigations to either succeed or fail.
+6. Ensure that the element is now checked. If not, this method throws.
+
+## elementHandle.uncheck
+
+**Signature: elementHandle.uncheck(options?)**
+
+- `options?` <type>object</type>
+  - `force?` <type>boolean</type> Whether to bypass the actionability checks. Defaults to false.
+  - `position?` <type>object</type> A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element.
+  x <type>number</type>
+  y <type>number</type>
+  - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
+  - `trial?` <type>boolean</type> When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it.
+
+This method checks the element by performing the following steps:
+
+1. Ensure that element is a checkbox or a radio input. If not, this method throws. If the element is already unchecked, this method returns immediately.
+2. Wait for actionability checks on the element, unless force option is set.
+3. Scroll the element into view if needed.
+4. Use page.mouse to click in the center of the element.
+5. Wait for initiated navigations to either succeed or fail, unless noWaitAfter option is set.
+6. Ensure that the element is now unchecked. If not, this method throws.
+
+If the element is detached from the DOM at any moment during the action, this method throws.
+
+When all steps combined have not finished during the specified timeout, this method throws a TimeoutError. Passing zero timeout disables this.
+
+## elementHandle.focus
+
+**Signature: elementHandle.focus(options?)**
+
+- `options?` <type>object</type>
+  - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+
+Calls focus on the element.
+
+## elementHandle.hover
+**Signature: elementHandle.hover(options?)**
+- `options?` <type>object</type>
+  - `force?` <type>boolean</type> Whether to bypass the actionability checks. Defaults to `false`.
+  - `modifiers?` <type>Array&lt;"Alt"|"Control"|"Meta"|"Shift"&gt;</type> Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current modifiers back. If not specified, currently pressed modifiers are used.
+    - `position?` <type>object</type> A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the element.
+      - `x` <type>number</type>
+      - `y` <type>number</type>
+  - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
+  - `trial?` <type>boolean</type> When set, this method only performs the actionability checks and skips the action. Defaults to false. Useful to wait until the element is ready for the action without performing it.
+
+**Returns** <type>Promise&lt;void&gt;</type>
+
+## elementHandle.isVisible
+
+**Signature: elementHandle.isVisible(options?)**
+
+- `options?` <type>object</type>
+  - timeout? <type>number</type> DEPRECATED This option is ignored. `elementHandle.isVisible(options?)` does not wait for the element to become visible and returns immediately.
+
+**Returns** <type>Promise&lt;boolean&gt;</type>
+
+Returns whether the element is visible.
+
+## elementHandle.isCheck
+
+**Signature: elementHandle.isCheck(options?)**
+
+- `options?` <type>object</type>
+  - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
+
+**Returns** <type>Promise&lt;boolean&gt;</type>
+
+Returns whether the element is checked. Throws if the element is not a checkbox or radio input.
+
+## elementHandle.isHidden
+**Signature: elementHandle.isHidden(options?)**
+
+## elementHandle.isDisabled
+**Signature: elementHandle.isDisabled(options?)**
+
+- `options?` <type>object</type>
+  - `timeout?` <type>number</type> Maximum time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
+**Returns** <type>Promise&lt;boolean&gt;</type>
+
+Returns whether the element is disabled, the opposite of enabled.

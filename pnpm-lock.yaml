@@ -352,13 +352,13 @@ importers:
       vue-tsc: registry.npmmirror.com/vue-tsc/0.39.5_typescript@4.8.2
       xbell: link:../../packages/xbell
 
-  tests/class-e2e:
+  tests/class-pom:
     specifiers:
       xbell: workspace:*
     devDependencies:
       xbell: link:../../packages/xbell
 
-  tests/class-pom:
+  tests/classic-e2e:
     specifiers:
       xbell: workspace:*
     devDependencies:
@@ -379,12 +379,6 @@ importers:
       react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
     devDependencies:
       vite: registry.npmmirror.com/vite/3.1.0
-      xbell: link:../../packages/xbell
-
-  tests/multi-projects:
-    specifiers:
-      xbell: workspace:*
-    devDependencies:
       xbell: link:../../packages/xbell
 
   tests/node-basic:
@@ -19487,6 +19481,12 @@ packages:
     name: react-dev-utils
     version: 12.0.1
     engines: {node: '>=14'}
+    peerDependencies:
+      typescript: '>=2.7'
+      webpack: '>=4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
     dependencies:
       '@babel/code-frame': registry.npmmirror.com/@babel/code-frame/7.16.7
       address: registry.npmmirror.com/address/1.2.0
@@ -19517,9 +19517,7 @@ packages:
     transitivePeerDependencies:
       - eslint
       - supports-color
-      - typescript
       - vue-template-compiler
-      - webpack
     dev: false
 
   registry.npmmirror.com/react-dev-utils/12.0.1_igkzj7o3o5ugyo5oxz5n6lvldq:
@@ -19528,6 +19526,12 @@ packages:
     name: react-dev-utils
     version: 12.0.1
     engines: {node: '>=14'}
+    peerDependencies:
+      typescript: '>=2.7'
+      webpack: '>=4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
     dependencies:
       '@babel/code-frame': registry.npmmirror.com/@babel/code-frame/7.16.7
       address: registry.npmmirror.com/address/1.2.0
@@ -19558,9 +19562,7 @@ packages:
     transitivePeerDependencies:
       - eslint
       - supports-color
-      - typescript
       - vue-template-compiler
-      - webpack
     dev: false
 
   registry.npmmirror.com/react-dom/17.0.2_react@17.0.2:

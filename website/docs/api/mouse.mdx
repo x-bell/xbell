@@ -13,7 +13,7 @@ title: Mouse
   - `clickCount?` <type>number</type> defaults to 1. See UIEvent.detail.
   - `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds. Defaults to 0
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 
 Shortcut for mouse.move(x, y, options?), mouse.down(options?), mouse.up(options?).
 
@@ -26,7 +26,7 @@ Shortcut for mouse.move(x, y, options?), mouse.down(options?), mouse.up(options?
   - `button?` &lt;"left" | "right" | "middle"&gt; Defaults to left.
   - `delay?` <type>number</type> Time to wait between mousedown and mouseup in milliseconds. Defaults to 0
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 
 Shortcut for mouse.move(x, y, options?), mouse.down(options?), mouse.up(options?), mouse.down(options?) and mouse.up(options?).
 
@@ -37,7 +37,7 @@ Shortcut for mouse.move(x, y, options?), mouse.down(options?), mouse.up(options?
   - `button?` &lt;"left"|"right"|"middle"&gt; Defaults to left.
   - `clickCount?` <type>number</type> defaults to 1. See UIEvent.detail.
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 
 Dispatches a mousedown event.
 
@@ -50,7 +50,7 @@ Dispatches a mousedown event.
 - `options?` <type>object</type> Optional object
   - `steps?` <type>number</type>  Defaults to 1. Sends intermediate mousemove events.
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 
 Dispatches a `mousemove` event.
 
@@ -64,13 +64,13 @@ Dispatches a `mousemove` event.
 
 Dispatches a `mouseup` event.
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>
 
 ## mouse.wheel
 
 **Signature: mouse.wheel(deltaX, deltaY)**
 
-`deltaX` <type>number</type> Pixels to scroll horizontally.
-`deltaY` <type>number</type> Pixels to scroll vertically.
+- `deltaX` <type>number</type> Pixels to scroll horizontally.
+- `deltaY` <type>number</type> Pixels to scroll vertically.
 
-*Returns* <type>Promise&lt;void&gt;</type>
+**Returns** <type>Promise&lt;void&gt;</type>

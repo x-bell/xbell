@@ -50,9 +50,9 @@ const sidebars = {
     'api/expect',
     'api/page',
     'api/locator',
+    'api/element-handle',
     'api/mouse',
     'api/keyboard',
-    'api/element-handle',
     'api/decorators',
   ],
   examples: [

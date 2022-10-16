@@ -8,7 +8,7 @@ export type FixtureFunction<T> = (args: XBellTestCaseFunctionArguments<any>) => 
 // export const myFixture = defineFixture(({ page }) => ({
 //   buttonFixture: {
 //     async onClick(text: string) {
-//       await page.locateByText(text).click()
+//       await page.getByText(text).click()
 //     }
 //   }
 // }));
