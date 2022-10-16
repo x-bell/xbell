@@ -1,21 +1,7 @@
 import type { expell } from 'expell';
 import type { XBellTaskConfig, XBellRuntimeOptions, XBellProject } from './config';
 import type { Expect } from '../worker/expect/expect';
-import type {
-  TimeoutOptions,
-  ElementHandleClickOptions,
-  ElementHandleDblclickOptions,
-  ElementHandleHoverOptions,
-  ElementHandleUncheckOptions,
-  ElementHandleCheckOptions,
-  Rect,
-  FrameGotoOptions,
-  Response,
-  LifecycleEvent,
-  PageScreenshotOptions,
-  ElementHandleScreenshotOptions,
-  Request,
-} from './pw';
+import type { XBellPage } from './page';
 
 export type XBellError = { name: string; message: string; stack?: string };
 
@@ -185,73 +171,6 @@ export type XBellTestCase<NodeJSExtensionArg, BrowserExtensionArg> = XBellTestCa
 
 export interface XBellTestGroupFunction {
   (): void
-}
-
-interface XBellPageExecutor<BrowserExtensionArg> {
-  (arg: BrowserExtensionArg): void;
-}
-
-export interface XBellElementHandle {
-  focus(): Promise<void>
-  click(options?: ElementHandleClickOptions): Promise<void>;
-  dblclick(options?: ElementHandleDblclickOptions): Promise<void>;
-  hover(options?: ElementHandleHoverOptions): Promise<void>;
-  check(options?: ElementHandleCheckOptions): Promise<void>
-  uncheck(options?: ElementHandleUncheckOptions): Promise<void>
-  isVisible(): Promise<boolean>;
-  isChecked(): Promise<boolean>;
-  isDisabled(): Promise<boolean>;
-  isHidden(): Promise<boolean>;
-  boundingBox(): Promise<Rect | null>;
-  screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
-}
-
-export interface XBellLocator {
-  focus(options?: TimeoutOptions): Promise<void>
-  click(options?: ElementHandleClickOptions): Promise<void>;
-  dblclick(options?: ElementHandleDblclickOptions): Promise<void>;
-  hover(options?: ElementHandleHoverOptions): Promise<void>;
-  check(options?: ElementHandleCheckOptions): Promise<void>
-  uncheck(options?: ElementHandleUncheckOptions): Promise<void>
-  isVisible(options?: TimeoutOptions): Promise<boolean>;
-  isChecked(options?: TimeoutOptions): Promise<boolean>;
-  isDisabled(options?: TimeoutOptions): Promise<boolean>;
-  isHidden(options?: TimeoutOptions): Promise<boolean>;
-  boundingBox(options?: TimeoutOptions): Promise<Rect | null>;
-  screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
-  locateByText(text: string): XBellLocator;
-  locateByTestId(testId: string): XBellLocator;
-  locateByClass(className: string): XBellLocator;
-  queryByText(text: string): Promise<XBellElementHandle | null>;
-  queryByTestId(testId: string): Promise<XBellElementHandle | null>;
-  queryByClass(className: string): Promise<XBellElementHandle | null>;
-}
-
-export interface XBellPage<BrowserExtensionArg = {}> {
-  evaluate: <Args>(func: XBellPageExecutor<BrowserExtensionArg & Args>, args?: Args) => void;
-  close(): Promise<void>;
-  goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
-  waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
-  screenshot(options?: PageScreenshotOptions): Promise<Buffer>
-  locateByText(text: string): XBellLocator;
-  locateByTestId(testId: string): XBellLocator;
-  locateByClass(className: string): XBellLocator;
-  queryByText(text: string): Promise<XBellElementHandle | null>;
-  queryByTestId(testId: string): Promise<XBellElementHandle | null>;
-  queryByClass(className: string): Promise<XBellElementHandle | null>;
-  url(): Promise<string>;
-  waitForNavigation(options?: {
-    timeout?: number;
-    url?: string|RegExp|((url: URL) => boolean);
-    waitUntil?: "load"|"domcontentloaded"|"networkidle"|"commit";
-  }): Promise<null | Response>;
-  waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
-    timeout?: number;
-  }): Promise<Request>;
-  waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
-    timeout?: number;
-  }): Promise<Response>;
-
 }
 
 export interface XBellTestCaseFunctionArguments<BrowserExtensionArg = {}> {

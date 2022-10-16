@@ -6,7 +6,7 @@ import type {
 
 import type {
   XBellPage,
-} from '../types';
+} from '../types/page';
 
 import type {
   FrameGotoOptions,
@@ -20,6 +20,8 @@ import { get } from '../utils/http';
 import debug from 'debug';
 import { Locator } from './locator';
 import { ElementHandle } from './element-handle';
+import type { Keyboard } from '../types/keyboard';
+import type { Mouse } from '../types/mouse';
 
 const debugPage = debug('xbell:page');
 
@@ -29,10 +31,16 @@ export class Page implements XBellPage {
     return new Page(page);
   }
 
+  public keyboard: Keyboard;
+
+  public mouse: Mouse;
+
   protected _settingPromise: Promise<void>;
 
   constructor(protected _page: PWPage) {
     this._settingPromise = this._setting();
+    this.keyboard = this._page.keyboard;
+    this.mouse = this._page.mouse;
   }
 
   async _setting() {

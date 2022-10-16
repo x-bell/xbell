@@ -1,37 +1,43 @@
-// import { Page, Locator } from 'playwright-core';
+import type {
+  FrameGotoOptions,
+  Response,
+  LifecycleEvent,
+  PageScreenshotOptions,
+  Request,
+} from './pw';
+import type { XBellLocator } from './locator';
+import type { XBellElementHandle } from './element-handle';
+import type { Mouse } from './mouse';
+import type { Keyboard } from './keyboard';
 
+interface XBellPageExecutor<BrowserExtensionArg> {
+  (arg: BrowserExtensionArg): void;
+}
 
-// interface XBellQuery {
-//   queryByText(text: string): XBellLocator;
-//   queryByClass(className: string, tagType?: string): XBellLocator;
-//   queryByTestId(testId: string, tagType?: string): XBellLocator;
-//   queryByPlaceholder(placeholder: string, tagType?: string): XBellLocator;
-//   queryById(id: string): XBellLocator;
-//   // from playwright-core
-//   locator(selector: string, options?: {
-//     /**
-//      * Matches elements containing an element that matches an inner locator. Inner locator is queried against the outer one.
-//      * For example, `article` that has `text=Playwright` matches `<article><div>Playwright</div></article>`.
-//      *
-//      * Note that outer and inner locators must belong to the same frame. Inner locator must not contain [FrameLocator]s.
-//      */
-//     has?: Locator;
-
-//     /**
-//      * Matches elements containing specified text somewhere inside, possibly in a child or a descendant element. When passed a
-//      * [string], matching is case-insensitive and searches for a substring. For example, `"Playwright"` matches
-//      * `<article><div>Playwright</div></article>`.
-//      */
-//     hasText?: string|RegExp;
-//   }): XBellLocator;
-// }
-
-// export interface XBellPage extends Omit<Page, 'locator'>, XBellQuery  {
-  
-// }
-
-// export interface XBellLocator extends Omit<Locator, 'locator'>, XBellQuery {
-//   nth(index: number): XBellLocator;
-//   first(): XBellLocator;
-//   last(): XBellLocator;
-// }
+export interface XBellPage<BrowserExtensionArg = {}> {
+  evaluate: <Args>(func: XBellPageExecutor<BrowserExtensionArg & Args>, args?: Args) => void;
+  close(): Promise<void>;
+  goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
+  waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
+  screenshot(options?: PageScreenshotOptions): Promise<Buffer>
+  locateByText(text: string): XBellLocator;
+  locateByTestId(testId: string): XBellLocator;
+  locateByClass(className: string): XBellLocator;
+  queryByText(text: string): Promise<XBellElementHandle | null>;
+  queryByTestId(testId: string): Promise<XBellElementHandle | null>;
+  queryByClass(className: string): Promise<XBellElementHandle | null>;
+  url(): Promise<string>;
+  waitForNavigation(options?: {
+    timeout?: number;
+    url?: string|RegExp|((url: URL) => boolean);
+    waitUntil?: "load"|"domcontentloaded"|"networkidle"|"commit";
+  }): Promise<null | Response>;
+  waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
+    timeout?: number;
+  }): Promise<Request>;
+  waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
+    timeout?: number;
+  }): Promise<Response>;
+  keyboard: Keyboard;
+  mouse: Mouse;
+}
