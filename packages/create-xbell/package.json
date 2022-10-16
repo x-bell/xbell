@@ -1,6 +1,6 @@
 {
   "name": "create-xbell",
-  "version": "0.4.2",
+  "version": "0.6.0-alpha.0",
   "author": "lianghang",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "bin"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {

@@ -6,12 +6,15 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": [ "es2015" ]
+    "lib": [ "es2015", "DOM"]
   },
   "include": [
     "xbell-env.d.ts",
     "**/*.test.ts",
+    "**/*.test.tsx",
     "**/*.spec.ts",
-    "./src/**/*.ts"
+    "**/*.spec.tsx",
+    "**/*.ts",
+    "**/*.tsx"
   ]
 }
