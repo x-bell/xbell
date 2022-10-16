@@ -6,3 +6,6 @@ export * from './expect';
 export * from './test';
 export * from './worker-message';
 export * from './fixture';
+export * from './page';
+export * from './locator';
+export * from './element-handle';

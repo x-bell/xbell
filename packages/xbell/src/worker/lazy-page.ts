@@ -1,12 +1,27 @@
 import { Page } from './page';
 import { lazyBrowser } from './browser';
-import type { XBellLocator, XBellPage } from '../types';
+import type { XBellPage, XBellLocator } from '../types';
 import debug from 'debug';
 import type { Browser, BrowserContext } from 'playwright-core';
 
 const debugLazyPage = debug('xbell:lazyPage');
 
+
 export function genLazyPage(): XBellPage & { used: boolean } {
+  function genProxy(pagePropKey: 'mouse' | 'keyboard') {
+    const proxy = new Proxy({}, {
+      get(target, propKey: keyof Page[typeof pagePropKey]) {
+        return (...args: any[]) => {
+          return getLazyPage().then(({ page }) => {
+            return Reflect.apply(page[pagePropKey][propKey] as Function, page[pagePropKey], args);
+          });
+        }
+      }
+    }) as Page[typeof pagePropKey];
+
+    return proxy;
+  }
+
   let _lazyPage: Page;
   let _lazyContext: BrowserContext;
   let _lazyBrowser: Browser;
@@ -35,14 +50,26 @@ export function genLazyPage(): XBellPage & { used: boolean } {
     };
   };
 
+  const keyboardProxy = genProxy('keyboard');
+  const mouseProxy = genProxy('mouse');
+
   const proxyPage = new Proxy({}, {
     get(target, propKey: keyof XBellPage | 'used') {
       debugLazyPage('get.propKey', propKey);
       if (propKey === 'used') {
         return usedFlag;
       }
+
+      if (propKey === 'keyboard') {
+        return keyboardProxy;
+      }
+
+      if (propKey === 'mouse') {
+        return mouseProxy;
+      }
+
       return (...args: any[]) => {
-        if (propKey.startsWith('locat')) {
+        if (propKey.startsWith('getBy')) {
           return new Proxy({}, {
             get(target, locatorKey: keyof XBellLocator) {
               return (...locatorArgs: any[]) => getLazyPage().then(({ page }) => {

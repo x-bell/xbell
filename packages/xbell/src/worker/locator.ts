@@ -5,8 +5,7 @@ import type {
 
 import type {
   XBellLocator,
-  XBellElementHandle,
-} from '../types';
+} from '../types/locator';
 
 import type {
   ElementHandleCheckOptions,
