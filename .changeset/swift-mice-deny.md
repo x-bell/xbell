@@ -1,5 +1,0 @@
----
-"xbell": minor
----
-
-browser testing

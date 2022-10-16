@@ -1,25 +1,32 @@
-import { writeFileSync } from 'fs';
+import { writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const tpl = `import type { XBellConfig } from 'xbell';
 
-export default <XBellConfig>({
-  viewport: {
-    width: 1380,
-    height: 720,
+const config: XBellConfig = {
+  browser: {
+    viewport: {
+      width: 1380,
+      height: 720,
+    },
+    headless: true,
   },
-  runEnvs: ['prod'],
-  browsers: ['chromium'],
-  headless: false,
-  envConfig: {
-    prod: {
-      ENV: 'prod',
-    }
-  },
-});
+};
+
+export default config;
 
 `;
+
+const XBellConfigFilePaths = [
+  'xbell.config.ts',
+  'xbell.config.js',
+  'xbell.config.mjs',
+  'xbell.config.cjs',
+];
 export function writeDefaultXBellConfig(projectDir: string) {
-  const configFilepath = join(projectDir, 'xbell.config.ts');
-  writeFileSync(configFilepath, tpl, 'utf-8');
+  const isExisted = XBellConfigFilePaths.some(filename => existsSync(join(projectDir, filename)))
+  if (!isExisted) {
+    const configFilepath = join(projectDir, 'xbell.config.ts');
+    writeFileSync(configFilepath, tpl, 'utf-8');
+  }
 }

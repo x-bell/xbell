@@ -1,14 +1,7 @@
-import { checkIsProject } from './utils/check-is-project';
-import { initExistedProject } from './init-existed-project';
-import { initEndToEndProject } from './init-end-to-end-project'
+import { initXBell } from './init-xbell';
 
 export async function start() {
-  const projectDir = process.cwd();
-  if (checkIsProject(projectDir)) {
-    await initExistedProject()
-  } else {
-    await initEndToEndProject();
-  }
+  await initXBell();
 }
 
 start();
