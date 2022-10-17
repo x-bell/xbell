@@ -6,13 +6,13 @@ const props = defineProps({
 });
 
 const userInfo = ref({});
+const visible = ref(false);
 
 onMounted(async () => {
   const res = await fetch(`https://api.github.com/users/${props.username}`);
   const data = await res.json();
   userInfo.value = data;
 });
-
 
 </script>
 
@@ -22,6 +22,9 @@ onMounted(async () => {
     <div>
       <span>name: </span>
       <span>{{userInfo.name}}</span>
+    </div>
+    <div v-if="visible">
+      <div>hided content</div>
     </div>
   </div>
 </template>
