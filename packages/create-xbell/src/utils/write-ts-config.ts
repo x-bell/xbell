@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
-import { getJsonFileSpaces } from './get-json-file-spaces';
+import { getJsonFileSpaces, loadJSON } from './json';
 
 const xbellTsConfigJson = {
   "extends": "./tsconfig.json",
@@ -58,7 +58,7 @@ export function writeTSConfig(rootDir: string) {
   if (!isExistedTsTestJson) {
 
   }
-  const tsJson = isExistedTsJson ? require(tsJsonPath) : {}
+  const tsJson = isExistedTsJson ? loadJSON(tsJsonPath) : {}
   const spaces = isExistedTsJson ? getJsonFileSpaces(tsJsonPath) : 2;
   tsJson.references = [
     ...(tsJson.references || []),

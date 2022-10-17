@@ -1,6 +1,6 @@
 {
   "name": "create-xbell",
-  "version": "0.6.0-alpha.4",
+  "version": "0.6.0-alpha.5",
   "author": "lianghang",
   "main": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -24,7 +24,8 @@
     "glob": "^8.0.1",
     "inquirer": "^8.2.4",
     "nunjucks": "^3.2.3",
-    "ora": "^5.4.1"
+    "ora": "^5.4.1",
+    "@xbell/color": "workspace:*"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
@@ -32,6 +33,7 @@
     "@types/inquirer": "^8.2.1",
     "@types/node": "^18.7.18",
     "@types/nunjucks": "^3.2.1",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "xbell": "latest"
   }
 }

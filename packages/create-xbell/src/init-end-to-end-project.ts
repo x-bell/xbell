@@ -6,8 +6,7 @@ import * as path from 'path';
 import * as nunjucks from 'nunjucks';
 import { execSync } from 'child_process';
 import { getQuestion, BellAnswers } from './question';
-import * as chalk from 'chalk'
-// import ora from 'ora';
+import color from '@xbell/color';
 
 interface IFile {
   relativePath: string;
@@ -84,12 +83,12 @@ function installPackages(projectName: string) {
 
   // spinner.stop()
 
-  console.log(chalk.bgGreen.black(' Done ') + ' ' + chalk.green('项目初始化完成!'))
+  console.log(color.bgGreen.black(' Done ') + ' ' + color.green('项目初始化完成!'))
   console.log(
-    chalk.cyan(`cd ${projectName}`)
+    color.cyan(`cd ${projectName}`)
   )
   console.log(
-    chalk.cyan(`npm run install:browser`)
+    color.cyan(`npm run install:browser`)
   )
 
 }

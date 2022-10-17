@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { existsSync, writeFileSync } from 'fs';
-import { getJsonFileSpaces } from './get-json-file-spaces';
+import { getJsonFileSpaces, loadJSON } from './json';
 
 export function existPackageJson(rootDir: string) {
   const hasPkgJson = existsSync(
@@ -29,7 +29,7 @@ const SCRIPTS = {
 export function writePackageJson(projectDir: string) {
   const isExistedPackageJson = existPackageJson(projectDir);
   const pkgJsonPath = join(projectDir, 'package.json');
-  const pkgJson = isExistedPackageJson ? require(pkgJsonPath) : JSON.parse(
+  const pkgJson = isExistedPackageJson ? loadJSON(pkgJsonPath) : JSON.parse(
     JSON.stringify(DEFAULT_PACKAGE_JSON)
   );
 

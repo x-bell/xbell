@@ -1,18 +1,18 @@
-import * as chalk from 'chalk';
 import { writePackageJson } from './utils/write-package-json';
 import { writeTSConfig } from './utils/write-ts-config';
 import { writeDefaultXBellConfig } from './utils/write-default-xbell-config';
+import color from '@xbell/color';
 
-export function initXBell() {
+export async function initXBell() {
   const projectDir = process.cwd();
-  writePackageJson(projectDir);
-  writeDefaultXBellConfig(projectDir);
-  writeTSConfig(projectDir);
-  console.log(chalk.green('Done! run:'))
+  await writePackageJson(projectDir);
+  await writeDefaultXBellConfig(projectDir);
+  await writeTSConfig(projectDir);
+  console.log(color.green('Done! run:'))
   console.log()
-  console.log('  ' + chalk.cyan('npm install'))
+  console.log('  ' + color.cyan('npm install'))
   console.log()
-  console.log('  ' + chalk.cyan('npm run install-browser'))
+  console.log('  ' + color.cyan('npm run install-browser'))
   console.log()
-  console.log('  ' + chalk.cyan('npm run test'))
+  console.log('  ' + color.cyan('npm run test'))
 }

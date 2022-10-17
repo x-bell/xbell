@@ -13,3 +13,9 @@ export function getJsonFileSpaces(filename: string) {
     return 2;
   }
 }
+
+export function loadJSON(jsonFilePath: string) {
+  return JSON.parse(
+    readFileSync(jsonFilePath, 'utf-8')
+  );
+}
