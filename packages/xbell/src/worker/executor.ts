@@ -76,7 +76,8 @@ export class Executor {
       } else {
         await this.runClassicCaseInNode(c, argManager);
       }
-      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
+      const coverage = await argManager.genCoverage();
+      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, coverage });
     } catch(err: any) {
       workerContext.channel.emit('onCaseExecuteFailed', {
         uuid: c.uuid,
@@ -87,7 +88,6 @@ export class Executor {
         }
       })
     } finally {
-      await argManager.genCoverage();
       await argManager.terdown();
     }
   }

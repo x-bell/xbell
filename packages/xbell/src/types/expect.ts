@@ -1,4 +1,5 @@
-import { BaseExpect, Matchers as JMatcher, AsymmetricMatchers } from 'expect';
+import type { BaseExpect, Matchers as JMatcher, AsymmetricMatchers } from 'expect';
+
 export interface ToMatchSnapshotOptions {
   /**
    * Image name

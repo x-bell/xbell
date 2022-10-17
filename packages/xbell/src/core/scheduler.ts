@@ -53,8 +53,8 @@ export class Scheduler {
 
       // events
       worker.channel.addListener('onLog', (...args) => recorder.onLog(...args))
-      worker.channel.addListener('onFileCollectSuccesed', (...args) => recorder.onFileCollectSuccesed(...args))
-      worker.channel.addListener('onFileCollectFailed', (...args) => recorder.onFileCollectFailed(...args))
+      worker.channel.addListener('onFileCollectSuccesed', (...args) => recorder.onFileCollectSuccesed(...args));
+      worker.channel.addListener('onFileCollectFailed', (...args) => recorder.onFileCollectFailed(...args));
       worker.channel.addListener('onCaseExecuteStart', (...args) => recorder.onCaseExecuteStart(...args))
       worker.channel.addListener('onCaseExecuteSuccessed', (...args) => recorder.onCaseExecuteSuccessed(...args))
       worker.channel.addListener('onCaseExecuteFailed', (...args) => recorder.onCaseExecuteFailed(...args))
@@ -72,6 +72,8 @@ export class Scheduler {
     }));
     workerPool.addTasks(tasks);
     await workerPool.runAllTasks();
+
+    recorder.onAllDone();
   }
 }
 

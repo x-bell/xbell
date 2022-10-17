@@ -19,6 +19,7 @@ export interface XBellTestCaseRecord {
   caseDescription: string;
   status: XBellTestCaseStatus;
   error?: XBellError;
+  coverage?: any;
 }
 
 export interface XBellTestGroupRecord {
@@ -202,7 +203,8 @@ export interface XBellWorkerLifecycle {
   onFileCollectSuccesed(file: XBellTestFileRecord): void;
   onFileCollectFailed(file: XBellTestFileRecord): void;
   onCaseExecuteStart(c: { uuid: string }): void;
-  onCaseExecuteSuccessed(c: { uuid: string }): void;
+  onCaseExecuteSuccessed(c: { uuid: string, coverage?: any }): void;
   onCaseExecuteFailed(c: { uuid: string, error: XBellError }): void;
+  onAllDone(): Promise<void> | void;
   onExit(): void;
 }

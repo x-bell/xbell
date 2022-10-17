@@ -13,6 +13,7 @@ import type { Channel } from '../common/channel';
 import { logger } from '../common/logger';
 import { XBellCaseRecord, XBellCaseStatus } from 'xbell-reporter';
 import { isCase } from '../utils/is';
+import { coverageManager } from '../common/coverage-manager';
 
 interface XBellRecorder extends Omit<XBellWorkerLifecycle, 'onExit'> {
 
@@ -52,12 +53,16 @@ class Recorder implements XBellRecorder {
     this._setCaseStatus(c.uuid, 'running');
   }
 
-  onCaseExecuteSuccessed(c: { uuid: string; }): void {
-    this._setCaseStatus(c.uuid, 'successed');
+  onCaseExecuteSuccessed(c: { uuid: string; coverage?: any }): void {
+    this._setCaseStatus(c.uuid, 'successed', { coverage: c.coverage });
   }
 
   onCaseExecuteFailed(c: { uuid: string; error: XBellError; }): void {
-    this._setCaseStatus(c.uuid, 'failed', c.error);
+    this._setCaseStatus(c.uuid, 'failed', { error: c.error });
+  }
+
+  async onAllDone() {
+    await coverageManager.generateReport()
   }
 
   onLog(data: XBellWorkerLog & { filename: string; }): void {
@@ -79,12 +84,16 @@ class Recorder implements XBellRecorder {
   }
 
   
-  protected _setCaseStatus(uuid: string, status: Exclude<XBellCaseStatus, 'failed'>): void;
-  protected _setCaseStatus(uuid: string, status: 'failed', error: XBellError): void;
-  protected _setCaseStatus(uuid: string, status: XBellCaseStatus, error?: XBellError): void {
+  protected _setCaseStatus(uuid: string, status: Exclude<XBellCaseStatus, 'failed'>, opts?: { coverage: any }): void;
+  protected _setCaseStatus(uuid: string, status: 'failed', opts?: { error: XBellError }): void;
+  protected _setCaseStatus(uuid: string, status: XBellCaseStatus, { error, coverage }: { error?: XBellError, coverage?: any } = {}): void {
     const task = this._taskMap.get(uuid)
     if (task && isCase(task)) {
       task.status = status;
+      if (coverage) {
+        task.coverage = coverage;
+        coverageManager.addCoverage(coverage);
+      }
       if (error) task.error = error;
       this._broadcast();
     }

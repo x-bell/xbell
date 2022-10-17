@@ -36,16 +36,17 @@ export class ArgumentManager {
       const coverage = await this.page.evaluate(() => {
         return window.__coverage__;
       });
+      return coverage;
       // @ts-ignore
-      if (coverage) {
-        // TODO: coverage
-        fs.writeFileSync(
-          path.join(process.cwd(),
-          '__coverage__.json'),
-          JSON.stringify(coverage),
-          'utf-8'
-        );
-      }
+      // if (coverage) {
+      //   // TODO: coverage
+      //   fs.writeFileSync(
+      //     path.join(process.cwd(),
+      //     '__coverage__.json'),
+      //     JSON.stringify(coverage),
+      //     'utf-8'
+      //   );
+      // }
     }
   }
 }

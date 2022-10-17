@@ -1,5 +1,3 @@
-
-
 {
   "name": "xbell",
   "version": "0.4.1",
@@ -65,7 +63,6 @@
     "@babel/code-frame": "^7.16.7",
     "@swc/core": "^1.2.208",
     "@vitejs/plugin-vue": "^3.0.3",
-    "chalk": "^5.0.1",
     "commander": "^9.2.0",
     "debug": "^4.3.4",
     "expect": "^28.1.0",
@@ -84,11 +81,19 @@
     "strip-ansi": "^7.0.1",
     "vite": "^3.0.7",
     "vite-plugin-istanbul": "^2.9.0",
+    "istanbul-lib-coverage": "^3.2.0",
+    "istanbul-lib-source-maps": "^4.0.1",
+    "istanbul-lib-report": "^3.0.0",
+    "istanbul-reports": "^3.1.5",
     "xbell-reporter": "workspace:*",
     "@xbell/code-stack": "workspace:*",
     "@xbell/color": "workspace:*"
   },
   "devDependencies": {
+    "@types/istanbul-lib-coverage": "^2.0.4",
+    "@types/istanbul-lib-source-maps": "^4.0.1",
+    "@types/istanbul-lib-report": "^3.0.0",
+    "@types/istanbul-reports": "^3.0.1",
     "@types/babel__code-frame": "^7.0.3",
     "@types/debug": "^4.1.7",
     "@types/fs-extra": "^9.0.13",
