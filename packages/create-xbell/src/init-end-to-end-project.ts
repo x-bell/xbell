@@ -7,7 +7,7 @@ import * as nunjucks from 'nunjucks';
 import { execSync } from 'child_process';
 import { getQuestion, BellAnswers } from './question';
 import * as chalk from 'chalk'
-import ora = require('ora');
+// import ora from 'ora';
 
 interface IFile {
   relativePath: string;
@@ -76,13 +76,13 @@ function installPackages(projectName: string) {
     projectName,
   );
 
-  const spinner = ora('正安装依赖...').start();
+  // const spinner = ora('正安装依赖...').start();
 
   execSync(`${COMMAND} ${args.join(' ')}`, {
     cwd: projectPath || process.cwd(),
   })
 
-  spinner.stop()
+  // spinner.stop()
 
   console.log(chalk.bgGreen.black(' Done ') + ' ' + chalk.green('项目初始化完成!'))
   console.log(
