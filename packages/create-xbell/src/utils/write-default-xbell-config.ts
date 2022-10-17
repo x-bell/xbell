@@ -14,7 +14,6 @@ const config: XBellConfig = {
 };
 
 export default config;
-
 `;
 
 const XBellConfigFilePaths = [

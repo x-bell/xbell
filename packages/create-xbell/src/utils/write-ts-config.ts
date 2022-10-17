@@ -27,7 +27,7 @@ function writeXBellTsConfigJson(rootDir: string, spaces = 2) {
   const xbellTsJsonPath = join(rootDir, 'tsconfig.test.json');
   writeFileSync(
     xbellTsJsonPath,
-    JSON.stringify(xbellTsConfigJson, null, spaces),
+    JSON.stringify(xbellTsConfigJson, null, spaces) + '\n',
     'utf-8'
   )
 }
@@ -68,7 +68,7 @@ export function writeTSConfig(rootDir: string) {
   // write rederences
   writeFileSync(
     tsJsonPath,
-    JSON.stringify(tsJson, null, spaces),
+    JSON.stringify(tsJson, null, spaces) + '\n',
     'utf-8'
   )
   writeXBellTsConfigJson(rootDir, spaces)
