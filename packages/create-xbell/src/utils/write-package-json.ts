@@ -44,6 +44,6 @@ export function writePackageJson(projectDir: string) {
     pkgJson.scripts[key] = value;
   }
 
-  const spaces = getJsonFileSpaces(pkgJsonPath);
+  const spaces = isExistedPackageJson ? getJsonFileSpaces(pkgJsonPath) : 2;
   writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, spaces));
 }
