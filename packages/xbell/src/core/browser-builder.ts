@@ -9,10 +9,12 @@ import {
 } from 'vite';
 import istanbul from 'vite-plugin-istanbul';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
-import vue from '@vitejs/plugin-vue';
 import type { XBellWorkerQueryModuleUrl } from '../types';
 import { get } from '../utils/http';
+import { configurator } from '../common/configurator';
+import debug from 'debug';
 
+const debugBrowserBuilder = debug('xbell:BrowserBuilder');
 
 class BrowserBuilder {
   protected _server?: Promise<{
@@ -41,7 +43,6 @@ class BrowserBuilder {
         hmr: false,
       },
       plugins: [
-        vue(),
         istanbul({
           exclude: ['node_modules', 'test/'],
           extension: ['.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs', '.vue'],
@@ -52,10 +53,14 @@ class BrowserBuilder {
         sourcemap: true,
       },
     });
-    const finalConfig: InlineConfig = {
-      ...testConfig,
-      configFile: false,
-    }
+    const userViteConfig = configurator.globalConfig.browser.devServer?.viteConfig;
+    const finalConfig: InlineConfig = mergeConfig(
+      userViteConfig || {},
+      { ...testConfig, configFile: false, }
+    );
+
+    debugBrowserBuilder('userViteConfig', userViteConfig);
+    debugBrowserBuilder('finalConfigPlugins', finalConfig.plugins);
     const server = await createServer(finalConfig);
   
     await server.listen();

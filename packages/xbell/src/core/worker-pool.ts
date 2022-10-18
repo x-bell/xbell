@@ -48,7 +48,6 @@ export class WorkerPool {
           workerData: <XBellWorkerData>{
             port: workerPort,
             workerId,
-            globalConfig: configurator.globalConfig,
             projectName: project.name,
           },
         }),

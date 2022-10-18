@@ -1,4 +1,4 @@
-import http from 'http';
+import * as http from 'node:http';
 
 export const get = (url: string) => {
   return new Promise<{ body: string; contentType?: string } >((resolve, reject)=> {

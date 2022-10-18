@@ -1,17 +1,22 @@
-import type { XBellTestCaseFunctionArguments } from '../types/test';
+import type { XBellTestCase, XBellTestCaseFunctionArguments } from '../types/test';
 import type { XBellProject } from '../types/config';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { genLazyPage } from './lazy-page';
 import { workerContext } from './worker-context';
 import { expect } from './expect/expect';
+import { configurator } from '../common/configurator';
 
 export class ArgumentManager {
-  page = genLazyPage();
+  page = genLazyPage({
+    browserCallbacks: this._case.runtimeOptions.browserCallbacks || [],
+  });
+
   project: XBellProject;
 
-  constructor() {
-    const { globalConfig, projectName } = workerContext.workerData;
+  constructor(protected _case: XBellTestCase<any, any>) {
+    const { projectName } = workerContext.workerData;
+    const { globalConfig } = configurator;
     const project = globalConfig.projects!.find(project => project.name === projectName);
     if (!project) {
       throw new Error('Not found project');

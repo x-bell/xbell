@@ -26,6 +26,7 @@ export class Configurator implements XBellConfigurator {
       width: 1280,
       height: 500,
     },
+    devServer: {}
   };
 
   static XBellDefaultConfig: Required<XBellConfig> = {

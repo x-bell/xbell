@@ -66,7 +66,6 @@ export class Scheduler {
     const tasks: XBellWorkerTask[] = testFiles.map((testFilename) => ({
       type: 'run',
       payload: {
-        globalConfig,
         testFilenames: [testFilename],
       },
     }));

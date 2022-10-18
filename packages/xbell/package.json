@@ -79,7 +79,7 @@
     "reflect-metadata": "^0.1.13",
     "stack-utils": "^2.0.5",
     "strip-ansi": "^7.0.1",
-    "vite": "^3.0.7",
+    "vite": "^3.1.8",
     "vite-plugin-istanbul": "^2.9.0",
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-source-maps": "^4.0.1",

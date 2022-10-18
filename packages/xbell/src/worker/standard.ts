@@ -14,7 +14,7 @@ interface XBellBrowserTest<BrowserExtArgs = {}> {
 
   batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtArgs & { item: T }>) => void;
 
-  extend<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<BrowserExtArgs & Awaited<ReturnType<T>>>;
+  extend<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<Awaited<ReturnType<T>>>;
 }
 
 interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
@@ -37,7 +37,7 @@ interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
    /** case */
    (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
 
-  extendBrowser<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, BrowserExtArgs & Awaited<ReturnType<T>>>;
+  extendBrowser<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, Awaited<ReturnType<T>>>;
 }
 
 export function createBrowserTest<BrowserExtArgs = {}>(

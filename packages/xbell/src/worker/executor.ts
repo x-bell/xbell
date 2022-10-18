@@ -66,7 +66,7 @@ export class Executor {
   }
 
   async runCaseInNode(c: XBellTestCase<any, any>) {
-    const argManager = new ArgumentManager();
+    const argManager = new ArgumentManager(c);
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,
     });
@@ -98,7 +98,7 @@ export class Executor {
     });
 
     const browserContext = await browser.newContext();
-    const page = await Page.from(browserContext)
+    const page = await Page.from(browserContext, c.runtimeOptions.browserCallbacks || [])
     await page.evaluate(c.testFunction, {});
     await page.close();
     await browserContext.close();

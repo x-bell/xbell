@@ -7,7 +7,11 @@ import type { Browser, BrowserContext } from 'playwright-core';
 const debugLazyPage = debug('xbell:lazyPage');
 
 
-export function genLazyPage(): XBellPage & { used: boolean } {
+export function genLazyPage({
+  browserCallbacks
+}: {
+  browserCallbacks: Array<(args: any) => any>
+}): XBellPage & { used: boolean } {
   function genProxy(pagePropKey: 'mouse' | 'keyboard') {
     const proxy = new Proxy({}, {
       get(target, propKey: keyof Page[typeof pagePropKey]) {
@@ -42,7 +46,7 @@ export function genLazyPage(): XBellPage & { used: boolean } {
     const browserContext = await browser.newContext();
     _lazyContext = browserContext;
     _lazyBrowser = browser;
-    _lazyPage = await Page.from(browserContext)
+    _lazyPage = await Page.from(browserContext, browserCallbacks)
     return {
       page: _lazyPage,
       context: _lazyContext,

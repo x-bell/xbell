@@ -26,21 +26,39 @@ import { Keyboard } from './keyboard';
 const debugPage = debug('xbell:page');
 
 export class Page implements XBellPage {
-  static async from(browserContext: PWBroContext) {
-    const page = await browserContext.newPage();
-    return new Page(page);
+  static async from<T extends (args: any) => any>(browserContext: PWBroContext, browserCallback: T[]) {
+    const _page = await browserContext.newPage();
+    const page = new Page(_page, browserCallback);
+    await page.setup()
+    return page;
   }
 
   public keyboard: Keyboard;
 
   public mouse: Mouse;
 
-  protected _settingPromise: Promise<void>;
+  // protected _settingPromise: Promise<void>;
 
-  constructor(protected _page: PWPage) {
-    this._settingPromise = this._setting();
+  constructor(
+    protected _page: PWPage,
+    protected _browserCallbacks: Array<(args: any) => any>,
+  ) {
     this.keyboard = new Keyboard(this._page.keyboard);
     this.mouse = this._page.mouse;
+  }
+
+  async setup() {
+    await this._setting();
+    let handle: {
+      evaluateHandle: PWPage['evaluateHandle']
+      evaluate: PWPage['evaluate']
+    } = this._page;
+    for (const browserCallback of this._browserCallbacks) {
+      handle = await handle.evaluateHandle(browserCallback);
+    }
+
+    this._page.evaluate = handle.evaluate;
+    this._page.evaluateHandle = handle.evaluateHandle;
   }
 
   async _setting() {

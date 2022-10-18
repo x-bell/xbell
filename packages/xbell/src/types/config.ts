@@ -1,3 +1,5 @@
+import type { UserConfigExport } from 'vite';
+
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
 export interface XBellBrowserConfig {
@@ -7,6 +9,10 @@ export interface XBellBrowserConfig {
     width: number;
     height: number;
   },
+  /** browser dev server */
+  devServer?: {
+    viteConfig?: UserConfigExport;
+  }
 }
 
 export interface XBellConfig {

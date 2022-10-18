@@ -15,6 +15,10 @@ class CoverageManager {
   }
 
   async generateReport() {
+    if (!this.coverages.length) {
+      return;
+    }
+
     const mergedCoverage: CoverageMap = this.coverages.reduce((coverage, previousCoverageMap) => {
       const map = libCoverage.createCoverageMap(coverage)
       map.merge(previousCoverageMap)

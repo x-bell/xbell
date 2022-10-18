@@ -6,8 +6,10 @@ import { collector } from './collector';
 import { workerContext } from './worker-context';
 import { toTestFileRecord } from '../utils/record';
 import debug from 'debug';
+import { configurator } from '../common/configurator';
 
 const debugWorker = debug('xbell:worker');
+
 export async function run(workData: XBellWorkerTaskPayload) {
   const testFiles = (await Promise.all(workData.testFilenames.map(async (filename) => {
     try {
@@ -37,16 +39,19 @@ export async function run(workData: XBellWorkerTaskPayload) {
     workerContext.setCurrentTestFile(testFile);
     const executor = new Executor({
       projectName:  workerContext.workerData.projectName,
-      globalConfig: workerContext.workerData.globalConfig,
+      globalConfig: configurator.globalConfig,
     }); 
     await executor.run(testFile);
   }
 }
 
-
+async function setup() {
+  await configurator.setup()
+}
 
 parentPort!.on('message', async ({ type, payload }: XBellWorkerTask) => {
   if (type === 'run') {
+    await setup();
     await run(payload);
     parentPort?.postMessage({
       type: 'finished',
