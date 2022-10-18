@@ -9,3 +9,4 @@ export * from './fixture';
 export * from './page';
 export * from './locator';
 export * from './element-handle';
+export * from './record';

@@ -1,4 +1,4 @@
-import type { XBellTestFileRecord, XBellTestTaskRecord } from './test';
+import type { XBellTestFileRecord, XBellTestTaskRecord } from './record';
 
 export type XBellWorkerUpdateFileMessage = {
   tag: 'workerUpdateFile';
