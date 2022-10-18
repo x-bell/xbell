@@ -1,0 +1,19 @@
+{
+  "name": "@xbell/vue2",
+  "version": "0.1.0",
+  "author": {
+    "name": "Hang Liang",
+    "email": "xlianghang@163.com",
+    "url": "https://github.com/xlianghang"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "2.x"
+  },
+  "dependencies": {
+    "xbell": "workspace:*"
+  },
+  "devDependencies": {
+    "vue": "^2.7.13"
+  }
+}
