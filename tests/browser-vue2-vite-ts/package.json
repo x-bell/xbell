@@ -1,0 +1,22 @@
+{
+  "name": "browser-vue2-vite-ts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "test": "xbell"
+  },
+  "dependencies": {
+    "vue": "^2.7.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue2": "^2.0.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.1.8",
+    "vue-tsc": "^0.39.5",
+    "xbell": "workspace:*",
+    "@xbell/vue2": "workspace:*"
+  }
+}
