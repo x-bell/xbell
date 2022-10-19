@@ -24,13 +24,13 @@ const AccountBar: React.FC<AccountBarProps> = ({
   return (
     <Grid container spacing={2}>
       <Row item xs={4}>
-        <AccountCard icon={<ThumbUpIcon />} count={successedCount} title="成功数" color="success" />
+        <AccountCard icon={<ThumbUpIcon />} count={successedCount} title="Passed" color="success" />
       </Row>
       <Row item xs={4}>
-        <AccountCard icon={<NotificationImportantIcon />} count={failedCount} title="失败数" color="primary" />
+        <AccountCard icon={<NotificationImportantIcon />} count={failedCount} title="Failed" color="primary" />
       </Row>
       <Row item xs={4}>
-        <AccountCard icon={<HourglassFullIcon />} count={runningCount} title="运行中" color="warning" />
+        <AccountCard icon={<HourglassFullIcon />} count={runningCount} title="Running" color="warning" />
       </Row>
     </Grid>
   )

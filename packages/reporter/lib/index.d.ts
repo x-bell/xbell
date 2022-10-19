@@ -1,36 +1,51 @@
-export type XBellCaseStatus =
+export type XBellTestCaseStatus =
   | 'successed'
   | 'failed'
   | 'running'
   | 'waiting';
 
-export interface XBellErrorRecord {
-  originError: Error;
-  message?: string;
-  codeFrame?: string;
-  firstFrame?: string;
+export type XBellError = { name: string; message: string; stack?: string };
+
+export interface XBellWorkerLog {
+  type: 'stdout' | 'stderr';
+  content: string;
 }
 
-export interface XBellCaseRecord {
-  env: string;
-  caseName: string;
-  groupName: string;
-  browser: string;
-  status: XBellCaseStatus;
-  videoRecords: {
-    filepath: string;
-  }[]
-  errors?: XBellErrorRecord[];
-  steps?: string[];
+export interface XBellTestCaseRecord {
+  type: 'case';
+  uuid: string;
+  filename: string;
+  groupDescription?: string;
+  caseDescription: string;
+  status: XBellTestCaseStatus;
+  error?: XBellError;
+  coverage?: any;
+  videos?: string[];
 }
 
-export interface XBellGroupRecord {
-  env: string;
-  groupName: string;
-  browser: string;
-  cases: XBellCaseRecord[];
+export interface XBellTestGroupRecord {
+  type: 'group';
+  filename: string;
+  uuid: string;
+  groupDescription: string;
+  cases: XBellTestTaskRecord[];
 }
 
-export type XBellEnvRecord = Record<string, XBellGroupRecord[]>;
+export type XBellTestTaskRecord =
+  | XBellTestGroupRecord
+  | XBellTestCaseRecord;
 
-export declare function generateHTML(reportResource: XBellEnvRecord): string;
+
+export interface XBellTestFileRecord {
+  filename: string;
+  tasks: XBellTestTaskRecord[];
+  logs: XBellWorkerLog[];
+  error?: XBellError;
+}
+
+export interface XBellTestProjectRecord {
+  projectName: string;
+  files: XBellTestFileRecord[];
+}
+
+export declare function generateHTML(reportResource: XBellTestProjectRecord[]): string;

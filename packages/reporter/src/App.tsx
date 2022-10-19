@@ -4,48 +4,35 @@ import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import SearchAppBar from './components/SearchAppBar';
 import theme from 'assets/theme';
-import GroupCard from 'components/GroupCard';
+import { FileCard } from 'components/FileCard';
 import AccountBar from 'components/AccountBar';
 import { MaterialUIControllerProvider } from './context';
-import { XBellEnvRecord } from '../lib/index';
+import type { XBellTestProjectRecord } from '../lib/index';
+import { getFilesCounter } from './utils/count';
 
 import './App.css'
 
 // @ts-ignore
-const XBELL_RESOURCES: XBellEnvRecord = window.XBELL_RESOURCES;
+const XBELL_RESOURCES: XBellTestProjectRecord[] = window.XBELL_RESOURCES;
 
 const ListContainer = styled('div')`
   padding: 40px;
 `;
-const envs = Object.keys(XBELL_RESOURCES);
+const projects = XBELL_RESOURCES.map(project => project.projectName);
 
 function App() {
-  const [activeEnv, setActiveEnv] = React.useState(envs[0]);
-  const account = XBELL_RESOURCES[activeEnv].reduce((acc, { cases }) => {
-    cases.forEach((c) => {
-      if (c.status === 'failed') {
-        acc.failed++;
-      } else if (c.status === 'successed') {
-        acc.successed++;
-      } else if (c.status === 'running') {
-        acc.running++;
-      }
-    })
-    return acc;
-  }, {
-    successed: 0,
-    failed: 0,
-    running: 0,
-  });
+  const [activeProject, setActiveProject] = React.useState(projects[0]);
+  const activeProjectRecord = XBELL_RESOURCES.find(project => project.projectName === activeProject)!;
+  const account = getFilesCounter(activeProjectRecord.files);
   // const [isDark, setIsDark] = React.useState(true);
   return (
     <MaterialUIControllerProvider>
       <ThemeProvider theme={theme}>
         <Stack spacing={2}>
           <SearchAppBar
-            envs={envs}
-            activeEnv={activeEnv}
-            onEnvChange={setActiveEnv}
+            projects={projects}
+            activeProject={activeProject}
+            onProjectChange={setActiveProject}
           />
           <AccountBar
             successedCount={account.successed}
@@ -54,8 +41,8 @@ function App() {
           />
           <ListContainer>
             <Stack spacing={2}>
-            {XBELL_RESOURCES[activeEnv].map((group, index) => (
-              <GroupCard key={index} {...group} />
+            {activeProjectRecord.files.map((file, index) => (
+              <FileCard key={index} {...file} />
             ))}
             </Stack>
           </ListContainer>

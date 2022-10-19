@@ -11,6 +11,7 @@ import Tab from '@mui/material/Tab';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 // import SearchIcon from '@mui/icons-material/Search';
 import ThemeSwitch from './ThemeSwitch';
+import MDButton from './MDButton';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -59,15 +60,15 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 }));
 
 interface SearchAppBarProps {
-  envs: string[];
-  activeEnv: string;
-  onEnvChange(env: string): void;
+  projects: string[];
+  activeProject: string;
+  onProjectChange(env: string): void;
 }
 
 export default function SearchAppBar({
-  envs,
-  activeEnv,
-  onEnvChange,
+  projects,
+  activeProject,
+  onProjectChange,
 }: SearchAppBarProps) {
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -77,7 +78,7 @@ export default function SearchAppBar({
             size="large"
             edge="start"
             aria-label="open drawer"
-            sx={{ mr: 2 }}
+            sx={{ mr: 0 }}
           >
             <NotificationsActiveIcon />
           </IconButton>
@@ -87,21 +88,31 @@ export default function SearchAppBar({
             component="div"
             sx={{ display: { xs: 'none', sm: 'block' } }}
           >
-            X - BELL
+            XBELL
           </Typography>
           <Box style={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-            <StyledTabs
+            {projects.length > 1 && <StyledTabs
               centered
-              value={envs.indexOf(activeEnv)}
-              onChange={(_, v) => onEnvChange(envs[v])}
+              value={projects.indexOf(activeProject)}
+              onChange={(_, v) => onProjectChange(projects[v])}
               indicatorColor="secondary"
               textColor="inherit"
             >
-              {envs.map((env) => (
+              {projects.map((env) => (
                 <Tab key={env} label={env.toLocaleUpperCase()} />
               ))}
             </StyledTabs>
+            }
           </Box>
+          {/* <MDButton variant="outlined" color="info">
+            Coverage
+          </MDButton> */}
+          <MDButton variant="gradient" color="info" onClick={() => location.href = './coverage/index.html'}>
+            Coverage
+          </MDButton>
+          {/* <MDButton variant="contained" color="info">
+            Coverage
+          </MDButton> */}
           {/* <ThemeSwitch /> */}
           {/* <Search>
             <SearchIconWrapper>
