@@ -8,7 +8,7 @@ import { Worker, MessageChannel, isMainThread } from 'node:worker_threads';
 // import type { MessagePort } from 'node:worker_threads';
 import { cpus } from 'node:os';
 import { Channel } from '../common/channel';
-import { pathManager } from './path-manager';
+import { pathManager } from '../common/path-manager';
 import { configurator } from '../common/configurator';
 import debug from 'debug';
 

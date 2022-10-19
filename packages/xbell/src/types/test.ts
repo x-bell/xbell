@@ -165,8 +165,8 @@ export interface XBellWorkerLifecycle {
   onFileCollectSuccesed(file: XBellTestFileRecord): void;
   onFileCollectFailed(file: XBellTestFileRecord): void;
   onCaseExecuteStart(c: { uuid: string }): void;
-  onCaseExecuteSuccessed(c: { uuid: string, coverage?: any }): void;
-  onCaseExecuteFailed(c: { uuid: string, error: XBellError }): void;
+  onCaseExecuteSuccessed(c: { uuid: string, coverage?: any, videos?: string[] }): void;
+  onCaseExecuteFailed(c: { uuid: string, error: XBellError, videos?: string[] }): void;
   onAllDone(): Promise<void> | void;
   onExit(): void;
 }

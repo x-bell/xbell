@@ -10,12 +10,14 @@ import { recorder } from './recorder';
 import { printer } from './printer';
 import { prompter } from '../prompter';
 import { workerPool } from './worker-pool';
+import { htmlReporter } from '../common/html-reporter';
 
 class XBell {
   async setup() {
     await configurator.setup();
     await workerPool.setup();
     await scheduler.setup();
+    await htmlReporter.setup();
 
     recorder.subscribe((records) => {
       printer.print(records);

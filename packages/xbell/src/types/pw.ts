@@ -1,10 +1,12 @@
 
-export type { Response, Request } from 'playwright-core';
 import type { JSHandle, ElementHandle } from 'playwright-core';
+
+export type { Response, Request, Video } from 'playwright-core';
 
 export type SmartHandle<T> = T extends Node ? ElementHandle<T> : JSHandle<T>;
 
 export type NoHandles<Arg> = Arg extends JSHandle ? never : (Arg extends object ? { [Key in keyof Arg]: NoHandles<Arg[Key]> } : Arg);
+
 export type Unboxed<Arg> =
   Arg extends ElementHandle<infer T> ? T :
   Arg extends JSHandle<infer T> ? T :
@@ -16,7 +18,9 @@ export type Unboxed<Arg> =
   Arg extends Array<infer T> ? Array<Unboxed<T>> :
   Arg extends object ? { [Key in keyof Arg]: Unboxed<Arg[Key]> } :
   Arg;
+
 export type PageFunction0<R> = string | (() => R | Promise<R>);
+
 export type PageFunction<Arg, R> = string | ((arg: Unboxed<Arg>) => R | Promise<R>);
 
 export type Size = { width: number, height: number };

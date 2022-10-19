@@ -53,12 +53,12 @@ class Recorder implements XBellRecorder {
     this._setCaseStatus(c.uuid, 'running');
   }
 
-  onCaseExecuteSuccessed(c: { uuid: string; coverage?: any }): void {
-    this._setCaseStatus(c.uuid, 'successed', { coverage: c.coverage });
+  onCaseExecuteSuccessed(c: { uuid: string; coverage?: any, videos?: string[] }): void {
+    this._setCaseStatus(c.uuid, 'successed', { coverage: c.coverage, videos: c.videos });
   }
 
-  onCaseExecuteFailed(c: { uuid: string; error: XBellError; }): void {
-    this._setCaseStatus(c.uuid, 'failed', { error: c.error });
+  onCaseExecuteFailed(c: { uuid: string; error: XBellError; videos?: string[] }): void {
+    this._setCaseStatus(c.uuid, 'failed', { error: c.error, videos: c.videos });
   }
 
   async onAllDone() {
@@ -84,15 +84,18 @@ class Recorder implements XBellRecorder {
   }
 
   
-  protected _setCaseStatus(uuid: string, status: Exclude<XBellCaseStatus, 'failed'>, opts?: { coverage: any }): void;
-  protected _setCaseStatus(uuid: string, status: 'failed', opts?: { error: XBellError }): void;
-  protected _setCaseStatus(uuid: string, status: XBellCaseStatus, { error, coverage }: { error?: XBellError, coverage?: any } = {}): void {
+  protected _setCaseStatus(uuid: string, status: Exclude<XBellCaseStatus, 'failed'>, opts?: { coverage?: any, videos?: string[] }): void;
+  protected _setCaseStatus(uuid: string, status: 'failed', opts?: { error: XBellError, videos?: string[] }): void;
+  protected _setCaseStatus(uuid: string, status: XBellCaseStatus, { error, coverage, videos }: { error?: XBellError, coverage?: any, videos?: string[] } = {}): void {
     const task = this._taskMap.get(uuid)
     if (task && isCase(task)) {
       task.status = status;
       if (coverage) {
         task.coverage = coverage;
         coverageManager.addCoverage(coverage);
+      }
+      if (videos?.length) {
+        task.videos = videos;
       }
       if (error) task.error = error;
       this._broadcast();

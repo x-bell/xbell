@@ -2,9 +2,11 @@ import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellTestCaseStandar
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
-import { ArgumentManager } from './args';
+import { ArgumentManager } from './argument-manager';
 import { stateManager } from './state-manager';
 import { configurator } from '../common/configurator';
+import { pathManager } from '../common/path-manager';
+import { join } from 'path';
 
 function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
   return typeof c.testFunction === 'function'
@@ -84,18 +86,22 @@ export class Executor {
         await hooks.afterEach(argManager.getArguments());
       }
       const coverage = await argManager.genCoverage();
-      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, coverage });
+      const pageResult = await argManager.terdown();
+      const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
+      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, coverage, videos });
     } catch(err: any) {
+      const pageResult = await argManager.terdown();
+      const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
+
       workerContext.channel.emit('onCaseExecuteFailed', {
         uuid: c.uuid,
         error: {
           message: err?.message || 'Run case error',
           name: err?.name || 'UnkonwError',
           stack: err?.stack,
-        }
+        },
+        videos,
       })
-    } finally {
-      await argManager.terdown();
     }
   }
 
@@ -104,7 +110,16 @@ export class Executor {
       headless: false,
     });
 
-    const browserContext = await browser.newContext();
+    const { viewport } = configurator.globalConfig.browser;
+    const videoDir = join(pathManager.tmpDir, 'videos');
+    // ensureDir(videoDir);
+    const browserContext = await browser.newContext({
+      viewport,
+      recordVideo: {
+        size: viewport,
+        dir: videoDir,
+      },
+    });
     const page = await Page.from(browserContext, c.runtimeOptions.browserCallbacks || [])
     await page.evaluate(c.testFunction, {});
     await page.close();

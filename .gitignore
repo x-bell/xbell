@@ -9,3 +9,4 @@ dist
 deprecated
 __snapshots__
 coverage
+test-report

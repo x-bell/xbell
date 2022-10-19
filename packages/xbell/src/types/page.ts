@@ -5,16 +5,13 @@ import type {
   PageScreenshotOptions,
   Request,
   SmartHandle,
-  PageFunction
+  PageFunction,
+  Video,
 } from './pw';
 import type { XBellLocator } from './locator';
 import type { XBellElementHandle } from './element-handle';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
-
-interface XBellPageFunction<BrowserExtensionArg> {
-  (arg: BrowserExtensionArg): void;
-}
 
 export interface XBellPage<BrowserExtensionArg = {}> {
   evaluate<R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, arg?: Args): Promise<R>;
@@ -32,8 +29,8 @@ export interface XBellPage<BrowserExtensionArg = {}> {
   url(): Promise<string>;
   waitForNavigation(options?: {
     timeout?: number;
-    url?: string|RegExp|((url: URL) => boolean);
-    waitUntil?: "load"|"domcontentloaded"|"networkidle"|"commit";
+    url?: string | RegExp|((url: URL) => boolean);
+    waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
   }): Promise<null | Response>;
   waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
     timeout?: number;
@@ -43,4 +40,5 @@ export interface XBellPage<BrowserExtensionArg = {}> {
   }): Promise<Response>;
   keyboard: Keyboard;
   mouse: Mouse;
+  video(): Promise<Video | null>;
 }

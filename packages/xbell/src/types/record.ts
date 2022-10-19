@@ -20,6 +20,7 @@ export interface XBellTestCaseRecord {
   status: XBellTestCaseStatus;
   error?: XBellError;
   coverage?: any;
+  videos?: string[];
 }
 
 export interface XBellTestGroupRecord {

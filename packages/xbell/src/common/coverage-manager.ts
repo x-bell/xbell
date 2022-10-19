@@ -1,10 +1,10 @@
-import * as path from 'path';
+import type { ReportOptions } from 'istanbul-reports';
 import type { CoverageMap } from 'istanbul-lib-coverage'
 import libCoverage from 'istanbul-lib-coverage'
 import libSourceMaps from 'istanbul-lib-source-maps'
 import libReport from 'istanbul-lib-report'
 import reports from 'istanbul-reports';
-import type { ReportOptions } from 'istanbul-reports';
+import { pathManager } from './path-manager';
 
 
 class CoverageManager {
@@ -29,7 +29,7 @@ class CoverageManager {
     const coverageMap: CoverageMap = await sourceMapStore.transformCoverage(mergedCoverage)
 
     const contextOptions = {
-      dir: path.join(process.cwd(), 'coverage'),
+      dir: pathManager.coverageDir,
       coverageMap,
       sourceFinder: sourceMapStore.sourceFinder,
     };

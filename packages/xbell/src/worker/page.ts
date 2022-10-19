@@ -2,6 +2,7 @@ import type {
   BrowserContext as PWBroContext,
   Page as PWPage,
   Request,
+  Video,
 } from 'playwright-core';
 
 import type {
@@ -237,5 +238,9 @@ export class Page implements XBellPage {
 
   waitForRequest(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
     return this._page.waitForRequest(urlOrPredicate, options);
+  }
+
+  async video(): Promise<Video | null> {
+    return this._page.video();
   }
 }

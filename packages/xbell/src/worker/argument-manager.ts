@@ -1,12 +1,10 @@
 import type { XBellTestCase, XBellTestCaseFunctionArguments } from '../types/test';
 import type { XBellProject } from '../types/config';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { genLazyPage } from './lazy-page';
 import { workerContext } from './worker-context';
 import { expect } from './expect/expect';
 import { configurator } from '../common/configurator';
-
+import { htmlReporter } from '../common/html-reporter';
 export class ArgumentManager {
   page = genLazyPage({
     browserCallbacks: this._case.runtimeOptions.browserCallbacks || [],
@@ -33,7 +31,18 @@ export class ArgumentManager {
   }
 
   async terdown() {
-    await this.page.close();
+    if (this.page.used) {
+      const video = await this.page.video()
+      if (video) {
+        const filepath = await video.path();
+        await this.page.close();
+        return {
+          videoPath: htmlReporter.saveAsset(filepath),
+        }
+      } else {
+        await this.page.close();
+      }
+    }
   }
 
   async genCoverage() {
@@ -42,16 +51,6 @@ export class ArgumentManager {
         return window.__coverage__;
       });
       return coverage;
-      // @ts-ignore
-      // if (coverage) {
-      //   // TODO: coverage
-      //   fs.writeFileSync(
-      //     path.join(process.cwd(),
-      //     '__coverage__.json'),
-      //     JSON.stringify(coverage),
-      //     'utf-8'
-      //   );
-      // }
     }
   }
 }

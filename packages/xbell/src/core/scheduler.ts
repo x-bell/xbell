@@ -8,7 +8,6 @@ import { configurator } from '../common/configurator';
 import { workerPool } from './worker-pool';
 import { recorder } from './recorder';
 import { browserBuilder } from './browser-builder';
-import { pathManager } from './path-manager';
 import { compiler } from '../compiler/compiler';
 
 export interface XBellScheduler  {

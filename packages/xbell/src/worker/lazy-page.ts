@@ -1,8 +1,11 @@
+import type { XBellPage, XBellLocator } from '../types';
+import type { Browser, BrowserContext } from 'playwright-core';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
-import type { XBellPage, XBellLocator } from '../types';
 import debug from 'debug';
-import type { Browser, BrowserContext } from 'playwright-core';
+import * as path from 'node:path';
+import { configurator } from '../common/configurator';
+import { pathManager } from '../common/path-manager';
 
 const debugLazyPage = debug('xbell:lazyPage');
 
@@ -40,10 +43,19 @@ export function genLazyPage({
       };
     }
 
+    const { headless, viewport } = configurator.globalConfig.browser;
     const browser = await lazyBrowser.newContext('chromium', {
-      headless: false,
+      headless: !!headless,
     });
-    const browserContext = await browser.newContext();
+    const videoDir = path.join(pathManager.tmpDir, 'videos');
+
+    const browserContext = await browser.newContext({
+      viewport,
+      recordVideo: {
+        dir: videoDir,
+        size: viewport,
+      }
+    });
     _lazyContext = browserContext;
     _lazyBrowser = browser;
     _lazyPage = await Page.from(browserContext, browserCallbacks)
