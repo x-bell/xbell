@@ -1,4 +1,5 @@
 import type { UserConfigExport } from 'vite';
+import type { XBellTestCaseFunction } from './test';
 
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
@@ -24,6 +25,11 @@ export interface XBellConfig {
   include?: string[];
   /** exclude */
   exclude?: string[];
+
+  hooks?: {
+    beforeEach?: XBellTestCaseFunction;
+    afterEach?: XBellTestCaseFunction;
+  }
 }
 
 export type XBellTaskConfig = Partial<

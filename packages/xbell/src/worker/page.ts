@@ -62,8 +62,9 @@ export class Page implements XBellPage {
       handle = await handle.evaluateHandle(browserCallback);
     }
 
-    this.evaluate = handle.evaluate;
-    this.evaluateHandle = handle.evaluateHandle;
+    const hasLength = this._browserCallbacks.length;
+    this.evaluate = hasLength ? handle.evaluate.bind(handle) : handle.evaluate;
+    this.evaluateHandle = hasLength ? handle.evaluateHandle.bind(handle) : handle.evaluateHandle;
   }
 
   protected async _setting() {

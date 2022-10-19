@@ -4,6 +4,7 @@ import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
 import { ArgumentManager } from './args';
 import { stateManager } from './state-manager';
+import { configurator } from '../common/configurator';
 
 function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
   return typeof c.testFunction === 'function'
@@ -61,20 +62,26 @@ export class Executor {
 
   protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>, argManager: ArgumentManager) {
     const { runtimeOptions, testFunction } = c;
-
     await testFunction(argManager.getArguments());
   }
 
   async runCaseInNode(c: XBellTestCase<any, any>) {
     const argManager = new ArgumentManager(c);
+    const { hooks } = configurator.globalConfig;
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,
     });
     try {
+      if (typeof hooks.beforeEach === 'function') {
+        await hooks.beforeEach(argManager.getArguments());
+      }
       if (isStandardCase(c)) {
         await this.runStandardCaseInNode(c, argManager);
       } else {
         await this.runClassicCaseInNode(c, argManager);
+      }
+      if (typeof hooks.afterEach === 'function') {
+        await hooks.afterEach(argManager.getArguments());
       }
       const coverage = await argManager.genCoverage();
       workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, coverage });

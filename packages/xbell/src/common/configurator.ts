@@ -26,7 +26,7 @@ export class Configurator implements XBellConfigurator {
       width: 1280,
       height: 500,
     },
-    devServer: {}
+    devServer: {},
   };
 
   static XBellDefaultConfig: Required<XBellConfig> = {
@@ -36,6 +36,7 @@ export class Configurator implements XBellConfigurator {
     browser: this.XBellDefaultBrowserConfig,
     include: ['**/*.{spec,test}.{cjs,mjs,js,jsx,ts,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**'],
+    hooks: {},
   }
 
   static XBellConfigFilePaths = [

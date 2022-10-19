@@ -8,4 +8,4 @@ dist
 .DS_Store
 deprecated
 __snapshots__
-
+coverage
