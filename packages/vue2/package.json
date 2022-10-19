@@ -6,6 +6,13 @@
     "email": "xlianghang@163.com",
     "url": "https://github.com/xlianghang"
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "prepublishOnly": "npm run build"
+  },
   "license": "MIT",
   "peerDependencies": {
     "vue": "2.x"
