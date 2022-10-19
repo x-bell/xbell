@@ -17,7 +17,7 @@ interface XBellBrowserTest<BrowserExtArgs = {}> {
   extend<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<Awaited<ReturnType<T>>>;
 }
 
-interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
+export interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
   /** group */
   describe(groupDescription: string, testGroupFunction: XBellTestGroupFunction): void;
 

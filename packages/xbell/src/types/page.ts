@@ -4,18 +4,21 @@ import type {
   LifecycleEvent,
   PageScreenshotOptions,
   Request,
+  SmartHandle,
+  PageFunction
 } from './pw';
 import type { XBellLocator } from './locator';
 import type { XBellElementHandle } from './element-handle';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 
-interface XBellPageExecutor<BrowserExtensionArg> {
+interface XBellPageFunction<BrowserExtensionArg> {
   (arg: BrowserExtensionArg): void;
 }
 
 export interface XBellPage<BrowserExtensionArg = {}> {
-  evaluate: <Args>(func: XBellPageExecutor<BrowserExtensionArg & Args>, args?: Args) => void;
+  evaluate<R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, arg?: Args): Promise<R>;
+  evaluateHandle: <R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, args?: Args) => Promise<SmartHandle<R>>;
   close(): Promise<void>;
   goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;

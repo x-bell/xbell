@@ -63,11 +63,15 @@ export {
   ElementHandle,
 } from './worker/element-handle';
 
-export {
+export type {
   FixtureFunction,
   XBellConfig,
   XBellProject as Project,
 } from './types';
+
+export type {
+  XBellTest
+} from './worker/standard';
 
 // @ts-ignore
 // resolve swc problem https://github.com/swc-project/swc/issues/1065

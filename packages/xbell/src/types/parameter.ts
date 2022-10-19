@@ -11,8 +11,6 @@ export interface IParameter {
 export type PropertyKey = symbol | string;
 
 export interface TestArguments<BrowserExtensionArg = {}> extends XBellTestCaseFunctionArguments<BrowserExtensionArg> {
-  page: Page;
-  project: XBellProject;
 }
 
 export interface TestEachArguments<T = any> extends TestArguments {

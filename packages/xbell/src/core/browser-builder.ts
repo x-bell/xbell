@@ -71,6 +71,10 @@ class BrowserBuilder {
     await get(`http://localhost:${port}/${XBELL_BUNDLE_PREFIX}/@vite/env`);
     return {
       async queryUrl(path: string, importer: string) {
+        debugBrowserBuilder('resolveId', {
+          path,
+          importer
+        });
         const ret = await server.pluginContainer.resolveId(path, importer, { ssr: false });
         return ret?.id
       },

@@ -320,7 +320,7 @@ class Printer {
 
     return [
       c.error?.message,
-      errInfo?.stack,
+      errInfo?.stack || c.error.stack,
     ].filter(Boolean).join('\n\n');
   }
 
