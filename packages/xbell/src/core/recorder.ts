@@ -7,13 +7,14 @@ import {
   XBellWorkerLifecycle,
   XBellWorkerLog,
   XBellError,
+  XBellTestCaseStatus
 } from '../types';
 import { eachTask } from '../utils/task';
 import type { Channel } from '../common/channel';
 import { logger } from '../common/logger';
-import { XBellCaseRecord, XBellCaseStatus } from 'xbell-reporter';
 import { isCase } from '../utils/is';
 import { coverageManager } from '../common/coverage-manager';
+import { htmlReporter } from '../common/html-reporter';
 
 interface XBellRecorder extends Omit<XBellWorkerLifecycle, 'onExit'> {
 
@@ -62,7 +63,8 @@ class Recorder implements XBellRecorder {
   }
 
   async onAllDone() {
-    await coverageManager.generateReport()
+    await coverageManager.generateReport();
+    await htmlReporter.generateReport(this.tree);
   }
 
   onLog(data: XBellWorkerLog & { filename: string; }): void {
@@ -84,9 +86,9 @@ class Recorder implements XBellRecorder {
   }
 
   
-  protected _setCaseStatus(uuid: string, status: Exclude<XBellCaseStatus, 'failed'>, opts?: { coverage?: any, videos?: string[] }): void;
+  protected _setCaseStatus(uuid: string, status: Exclude<XBellTestCaseStatus, 'failed'>, opts?: { coverage?: any, videos?: string[] }): void;
   protected _setCaseStatus(uuid: string, status: 'failed', opts?: { error: XBellError, videos?: string[] }): void;
-  protected _setCaseStatus(uuid: string, status: XBellCaseStatus, { error, coverage, videos }: { error?: XBellError, coverage?: any, videos?: string[] } = {}): void {
+  protected _setCaseStatus(uuid: string, status: XBellTestCaseStatus, { error, coverage, videos }: { error?: XBellError, coverage?: any, videos?: string[] } = {}): void {
     const task = this._taskMap.get(uuid)
     if (task && isCase(task)) {
       task.status = status;

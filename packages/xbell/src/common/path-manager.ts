@@ -8,6 +8,7 @@ class PathManager {
   testReportDir = join(process.cwd(), 'test-report');
   coverageDir = join(this.testReportDir, 'coverage');
   workerPath = join(this.distDir, './worker/worker.mjs');
+  projectDir = process.cwd();
 }
 
 export const pathManager = new PathManager();

@@ -8,7 +8,6 @@ import {
   XBellTestTaskRecord,
 } from '../types';
 import { isCase, isGroup } from '../utils/is';
-import { XBellCaseStatus } from 'xbell-reporter';
 import { recorder } from './recorder';
 import { relative } from 'node:path';
 import { createLogUpdate } from 'log-update';
@@ -23,7 +22,7 @@ function getUpLevelStatus({
   failed,
   running,
   waiting
-}: Record<XBellCaseStatus, boolean | number>): XBellCaseStatus {
+}: Record<XBellTestCaseStatus, boolean | number>): XBellTestCaseStatus {
   if (!running && !successed && !failed && waiting) {
     return 'waiting';
   }
@@ -38,7 +37,7 @@ function getUpLevelStatus({
   return 'successed'
 }
 
-const defaultCounter: Record<XBellCaseStatus, number> = {
+const defaultCounter: Record<XBellTestCaseStatus, number> = {
   successed: 0,
   failed: 0,
   running: 0,
@@ -68,7 +67,7 @@ class Printer {
     caseErrors: string[],
   ): {
     text: string;
-    status: XBellCaseStatus;
+    status: XBellTestCaseStatus;
     caseCounter: Record<XBellTestCaseStatus, number>;
   } {
     const counterForUpLevel = { ...defaultCounter };
@@ -171,7 +170,7 @@ class Printer {
     return Array.isArray(icons) ? icons[this.currentFrame % icons.length] : icons;
   }
 
-  protected getStatusLabel(status: XBellCaseStatus) {
+  protected getStatusLabel(status: XBellTestCaseStatus) {
     if (status === 'waiting') {
       return color.bold.inverse.yellow(' WAIT ');
     }
@@ -255,7 +254,7 @@ class Printer {
     return sideText + text + sideText;
   }
 
-  getColorTextByStatus(status: XBellCaseStatus, text: string) {
+  getColorTextByStatus(status: XBellTestCaseStatus, text: string) {
     if (status === 'failed') {
       return color.red(text);
     }
@@ -277,8 +276,8 @@ class Printer {
     fileStatusCounter,
     caseStatusCounter
   }: {
-    fileStatusCounter: Record<XBellCaseStatus, number>;
-    caseStatusCounter: Record<XBellCaseStatus, number>
+    fileStatusCounter: Record<XBellTestCaseStatus, number>;
+    caseStatusCounter: Record<XBellTestCaseStatus, number>
   }) {
     const isAllPassed = fileStatusCounter.failed === 0 && fileStatusCounter.running === 0 && fileStatusCounter.waiting === 0;
 
@@ -298,7 +297,7 @@ class Printer {
     return ms + 'ms';
   }
 
-  getTotals(counter: Record<XBellCaseStatus, number>): string {
+  getTotals(counter: Record<XBellTestCaseStatus, number>): string {
     const total = Object.entries(counter).reduce((acc, [key, num]) => acc + num, 0);
     return [
       counter.failed ? color.bold.red(counter.failed + ' failed') : undefined,

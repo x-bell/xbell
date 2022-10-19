@@ -24,7 +24,7 @@ export class Configurator implements XBellConfigurator {
     headless: true,
     viewport: {
       width: 1280,
-      height: 500,
+      height: 700,
     },
     devServer: {},
   };
