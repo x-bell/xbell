@@ -14,7 +14,7 @@ import Box from './MDBox';
 import Badge from './MDBadge';
 import VideoDialog from './VideoDialog';
 import { XBellTestGroupRecord, XBellTestCaseRecord, XBellTestCaseStatus, XBellTestTaskRecord, XBellTestFileRecord } from '../../lib/index';
-
+import MDTypography from './MDTypography';
 const GroupRow = styled('div')`
   flex: 1;
   display: flex;
@@ -58,10 +58,20 @@ export const FileCard: React.FC<XBellTestFileRecord> = ({
   filename,
   tasks
 }) => {
+  const filepaths = filename.split('/');
+  const file = filepaths.pop();
+  const dir = filepaths.join('/') + '/';
   return (
-    <div>
-      <div>{filename}</div>
-      {tasks.map((task, index) => <TaskCard key={index} {...task} />)}
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 8 }}>
+        <MDTypography>
+          <span style={{ color: '#777' }}>{dir}</span>
+          <span>{file}</span>
+        </MDTypography>
+      </div>
+      <Stack spacing={2}>
+        {tasks.map((task, index) => <TaskCard key={index} {...task} />)}
+      </Stack>
     </div>
   )
 }

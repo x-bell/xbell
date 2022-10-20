@@ -23,7 +23,7 @@ const VideoContainer = styled(Box)({
 
 const Container = styled(Box)({
   height: '550px',
-  padding: '12px 24px',
+  padding: '36px 24px 12px',
   position: 'relative',
 });
 
@@ -36,8 +36,8 @@ const TinyText = styled(Typography)({
 
 const StyledCloseButton = styled(IconButton)({
   position: 'absolute',
-  top: '-6px',
-  right: '-6px',
+  top: '0px',
+  right: '0px',
 });
 
 function formatDuration(value: number) {
