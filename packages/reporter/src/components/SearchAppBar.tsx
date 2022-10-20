@@ -79,6 +79,7 @@ export default function SearchAppBar({
             edge="start"
             aria-label="open drawer"
             sx={{ mr: 0 }}
+            onClick={() => window.open('https://x-bell.github.io/xbell', '_blank')}
           >
             <NotificationsActiveIcon />
           </IconButton>
