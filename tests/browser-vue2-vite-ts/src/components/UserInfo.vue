@@ -42,6 +42,7 @@ export default defineComponent({
 
 <style scoped>
 .user-info-root {
+  width: 200px;
   color: #888;
 }
 

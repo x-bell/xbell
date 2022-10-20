@@ -3,6 +3,7 @@ import viteConfig from './vite.config';
 
 const config: XBellConfig = {
   browser: {
+    headless: false,
     devServer: {
       viteConfig,
     }

@@ -1,6 +1,6 @@
 import { test } from '@xbell/vue2';
 
-test('render app', async ({ page, expect }) => {
+test('execute', async ({ page, expect }) => {
   await page.evaluate(async () => {
     await import ('./main');
   });

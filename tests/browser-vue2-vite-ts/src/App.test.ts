@@ -9,13 +9,13 @@ const test = basic
     }
   });
 
-test('render App.vue', async ({ page, expect }) => {
+test('render', async ({ page, expect }) => {
   await page.waitForLoadState('networkidle');
   await expect(page.getByText('User')).toBeVisible();
   await expect(page.getByText('Hang Liang')).toBeVisible();
 });
 
-test('App.vue screenshot', async ({ page, expect }) => {
+test('screenshot', async ({ page, expect }) => {
   await expect(page).toMatchScreenshot({
     name: 'app-screenshot',
   });
