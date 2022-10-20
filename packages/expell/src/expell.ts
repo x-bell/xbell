@@ -95,26 +95,28 @@ export function createExpell<MatchObject extends ExpellMatchObject, Type = any, 
                 ? Promise.resolve(received).catch(res => Reflect.apply(matchObject[propKey as string], state, [res, ...args]))
                 : Reflect.apply(matchObject[propKey as string], state, [received, ...args])
 
-            if (isPromise(innerRet)) {
-              return innerRet.then((ret) => {
-                const rawPass = typeof ret.pass === 'function' ? ret.pass(state) : ret.pass;
-                const pass = state.not ? !rawPass : rawPass;
-                if (!pass) {
-                  const err = new Error(ret.message(state));
-                  err.name = 'AssertionError';
-                  return Promise.reject(err);
-                }
-              })
-            } else {
-              const rawPass = typeof innerRet.pass === 'function' ? innerRet.pass(state) : innerRet.pass;
-              const pass = state.not ? !rawPass : rawPass;
+              
+            const handleResult = (ret: ExpellMatchResult) => {
+              const rawPass = typeof ret.pass === 'function' ? ret.pass(state) : ret.pass;
 
-              if (!pass) {
-                const msg = innerRet.message(state);
-                const err = new Error(msg)
-                err.name = 'AssertionError';
-                throw err;
-              }
+                const handlePass = (rawPass: boolean) => {
+                  const pass = state.not ? !rawPass : rawPass;
+                  if (!pass) {
+                    const err = new Error(ret.message(state));
+                    err.name = 'AssertionError';
+                    throw err;
+                  }
+                }
+                if (isPromise(rawPass)) {
+                  return rawPass.then(handlePass);
+                }
+                return handlePass(rawPass);
+            }
+
+            if (isPromise(innerRet)) {
+              return innerRet.then(handleResult)
+            } else {
+              return handleResult(innerRet);
             }
           };
         }

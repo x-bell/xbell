@@ -23,13 +23,14 @@ function getUpLevelStatus({
   running,
   waiting
 }: Record<XBellTestCaseStatus, boolean | number>): XBellTestCaseStatus {
-  if (!running && !successed && !failed && waiting) {
-    return 'waiting';
-  }
-
   if (running) {
     return 'running';
   }
+
+  if (waiting) {
+    return 'waiting';
+  }
+
   if (failed) {
     return 'failed';
   }

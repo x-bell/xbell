@@ -7,7 +7,7 @@ export interface ExpellMatchState {
   rejects: boolean;
 }
 
-export type ExpellMatchResult = { pass: boolean | ((state: ExpellMatchState) => boolean), message: (state: ExpellMatchState) => string };
+export type ExpellMatchResult = { pass: boolean | ((state: ExpellMatchState) => (boolean | Promise<boolean>)), message: (state: ExpellMatchState) => string };
 
 export type ExpellMatchFunction = (...args: any) => ExpellMatchResult;
 

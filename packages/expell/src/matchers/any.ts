@@ -4,6 +4,7 @@ import { getAssertionMessage, getMatcherMessage } from '../message';
 import { ExpellMatchFunction, ExpellMatchPromiseFunction } from '../types';
 import { getConstructorName } from '../proto';
 import { equals, iterableEquality, typeEquality, sparseArrayEquality, arrayBufferEquality } from '../equal';
+import { isPromise } from 'util/types';
 
 interface ExpellAnyAssertion {
   // not: ExpellAssertion<T>
@@ -169,4 +170,42 @@ export const anyMatcher = defineMatcher({
       }
     }
   },
+  toThrow(received: unknown, expected?: string | RegExp | Error) {
+    let message;
+    return {
+      pass: (state) => {
+        let err: any;
+        let isThrow = false;
+        if (typeof received === 'function') {
+          try {
+            received();
+          } catch (error) {
+            err = error;
+            isThrow = true;
+          }
+        } else if (state.rejects) {
+          err = received;
+        }
+
+        if (!isThrow && !err) {
+          return false;
+        }
+
+        if (typeof expected === 'undefined') {
+          return isThrow || err instanceof Error;
+        } else if (typeof expected === 'string') {
+          return err?.message === expected;
+        } else if (expected instanceof RegExp) {
+          return expected.test(err?.message)
+        } else if (expected instanceof Error) {
+          return expected.message === err?.message;
+        }
+
+        return true;
+      },
+      message: ({ not }) => {
+        return 'toThrow Error';
+      }
+    }
+  }
 });

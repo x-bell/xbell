@@ -124,7 +124,8 @@ export class Collector {
     runtimeOptions: XBellRuntimeOptions,
   ) {
     this.currentGroup = this.createGroup(groupDescription, config, runtimeOptions);
-    await testGroupFunction()
+    this.currentFile!.tasks.push(this.currentGroup);
+    await testGroupFunction();
     this.currentGroup = undefined;
   }
 
