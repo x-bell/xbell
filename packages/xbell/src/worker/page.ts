@@ -28,6 +28,11 @@ import { Keyboard } from './keyboard';
 
 const debugPage = debug('xbell:page');
 
+interface EvaluateHandler {
+  evaluateHandle: PWPage['evaluateHandle'];
+  evaluate: PWPage['evaluate']
+}
+
 export class Page implements XBellPage {
   static async from<T extends (args: any) => any>(browserContext: PWBroContext, browserCallback: T[]) {
     const _page = await browserContext.newPage();
@@ -59,13 +64,17 @@ export class Page implements XBellPage {
       evaluateHandle: PWPage['evaluateHandle']
       evaluate: PWPage['evaluate']
     } = this;
+    debugPage('initPageEnv.length', this._browserCallbacks.length);
     for (const browserCallback of this._browserCallbacks) {
+      debugPage('browser-callback', browserCallback.toString());
       handle = await handle.evaluateHandle(browserCallback);
     }
+    // process.exit(0);
+    // const hasLength = this._browserCallbacks.length;
+    this.evaluate = handle.evaluate;
+    this.evaluateHandle = handle.evaluateHandle;
+    debugPage('initPageEnv.done');
 
-    const hasLength = this._browserCallbacks.length;
-    this.evaluate = hasLength ? handle.evaluate.bind(handle) : handle.evaluate;
-    this.evaluateHandle = hasLength ? handle.evaluateHandle.bind(handle) : handle.evaluateHandle;
   }
 
   protected async _setting() {
@@ -188,33 +197,67 @@ export class Page implements XBellPage {
     return func() as Function;
   }
 
-  evaluate = async <R, Arg>(pageFunction: PageFunction<{} & Arg, R>, arg: Arg): Promise<R> => {
+  // evaluate = async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args): Promise<R> => {
+  //   return this._evaluate(pageFunction, args, this._page);
+  // }
+
+  // evaluateHandle = async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args | undefined): Promise<SmartHandle<R>> => {
+  //   debugPage('evaluateHandle:before', pageFunction.toString());
+  //   const func = await this._transformBrowserFunction(pageFunction);
+  //   debugPage('evaluateHandle:after', func.toString());
+  //   const ret: SmartHandle<R> = await this._page.evaluateHandle(func as any, args);
+  //   const originEvaluate = ret.evaluate.bind(ret)
+  //   const originEvaluateHandle = ret.evaluateHandle.bind(ret);
+  //   type EH = typeof ret.evaluateHandle;
+  //   type E = typeof ret.evaluateHandle;
+  //   ret.evaluateHandle = async (...args: Parameters<EH>): Promise<ReturnType<EH>> => {
+  //     const func = await this._transformBrowserFunction(args[0])
+  //     return originEvaluateHandle(func as any, ...args.slice(1))
+  //   };
+  //   ret.evaluate = async (...args: Parameters<E>): Promise<ReturnType<E>> => {
+  //     debugPage('originEvaluate:before', pageFunction.toString());
+  //     const func = await this._transformBrowserFunction(args[0]);
+  //     debugPage('originEvaluate:after', pageFunction.toString());
+  //     return originEvaluate(func as any, ...args.slice(1));
+
+  //   };
+
+  //   return ret;
+  // }
+
+  protected _genEvaluate = (originEvaluate: EvaluateHandler['evaluate']) => async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args): Promise<R> => {
     debugPage('evaluate:before', pageFunction.toString());
     const func = await this._transformBrowserFunction(pageFunction);
     debugPage('evaluate:after', func.toString());
-    return this._page.evaluate(func as any, arg);
+    return originEvaluate(func as any, args);
   }
 
-  evaluateHandle = async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args | undefined): Promise<SmartHandle<R>> => {
+  protected _genEvaluateHandle = (originEvaluateHandle: EvaluateHandler['evaluateHandle']) => async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args | undefined, ): Promise<SmartHandle<R>> => {
     debugPage('evaluateHandle:before', pageFunction.toString());
     const func = await this._transformBrowserFunction(pageFunction);
     debugPage('evaluateHandle:after', func.toString());
-    const ret: SmartHandle<R> = await this._page.evaluateHandle(func as any, args);
-    const originEvaluate = ret.evaluate.bind(ret)
-    const originEvaluateHandle = ret.evaluateHandle.bind(ret);
-    type EH = typeof ret.evaluateHandle;
-    type E = typeof ret.evaluateHandle;
-    ret.evaluateHandle = async (...args: Parameters<EH>): Promise<ReturnType<EH>> => {
-      const func = await this._transformBrowserFunction(args[0])
-      return originEvaluateHandle(func as any, ...args.slice(1))
-    };
-    ret.evaluate = async (...args: Parameters<E>): Promise<ReturnType<E>> => {
-      const func = await this._transformBrowserFunction(args[0])
-      return originEvaluate(func as any, ...args.slice(1));
-    };
-
+    const ret: SmartHandle<R> = await originEvaluateHandle(func as any, args);
+    debugPage('_genEvaluateHandle:ret');
+    ret.evaluateHandle = this._genEvaluateHandle(ret.evaluateHandle.bind(ret));
+    ret.evaluate = this._genEvaluate(ret.evaluate.bind(ret));
     return ret;
+    // const originEvaluate = ret.evaluate.bind(ret)
+    // const originEvaluateHandle = ret.evaluateHandle.bind(ret);
+    // type EH = typeof ret.evaluateHandle;
+    // type E = typeof ret.evaluateHandle;
+    // ret.evaluateHandle = this.evaluateHandle
+    // ret.evaluate = async (...args: Parameters<E>): Promise<ReturnType<E>> => {
+    //   debugPage('originEvaluate:before', pageFunction.toString());
+    //   const func = await this._transformBrowserFunction(args[0]);
+    //   debugPage('originEvaluate:after', pageFunction.toString());
+    //   return originEvaluate(func as any, ...args.slice(1));
+
+    // };
   }
+
+  evaluate = this._genEvaluate(this._page.evaluate.bind(this._page));
+
+  evaluateHandle = this._genEvaluateHandle(this._page.evaluateHandle.bind(this._page));
 
   screenshot(options?: PageScreenshotOptions | undefined): Promise<Buffer> {
     return this._page.screenshot(options);

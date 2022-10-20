@@ -2,7 +2,10 @@ import type { XBellTestFileRecord, XBellWorkerLog, XBellWorkerLifecycle } from '
 import type { MessagePort } from 'worker_threads';
 import { EventEmitter } from 'events';
 import { randomUUID } from 'crypto';
-import { compiler } from '../compiler/compiler';
+
+import debug from 'debug';
+
+const debugChannel = debug('xbell:channel');
 
 type XBellWorkerRequestId = string;
 
@@ -110,7 +113,6 @@ export class Channel extends EventEmitter {
   }
 
   public registerRoutes(router: XBellWorkerRequests) {
-    compiler
     this._router = router;
   }
 
@@ -138,15 +140,17 @@ export class Channel extends EventEmitter {
     data?: Parameters<XBellWorkerRequests[T]>[0]
   ): Promise<Awaited<ReturnType<XBellWorkerRequests[T]>>> {
     const requestId = randomUUID();
+    const payload = {
+      api,
+      data,
+      requestId,
+    };
     const message: XBellWorkerRequestMessage = {
       type: 'request',
-      payload: {
-        api,
-        data,
-        requestId,
-      }
-    }
+      payload: payload,
+    };
     this.port.postMessage(message);
+    debugChannel('request', payload);
     return new Promise((resolve, reject) => {
       this._requestPromiseMap.set(requestId, {
         resolve,

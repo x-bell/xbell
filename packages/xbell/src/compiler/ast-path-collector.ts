@@ -12,8 +12,7 @@ import {
   ObjectPatternProperty
 } from '@swc/core';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
-// import { genArgument, genAwaitExpression, genCallExpression, genIdentifier, genImport, genKeyValuePatternProperty, genObjectPattern, genStringLiteral, genVariableDeclaration, genVariableDeclarator } from './ast';
-
+import { pathManager } from '../common/path-manager';
 
 export class ASTPathCollector extends Visitor {
   public paths = new Set<string>()
@@ -90,14 +89,23 @@ export class ASTPathCollector extends Visitor {
   }
 
   visitCallExpression(n: CallExpression): Expression {
+    // process relative path
     if (n.callee.type === 'Import' && n.arguments[0].expression.type === 'StringLiteral') {
       if (!this.urlMap) {
         this.paths.add(n.arguments[0].expression.value);
       } else {
-        const targetUrl = this.urlMap.get(n.arguments[0].expression.value)?.replace(process.cwd(), '/' + XBELL_BUNDLE_PREFIX);
-        // @ts-ignore
-        delete n.arguments[0].expression.raw;
-        n.arguments[0].expression.value = targetUrl as string;
+        const rawValue = n.arguments[0].expression.value
+        if (!rawValue.includes(XBELL_BUNDLE_PREFIX)) {
+          const resolveId = this.urlMap.get(rawValue)!;
+          const targetUrl = rawValue.includes(pathManager.projectDir)
+            ? resolveId.replace(pathManager.projectDir, `/${XBELL_BUNDLE_PREFIX}`)
+            : (`/${XBELL_BUNDLE_PREFIX}/@fs` + resolveId);
+          // const prefix = '/' + XBELL_BUNDLE_PREFIX;
+          // const targetUrl = prefix + this.urlMap.get(n.arguments[0].expression.value);
+          // @ts-ignore
+          delete n.arguments[0].expression.raw;
+          n.arguments[0].expression.value = targetUrl as string;
+        }
       }
     }
     return n;

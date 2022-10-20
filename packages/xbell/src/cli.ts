@@ -8,7 +8,6 @@ import { Command } from 'commander';
 // import glob from 'fast-glob';
 
 import { checkDownloadSpeed } from './utils/network';
-// import { registerTransfomer } from './compiler/transform';
 // @ts-ignore
 import * as pwServer from 'playwright-core/lib/server';
 import { xbell } from './core/xbell';

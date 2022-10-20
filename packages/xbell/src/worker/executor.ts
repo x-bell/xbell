@@ -7,6 +7,9 @@ import { stateManager } from './state-manager';
 import { configurator } from '../common/configurator';
 import { pathManager } from '../common/path-manager';
 import { join } from 'path';
+import debug from 'debug';
+
+const debugExecutor = debug('xbell:executor');
 
 function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
   return typeof c.testFunction === 'function'
@@ -44,15 +47,11 @@ export class Executor {
   }
 
   async runCase(c: XBellTestCase<any, any>) {
-    try {
-      if (c.runtime === 'node') {
-        await this.runCaseInNode(c);
-      } else {
-        // TODO:
-        await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
-      }
-    } catch(error) {
-
+    if (c.runtime === 'node') {
+      await this.runCaseInNode(c);
+    } else {
+      // TODO:
+      await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
     }
   }
 
@@ -101,17 +100,21 @@ export class Executor {
           stack: err?.stack,
         },
         videos,
-      })
+      });
     }
   }
 
   async runCaseInBrowser(c: XBellTestCaseStandard<any, any>) {
+    const { viewport, headless } = configurator.globalConfig.browser;
+    const videoDir = join(pathManager.tmpDir, 'videos');
+
     const browser = await lazyBrowser.newContext('chromium', {
-      headless: false,
+      headless: !!headless,
+    });
+    workerContext.channel.emit('onCaseExecuteStart', {
+      uuid: c.uuid,
     });
 
-    const { viewport } = configurator.globalConfig.browser;
-    const videoDir = join(pathManager.tmpDir, 'videos');
     // ensureDir(videoDir);
     const browserContext = await browser.newContext({
       viewport,
@@ -120,10 +123,45 @@ export class Executor {
         dir: videoDir,
       },
     });
-    const page = await Page.from(browserContext, c.runtimeOptions.browserCallbacks || [])
-    await page.evaluate(c.testFunction, {});
-    await page.close();
-    await browserContext.close();
-    await browser.close();
+    const page = await Page.from(browserContext, [
+      // default setup
+      async () => {
+        // @ts-ignore
+        const { expect } = await import('xbell/browser');
+        return {
+          expect,
+        };
+      },
+      ...(c.runtimeOptions.browserCallbacks || [])
+    ]);
+    try {
+      // A tentative decision
+      debugExecutor('page.goto');
+
+      await page.goto('https://xbell.test', {
+        html: '<body></body>',
+      });
+      debugExecutor('page.goto.end', page.evaluate);
+
+      await page.evaluate(c.testFunction);
+      debugExecutor('page.evaluate.end');
+
+      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
+    } catch(err: any) {
+      debugExecutor('page.err', err);
+
+      workerContext.channel.emit('onCaseExecuteFailed', {
+        uuid: c.uuid,
+        error: {
+          message: err?.message || 'Run case error',
+          name: err?.name || 'UnkonwError',
+          stack: err?.stack,
+        },
+      });
+    } finally {
+      await page.close();
+      await browserContext.close();
+      await browser.close();
+    }
   }
 }

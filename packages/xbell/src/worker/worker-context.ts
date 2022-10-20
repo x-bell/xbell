@@ -5,6 +5,7 @@ import { Console } from 'node:console';
 import { Writable } from 'node:stream';
 import { Channel } from '../common/channel';
 
+
 class WorkerContext {
   workerData = wd as XBellWorkerData;
   channel = new Channel(wd.port);

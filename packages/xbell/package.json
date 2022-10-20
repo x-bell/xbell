@@ -22,6 +22,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs"
     },
+    "./browser": {
+      "type": "./dist/browser/index.d.ts",
+      "import": "./dist/browser/index.mjs"
+    },
     "./decorators": {
       "type": "./dist/decorators.d.ts",
       "import": "./dist/decorators.mjs"
