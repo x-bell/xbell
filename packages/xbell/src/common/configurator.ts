@@ -1,7 +1,9 @@
+import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig } from '../types';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { mergeConfig } from 'vite';
-import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig } from '../types';
+import debug from 'debug';
+
+const debugConfigurator = debug('xbell:configurator');
 
 interface XBellConfigurator {
   globalConfig: XBellConfig;
@@ -50,6 +52,7 @@ export class Configurator implements XBellConfigurator {
 
   async setup() {
     this.globalConfig = await this.loadGlobalConfig()
+    debugConfigurator('globalConfig', this.globalConfig);
   }
 
   protected async loadGlobalConfig(): Promise<Required<XBellConfig>> {
@@ -62,11 +65,11 @@ export class Configurator implements XBellConfigurator {
     }
     
     const { default: userConfig } = await import(targetConfigFilePath);
-    return mergeConfig(XBellDefaultConfig, userConfig) as Required<XBellConfig>;
+    return _mergeConfig(XBellDefaultConfig, userConfig) as Required<XBellConfig>;
   }
 
   public async queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig> {
-    const globalConfig = await this.globalConfig
+    const globalConfig = await this.globalConfig;
     return _mergeConfig(globalConfig, caseConfig);
   }
 }
