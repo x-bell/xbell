@@ -6,7 +6,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs"
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
     "typescript": "^4.6.4",

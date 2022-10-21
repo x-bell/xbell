@@ -10,3 +10,5 @@ deprecated
 __snapshots__
 coverage
 test-report
+internal
+multi-projects

@@ -7,7 +7,8 @@
     "url": "https://github.com/xlianghang"
   },
   "scripts": {
-    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs"
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "prepublishOnly": "pnpm build"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
