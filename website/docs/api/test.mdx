@@ -12,11 +12,36 @@ title: Test
 - `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
 
 ```typescript
-import test from 'xbell';
+import { test } from 'xbell';
 
 test('goto github', async ({ page }) => {
   await page.goto('https://github.com');
 });
+```
+
+### test.extend
+
+**Signature: test.extend(extendFunction)**
+
+- `extendFunction` <type>(testArgs: TestArguments) => any</type>
+
+`test.extend` can extend or customize the environment of the case, which will be executed before each case begins.
+
+```typescript
+import { test as baisc } from 'xbell';
+
+const test = basic.extend(({ expect }) => {
+  const data = [ 1, 2, 3, ];
+  return {
+    expect,
+    data,
+  };
+});
+
+test('extend demo', ({ expect, data }) => {
+  expect(data[0]).toBe(1);
+});
+
 ```
 
 ### test.each
@@ -106,6 +131,34 @@ test.browser('one plus one equals two', async ({ page, expect }) => {
   const { add } = await import('./add.ts');
   expect(add(1, 1)).toBe(2);
 });
+```
+
+### test.browser.extend
+
+**Signature: test.browser.extend(extendFunction)**
+
+- `extendFunction` <type>(testArgs: BrowserTestArguments) => any</type>
+
+`test.browser.extend` can extend or customize the environment of the browser case, which will be executed before each case begins.
+
+```typescript
+import { test as baisc } from 'xbell';
+
+const test = basic.browser.extend(({ expect }) => {
+  const data = [ 1, 2, 3, ];
+
+  window.data = data;
+
+  return {
+    expect,
+    data,
+  };
+});
+
+test('browser extend demo', ({ expect, data }) => {
+  expect(data).toBe(window.data);
+});
+
 ```
 
 ### test.browser.each

@@ -20,6 +20,31 @@ test('goto github', async ({ page }) => {
 });
 ```
 
+### test.extend
+
+**函数签名: test.extend(extendFunction)**
+
+- `extendFunction` <type>(testArgs: TestArguments) => any</type>
+
+"test.extend" 可以扩展或自定义用例的环境，它将在每个用例开始之前执行
+
+```typescript
+import { test as baisc } from 'xbell';
+
+const test = basic.extend(({ expect }) => {
+  const data = [ 1, 2, 3, ];
+  return {
+    expect,
+    data,
+  };
+});
+
+test('extend demo', ({ expect, data }) => {
+  expect(data[0]).toBe(1);
+});
+
+```
+
 ### test.each
 
 **函数签名: test.each(items)(displayName, testFunction)**
@@ -107,6 +132,36 @@ test.browser('one plus one equals two', async ({ page, expect }) => {
   const { add } = await import('./add.ts');
   expect(add(1, 1)).toBe(2);
 });
+```
+
+### test.browser.extend
+
+**函数签名: test.browser.extend(extendFunction)**
+
+- `extendFunction` <type>(testArgs: BrowserTestArguments) => any</type>
+
+`test.browser.extend` 可以扩展或自定义浏览器用例的环境，它将在每个用例开始之前执行
+
+```typescript
+import { test as baisc } from 'xbell';
+
+const test = basic.browser.extend(({ expect, fn, spyOn }) => {
+  const data = [ 1, 2, 3, ];
+
+  window.data = data;
+
+  return {
+    expect,
+    data,
+    fn,
+    spyOn
+  };
+});
+
+test('browser extend demo', ({ expect, data }) => {
+  expect(data).toBe(window.data);
+});
+
 ```
 
 ### test.browser.each
