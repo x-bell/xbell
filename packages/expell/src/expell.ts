@@ -95,7 +95,6 @@ export function createExpell<MatchObject extends ExpellMatchObject, Type = any, 
                 ? Promise.resolve(received).catch(res => Reflect.apply(matchObject[propKey as string], state, [res, ...args]))
                 : Reflect.apply(matchObject[propKey as string], state, [received, ...args])
 
-              
             const handleResult = (ret: ExpellMatchResult) => {
               const rawPass = typeof ret.pass === 'function' ? ret.pass(state) : ret.pass;
 
@@ -112,6 +111,7 @@ export function createExpell<MatchObject extends ExpellMatchObject, Type = any, 
                 }
                 return handlePass(rawPass);
             }
+            
 
             if (isPromise(innerRet)) {
               return innerRet.then(handleResult)

@@ -13,11 +13,16 @@
 //   toHaveNthReturnedWith(nthCall: number, value: unknown): void;
 // }
 
-export type ExpellSpy<Arg extends any[] = any[], ReturnType = any> = {
-  (...args: Arg): ReturnType
-} & ExpellSpyState<Arg, ReturnType>
+export type Mock<Args extends any[] = any[], R = any> = {
+  (...args: Args): R
+} & SpyState<Args, R> & {
+  _isMockFunction: true;
+  _origin(...args: Args): R;
+  mockReturnValue(value: R): Mock<Args, R>;
+  mockImplementation(impl: (...args: Args) => R): Mock<Args, R>;
+};
 
-interface ExpellSpyState<Arg extends any[], ReturnType> {
+interface SpyState<Arg extends any[], ReturnType> {
   calls: Arg[];
   results: {
     type: 'return' | 'throw'
@@ -25,11 +30,12 @@ interface ExpellSpyState<Arg extends any[], ReturnType> {
   }[];
 }
 
-export const spy = <Args extends any[], ReturnType>(callback: (...args: Args) => ReturnType = ((n => n) as (...args: any[]) => any)): ExpellSpy<Args, ReturnType> => {
-  const handler: ExpellSpy<Args, ReturnType> = function handler(...args: Args) {
+export const spy = <T extends (...args: any[]) => any>(callback: ((...args: Parameters<T>) => ReturnType<T>) = ((n => n) as (...args: any[]) => any)): Mock<Parameters<T>, ReturnType<T>> => {
+  const origin = callback;
+  const handler: Mock<Parameters<T>, ReturnType<T>> = function handler(...args: Parameters<T>) {
     handler.calls.push(args);
     try {
-      const ret = callback(...args);
+      const ret = origin(...args);
       handler.results.push({
         type: 'return',
         value: ret,
@@ -46,6 +52,17 @@ export const spy = <Args extends any[], ReturnType>(callback: (...args: Args) =>
 
   handler.calls = [];
   handler.results = [];
+
+  handler.mockReturnValue = (v) => {
+    return spy((...args: Parameters<T>) => v);
+  };
+
+  handler.mockImplementation = ((impl: T) => {
+    return spy(impl);
+  });
+
+  handler._isMockFunction = true;
+  handler._origin = origin;
 
   return handler;
 }

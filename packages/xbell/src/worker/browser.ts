@@ -22,7 +22,7 @@ class LazyBrowser {
 
   newContext(browserType: BrowserName, options?: LaunchOptions) {
     this._lazy[browserType] = BROWSER_MAP[browserType].launch({
-      headless: false,
+      ...options,
     });
 
     return this._lazy[browserType]!;

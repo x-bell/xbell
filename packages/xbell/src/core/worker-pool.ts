@@ -26,7 +26,7 @@ export class WorkerPool {
 
   constructor(
     public workPath: string,
-    // public threads = cpus().length,
+    public threads = cpus().length,
   ) {}
 
   async setup() {
@@ -36,8 +36,10 @@ export class WorkerPool {
   }
 
   protected genWorkers(projects: XBellProject[]): XBellWorkerItem[] {
+    // TODO: multi-project2
+    const project = projects[0];
     // const { workerPort } = this.channel;
-    return projects.map((project, idx) => {
+    return Array.from(new Array(this.threads), (_, idx) => {
       const { port1: mainPort, port2: workerPort } = new MessageChannel();
       const channel = new Channel(mainPort);
 

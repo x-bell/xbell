@@ -1,4 +1,4 @@
-import type { expell } from 'expell';
+import type { fn, spyOn } from 'expell';
 import type { XBellTaskConfig, XBellRuntimeOptions, XBellProject } from './config';
 import type { Expect } from '../worker/expect/expect';
 import type { XBellPage } from './page';
@@ -140,6 +140,8 @@ export interface XBellTestCaseFunctionArguments<BrowserExtensionArg = {}> {
   page: XBellPage<BrowserExtensionArg>;
   project: XBellProject;
   expect: Expect;
+  fn: typeof fn;
+  spyOn: typeof spyOn;
 }
 
 export interface XBellTestCaseFunction<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> {
@@ -147,7 +149,7 @@ export interface XBellTestCaseFunction<NodeJSExtensionArg = {}, BrowserExtension
 }
 
 export interface XBellBrowserTestCaseFunction<BrowserExtensionArg = {}> {
-  (args: { expect: typeof expell } & BrowserExtensionArg): void | Promise<void>;
+  (args: BrowserExtensionArg): (void | Promise<void>);
 }
 
 export type XBellTestTask<NodeJSExtensionArg = any, BrowserExtensionArg = any> =

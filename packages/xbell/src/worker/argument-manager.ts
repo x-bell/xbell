@@ -5,6 +5,7 @@ import { workerContext } from './worker-context';
 import { expect } from './expect/expect';
 import { configurator } from '../common/configurator';
 import { htmlReporter } from '../common/html-reporter';
+import { fn, spyOn } from './utils';
 export class ArgumentManager {
   page = genLazyPage({
     browserCallbacks: this._case.runtimeOptions.browserCallbacks || [],
@@ -27,6 +28,8 @@ export class ArgumentManager {
       page: this.page,
       project: this.project,
       expect,
+      spyOn,
+      fn
     }
   }
 

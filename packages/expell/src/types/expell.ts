@@ -1,5 +1,4 @@
 import type { ConditionResult, ConditionType } from './utils'
-import type { ExpellSpy } from '../spy';
 
 export interface ExpellMatchState {
   not: boolean;

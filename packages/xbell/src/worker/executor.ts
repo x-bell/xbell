@@ -8,6 +8,7 @@ import { configurator } from '../common/configurator';
 import { pathManager } from '../common/path-manager';
 import { join } from 'path';
 import debug from 'debug';
+import { htmlReporter } from '../common/html-reporter';
 
 const debugExecutor = debug('xbell:executor');
 
@@ -127,13 +128,31 @@ export class Executor {
       // default setup
       async () => {
         // @ts-ignore
-        const { expect } = await import('xbell/browser');
+        const { expect, fn, spyOn } = await import('xbell/browser');
         return {
           expect,
+          fn,
+          spyOn
         };
       },
       ...(c.runtimeOptions.browserCallbacks || [])
     ]);
+    const terdown = async () => {
+      const video = await page.video();
+      if (video) {
+        const filepath = await video.path();
+        await page.close();
+        await browserContext.close();
+        await browser.close();
+        return {
+          videoPath: htmlReporter.saveAsset(filepath),
+        }
+      } else {
+        await page.close();
+        await browserContext.close();
+        await browser.close();
+      }
+    }
     try {
       // A tentative decision
       debugExecutor('page.goto');
@@ -145,11 +164,17 @@ export class Executor {
 
       await page.evaluate(c.testFunction);
       debugExecutor('page.evaluate.end');
-
-      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid });
+      const coverage = await page.evaluate(() => {
+        return window.__coverage__;
+      });
+      const pageResult = await terdown();
+      const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
+      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, videos, coverage });
+      
     } catch(err: any) {
       debugExecutor('page.err', err);
-
+      const pageResult = await terdown();
+      const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
       workerContext.channel.emit('onCaseExecuteFailed', {
         uuid: c.uuid,
         error: {
@@ -157,11 +182,8 @@ export class Executor {
           name: err?.name || 'UnkonwError',
           stack: err?.stack,
         },
+        videos,
       });
-    } finally {
-      await page.close();
-      await browserContext.close();
-      await browser.close();
     }
   }
 }

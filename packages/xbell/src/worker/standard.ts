@@ -1,6 +1,6 @@
 import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments, FixtureFunction } from '../types';
 import { collector } from './collector';
-import type { expell } from 'expell';
+import type { expell, fn, spyOn } from 'expell';
 
 interface XBellBrowserTest<BrowserExtArgs = {}> {
   (caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
@@ -287,7 +287,9 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
 }
 
 export const test = createTest<{}, {
-  expect: typeof expell
+  expect: typeof expell;
+  fn: typeof fn;
+  spyOn: typeof spyOn;
 }>();
 
 export const describe = test.describe;

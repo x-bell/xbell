@@ -1,5 +1,5 @@
 // import type { ExpellMatchPromiseFunction, ExpellMatchFunction  } from '../types';
-import type { ExpellSpy } from '../spy';
+import type { Mock } from '../spy';
 import { defineMatcher } from '../expell';
 import { getAssertionMessage } from '../message';
 
@@ -18,7 +18,7 @@ import { getAssertionMessage } from '../message';
 // }
 
 export const spyMatcher = defineMatcher({
-  toHaveBeenCalled(received: ExpellSpy) {
+  toHaveBeenCalled(received: Mock) {
     return {
       pass: received.calls.length > 0,
       message: (state) => getAssertionMessage({
@@ -33,13 +33,22 @@ export const spyMatcher = defineMatcher({
       }),
     }
   },
-  toHaveBeenCalledTimes(received: ExpellSpy, times: number) {
+  toHaveBeenCalledTimes(received: Mock, times: number) {
     return {
-      pass: received.calls.length === times,
-      message: ({ not }) => ''
+      pass: received?.calls?.length === times,
+      message: (state) => getAssertionMessage({
+        assertionName: 'toHaveBeenCalledTimes',
+        expectedLabel: 'Expected number of calls',
+        receivedLabel: 'Received number of calls',
+        matcherReceived: 'fn()',
+        expectedFormat: state.not ? `!= ${times}` : String(times),
+        matcherExpected: '',
+        received: received?.calls?.length,
+        ...state,
+      })
     }
   },
-  toHaveBeenCalledWith(received: ExpellSpy, ...expectedArgs: any[]) {
+  toHaveBeenCalledWith(received: Mock, ...expectedArgs: any[]) {
     const actualArgs = received.calls[0];
     const isSameLength = expectedArgs.length === actualArgs.length;
     const isAllEmpty = !expectedArgs.length && !actualArgs.length;
@@ -50,7 +59,7 @@ export const spyMatcher = defineMatcher({
       message: () => '',
     }
   },
-  toHaveBeenLastCalledWith(received: ExpellSpy, ...expectedArgs: any[]) {
+  toHaveBeenLastCalledWith(received: Mock, ...expectedArgs: any[]) {
     const actualArgs = received.calls[received.calls.length - 1];
     const isSameLength = expectedArgs.length === actualArgs.length;
     const isAllEmpty = !expectedArgs.length && !actualArgs.length;
@@ -61,7 +70,7 @@ export const spyMatcher = defineMatcher({
       message: () => '',
     }
   },
-  toHaveBeenNthCalledWith(received: ExpellSpy, nthCall: number, ...expectedArgs: any[]) {
+  toHaveBeenNthCalledWith(received: Mock, nthCall: number, ...expectedArgs: any[]) {
     const actualArgs = received.calls[nthCall];
     const isSameLength = expectedArgs.length === actualArgs.length;
     const isAllEmpty = !expectedArgs.length && !actualArgs.length;
@@ -72,13 +81,13 @@ export const spyMatcher = defineMatcher({
       message: ({ not }) => ''
     }
   },
-  toHaveReturned(received: ExpellSpy) {
+  toHaveReturned(received: Mock) {
     return {
       pass: received.results[0]?.value != undefined,
       message: ({ not }) => '',
     }
   },
-  toHaveReturnedTimes(received: ExpellSpy, times: number) {
+  toHaveReturnedTimes(received: Mock, times: number) {
     return {
       pass: !!received.results.map(item => item.value).slice(0, 2),
       message: ({ not }) => ''

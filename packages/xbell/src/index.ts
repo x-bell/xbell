@@ -40,6 +40,11 @@ export {
 } from './worker/expect/expect';
 
 export {
+  spyOn,
+  fn,
+} from './worker/utils';
+
+export {
   Test,
   Todo,
   Only,
