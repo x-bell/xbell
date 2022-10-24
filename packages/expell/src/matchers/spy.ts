@@ -2,6 +2,7 @@
 import type { Mock } from '../spy';
 import { defineMatcher } from '../expell';
 import { getAssertionMessage } from '../message';
+import { equals, iterableEquality } from '../equal';
 
 // interface ExpellFunctionAssertion {
 //   // functions
@@ -55,7 +56,7 @@ export const spyMatcher = defineMatcher({
     return {
       pass: isAllEmpty ||
         // TODO: need to equal?
-        (isSameLength && actualArgs.every((actualArg, index) => actualArg === expectedArgs[index])),
+        (isSameLength && actualArgs.every((actualArg, index) => equals(actualArg, expectedArgs[index], [iterableEquality]))),
       message: () => '',
     }
   },
