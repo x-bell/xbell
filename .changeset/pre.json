@@ -7,7 +7,6 @@
     "react-unit-testing": "0.0.0",
     "create-xbell": "0.3.6",
     "eslint-config-xbell": "0.1.0",
-    "tsconfig": "0.0.0",
     "xbell-vsc-extension": "0.0.2",
     "xbell": "0.3.6",
     "xbell-reporter": "0.2.0",
