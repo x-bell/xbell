@@ -159,10 +159,10 @@ class Printer {
   }
 
   getFilename(filepath: string) {
-    const relativePath = filepath.split(process.cwd()).pop()!;
+    const relativePath = filepath.split(process.cwd() + '/').pop()!;
     const paths = relativePath.split('/');
     const filename = paths.pop();
-    return color.gray(paths.join('') + '/') + filename;
+    return color.gray(paths.join('/') + '/') + filename;
   }
 
   protected getStatusIcon(status: XBellTestCaseStatus) {
@@ -319,6 +319,7 @@ class Printer {
     });
 
     return [
+      [this.getFilename(c.filename), c.groupDescription, c.caseDescription].filter(Boolean).join(color.gray(' > ')),
       c.error?.message,
       errInfo?.stack || c.error.stack,
     ].filter(Boolean).join('\n\n');
