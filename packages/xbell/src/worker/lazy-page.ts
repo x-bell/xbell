@@ -87,7 +87,11 @@ export function genLazyPage({
       return (...args: any[]) => {
         if (propKey.startsWith('getBy')) {
           return new Proxy({}, {
-            get(target, locatorKey: keyof XBellLocator) {
+            get(target, locatorKey: string) {
+              // TODO: handle all keys that are not in the locator properties
+              if (locatorKey === 'then') {
+                return undefined;
+              }
               return (...locatorArgs: any[]) => getLazyPage().then(({ page }) => {
                 const locator = Reflect.apply(page[propKey], page, args);
                 return Reflect.apply(locator[locatorKey], locator, locatorArgs);

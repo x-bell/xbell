@@ -35,4 +35,34 @@ export interface XBellLocator {
   queryByText(text: string): Promise<XBellElementHandle | null>;
   queryByTestId(testId: string): Promise<XBellElementHandle | null>;
   queryByClass(className: string): Promise<XBellElementHandle | null>;
+  setInputFiles(files: string | Array<string> | {
+    /**
+     * File name
+     */
+    name: string;
+
+    /**
+     * File type
+     */
+    mimeType: string;
+
+    /**
+     * File content
+     */
+    buffer: Buffer;
+  } | Array<{
+    /**
+     * File name
+     */
+    name: string;
+
+    /**
+     * File type
+     */
+    mimeType: string;
+    buffer: Buffer;
+  }>, options?: {
+    noWaitAfter?: boolean;
+    timeout?: number;
+  }): Promise<void>;
 }

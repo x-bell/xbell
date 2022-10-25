@@ -102,4 +102,8 @@ export class Locator implements XBellLocator {
 
     return createElementHandle(await handle?.$(cls) ?? null);
   }
+
+  setInputFiles(files: string | string[] | { name: string; mimeType: string; buffer: Buffer; } | { name: string; mimeType: string; buffer: Buffer; }[], options?: { noWaitAfter?: boolean | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
+    return this._locator.setInputFiles(files, options);
+  }
 }
