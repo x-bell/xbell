@@ -1,11 +1,11 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import type { RawSourceMap } from 'source-map-js';
 import {
   createServer,
   defineConfig,
   mergeConfig,
   InlineConfig,
-  ViteDevServer
 } from 'vite';
 import istanbul from 'vite-plugin-istanbul';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
@@ -20,6 +20,7 @@ class BrowserBuilder {
   protected _server?: Promise<{
     queryUrl(path: string, importer?: string): Promise<string | undefined>;
     port: number;
+    getModuleByUrl(url: string): Promise<{ code: string, map: RawSourceMap | null } | undefined>;
   }>;
 
   get server() {
@@ -28,7 +29,6 @@ class BrowserBuilder {
   }
 
   protected async startServer() {
-    const projectDir = process.cwd();
     // const targetConfigFile = viteConfigNames.map(filename => join(projectDir, filename)).find(filename => existsSync(
     //   filename
     // ));
@@ -79,7 +79,32 @@ class BrowserBuilder {
         return ret?.id
       },
       port,
+      async getModuleByUrl(url: string) {
+        const res = server.moduleGraph.getModuleById(url);
+        if (res?.transformResult) {
+          const map = res.transformResult.map;
+          return {
+            map: map && {
+              ...map,
+              version: String(map.version),
+            },
+            code: res.transformResult.code,
+          }
+        }
+        return undefined;
+        // return Promise.all([
+        //   // server.moduleGraph.getModulesByFile('file:///Users/lianghang/Desktop/github/xlianghang/bell/tests/internal/src/utils/error.ts'),
+        //   // server.moduleGraph.getModulesByFile('/Users/lianghang/Desktop/github/xlianghang/bell/tests/internal/src/utils/error.ts'),
+        //   // server.moduleGraph.getModuleByUrl('https://xbell.test/__xbell_bundle_prefix__/src/utils/error.ts'),
+        //   // server.moduleGraph.getModuleByUrl('/__xbell_bundle_prefix__/src/utils/error.ts'),
+        // ]);
+      },
     };
+  }
+
+  async test() {
+    const s = await this._server;
+
   }
 
 }

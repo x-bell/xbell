@@ -93,6 +93,7 @@ export class Collector {
     runtime,
     runtimeOptions,
     options,
+    _testFunctionFilename
    }: {
     caseDescription: string,
     testCaseFunction: XBellTestCaseFunction<any, any>,
@@ -100,6 +101,7 @@ export class Collector {
     runtime: XBellRuntime,
     runtimeOptions: XBellRuntimeOptions,
     options: XBellOptions,
+    _testFunctionFilename?: string,
    }
   ): XBellTestCaseStandard<any, any> {
     return {
@@ -114,6 +116,7 @@ export class Collector {
       runtimeOptions,
       uuid: this.genUuid(),
       options,
+      _testFunctionFilename,
     }
   }
 
@@ -136,7 +139,8 @@ export class Collector {
       options,
       config,
       runtimeOptions,
-      runtime
+      runtime,
+      _testFunctionFilename,
     }: {
       caseDescription: string,
       testCaseFunction: XBellTestCaseFunction<any, any>,
@@ -144,6 +148,7 @@ export class Collector {
       config: XBellTaskConfig,
       runtimeOptions: XBellRuntimeOptions,
       runtime: XBellRuntime,
+      _testFunctionFilename?: string,
     }
   ) {
     const testCase = this.createCase({
@@ -153,6 +158,7 @@ export class Collector {
       testCaseFunction,
       config,
       options,
+      _testFunctionFilename,
     })
     if (this.currentGroup) {
       this.currentGroup.cases.push(testCase);

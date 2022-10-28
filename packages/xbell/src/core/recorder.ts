@@ -15,6 +15,7 @@ import { logger } from '../common/logger';
 import { isCase } from '../utils/is';
 import { coverageManager } from '../common/coverage-manager';
 import { htmlReporter } from '../common/html-reporter';
+import { formatError } from '../utils/error';
 
 interface XBellRecorder extends Omit<XBellWorkerLifecycle, 'onExit'> {
 
@@ -58,8 +59,9 @@ class Recorder implements XBellRecorder {
     this._setCaseStatus(c.uuid, 'successed', { coverage: c.coverage, videos: c.videos });
   }
 
-  onCaseExecuteFailed(c: { uuid: string; error: XBellError; videos?: string[] }): void {
-    this._setCaseStatus(c.uuid, 'failed', { error: c.error, videos: c.videos });
+  async onCaseExecuteFailed(c: { uuid: string; error: XBellError; videos?: string[] }) {
+    const error = await formatError(c.error);
+    this._setCaseStatus(c.uuid, 'failed', { error, videos: c.videos });
   }
 
   async onAllDone() {

@@ -40,6 +40,7 @@ class NodeJSVisitor extends Visitor {
   constructor(protected _filename: string) {
     super();
   }
+
   visitCallExpression(n: CallExpression): Expression {
     debugCompiler('visitCallExpression');
     const expression = n.arguments[0]?.expression;
@@ -57,13 +58,16 @@ class NodeJSVisitor extends Visitor {
 }
 
 export class Compiler {
+  public nodeJSCache = new Map<string, { code: string }>();
+  public browserCache = new Map<string, { code: string }>();
+
   public async compileNodeJSCode(sourceCode: string, filename: string): Promise<{ code: string; }> {
     const program = parseSync(sourceCode, {
       ...tsParserConfig,
     });
     const vistor = new NodeJSVisitor(filename);
     const finalProgram = vistor.visitProgram(program);
-    const { code } = transformSync(finalProgram, {
+    const { code, map } = transformSync(finalProgram, {
       sourceMaps: 'inline',
       module: {
         type: 'nodenext',
@@ -72,12 +76,13 @@ export class Compiler {
         ...jscConfig,
       }
     });
-    debugCompiler('nodejs:code', code);
+    debugCompiler('nodejs:code', { map, code });
+    this.nodeJSCache.set(filename, { code });
     return { code }; 
   }
 
   public async compileBrowserCode(sourceCode: string) {
-    debugCompiler('=====compile-browser======', sourceCode)
+    debugCompiler('=====compile-browser======', sourceCode);
     const program = parseSync(sourceCode, {
       ...tsParserConfig,
     });
@@ -101,7 +106,8 @@ export class Compiler {
   
     const generator = new ASTPathCollector(aliasMap);
     const browserProgram = generator.visitProgram(program);
-    const { code } = transformSync(browserProgram, {
+
+    const { code, map } = transformSync(browserProgram, {
       module: {
         type: 'es6'
       },
@@ -109,9 +115,11 @@ export class Compiler {
         ...jscConfig,
         target: 'es2020',
       },
+      sourceMaps: true
     });
     return {
       code,
+      map,
     }
   }
 }

@@ -4,7 +4,21 @@ export type XBellTestCaseStatus =
   | 'running'
   | 'waiting';
 
-export type XBellError = { name: string; message: string; stack?: string };
+// export type XBellError = { name: string; message: string; stack?: string };
+
+
+interface ParsedLine {
+  filename: string;
+  column: number;
+  line: number;
+}
+
+export interface XBellError {
+  name: string;
+  message: string;
+  stack?: string;
+  formatMessage?: string;
+}
 
 export interface XBellWorkerLog {
   type: 'stdout' | 'stderr';

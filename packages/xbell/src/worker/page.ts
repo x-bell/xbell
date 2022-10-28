@@ -190,11 +190,15 @@ export class Page implements XBellPage {
   protected async _transformBrowserFunction(browserFunction: Function | string) {
     const { code: targetCode } = await workerContext.channel.request(
       'transformBrowserCode',
-      { code: browserFunction.toString() }
+      { code: browserFunction.toString() },
     );
-    const funcBody = `return ${targetCode}`;
+    const funcBody = `return function __xbell_browser_function__() { return ${targetCode} }`;
     const func = new Function(funcBody);
-    return func() as Function;
+    Object.defineProperty(func, 'name', {
+      value: '__xbell_browser_function__'
+    });
+    // func.name = '__xbell_browser_function__';
+    return func()() as Function;
   }
 
   // evaluate = async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args): Promise<R> => {
@@ -229,18 +233,29 @@ export class Page implements XBellPage {
     debugPage('evaluate:before', pageFunction.toString());
     const func = await this._transformBrowserFunction(pageFunction);
     debugPage('evaluate:after', func.toString());
-    return originEvaluate(func as any, args);
+    try {
+      return await originEvaluate(func as any, args);
+    } catch(error: any) {
+      debugPage('_genEvaluate:error',  error.stack?.split('\n'));
+      throw error;
+    }
   }
 
   protected _genEvaluateHandle = (originEvaluateHandle: EvaluateHandler['evaluateHandle']) => async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args | undefined, ): Promise<SmartHandle<R>> => {
     debugPage('evaluateHandle:before', pageFunction.toString());
     const func = await this._transformBrowserFunction(pageFunction);
     debugPage('evaluateHandle:after', func.toString());
-    const ret: SmartHandle<R> = await originEvaluateHandle(func as any, args);
-    debugPage('_genEvaluateHandle:ret');
-    ret.evaluateHandle = this._genEvaluateHandle(ret.evaluateHandle.bind(ret));
-    ret.evaluate = this._genEvaluate(ret.evaluate.bind(ret));
-    return ret;
+    try {
+      const ret: SmartHandle<R> = await originEvaluateHandle(func as any, args);
+      debugPage('_genEvaluateHandle:ret');
+      ret.evaluateHandle = this._genEvaluateHandle(ret.evaluateHandle.bind(ret));
+      ret.evaluate = this._genEvaluate(ret.evaluate.bind(ret));
+      return ret;
+    } catch (error: any) {
+      // fix error
+      debugPage('_genEvaluateHandle:error', error.stack?.split('\n').pop());
+      throw error;
+    }
     // const originEvaluate = ret.evaluate.bind(ret)
     // const originEvaluateHandle = ret.evaluateHandle.bind(ret);
     // type EH = typeof ret.evaluateHandle;

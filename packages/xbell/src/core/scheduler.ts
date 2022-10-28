@@ -9,7 +9,9 @@ import { workerPool } from './worker-pool';
 import { recorder } from './recorder';
 import { browserBuilder } from './browser-builder';
 import { compiler } from '../compiler/compiler';
+import debug from 'debug';
 
+const debugScheduler = debug('xbell:scheduler');
 export interface XBellScheduler  {
   runTest(): Promise<void>
 }
@@ -32,9 +34,15 @@ export class Scheduler {
         //   })))
         // },
         async transformBrowserCode({ code: sourceCode }) {
-          const { code } = await compiler.compileBrowserCode(sourceCode);
+          const { code, map } = await compiler.compileBrowserCode(sourceCode);
+          debugScheduler('transform-browser', {
+            code,
+            map,
+            sourceCode,
+          });
           return {
             code,
+            map,
           }
         },
         async transformHtml({ html, url }) {

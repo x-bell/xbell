@@ -11,7 +11,7 @@ import { isCase, isGroup } from '../utils/is';
 import { recorder } from './recorder';
 import { relative } from 'node:path';
 import { createLogUpdate } from 'log-update';
-import { formatError } from '@xbell/code-stack';
+// import { formatError } from '@xbell/code-stack';
 const FOLD_ARROW = '❯';
 
 const log = createLogUpdate(process.stdout);
@@ -314,14 +314,13 @@ class Printer {
       return '';
     }
 
-    const errInfo = formatError(c.error, {
-      includes: process.cwd(),
-    });
+    // const errInfo = formatError(c.error, {
+    //   includes: process.cwd(),
+    // });
 
     return [
       [this.getFilename(c.filename), c.groupDescription, c.caseDescription].filter(Boolean).join(color.gray(' > ')),
-      c.error?.message,
-      errInfo?.stack || c.error.stack,
+      c.error.formatMessage ?? c.error.stack ?? c.error.message,
     ].filter(Boolean).join('\n\n');
   }
 

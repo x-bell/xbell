@@ -29,7 +29,7 @@ export function parseStack(stack: string, opts: FormatOptions = {}): {
   const codeLines = lines.slice(firstCodeLineIndex);
   debugParseStack('codeLines', codeLines);
   for (const line of codeLines) {
-    const location = _parseStackLine(line);
+    const location = parseStackLine(line);
     const isIgnore = _isIgnoreLine(location, opts);
 
     if (!isIgnore) {
@@ -69,20 +69,20 @@ function _isIgnoreLine(location: Location | null, opts: FormatOptions = {}) {
 
 const FILE_PREFIX = 'file://';
 
-function _getRelativeFilename (filename: string, cwd = process.cwd()) {
+function _getFilenamePath (filename: string, cwd = process.cwd()) {
   if (filename.startsWith(FILE_PREFIX)) {
     filename = filename.slice(filename.length);
   }
-  filename = filename.replace(/\\/g, '/');
-  if (filename.startsWith(`${cwd}/`)) {
-    filename = filename.slice(cwd.length + 1);
-  }
+  // filename = filename.replace(/\\/g, '/');
+  // if (filename.startsWith(`${cwd}/`)) {
+  //   filename = filename.slice(cwd.length + 1);
+  // }
 
   return filename;
 }
 
 
-function _parseStackLine(line: string): null | Location {
+export function parseStackLine(line: string): null | Location {
   if (!line)
     return null
 
@@ -99,6 +99,6 @@ function _parseStackLine(line: string): null | Location {
   return {
     columns: Number(columns),
     lines: Number(lines),
-    filename: _getRelativeFilename(filename),
+    filename: _getFilenamePath(filename),
   }
 }

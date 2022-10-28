@@ -1,6 +1,11 @@
 import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments, FixtureFunction } from '../types';
-import { collector } from './collector';
 import type { expell, fn, spyOn } from 'expell';
+import { fileURLToPath } from 'node:url';
+import { collector } from './collector';
+import { getCallSite } from '../utils/error';
+import debug from 'debug';
+
+const debugStandard = debug('xbell:standard');
 
 interface XBellBrowserTest<BrowserExtArgs = {}> {
   (caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
@@ -45,6 +50,14 @@ export function createBrowserTest<BrowserExtArgs = {}>(
   browserCallbacks: Array<(...args: any[]) => any> = [],
 ): XBellBrowserTest<BrowserExtArgs> {
   const browser: XBellBrowserTest<BrowserExtArgs> = (caseDescription, testCaseFunction) => {
+    const callSite = getCallSite();
+
+    const callSiteFilename = callSite[1]?.getFileName() ?? undefined;
+
+    const _testFunctionFilename = callSiteFilename && fileURLToPath(callSiteFilename);
+
+    debugStandard('_testFunctionFilename', _testFunctionFilename);
+
     collector.collectCase({
       caseDescription,
       testCaseFunction,
@@ -54,6 +67,7 @@ export function createBrowserTest<BrowserExtArgs = {}>(
       },
       config: {},
       options: {},
+      _testFunctionFilename,
     });
   }
 

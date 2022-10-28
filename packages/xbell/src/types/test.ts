@@ -113,6 +113,7 @@ interface XBellTestCaseCommon {
   // tagInfo: XBellCaseTagInfo;
   uuid: string;
   filename: string;
+  _testFunctionFilename?: string;
   groupDescription?: string;
   caseDescription: string;
   status: XBellTestCaseStatus;

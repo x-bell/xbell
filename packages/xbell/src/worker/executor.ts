@@ -161,7 +161,6 @@ export class Executor {
         html: '<body></body>',
       });
       debugExecutor('page.goto.end', page.evaluate);
-
       await page.evaluate(c.testFunction);
       debugExecutor('page.evaluate.end');
       const coverage = await page.evaluate(() => {
