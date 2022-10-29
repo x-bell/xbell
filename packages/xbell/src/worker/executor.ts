@@ -107,6 +107,7 @@ export class Executor {
 
   async runCaseInBrowser(c: XBellTestCaseStandard<any, any>) {
     const { viewport, headless } = configurator.globalConfig.browser;
+    const { coverage: coverageConfig } = configurator.globalConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
 
     const browser = await lazyBrowser.newContext('chromium', {
@@ -163,9 +164,9 @@ export class Executor {
       debugExecutor('page.goto.end', page.evaluate);
       await page.evaluate(c.testFunction);
       debugExecutor('page.evaluate.end');
-      const coverage = await page.evaluate(() => {
+      const coverage = coverageConfig?.enabled ? await page.evaluate(() => {
         return window.__coverage__;
-      });
+      }) : undefined;
       const pageResult = await terdown();
       const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
       workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, videos, coverage });

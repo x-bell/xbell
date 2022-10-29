@@ -30,6 +30,10 @@ export interface XBellConfig {
     beforeEach?: XBellTestCaseFunction;
     afterEach?: XBellTestCaseFunction;
   }
+
+  coverage?: {
+    enabled?: boolean;
+  }
 }
 
 export type XBellTaskConfig = Partial<

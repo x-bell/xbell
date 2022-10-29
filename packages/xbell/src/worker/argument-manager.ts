@@ -49,7 +49,7 @@ export class ArgumentManager {
   }
 
   async genCoverage() {
-    if (this.page.used) {
+    if (this.page.used && configurator.globalConfig.coverage?.enabled) {
       const coverage = await this.page.evaluate(() => {
         return window.__coverage__;
       });

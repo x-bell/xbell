@@ -43,12 +43,12 @@ class BrowserBuilder {
         hmr: false,
       },
       plugins: [
-        istanbul({
+        configurator.globalConfig.coverage?.enabled ? istanbul({
           exclude: ['node_modules', 'test/'],
           extension: ['.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs', '.vue'],
           requireEnv: false,
-        }),
-      ],
+        }) : undefined,
+      ].filter(Boolean),
       build: {
         sourcemap: true,
       },

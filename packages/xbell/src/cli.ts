@@ -1,30 +1,16 @@
 import 'reflect-metadata';
-// import * as fs from 'fs';
-// import { resolve, join } from 'path';
-// import { container } from './core-ioc/container';
-// import { MetaDataType } from './constants/index';
-// import { sleep, prettyPrint } from './utils/index';
 import { Command } from 'commander';
-// import glob from 'fast-glob';
 
 import { checkDownloadSpeed } from './utils/network';
 // @ts-ignore
 import * as pwServer from 'playwright-core/lib/server';
 import { xbell } from './core/xbell';
-// import { init } from './console';
+import { ProcessEnvKeys } from './common/env';
 const program = new Command();
 
-// init();
-
-
-// registerTransfomer();
 
 interface CommandOptions {
-  file?: string;
-  group?: string;
-  case?: string;
-  debug?: boolean;
-  env?: string;
+  coverage?: boolean;
 }
 
 const BROWSER_SOURCES = [
@@ -79,12 +65,9 @@ async function tryToDownlaod1M(sourceUrl: string) {
 
   program
     .command('run', { isDefault: true })
-    .option('-f, --file <type>', '指定测试文件')
-    .option('-g, --group <type>', '指定测试 group')
-    .option('-c, --case <type>', '指定测试 case')
-    .option('-e, --env <type>', '指定 env 环境')
-    .option('-d, --debug', '调试模式: 不会清空打印等')
+    .option('--coverage', 'enable coverage report')
     .action(async (commandOptions: CommandOptions) => {
+      process.env[ProcessEnvKeys.CLICoverage] = commandOptions.coverage ? String(commandOptions.coverage) : '';
       await xbell.setup();
       await xbell.runTest();
     });
