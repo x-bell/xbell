@@ -120,12 +120,15 @@ export async function formatError(error: Error, options: Partial<{
   }
   const { browserTestFunction } = options;
   const stackResult = parseStackLines(error.stack!);
-
   debugError('error:before', (error.stack!));
   debugError('error:after', stackResult);
   const server = await browserBuilder.server
   const [firstLine] = stackResult.lines || [];
   const isEvaluateFunction = !!firstLine.parsed && firstLine.content.includes('eval at evaluate') && !!browserTestFunction;
+  if (browserTestFunction && stackResult.head) {
+    stackResult.head = stackResult.head.replace(/^jsHandle\.evaluate\:\ /, '');
+  }
+  debugError('error', error.name, 'msg:', error.message);
   if (isEvaluateFunction && firstLine.parsed) {
     const originEvaluatePosition = firstLine.parsed;
     const { map: fileMap, code: fileCompiledCode } = await getNodeJSFileMap(browserTestFunction.filename) ?? {};

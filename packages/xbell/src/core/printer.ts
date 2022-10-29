@@ -11,7 +11,6 @@ import { isCase, isGroup } from '../utils/is';
 import { recorder } from './recorder';
 import { relative } from 'node:path';
 import { createLogUpdate } from 'log-update';
-// import { formatError } from '@xbell/code-stack';
 const FOLD_ARROW = '❯';
 
 const log = createLogUpdate(process.stdout);
@@ -200,12 +199,12 @@ class Printer {
     this.currentFrame++;
     const { text, fileStatusCounter, caseStatusCounter, caseErrors } = this.getAllFileInfo();
     const summaryText = this.getSummary({ fileStatusCounter, caseStatusCounter });
-    const errorText = caseErrors.map((text, idx, arr) => {
+    const errorText = caseErrors.map((errMsg, idx, arr) => {
       const total = arr.length;
       const title = color.bold.magenta(this.getCenterText(
         (` Failed Cases [${idx + 1}/${total}] `), { symbol: '-'})
         );
-      return `${title}\n${color.red(text)}`
+      return `${title}\n${errMsg}`
     }).join('\n') + (
       caseErrors.length ? `\n${color.bold.magenta(this.getCenterText('End', { symbol: '-'}))}` : ''
     );
@@ -313,10 +312,6 @@ class Printer {
     if (!c.error?.stack) {
       return '';
     }
-
-    // const errInfo = formatError(c.error, {
-    //   includes: process.cwd(),
-    // });
 
     return [
       [this.getFilename(c.filename), c.groupDescription, c.caseDescription].filter(Boolean).join(color.gray(' > ')),
