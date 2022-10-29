@@ -1,4 +1,3 @@
-
 import * as path from 'node:path';
 import { transformSync, parseSync, Expression, Import, Super, CallExpression } from '@swc/core';
 import { jscConfig, tsParserConfig } from './config';
@@ -59,7 +58,7 @@ class NodeJSVisitor extends Visitor {
 
 export class Compiler {
   public nodeJSCache = new Map<string, { code: string }>();
-  public browserCache = new Map<string, { code: string }>();
+  public browserSourceCodeMapByCode = new Map<string, { sourceCode: string; map: string; }>();
 
   public async compileNodeJSCode(sourceCode: string, filename: string): Promise<{ code: string; }> {
     const program = parseSync(sourceCode, {
@@ -77,8 +76,11 @@ export class Compiler {
       }
     });
     debugCompiler('nodejs:code', { map, code });
-    this.nodeJSCache.set(filename, { code });
-    return { code }; 
+    if (!this.nodeJSCache.has(filename)) {
+      this.nodeJSCache.set(filename, { code });
+    }
+
+    return this.nodeJSCache.get(filename)!;
   }
 
   public async compileBrowserCode(sourceCode: string) {
@@ -117,6 +119,12 @@ export class Compiler {
       },
       sourceMaps: true
     });
+
+    this.browserSourceCodeMapByCode.set(code, {
+      sourceCode,
+      map: map!,
+    });
+
     return {
       code,
       map,

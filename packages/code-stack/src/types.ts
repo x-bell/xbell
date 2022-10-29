@@ -1,6 +1,6 @@
 export interface Location {
-  lines: number;
-  columns: number;
+  line: number;
+  column: number;
   filename: string;
 }
 

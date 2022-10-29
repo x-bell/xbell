@@ -1,13 +1,17 @@
+import type { XBellError } from '../types';
+import color from '@xbell/color';
 import { parseStackLine, formatStack } from '@xbell/code-stack';
 import * as path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import { SourceMapConsumer } from 'source-map-js';
+import * as fs from 'node:fs';
+import { Buffer } from 'node:buffer';
+import { fileURLToPath, getProjectRelativePath } from './path';
+import { pathToFileURL } from 'node:url';
+import { RawSourceMap, SourceMapConsumer } from 'source-map-js';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import debug from 'debug';
 import { pathManager } from '../common/path-manager';
 import { browserBuilder } from '../core/browser-builder';
-import type { XBellError } from '../types';
-import color from '@xbell/color';
+import { compiler } from '../compiler/compiler';
 
 const STACK_LINE_REG = /\((.+?):(\d+):(\d+)\)$/;
 
@@ -22,12 +26,12 @@ function parseStackLines(stack: string) {
   }
   const codeLines = lines.slice(firstCodeLineIndex);
   const formatLines = codeLines.map((line) => {
-    const result = parseStackLine(line);
+    const parsed = parseStackLine(line);
 
-    if (result) {
-      const isHTTPBundle = result.filename.includes(XBELL_BUNDLE_PREFIX);
+    if (parsed) {
+      const isHTTPBundle = parsed.filename.includes(XBELL_BUNDLE_PREFIX);
       if (isHTTPBundle) {
-        const [, bundlePath] = result.filename.split('?')[0].split(XBELL_BUNDLE_PREFIX + '/');
+        const [, bundlePath] = parsed.filename.split('?')[0].split(XBELL_BUNDLE_PREFIX + '/');
         const isProject = !bundlePath.includes('@fs');
         const filepath = isProject
           ? path.join(pathManager.projectDir, bundlePath)
@@ -36,9 +40,9 @@ function parseStackLines(stack: string) {
         debugError('bundlePath', fileURL);
 
         return {
-          content: line.replace(result.filename, fileURL),
+          content: line.replace(parsed.filename, fileURL),
           parsed: {
-            ...result,
+            ...parsed,
             filename: fileURL,
           },
           isBundleUrl: true,
@@ -48,8 +52,9 @@ function parseStackLines(stack: string) {
 
       return {
         content: line,
+        parsed,
         isBundleUrl: false,
-        isInProjectPath: result.filename.includes(pathManager.projectDir),
+        isInProjectPath: parsed.filename.includes(pathManager.projectDir),
       };
     }
 
@@ -66,48 +71,134 @@ function parseStackLines(stack: string) {
   }
 }
 
-export async function formatError(error: Error): Promise<XBellError> {
+async function getNodeJSFileMap(filename: string): Promise<{
+  code: string;
+  map: RawSourceMap;
+} | null> {
+
+  const compileRet = await compiler.compileNodeJSCode(
+    fs.readFileSync(filename, 'utf-8'),
+    filename
+  );
+  if (compileRet) {
+
+    const [code, mapBase64] = compileRet.code.split('//# sourceMappingURL=data:application/json;base64,');
+    const buff = Buffer.from(mapBase64, 'base64');
+    const map = buff.toString('utf-8');
+
+    try {
+      return {
+        code,
+        map: JSON.parse(map) as RawSourceMap,
+      };
+    } catch {}
+  }
+
+  return null;
+}
+
+function getOriginPosition(map: RawSourceMap, position: { column: number, line: number }) {
+  const sourceMap = new SourceMapConsumer(map)
+
+  const originPosition = sourceMap.originalPositionFor(position);
+
+  return {
+    ...originPosition,
+    column: originPosition.column + 1,
+  };
+}
+
+
+export async function formatError(error: Error, options: Partial<{
+  browserTestFunction: {
+    body: string;
+    filename: string;
+  }
+}>  = {}): Promise<XBellError> {
   if (!error.stack) {
     return error;
   }
-  // const stacks = parseStack(error.stack!);
-  // if (formatResult) {
-  //   console.log(formatResult.codeLines);
-  // }
+  const { browserTestFunction } = options;
   const stackResult = parseStackLines(error.stack!);
-  // stackResult.lines.map(stack => stack.line)
+
   debugError('error:before', (error.stack!));
   debugError('error:after', stackResult);
   const server = await browserBuilder.server
   const [firstLine] = stackResult.lines || [];
+  const isEvaluateFunction = !!firstLine.parsed && firstLine.content.includes('eval at evaluate') && !!browserTestFunction;
+  if (isEvaluateFunction && firstLine.parsed) {
+    const originEvaluatePosition = firstLine.parsed;
+    const { map: fileMap, code: fileCompiledCode } = await getNodeJSFileMap(browserTestFunction.filename) ?? {};
+    const indexInCompiledCode = fileCompiledCode!.indexOf(browserTestFunction.body);
+
+    if (fileMap && indexInCompiledCode !== -1) {
+
+      const linesForCompiledCode = fileCompiledCode!.split('\n');
+      const originPosition = (() => {
+        let currIdx = 0;
+        for (const [currLine, line] of linesForCompiledCode.entries()) {
+          currIdx += line.length;
+          if (currIdx >= indexInCompiledCode) {
+            const filePosition = {
+              line: currLine + originEvaluatePosition.line,
+              column: originEvaluatePosition.column,
+            }
+            const originFilePosition = getOriginPosition(fileMap, {
+              line: 58,
+              column: 15,
+            })
+            debugError('browser-origin-file-position', originFilePosition, filePosition, fileCompiledCode);
+
+            return originFilePosition;
+          }
+        }
+
+        return null;
+      })();
+
+      if (originPosition) {
+        const stackMessage = formatStack(
+          browserTestFunction.filename, {
+          line: originPosition.line,
+          column: originPosition.column,
+        });
+        const formatMessage = [
+          color.red(stackResult.head),
+          '',
+          stackMessage,
+          '',
+          color.white.dim(firstLine.content.replace(STACK_LINE_REG, () => {
+            return `${getProjectRelativePath(browserTestFunction.filename)}:${originPosition.line}:${originPosition.column}`;
+          })),
+        ].join('\n');
+        return {
+          ...error,
+          formatMessage,
+        }
+      }
+    }
+
+    return error;
+  }
+
   const module = await (async () => {
     if (firstLine?.isBundleUrl && firstLine.isInProjectPath) {
       // const relativePath = firstLine.lineResult!.filename.split(XBELL_BUNDLE_PREFIX)[1];
       // const id = path.join(pathManager.projectDir, relativePath);
-      debugError('error:id', firstLine.parsed!.filename);
-      return (await Promise.all([
-        server.getModuleByUrl(
-          fileURLToPath(firstLine.parsed!.filename)
-        ),
-      ]))[0];
+      return server.getModuleByUrl(
+        fileURLToPath(firstLine.parsed!.filename)
+      );
     }
     return undefined;
   })();
   
   if (module?.map) {
-    debugError('error:lineReslt', firstLine.parsed!);
-    const sourceMap = new SourceMapConsumer(module.map)
-
-    const position = sourceMap.originalPositionFor({
-      column: firstLine.parsed!.columns,
-      line: firstLine.parsed!.lines,
-    });
-
-    if (position) {
+    const originPosition = getOriginPosition(module.map, firstLine.parsed!);
+    if (originPosition) {
       const stackMessage = formatStack(
         fileURLToPath(firstLine.parsed!.filename), {
-        lines: position.line,
-        columns: position.column + 1,
+        line: originPosition.line,
+        column: originPosition.column,
       });
       const formatMessage = [
         color.red(stackResult.head),
@@ -115,10 +206,11 @@ export async function formatError(error: Error): Promise<XBellError> {
         stackMessage,
         '',
         color.white.dim(firstLine.content.replace(STACK_LINE_REG, (_, file) => {
-          return `${file}:${position.line}:${position.column}`;
+          return `${
+            getProjectRelativePath(fileURLToPath(file))
+          }:${originPosition.line}:${originPosition.column}`;
         })),
       ].join('\n');
-      debugError('error:position', position, formatMessage);
       return {
         ...error,
         formatMessage,
@@ -136,79 +228,3 @@ export function getCallSite(): NodeJS.CallSite[] {
 	Error.prepareStackTrace = _prepareStackTrace;
   return callSite;
 }
-
-// import * as fs from 'fs';
-// import { codeFrameColumns } from '@babel/code-frame';
-// import StackUtils  from 'stack-utils';
-// import color from '@xbell/color';
-// import type { XBellError } from '../types/record';
-
-// const stackUtils = new StackUtils({
-//   cwd: 'empty',
-// })
-
-
-// function parseStack(stack: string) {
-//   const lines = stack.split('\n')
-//   let firstCodeLine = lines.findIndex(line => line.startsWith('    at '));
-//   if (firstCodeLine === -1) {
-//     firstCodeLine = lines.length - 1;
-//   }
-//   const message = lines.slice(0, firstCodeLine).join('\n');
-//   const codeLines = lines.slice(firstCodeLine);
-//   for (const line of codeLines) {
-//     const parsed = stackUtils.parseLine(line);
-//     if (!parsed || !parsed.file || parsed.file.includes('node_module') || parsed.file.includes('node:')) continue;
-//     // const resolvedFile = path.join(process.cwd(), parsed.file);
-//     // console.log(' parsed.file',  parsed.file);
-//     const location = {
-//       filename: parsed.file,
-//       column: parsed.column || 0,
-//       line: parsed.line || 0,
-
-//     }
-//     return {
-//       location,
-//       codeLines,
-//       message,
-//     }
-//   }
-// }
-
-// export function parseError(error: Error): XBellError | void {
-//   if (!error.stack) {
-//     return;
-//   }
-
-//   const stackRet = parseStack(error.stack);
-//   if (!stackRet) {
-//     return;
-//   }
-//   const { location, codeLines, message } = stackRet;
-
-//   if (location) {
-//     const codeFrame = codeFrameColumns(
-//       fs.readFileSync(location.filename, 'utf8'),
-//       {
-//         start: location
-//       },
-//       {
-//         highlightCode: true,
-//       }
-//     )
-//     console.log()
-//     console.log('');
-//     console.log(codeFrame);
-//     return {
-//       originError: error,
-//       message,
-//       codeFrame,
-//       firstFrame: codeLines?.length ? color.dim(codeLines[0]) : undefined,
-//     }
-//   }
-
-//   return {
-//     originError: error,
-//     message,
-//   }
-// }

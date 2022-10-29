@@ -176,6 +176,10 @@ export class Executor {
       const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
       workerContext.channel.emit('onCaseExecuteFailed', {
         uuid: c.uuid,
+        browserTestFunction: c._testFunctionFilename ? {
+          filename: c._testFunctionFilename,
+          body: c.testFunction.toString(),
+        } : undefined,
         error: {
           message: err?.message || 'Run case error',
           name: err?.name || 'UnkonwError',

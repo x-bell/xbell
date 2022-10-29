@@ -97,8 +97,8 @@ export function parseStackLine(line: string): null | Location {
     return null
 
   return {
-    columns: Number(columns),
-    lines: Number(lines),
+    column: Number(columns),
+    line: Number(lines),
     filename: _getFilenamePath(filename),
   }
 }

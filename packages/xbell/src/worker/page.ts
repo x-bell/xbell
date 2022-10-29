@@ -192,13 +192,13 @@ export class Page implements XBellPage {
       'transformBrowserCode',
       { code: browserFunction.toString() },
     );
-    const funcBody = `return function __xbell_browser_function__() { return ${targetCode} }`;
+    const funcBody = `return ${targetCode}`;
     const func = new Function(funcBody);
     Object.defineProperty(func, 'name', {
       value: '__xbell_browser_function__'
     });
     // func.name = '__xbell_browser_function__';
-    return func()() as Function;
+    return func() as Function;
   }
 
   // evaluate = async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args): Promise<R> => {

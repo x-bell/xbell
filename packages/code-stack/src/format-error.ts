@@ -13,11 +13,11 @@ export function formatError(error: Error, opts: FormatOptions = {}) {
     return null;
 
   const {
-    columns,
-    lines,
+    column,
+    line,
     filename,
   } = parsed.location;
-  const ret = formatStack(filename, { columns, lines });
+  const ret = formatStack(filename, { column, line });
   return {
     filename,
     stack: ret,

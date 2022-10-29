@@ -7,7 +7,8 @@ import {
   XBellWorkerLifecycle,
   XBellWorkerLog,
   XBellError,
-  XBellTestCaseStatus
+  XBellTestCaseStatus,
+  XBellTestCaseLifecycle
 } from '../types';
 import { eachTask } from '../utils/task';
 import type { Channel } from '../common/channel';
@@ -51,16 +52,22 @@ class Recorder implements XBellRecorder {
     this._addTestFile(file) ;
   }
 
-  onCaseExecuteStart(c: { uuid: string; }): void {
+  onCaseExecuteStart(c: Parameters<XBellWorkerLifecycle['onCaseExecuteStart']>[0]): void {
     this._setCaseStatus(c.uuid, 'running');
   }
 
-  onCaseExecuteSuccessed(c: { uuid: string; coverage?: any, videos?: string[] }): void {
+  onCaseExecuteSuccessed(c: Parameters<XBellWorkerLifecycle['onCaseExecuteSuccessed']>[0]): void {
     this._setCaseStatus(c.uuid, 'successed', { coverage: c.coverage, videos: c.videos });
   }
 
-  async onCaseExecuteFailed(c: { uuid: string; error: XBellError; videos?: string[] }) {
-    const error = await formatError(c.error);
+  async onCaseExecuteFailed(c: Parameters<XBellWorkerLifecycle['onCaseExecuteFailed']>[0]) {
+    let error = c.error;
+    try {
+      error = await formatError(c.error, {
+        browserTestFunction: c.browserTestFunction,
+      });
+    } catch {}
+
     this._setCaseStatus(c.uuid, 'failed', { error, videos: c.videos });
   }
 

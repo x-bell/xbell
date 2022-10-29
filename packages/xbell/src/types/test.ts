@@ -169,7 +169,7 @@ export interface XBellWorkerLifecycle {
   onFileCollectFailed(file: XBellTestFileRecord): void;
   onCaseExecuteStart(c: { uuid: string }): void;
   onCaseExecuteSuccessed(c: { uuid: string, coverage?: any, videos?: string[] }): void;
-  onCaseExecuteFailed(c: { uuid: string, error: XBellError, videos?: string[] }): void;
+  onCaseExecuteFailed(c: { uuid: string, error: XBellError, videos?: string[], browserTestFunction?: { body: string; filename: string; } }): void;
   onAllDone(): Promise<void> | void;
   onExit(): void;
 }
