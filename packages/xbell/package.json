@@ -1,6 +1,6 @@
 {
   "name": "xbell",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "A web testing framework.",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -65,7 +65,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/code-frame": "^7.16.7",
-    "@swc/core": "^1.2.208",
+    "@swc/core": "1.2.208",
     "@xbell/code-stack": "workspace:*",
     "@xbell/color": "workspace:*",
     "@xbell/reporter": "workspace:*",
