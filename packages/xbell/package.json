@@ -71,7 +71,6 @@
     "@xbell/reporter": "workspace:*",
     "commander": "^9.2.0",
     "debug": "^4.3.4",
-    "expect": "^28.1.0",
     "expell": "workspace:*",
     "fast-glob": "^3.2.11",
     "filenamify": "^4.3.0",

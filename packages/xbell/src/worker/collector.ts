@@ -12,8 +12,11 @@ import type {
   XBellTestCaseStandard,
 } from '../types';
 import { workerContext } from './worker-context';
+import * as path from 'node:path';
 import { ClassicCollector } from './classic-collector';
+import { getCallSite } from '../utils/error';
 import debug from 'debug';
+import { fileURLToPath } from 'url';
 
 const debugCollector = debug('xbell:collector');
 
@@ -65,6 +68,7 @@ export class Collector {
       tasks: [],
       config: {},
       logs: [],
+      mocks: new Map(),
     }
   }
 
@@ -165,6 +169,20 @@ export class Collector {
     } else {
       this.currentFile!.tasks.push(testCase);
     }
+  }
+
+  public collectMock(mockPath: string, factory?: () => any) {
+    if (mockPath.includes('.')) {
+      const callSite = getCallSite();
+      const callSiteFilename = callSite[1]?.getFileName() ?? undefined;
+      if (callSiteFilename) {
+        mockPath = path.join(
+          fileURLToPath(callSiteFilename),
+          mockPath
+        )
+      }
+    }
+    this.currentFile!.mocks.set(mockPath, factory);
   }
 }
 

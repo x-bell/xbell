@@ -14,6 +14,7 @@ export interface XBellTestFile {
   tasks: XBellTestTask[];
   config: XBellTaskConfig;
   logs: XBellWorkerLog[];
+  mocks: Map<string, (() => any) | undefined>;
 }
 
 export interface XBellOptions {

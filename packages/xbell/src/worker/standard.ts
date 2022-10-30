@@ -308,3 +308,6 @@ export const test = createTest<{}, {
 
 export const describe = test.describe;
 
+// export const mock = (mockPath: string, factory?: () => any) => {
+//   collector.collectMock(mockPath, factory);
+// }
