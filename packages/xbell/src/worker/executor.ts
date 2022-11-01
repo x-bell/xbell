@@ -136,8 +136,8 @@ export class Executor {
           spyOn
         };
       },
-      ...(c.runtimeOptions.browserCallbacks || [])
-    ]);
+      ...(c.runtimeOptions.browserCallbacks || []),  
+    ], c.browserMocks);
     const terdown = async () => {
       const video = await page.video();
       if (video) {

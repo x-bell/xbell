@@ -9,12 +9,15 @@ import type {
   XBellWorkerLog,
 } from './record';
 
+export type XBellMocks = Map<string, ((args: any) => any) | undefined>;
+
 export interface XBellTestFile {
   filename: string;
   tasks: XBellTestTask[];
   config: XBellTaskConfig;
   logs: XBellWorkerLog[];
-  mocks: Map<string, (() => any) | undefined>;
+  mocks: XBellMocks;
+  browserMocks: XBellMocks;
 }
 
 export interface XBellOptions {
@@ -121,6 +124,8 @@ interface XBellTestCaseCommon {
   config: XBellTaskConfig;
   runtimeOptions: XBellRuntimeOptions;
   options: XBellOptions;
+  mocks: XBellMocks;
+  browserMocks: XBellMocks;
 }
 export interface XBellTestCaseStandard<NodeJSExtensionArg, BrowserExtensionArg> extends XBellTestCaseCommon {
   testFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>;

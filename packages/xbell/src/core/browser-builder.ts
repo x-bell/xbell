@@ -18,9 +18,10 @@ const debugBrowserBuilder = debug('xbell:BrowserBuilder');
 
 class BrowserBuilder {
   protected _server?: Promise<{
+    queryId(path: string, importer?: string): Promise<string | undefined>;
     queryUrl(path: string, importer?: string): Promise<string | undefined>;
     port: number;
-    getModuleByUrl(url: string): Promise<{ code: string, map: RawSourceMap | null } | undefined>;
+    getModuleById(url: string): Promise<{ code: string, map: RawSourceMap | null } | undefined>;
   }>;
 
   get server() {
@@ -69,18 +70,20 @@ class BrowserBuilder {
     const { port } = addressInfo as Exclude<typeof addressInfo, string>;
     // NOTE: vite must fetch internal modules first. otherwise, other requests cannot be answered
     await get(`http://localhost:${port}/${XBELL_BUNDLE_PREFIX}/@vite/env`);
+
+    async function queryId(path: string, importer?: string) {
+      debugBrowserBuilder('resolveId', {
+        path,
+        importer
+      });
+      const ret = await server.pluginContainer.resolveId(path, importer, { ssr: false });
+      return ret?.id
+    };
     return {
-      async queryUrl(path: string, importer: string) {
-        debugBrowserBuilder('resolveId', {
-          path,
-          importer
-        });
-        const ret = await server.pluginContainer.resolveId(path, importer, { ssr: false });
-        return ret?.id
-      },
+      queryId,
       port,
-      async getModuleByUrl(url: string) {
-        const res = server.moduleGraph.getModuleById(url);
+      async getModuleById(id: string) {
+        const res = server.moduleGraph.getModuleById(id);
         if (res?.transformResult) {
           const map = res.transformResult.map;
           return {
@@ -99,6 +102,21 @@ class BrowserBuilder {
         //   // server.moduleGraph.getModuleByUrl('/__xbell_bundle_prefix__/src/utils/error.ts'),
         // ]);
       },
+      async getModuleByUrl(url: string) {
+        const mod = await server.moduleGraph.getModuleByUrl(url);
+        debugBrowserBuilder('module', mod);
+        return mod;
+      },
+      async queryUrl(path: string, importer?: string): Promise<string | undefined> {
+        const id = await queryId(path, importer);
+        // const loadResult =  id ? await server.pluginContainer.resolveId(id) : undefined;
+        // const moduleInfo = id ? server.pluginContainer.getModuleInfo(id) : undefined;
+
+        const ret = id ? server.moduleGraph.getModuleById(id) : undefined;
+        // const retFile = id ? server.moduleGraph.getModulesByFile(id) : undefined;
+        // debugBrowserBuilder('id', path, id, url, moduleInfo, ret, retFile, code);
+        return ret?.url;
+      }
     };
   }
 

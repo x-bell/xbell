@@ -1,4 +1,4 @@
-import type { XBellPage, XBellLocator } from '../types';
+import type { XBellPage, XBellLocator, XBellMocks } from '../types';
 import type { Browser, BrowserContext } from 'playwright-core';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
@@ -9,11 +9,12 @@ import { pathManager } from '../common/path-manager';
 
 const debugLazyPage = debug('xbell:lazyPage');
 
-
 export function genLazyPage({
-  browserCallbacks
+  browserCallbacks,
+  browserMocks
 }: {
-  browserCallbacks: Array<(args: any) => any>
+  browserCallbacks: Array<(args: any) => any>,
+  browserMocks: XBellMocks
 }): XBellPage & { used: boolean } {
   function genProxy(pagePropKey: 'mouse' | 'keyboard') {
     const proxy = new Proxy({}, {
@@ -58,7 +59,7 @@ export function genLazyPage({
     });
     _lazyContext = browserContext;
     _lazyBrowser = browser;
-    _lazyPage = await Page.from(browserContext, browserCallbacks)
+    _lazyPage = await Page.from(browserContext, browserCallbacks, browserMocks)
     return {
       page: _lazyPage,
       context: _lazyContext,

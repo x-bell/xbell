@@ -95,7 +95,7 @@ export class Compiler {
     const aliasMap = new Map<string, string>();
     const paths =  Array.from(pathCollector.paths).filter(path => !path.includes(XBELL_BUNDLE_PREFIX));
     for (const path of paths) {
-      const moduleUrl = await server.queryUrl(path);
+      const moduleUrl = await server.queryId(path);
       debugCompiler('queryUrl', path, moduleUrl);
       if (moduleUrl) {
         aliasMap.set(path, moduleUrl);

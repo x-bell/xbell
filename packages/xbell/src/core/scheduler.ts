@@ -55,7 +55,14 @@ export class Scheduler {
           return {
             port,
           }
-        }
+        },
+        async queryModuleUrl(modules: string[]) {
+          const server = await browserBuilder.server;
+          return Promise.all(modules.map(async (modulePath) => ({
+            url: await server.queryUrl(modulePath),
+            path: modulePath,
+          })));
+        },
       })
 
       // events

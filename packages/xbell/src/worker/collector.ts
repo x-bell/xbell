@@ -6,7 +6,6 @@ import type {
   XBellTestGroup,
   XBellTestGroupFunction,
   XBellRuntimeOptions,
-  XBellCaseTagInfo,
   XBellRuntime,
   XBellOptions,
   XBellTestCaseStandard,
@@ -16,7 +15,6 @@ import * as path from 'node:path';
 import { ClassicCollector } from './classic-collector';
 import { getCallSite } from '../utils/error';
 import debug from 'debug';
-import { fileURLToPath } from 'url';
 
 const debugCollector = debug('xbell:collector');
 
@@ -69,6 +67,7 @@ export class Collector {
       config: {},
       logs: [],
       mocks: new Map(),
+      browserMocks: new Map(),
     }
   }
 
@@ -121,6 +120,8 @@ export class Collector {
       uuid: this.genUuid(),
       options,
       _testFunctionFilename,
+      mocks: this.currentFile!.mocks,
+      browserMocks: this.currentFile!.browserMocks,
     }
   }
 
@@ -171,18 +172,12 @@ export class Collector {
     }
   }
 
-  public collectMock(mockPath: string, factory?: () => any) {
-    if (mockPath.includes('.')) {
-      const callSite = getCallSite();
-      const callSiteFilename = callSite[1]?.getFileName() ?? undefined;
-      if (callSiteFilename) {
-        mockPath = path.join(
-          fileURLToPath(callSiteFilename),
-          mockPath
-        )
-      }
-    }
+  public collectMock(mockPath: string, factory: (args: any) => any) {
     this.currentFile!.mocks.set(mockPath, factory);
+  }
+
+  public collectBrowserMock(mockPath: string, factory: (args: any) => any) {
+    this.currentFile!.browserMocks.set(mockPath, factory);
   }
 }
 

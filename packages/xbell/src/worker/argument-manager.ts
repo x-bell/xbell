@@ -9,6 +9,7 @@ import { fn, spyOn } from './utils';
 export class ArgumentManager {
   page = genLazyPage({
     browserCallbacks: this._case.runtimeOptions.browserCallbacks || [],
+    browserMocks: this._case.browserMocks,
   });
 
   project: XBellProject;

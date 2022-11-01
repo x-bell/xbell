@@ -1,5 +1,6 @@
 import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments, FixtureFunction } from '../types';
 import type { expell, fn, spyOn } from 'expell';
+import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { collector } from './collector';
 import { getCallSite } from '../utils/error';
@@ -21,6 +22,8 @@ interface XBellBrowserTest<BrowserExtArgs = {}> {
   batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtArgs & { item: T }>) => void;
 
   extend<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<Awaited<ReturnType<T>>>;
+
+  mock(path: string, factory: (args: BrowserExtArgs) => any): void;
 }
 
 export interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
@@ -41,7 +44,9 @@ export interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
 
   extend<T extends (args: XBellTestCaseFunctionArguments<BrowserExtArgs>) => any>(nodeJSCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs>;
    /** case */
-   (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
+  (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
+   
+  mock(path: string, factory: (args: NodeJSExtArgs) => any): void;
 
   extendBrowser<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, Awaited<ReturnType<T>>>;
 }
@@ -155,6 +160,22 @@ export function createBrowserTest<BrowserExtArgs = {}>(
         }
       });
     }
+  }
+
+  browser.mock = (mockPath: string, factory) => {
+    if (mockPath.includes('.')) {
+      const callSite = getCallSite();
+      const callSiteFilename = callSite[1]?.getFileName() ?? undefined;
+      if (callSiteFilename) {
+        mockPath = path.join(
+          path.dirname(
+            fileURLToPath(callSiteFilename)
+          ),
+          mockPath
+        )
+      }
+    }
+    collector.collectBrowserMock(mockPath, factory);
   }
 
   browser.extend = <T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<BrowserExtArgs & Awaited<ReturnType<T>>> => {
@@ -297,6 +318,22 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     ]);
   }
 
+  test.mock = (mockPath: string, factory) => {
+    if (mockPath.includes('.')) {
+      const callSite = getCallSite();
+      const callSiteFilename = callSite[1]?.getFileName() ?? undefined;
+      if (callSiteFilename) {
+        mockPath = path.join(
+          path.dirname(
+            fileURLToPath(callSiteFilename)
+          ),
+          mockPath
+        )
+      }
+    }
+    collector.collectMock(mockPath, factory);
+  }
+
   return test;
 }
 
@@ -309,5 +346,4 @@ export const test = createTest<{}, {
 export const describe = test.describe;
 
 // export const mock = (mockPath: string, factory?: () => any) => {
-//   collector.collectMock(mockPath, factory);
 // }

@@ -18,13 +18,15 @@ import type {
   SmartHandle,
 } from '../types/pw'
 import { workerContext } from './worker-context';
-import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
+import { XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
 import debug from 'debug';
 import { Locator } from './locator';
 import { ElementHandle } from './element-handle';
 import type { Mouse } from '../types/mouse';
 import { Keyboard } from './keyboard';
+import { Console } from 'node:console';
+import type { XBellMocks } from '../types/test';
 
 const debugPage = debug('xbell:page');
 
@@ -33,10 +35,14 @@ interface EvaluateHandler {
   evaluate: PWPage['evaluate']
 }
 
+declare global {
+  interface Window { __xbell_mocks__: Map<string, any>; }
+}
+
 export class Page implements XBellPage {
-  static async from<T extends (args: any) => any>(browserContext: PWBroContext, browserCallback: T[]) {
+  static async from<T extends (args: any) => any>(browserContext: PWBroContext, browserCallback: T[], mocks: XBellMocks) {
     const _page = await browserContext.newPage();
-    const page = new Page(_page, browserCallback);
+    const page = new Page(_page, browserCallback, mocks);
     await page.setup()
     return page;
   }
@@ -50,6 +56,7 @@ export class Page implements XBellPage {
   constructor(
     protected _page: PWPage,
     protected _browserCallbacks: Array<(args: any) => any>,
+    protected mocks: XBellMocks,
   ) {
     this.keyboard = new Keyboard(this._page.keyboard);
     this.mouse = this._page.mouse;
@@ -64,23 +71,41 @@ export class Page implements XBellPage {
       evaluateHandle: PWPage['evaluateHandle']
       evaluate: PWPage['evaluate']
     } = this;
-    debugPage('initPageEnv.length', this._browserCallbacks.length);
+    // debugPage('initPageEnv.length', this._browserCallbacks.length);
     for (const browserCallback of this._browserCallbacks) {
-      debugPage('browser-callback', browserCallback.toString());
+      // debugPage('browser-callback', browserCallback.toString());
       handle = await handle.evaluateHandle(browserCallback);
     }
     // process.exit(0);
     // const hasLength = this._browserCallbacks.length;
     this.evaluate = handle.evaluate;
     this.evaluateHandle = handle.evaluateHandle;
-    debugPage('initPageEnv.done');
-
+    // debugPage('initPageEnv.done');
   }
 
   protected async _setting() {
-    const { port } = await workerContext.channel.request('queryServerPort',);
+    const { port } = await workerContext.channel.request('queryServerPort');
+    const modulePaths = Array.from(this.mocks.keys());
+    this._page.route(new RegExp(XBELL_ACTUAL_BUNDLE_PREFIX), async (route, request) => {
+      const url = request.url();
+      const urlObj = new URL(url);
+      // const pathnameWithPrefix = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '')
+      urlObj.protocol = 'http';
+      urlObj.hostname = 'localhost';
+      urlObj.port = String(port);
+      const { body, contentType } = await get(urlObj.href.replace(XBELL_ACTUAL_BUNDLE_PREFIX, XBELL_BUNDLE_PREFIX));
+
+      route.fulfill({
+        status: 200,
+        contentType,
+        body,
+      });
+    });
+
     this._page.route((new RegExp(XBELL_BUNDLE_PREFIX)), async (route, request) => {
       const url = request.url();
+      const urlObj = new URL(url);
+      const pathnameWithoutPrefix = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '');
       // if (url.includes('@vite/client')) {
       //   route.continue()
       //   // route.fulfill({
@@ -93,16 +118,53 @@ export class Page implements XBellPage {
       //   // });
       //   return;
       // }
-      const urlObj = new URL(url)
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
       urlObj.port = String(port);
-      const { body, contentType } = await get(urlObj.href)
-      route.fulfill({
-        status: 200,
-        contentType,
-        body,
-      })
+      const { body, contentType } = await get(urlObj.href);
+      // after get
+      // const moduleUrls = await workerContext.channel.request('queryModuleUrl', modulePaths);
+      // pre fetch url
+      const moduleUrlMapByPath = await workerContext.channel.request('queryModuleUrl', modulePaths);
+      const targetModule = moduleUrlMapByPath.find(item => item.url === pathnameWithoutPrefix);
+      debugPage('moduleUrls', moduleUrlMapByPath, urlObj.href);
+      const targetUrl = `${urlObj.pathname + urlObj.search}`.replace(XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX);
+      debugPage('targetModule', targetModule, targetUrl);
+      if (targetModule) {
+        const factory = this.mocks?.get(targetModule?.path);
+        if (!factory) throw new Error(`The mocking path is "${targetModule.path}" missing factory function`)
+        const obj = await this._page.evaluateHandle(factory);
+
+        await obj.evaluate((factoryReturnValue, modulePath) => {
+          if (!window.__xbell_mocks__) window.__xbell_mocks__ = new Map();
+          window.__xbell_mocks__ = new Map();
+          window.__xbell_mocks__.set(modulePath, factoryReturnValue);
+          console.log('jsHandle', factoryReturnValue, modulePath);
+        }, targetModule.path);
+        const keys = Array.from((await obj.getProperties()).keys());
+        debugPage('keys', keys);
+        const exportPropertiesCodes = keys.map((key) => {
+          return `export const ${key} = factory["${key}"];`
+        });
+
+        const body = [
+          `const factory = window.__xbell_mocks__.get("${targetModule.path}");`,
+          ...exportPropertiesCodes,
+        ].join('\n');
+
+        route.fulfill({
+          status: 200,
+          contentType,
+          body,
+        });
+        route
+      } else {
+        route.fulfill({
+          status: 200,
+          contentType,
+          body,
+        });
+      }
     });
 
     // this._page.route((url) => {
@@ -124,7 +186,10 @@ export class Page implements XBellPage {
   }
 
   async _settingGotoRoute(url: string, html: string) {
+    // empty
     const { html: finalHtml } = await workerContext.channel.request('transformHtml', { html, url });
+
+    // handle goto.html
     await this._page.route(url, (route) => {
       route.fulfill({
         status: 200,
@@ -139,7 +204,7 @@ export class Page implements XBellPage {
       await this._settingGotoRoute(url, options.html);
     }
     const { html, ...otherOptons } = options || {};
-    debugPage('goto', url);
+    // debugPage('goto', url);
     // TODO: playwright version
     // @ts-ignore
     const ret = await this._page.goto(url, otherOptons);
@@ -230,30 +295,30 @@ export class Page implements XBellPage {
   // }
 
   protected _genEvaluate = (originEvaluate: EvaluateHandler['evaluate']) => async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args): Promise<R> => {
-    debugPage('evaluate:before', pageFunction.toString());
+    // debugPage('evaluate:before', pageFunction.toString());
     const func = await this._transformBrowserFunction(pageFunction);
-    debugPage('evaluate:after', func.toString());
+    // debugPage('evaluate:after', func.toString());
     try {
       return await originEvaluate(func as any, args);
     } catch(error: any) {
-      debugPage('_genEvaluate:error',  error.stack?.split('\n'));
+      // debugPage('_genEvaluate:error',  error.stack?.split('\n'));
       throw error;
     }
   }
 
   protected _genEvaluateHandle = (originEvaluateHandle: EvaluateHandler['evaluateHandle']) => async <R, Args>(pageFunction: PageFunction<{} & Args, R>, args?: Args | undefined, ): Promise<SmartHandle<R>> => {
-    debugPage('evaluateHandle:before', pageFunction.toString());
+    // debugPage('evaluateHandle:before', pageFunction.toString());
     const func = await this._transformBrowserFunction(pageFunction);
-    debugPage('evaluateHandle:after', func.toString());
+    // debugPage('evaluateHandle:after', func.toString());
     try {
       const ret: SmartHandle<R> = await originEvaluateHandle(func as any, args);
-      debugPage('_genEvaluateHandle:ret');
+      // debugPage('_genEvaluateHandle:ret');
       ret.evaluateHandle = this._genEvaluateHandle(ret.evaluateHandle.bind(ret));
       ret.evaluate = this._genEvaluate(ret.evaluate.bind(ret));
       return ret;
     } catch (error: any) {
       // fix error
-      debugPage('_genEvaluateHandle:error', error.stack?.split('\n').pop());
+      // debugPage('_genEvaluateHandle:error', error.stack?.split('\n').pop());
       throw error;
     }
     // const originEvaluate = ret.evaluate.bind(ret)

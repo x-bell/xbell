@@ -176,6 +176,8 @@ export class ClassicCollector {
           runtime: 'node',
           status: 'waiting',
           class: cls,
+          mocks: this.currentFile!.mocks,
+          browserMocks: this.currentFile!.browserMocks,
         };
 
         return c;
@@ -201,6 +203,9 @@ export class ClassicCollector {
       runtime: 'node',
       status: 'waiting',
       class: cls,
+      // TODO: classic mocks
+      mocks: this.currentFile!.mocks,
+      browserMocks: this.currentFile!.browserMocks,
     }];
   }
 }

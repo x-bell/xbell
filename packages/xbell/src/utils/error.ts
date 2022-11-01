@@ -146,10 +146,7 @@ export async function formatError(error: Error, options: Partial<{
               line: currLine + originEvaluatePosition.line,
               column: originEvaluatePosition.column,
             }
-            const originFilePosition = getOriginPosition(fileMap, {
-              line: 58,
-              column: 15,
-            })
+            const originFilePosition = getOriginPosition(fileMap, filePosition);
             debugError('browser-origin-file-position', originFilePosition, filePosition, fileCompiledCode);
 
             return originFilePosition;
@@ -188,7 +185,7 @@ export async function formatError(error: Error, options: Partial<{
     if (firstLine?.isBundleUrl && firstLine.isInProjectPath) {
       // const relativePath = firstLine.lineResult!.filename.split(XBELL_BUNDLE_PREFIX)[1];
       // const id = path.join(pathManager.projectDir, relativePath);
-      return server.getModuleByUrl(
+      return server.getModuleById(
         fileURLToPath(firstLine.parsed!.filename)
       );
     }
