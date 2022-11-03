@@ -74,6 +74,7 @@ class Recorder implements XBellRecorder {
   async onAllDone() {
     await coverageManager.generateReport();
     await htmlReporter.generateReport(this.tree);
+    process.exit(0);
   }
 
   onLog(data: XBellWorkerLog & { filename: string; }): void {
