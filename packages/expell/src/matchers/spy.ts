@@ -55,9 +55,8 @@ export const spyMatcher = defineMatcher({
     const isAllEmpty = !expectedArgs.length && !actualArgs.length;
     return {
       pass: isAllEmpty ||
-        // TODO: need to equal?
         (isSameLength && actualArgs.every((actualArg, index) => equals(actualArg, expectedArgs[index], [iterableEquality]))),
-      message: () => '',
+      message: () => 'Not equal',
     }
   },
   toHaveBeenLastCalledWith(received: Mock, ...expectedArgs: any[]) {
@@ -66,20 +65,19 @@ export const spyMatcher = defineMatcher({
     const isAllEmpty = !expectedArgs.length && !actualArgs.length;
     return {
       pass: isAllEmpty ||
-      // TODO: need to equal?
-      (isSameLength && actualArgs.every((actualArg, index) => actualArg === expectedArgs[index])),
-      message: () => '',
+      (isSameLength && actualArgs.every((actualArg, index) => equals(actualArg, expectedArgs[index], [iterableEquality]))),
+      message: () => 'Not equal',
     }
   },
   toHaveBeenNthCalledWith(received: Mock, nthCall: number, ...expectedArgs: any[]) {
-    const actualArgs = received.calls[nthCall];
+    const actualArgs = received.calls[nthCall - 1];
     const isSameLength = expectedArgs.length === actualArgs.length;
     const isAllEmpty = !expectedArgs.length && !actualArgs.length;
     return {
       pass: isAllEmpty ||
       // TODO: need to equal?
-      (isSameLength && actualArgs.every((actualArg, index) => actualArg === expectedArgs[index])),
-      message: ({ not }) => ''
+      (isSameLength && actualArgs.every((actualArg, index) => equals(actualArg, expectedArgs[index], [iterableEquality]))),
+      message: ({ not }) => 'Not equal'
     }
   },
   toHaveReturned(received: Mock) {
@@ -94,22 +92,71 @@ export const spyMatcher = defineMatcher({
       message: ({ not }) => ''
     }
   },
-  toHaveReturnedWith(received, times: number) {
+  toHaveReturnedWith(received: Mock, returnValue: any) {
+
+    if (!received.results[0]) {
+      return {
+        pass: false,
+        message: () => 'The function No call',
+      }
+    }
+
+    const { value, type } = received.results[0];
+
+    if (type === 'throw') {
+      return {
+        pass: false,
+        message: () => 'The function throw error',
+      };
+    }
+
     return {
-      pass: true,
-      message: ({ not }) => ''
+      pass:  equals(value, returnValue, [iterableEquality]),
+      message: ({ not }) => 'Not equal'
     }
   },
-  toHaveLastReturnedWith(value: unknown) {
+  toHaveLastReturnedWith(received: Mock, returnValue: any) {
+    if (!received.results[0]) {
+      return {
+        pass: false,
+        message: () => 'The function No call',
+      };
+    }
+
+    const { value, type } = received.results[received.length - 1];
+
+    if (type === 'throw') {
+      return {
+        pass: false,
+        message: () => 'The function throw error',
+      };
+    }
+
     return {
-      pass: true,
-      message: ({ not }) => ''
+      pass: equals(value, returnValue, [iterableEquality]),
+      message: ({ not }) => 'Not equal'
     }
   },
-  toHaveNthReturnedWith(nthCall: number, value: unknown) {
+  toHaveNthReturnedWith(received: Mock, nthCall: number, returnValue: any) {
+    if (received.length < nthCall) {
+      return {
+        pass: false,
+        message: () => `The function is called only ${received.length}`,
+      };
+    }
+
+    const { value, type } = received.results[nthCall - 1];
+
+    if (type === 'throw') {
+      return {
+        pass: false,
+        message: () => `The ${nthCall} call to the function was thrown error`,
+      };
+    }
+
     return {
-      pass: true,
-      message: () => ''
+      pass: equals(value, returnValue, [iterableEquality]),
+      message: () => 'Not Equal'
     }
   }
 });
