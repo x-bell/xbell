@@ -24,7 +24,7 @@ interface XBellProjects {
 ```typescript title="xbell.config.ts"
 import type { XBellConfig } from 'xbell';
 
-export default <XBellConfig>({
+const config: XBellConfig = {
   browser: {
     headless: true,
   },
@@ -54,6 +54,8 @@ export default <XBellConfig>({
     }
   ],
 });
+
+export default config;
 ```
 
 ## Write Testing

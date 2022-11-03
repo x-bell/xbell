@@ -6,23 +6,32 @@ title: Config
 ```typescript title="xbell.config.ts"
 import type { XBellConfig } from 'xbell';
 
-export default <XBellConfig>({
+const config: XBellConfig = {
   browser: {
     headless: false,
   },
-  include: ['**/*.{test,spec}.{js,ts,jsx,tsx}']
-});
+  include: ['**/*.{test,spec}.{js,ts,jsx,tsx}'],
+};
+
+export default config;
 ```
 
-## config.include
+## include
 - type: <type>string[]</type>
 - default: `['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']`
 
-## config.browser
-浏览器配置
+## browser
 
-### config.browser.headless
+### headless
 - type: <type>boolean</type>
 - default: `true`
 
 是否使用无头模式
+
+## coverage
+
+### enable
+- `type` <type>boolean</type>
+- default: `false`
+
+是否开启覆盖率输出

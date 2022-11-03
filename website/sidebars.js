@@ -47,6 +47,7 @@ const sidebars = {
   api: [
     'api/test',
     'api/config',
+    'api/cli',
     'api/expect',
     'api/page',
     'api/locator',
