@@ -17,6 +17,10 @@ const STACK_LINE_REG = /\((.+?):(\d+):(\d+)\)$/;
 
 const debugError = debug('xbell:error');
 
+function isEvaluateCalback(line: string) {
+  return line.includes('eval at evaluate');
+}
+
 function parseStackLines(stack: string) {
   const lines = stack.split('\n')
 
@@ -46,7 +50,7 @@ function parseStackLines(stack: string) {
             filename: fileURL,
           },
           isBundleUrl: true,
-          isInProjectPath: true,
+          isInProjectPath: isProject,
         };
       }
 
@@ -123,8 +127,9 @@ export async function formatError(error: Error, options: Partial<{
   debugError('error:before', (error.stack!));
   debugError('error:after', stackResult);
   const server = await browserBuilder.server
-  const [firstLine] = stackResult.lines || [];
-  const isEvaluateFunction = !!firstLine.parsed && firstLine.content.includes('eval at evaluate') && !!browserTestFunction;
+  const inProjectLines = stackResult.lines.filter(item => item.isInProjectPath || isEvaluateCalback(item.content));
+  const [firstLine] = (inProjectLines.length ? inProjectLines : stackResult.lines) || [];
+  const isEvaluateFunction = !!firstLine.parsed && isEvaluateCalback(firstLine.content) && !!browserTestFunction;
   if (browserTestFunction && stackResult.head) {
     stackResult.head = stackResult.head.replace(/^jsHandle\.evaluate\:\ /, '');
   }
