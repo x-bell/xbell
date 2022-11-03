@@ -1,10 +1,10 @@
-import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments, FixtureFunction } from '../types';
-import type { expell, fn, spyOn } from 'expell';
+import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments, FixtureFunction, XBellBrowserCallback } from '../types';
 import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath } from '../utils/path';
 import { collector } from './collector';
 import { getCallSite } from '../utils/error';
 import debug from 'debug';
+import type { BrowserTestArguments } from '../browser/index';
 
 const debugStandard = debug('xbell:standard');
 
@@ -52,14 +52,14 @@ export interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
 }
 
 export function createBrowserTest<BrowserExtArgs = {}>(
-  browserCallbacks: Array<(...args: any[]) => any> = [],
+  browserCallbacks: XBellBrowserCallback[] = [],
 ): XBellBrowserTest<BrowserExtArgs> {
   const browser: XBellBrowserTest<BrowserExtArgs> = (caseDescription, testCaseFunction) => {
     const callSite = getCallSite();
 
-    const callSiteFilename = callSite[1]?.getFileName() ?? undefined;
+    const callSiteFilename = callSite[1].getFileName()!;
 
-    const _testFunctionFilename = callSiteFilename && fileURLToPath(callSiteFilename);
+    const _testFunctionFilename = fileURLToPath(callSiteFilename);
 
     debugStandard('_testFunctionFilename', _testFunctionFilename);
 
@@ -165,23 +165,27 @@ export function createBrowserTest<BrowserExtArgs = {}>(
   browser.mock = (mockPath: string, factory) => {
     if (mockPath.includes('.')) {
       const callSite = getCallSite();
-      const callSiteFilename = callSite[1]?.getFileName() ?? undefined;
-      if (callSiteFilename) {
-        mockPath = path.join(
-          path.dirname(
-            fileURLToPath(callSiteFilename)
-          ),
-          mockPath
-        )
-      }
+      const callSiteFilename = callSite[1].getFileName()!;
+      mockPath = path.join(
+        path.dirname(
+          fileURLToPath(callSiteFilename)
+        ),
+        mockPath
+      );
     }
     collector.collectBrowserMock(mockPath, factory);
   }
 
   browser.extend = <T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<BrowserExtArgs & Awaited<ReturnType<T>>> => {
+    const callSite = getCallSite();
+
+    const callSiteFilename = callSite[1]!.getFileName() ?? undefined;
     return createBrowserTest([
       ...browserCallbacks,
-      browserCallback,
+      {
+        callback: browserCallback,
+        filename: fileURLToPath(callSiteFilename!),
+      }
     ]);
   };
 
@@ -190,7 +194,7 @@ export function createBrowserTest<BrowserExtArgs = {}>(
 
 export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
   nodejsCallbacks: Array<(...args: any[]) => any> = [],
-  browserCallbacks: Array<(...args: any[]) => any> = [],
+  browserCallbacks: Array<XBellBrowserCallback> = [],
 ): XBellTest<NodeJSExtArgs, BrowserExtArgs> {
   const test: XBellTest<NodeJSExtArgs, BrowserExtArgs> = (
     caseDescription: string,
@@ -310,18 +314,24 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
   test.browser = createBrowserTest(browserCallbacks);
 
   test.extendBrowser = (browserCallback) => {
+    const callSite = getCallSite();
+    const callSiteFilename = callSite[1]!.getFileName()!;
+
     return createTest([
       ...nodejsCallbacks,
     ], [
       ...browserCallbacks,
-      browserCallback
+      {
+        callback: browserCallback,
+        filename: fileURLToPath(callSiteFilename),
+      }
     ]);
   }
 
   test.mock = (mockPath: string, factory) => {
     if (mockPath.includes('.')) {
       const callSite = getCallSite();
-      const callSiteFilename = callSite[1]?.getFileName() ?? undefined;
+      const callSiteFilename = callSite[1]!.getFileName()!;
       if (callSiteFilename) {
         mockPath = path.join(
           path.dirname(
@@ -337,11 +347,7 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
   return test;
 }
 
-export const test = createTest<{}, {
-  expect: typeof expell;
-  fn: typeof fn;
-  spyOn: typeof spyOn;
-}>();
+export const test = createTest<{}, BrowserTestArguments>();
 
 export const describe = test.describe;
 

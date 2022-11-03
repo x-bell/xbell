@@ -27,6 +27,7 @@ function getUpLevelStatus({
   }
 
   if (waiting) {
+    if (failed || successed) return 'running';
     return 'waiting';
   }
 
@@ -147,7 +148,8 @@ class Printer {
       } as const : this.getTaskInfo(file.tasks, 0, caseStatusCounter, caseErrors);
       fileStatusCounter[status]++;
       return this.getStatusLabel(status) + ' ' + color.white(this.getFilename(file.filename)) + (status === 'successed' ? '' : this.startWithNewLine(text)) + this.startWithNewLine(this.getFileLogs(file)) + this.startWithNewLine(this.getFileError(file));
-    }).join('\n\n');
+    })
+    .join('\n\n');
 
     return {
       text,

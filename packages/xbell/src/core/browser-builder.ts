@@ -95,12 +95,6 @@ class BrowserBuilder {
           }
         }
         return undefined;
-        // return Promise.all([
-        //   // server.moduleGraph.getModulesByFile('file:///Users/lianghang/Desktop/github/xlianghang/bell/tests/internal/src/utils/error.ts'),
-        //   // server.moduleGraph.getModulesByFile('/Users/lianghang/Desktop/github/xlianghang/bell/tests/internal/src/utils/error.ts'),
-        //   // server.moduleGraph.getModuleByUrl('https://xbell.test/__xbell_bundle_prefix__/src/utils/error.ts'),
-        //   // server.moduleGraph.getModuleByUrl('/__xbell_bundle_prefix__/src/utils/error.ts'),
-        // ]);
       },
       async getModuleByUrl(url: string) {
         const mod = await server.moduleGraph.getModuleByUrl(url);

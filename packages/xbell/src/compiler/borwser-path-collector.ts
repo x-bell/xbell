@@ -13,10 +13,11 @@ import {
 } from '@swc/core';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import { pathManager } from '../common/path-manager';
+import { idToUrl } from '../utils/path';
 
-export class ASTPathCollector extends Visitor {
+export class BrowserPathCollector extends Visitor {
   public paths = new Set<string>()
-  constructor(public urlMap?: Map<string, string>) {
+  constructor(public idMapByFullpath?: Map<string, string>) {
     super()
   }
 
@@ -82,26 +83,22 @@ export class ASTPathCollector extends Visitor {
   }
 
   visitIdentifier(n: Identifier): Identifier {
-    if (this.urlMap && (n.value === 'React1' || n.value === '_jsx1')) {
+    if (this.idMapByFullpath && (n.value === 'React1' || n.value === '_jsx1')) {
       n.value = n.value.replace(/1$/, '');
     }
     return n;
   }
 
   visitCallExpression(n: CallExpression): Expression {
-    // process relative path
     if (n.callee.type === 'Import' && n.arguments[0].expression.type === 'StringLiteral') {
-      if (!this.urlMap) {
+      if (!this.idMapByFullpath) {
+        // fullpath by node transform
         this.paths.add(n.arguments[0].expression.value);
       } else {
         const rawValue = n.arguments[0].expression.value
         if (!rawValue.includes(XBELL_BUNDLE_PREFIX)) {
-          const resolveId = this.urlMap.get(rawValue)!;
-          const targetUrl = rawValue.includes(pathManager.projectDir)
-            ? resolveId.replace(pathManager.projectDir, `/${XBELL_BUNDLE_PREFIX}`)
-            : (`/${XBELL_BUNDLE_PREFIX}/@fs` + resolveId);
-          // const prefix = '/' + XBELL_BUNDLE_PREFIX;
-          // const targetUrl = prefix + this.urlMap.get(n.arguments[0].expression.value);
+          const resolveId = this.idMapByFullpath.get(rawValue)!;
+          const targetUrl = idToUrl(resolveId);
           // @ts-ignore
           delete n.arguments[0].expression.raw;
           n.arguments[0].expression.value = targetUrl as string;

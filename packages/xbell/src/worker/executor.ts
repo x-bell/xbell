@@ -9,6 +9,9 @@ import { pathManager } from '../common/path-manager';
 import { join } from 'path';
 import debug from 'debug';
 import { htmlReporter } from '../common/html-reporter';
+import * as url from 'url';
+
+const __filename = url.fileURLToPath(import.meta.url);
 
 const debugExecutor = debug('xbell:executor');
 
@@ -125,19 +128,28 @@ export class Executor {
         dir: videoDir,
       },
     });
-    const page = await Page.from(browserContext, [
-      // default setup
-      async () => {
-        // @ts-ignore
-        const { expect, fn, spyOn } = await import('xbell/browser');
-        return {
-          expect,
-          fn,
-          spyOn
-        };
-      },
-      ...(c.runtimeOptions.browserCallbacks || []),  
-    ], c.browserMocks);
+    const page = await Page.from({
+      browserContext,
+      browserCallbacks: [
+        // default setup
+        {
+          callback: async () => {
+            // @ts-ignore
+            const { expect, fn, spyOn, importActual } = await import('xbell/browser');
+            return {
+              expect,
+              fn,
+              spyOn,
+              importActual
+            };
+          },
+          filename: __filename,
+        },
+        ...(c.runtimeOptions.browserCallbacks || []),  
+      ],
+      mocks: c.browserMocks,
+      filename: c._testFunctionFilename!,
+    });
     const terdown = async () => {
       const video = await page.video();
       if (video) {

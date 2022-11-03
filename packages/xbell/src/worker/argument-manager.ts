@@ -10,6 +10,8 @@ export class ArgumentManager {
   page = genLazyPage({
     browserCallbacks: this._case.runtimeOptions.browserCallbacks || [],
     browserMocks: this._case.browserMocks,
+    // TODO: _testFunctionFilename in node
+    filename: this._case._testFunctionFilename ?? this._case.filename,
   });
 
   project: XBellProject;

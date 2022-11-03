@@ -15,7 +15,11 @@ interface XBellWorkerMessageCommon {
 }
 
 interface XBellWorkerRequests {
-  queryModuleUrl(modules: string[]): Promise<{ url: string | undefined; path: string }[]>;
+  queryModuleUrls(modules: string[]): Promise<{ url: string | undefined; path: string }[]>;
+  queryModuleId(option: {
+    modulePath: string;
+    importer?: string;
+  }): Promise<string | null>;
   transformBrowserCode(data: { code: string; }): Promise<{ code: string; }>;
   queryServerPort(): Promise<{ port: number }>;
   transformHtml(data: { html: string; url: string }): Promise<{ html: string }>;

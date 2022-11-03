@@ -27,6 +27,8 @@ import type { Mouse } from '../types/mouse';
 import { Keyboard } from './keyboard';
 import { Console } from 'node:console';
 import type { XBellMocks } from '../types/test';
+import type { XBellBrowserCallback } from '../types/config';
+import { idToUrl, resolvePath } from '../utils/path';
 
 const debugPage = debug('xbell:page');
 
@@ -36,13 +38,29 @@ interface EvaluateHandler {
 }
 
 declare global {
-  interface Window { __xbell_mocks__: Map<string, any>; }
+  interface Window {
+    __xbell_context__: {
+      importActual(path: string): Promise<any>;
+      mocks: Map<string, any>;
+    }
+    __xbell_getImportActualUrl__(path: string): Promise<string>
+  }
 }
 
 export class Page implements XBellPage {
-  static async from<T extends (args: any) => any>(browserContext: PWBroContext, browserCallback: T[], mocks: XBellMocks) {
+  static async from({
+    browserContext,
+    browserCallbacks,
+    mocks,
+    filename,
+  }: {
+    browserContext: PWBroContext;
+    browserCallbacks: XBellBrowserCallback[];
+    mocks: XBellMocks;
+    filename: string;
+  }) {
     const _page = await browserContext.newPage();
-    const page = new Page(_page, browserCallback, mocks);
+    const page = new Page(_page, browserCallbacks, mocks, filename);
     await page.setup()
     return page;
   }
@@ -50,14 +68,17 @@ export class Page implements XBellPage {
   public keyboard: Keyboard;
 
   public mouse: Mouse;
-
   // protected _settingPromise: Promise<void>;
+
+  protected _currentFilename: string;
 
   constructor(
     protected _page: PWPage,
-    protected _browserCallbacks: Array<(args: any) => any>,
-    protected mocks: XBellMocks,
+    protected _browserCallbacks: XBellBrowserCallback[],
+    protected _mocks: XBellMocks,
+    protected _filename: string,
   ) {
+    this._currentFilename = _filename;
     this.keyboard = new Keyboard(this._page.keyboard);
     this.mouse = this._page.mouse;
   }
@@ -66,26 +87,53 @@ export class Page implements XBellPage {
     await this._setting();
   }
 
-  protected async _initPageEnv() {
+  protected async _setupXBellContext() {
+    await this._page.exposeFunction('__xbell_getImportActualUrl__', async (modulePath: string) => {
+      const id = await workerContext.channel.request('queryModuleId', {
+        modulePath: modulePath,
+        importer: this._currentFilename,
+      });
+      debugPage('execute.__xbell_getImportActualUrl__', modulePath, this._currentFilename, id);
+      if (!id) {
+        return null;
+      }
+
+      return idToUrl(id, XBELL_ACTUAL_BUNDLE_PREFIX);
+    });
+    await this._page.evaluate(() => {
+      window.__xbell_context__ = {
+        mocks: new Map(),
+        importActual: async (path: string) => {
+          const url = await window.__xbell_getImportActualUrl__(path);
+          if (!url) {
+            throw new Error(`[importActual]: Not found ${path}`);
+          }
+          return import(url);
+        },
+      };
+    });
+    debugPage('__xbell_context__ done');
+  }
+
+  protected async _setupUserContext() {
     let handle: {
       evaluateHandle: PWPage['evaluateHandle']
       evaluate: PWPage['evaluate']
     } = this;
-    // debugPage('initPageEnv.length', this._browserCallbacks.length);
-    for (const browserCallback of this._browserCallbacks) {
-      // debugPage('browser-callback', browserCallback.toString());
-      handle = await handle.evaluateHandle(browserCallback);
+    debugPage('_setupUserContext_')
+    for (const { filename, callback } of this._browserCallbacks) {
+      this._currentFilename = filename;
+      handle = await handle.evaluateHandle(callback);
     }
-    // process.exit(0);
-    // const hasLength = this._browserCallbacks.length;
     this.evaluate = handle.evaluate;
     this.evaluateHandle = handle.evaluateHandle;
-    // debugPage('initPageEnv.done');
+    this._currentFilename = this._filename;
   }
 
   protected async _setting() {
     const { port } = await workerContext.channel.request('queryServerPort');
-    const modulePaths = Array.from(this.mocks.keys());
+    const modulePaths = Array.from(this._mocks.keys());
+
     this._page.route(new RegExp(XBELL_ACTUAL_BUNDLE_PREFIX), async (route, request) => {
       const url = request.url();
       const urlObj = new URL(url);
@@ -125,30 +173,28 @@ export class Page implements XBellPage {
       // after get
       // const moduleUrls = await workerContext.channel.request('queryModuleUrl', modulePaths);
       // pre fetch url
-      const moduleUrlMapByPath = await workerContext.channel.request('queryModuleUrl', modulePaths);
+      const moduleUrlMapByPath = await workerContext.channel.request('queryModuleUrls', modulePaths);
       const targetModule = moduleUrlMapByPath.find(item => item.url === pathnameWithoutPrefix);
       debugPage('moduleUrls', moduleUrlMapByPath, urlObj.href);
       const targetUrl = `${urlObj.pathname + urlObj.search}`.replace(XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX);
       debugPage('targetModule', targetModule, targetUrl);
       if (targetModule) {
-        const factory = this.mocks?.get(targetModule?.path);
+        const factory = this._mocks?.get(targetModule?.path);
         if (!factory) throw new Error(`The mocking path is "${targetModule.path}" missing factory function`)
         const obj = await this._page.evaluateHandle(factory);
 
         await obj.evaluate((factoryReturnValue, modulePath) => {
-          if (!window.__xbell_mocks__) window.__xbell_mocks__ = new Map();
-          window.__xbell_mocks__ = new Map();
-          window.__xbell_mocks__.set(modulePath, factoryReturnValue);
-          console.log('jsHandle', factoryReturnValue, modulePath);
+          window.__xbell_context__.mocks.set(modulePath, factoryReturnValue);
         }, targetModule.path);
         const keys = Array.from((await obj.getProperties()).keys());
         debugPage('keys', keys);
+
         const exportPropertiesCodes = keys.map((key) => {
           return `export const ${key} = factory["${key}"];`
         });
 
         const body = [
-          `const factory = window.__xbell_mocks__.get("${targetModule.path}");`,
+          `const factory = window.__xbell_context__.mocks.get("${targetModule.path}");`,
           ...exportPropertiesCodes,
         ].join('\n');
 
@@ -209,7 +255,8 @@ export class Page implements XBellPage {
     // @ts-ignore
     const ret = await this._page.goto(url, otherOptons);
     if (options?.html) {
-      await this._initPageEnv();
+      await this._setupXBellContext();
+      await this._setupUserContext();
     }
 
     return ret;

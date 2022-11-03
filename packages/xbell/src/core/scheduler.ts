@@ -56,14 +56,21 @@ export class Scheduler {
             port,
           }
         },
-        async queryModuleUrl(modules: string[]) {
+        async queryModuleUrls(modules: string[]) {
           const server = await browserBuilder.server;
           return Promise.all(modules.map(async (modulePath) => ({
             url: await server.queryUrl(modulePath),
             path: modulePath,
           })));
         },
-      })
+        async queryModuleId({
+          modulePath,
+          importer
+        }) {
+          const server = await browserBuilder.server;
+          return await server.queryId(modulePath, importer) ?? null;
+        }
+      });
 
       // events
       worker.channel.addListener('onLog', (...args) => recorder.onLog(...args))

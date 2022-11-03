@@ -47,8 +47,12 @@ export type XBellProject = {
   config?: XBellConfig;
 } & Omit<XBellProjects, 'names'>;
 
+export interface XBellBrowserCallback {
+  callback: (...args: any) => any;
+  filename: string;
+}
 
 export type XBellRuntimeOptions = Partial<{
-  browserCallbacks: Array<(...args: any) => any>;
+  browserCallbacks: XBellBrowserCallback[];
   args?: object
 }>;

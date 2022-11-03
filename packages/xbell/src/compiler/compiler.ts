@@ -1,8 +1,9 @@
 import * as path from 'node:path';
 import { transformSync, parseSync, Expression, Import, Super, CallExpression } from '@swc/core';
 import { jscConfig, tsParserConfig } from './config';
-import { ASTPathCollector } from './ast-path-collector';
+import { BrowserPathCollector } from './borwser-path-collector';
 import { browserBuilder } from '../core/browser-builder';
+import { resolvePath } from '../utils/path';
 import { Visitor } from './visitor';
 import debug from 'debug';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
@@ -18,19 +19,8 @@ export interface XBellCompiler {
   compileBrowserCode(sourceCode: string): Promise<{ code: string }>
 }
 
-function resolvePath(modulePath: string, importerPath?: string) {
 
-  if (!modulePath) return null;
 
-  if (modulePath.includes('.') && importerPath) {
-    return path.resolve(
-      path.dirname(importerPath),
-      modulePath
-    )
-  }
-
-  return null;
-}
 export interface XBellCompilerConstructor {
   new (desp: XBellCompilerDeps): XBellCompiler
 }
@@ -41,7 +31,6 @@ class NodeJSVisitor extends Visitor {
   }
 
   visitCallExpression(n: CallExpression): Expression {
-    debugCompiler('visitCallExpression');
     const expression = n.arguments[0]?.expression;
     if (n.callee.type === 'Import' && expression?.type === 'StringLiteral' && expression.value.startsWith('.')) {
       const fullpath = resolvePath(expression.value, this._filename);
@@ -75,7 +64,7 @@ export class Compiler {
         ...jscConfig,
       }
     });
-    debugCompiler('nodejs:code', { map, code });
+    // debugCompiler('nodejs:code', { map, code });
     if (!this.nodeJSCache.has(filename)) {
       this.nodeJSCache.set(filename, { code });
     }
@@ -90,15 +79,14 @@ export class Compiler {
     });
 
     const server = await browserBuilder.server;
-    const pathCollector = new ASTPathCollector();
+    const pathCollector = new BrowserPathCollector();
     pathCollector.visitProgram(program);
-    const aliasMap = new Map<string, string>();
+    const idMapByFullPath = new Map<string, string>();
     const paths =  Array.from(pathCollector.paths).filter(path => !path.includes(XBELL_BUNDLE_PREFIX));
     for (const path of paths) {
-      const moduleUrl = await server.queryId(path);
-      debugCompiler('queryUrl', path, moduleUrl);
-      if (moduleUrl) {
-        aliasMap.set(path, moduleUrl);
+      const moduleId = await server.queryId(path);
+      if (moduleId) {
+        idMapByFullPath.set(path, moduleId);
       } else {
         const err = new Error(`not found module: "${path}"`)
         err.name = 'CompileError';
@@ -106,7 +94,7 @@ export class Compiler {
       }
     }
   
-    const generator = new ASTPathCollector(aliasMap);
+    const generator = new BrowserPathCollector(idMapByFullPath);
     const browserProgram = generator.visitProgram(program);
 
     const { code, map } = transformSync(browserProgram, {
