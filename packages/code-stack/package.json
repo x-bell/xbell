@@ -16,7 +16,7 @@
   "dependencies": {
     "debug": "^4.3.4",
     "js-tokens": "^8.0.0",
-    "@xbell/color": "workspace:*"
+    "@xbell/color": "workspace:^"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7"

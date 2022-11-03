@@ -18,7 +18,7 @@
     "vue": "2.x"
   },
   "dependencies": {
-    "xbell": "workspace:*"
+    "xbell": "workspace:^"
   },
   "devDependencies": {
     "vue": "^2.7.13"
