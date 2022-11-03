@@ -1,0 +1,32 @@
+---
+title: Mocking
+---
+
+
+
+## Mocking Modules
+
+**Example**
+
+```typescript title="add.ts"
+export const add = (a: number, b: number) => a + b;
+```
+
+```typescript title="add.test.ts"
+import { test } from 'xbell';
+
+test.browser.mock('./add', async ({ importActual, fn }) => {
+  const { add } = await importActual<typeof import('./add')>('./add')
+  return {
+    add: fn(add),
+  };
+});
+
+test.browser('mocking modules: number', async ({ expect }) => {
+  const { add } = await import('./add');
+  expect(add(1, 1)).toBe(2);
+  expect(add).toHaveBeenCalled();
+  expect(add).toHaveBeenCalledWith(1, 1);
+  expect(add).toHaveReturnedWith(2);
+});
+```
