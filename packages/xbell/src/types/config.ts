@@ -50,6 +50,7 @@ export type XBellProject = {
 export interface XBellBrowserCallback {
   callback: (...args: any) => any;
   filename: string;
+  sortValue: number;
 }
 
 export type XBellRuntimeOptions = Partial<{

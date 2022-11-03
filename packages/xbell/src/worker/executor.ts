@@ -10,6 +10,7 @@ import { join } from 'path';
 import debug from 'debug';
 import { htmlReporter } from '../common/html-reporter';
 import * as url from 'url';
+import { getSortValue } from '../utils/sort';
 
 const __filename = url.fileURLToPath(import.meta.url);
 
@@ -130,8 +131,7 @@ export class Executor {
     });
     const page = await Page.from({
       browserContext,
-      browserCallbacks: [
-        // default setup
+      setupCalbacks: [
         {
           callback: async () => {
             // @ts-ignore
@@ -144,9 +144,10 @@ export class Executor {
             };
           },
           filename: __filename,
+          sortValue: 0,
         },
-        ...(c.runtimeOptions.browserCallbacks || []),  
       ],
+      browserCallbacks: c.runtimeOptions.browserCallbacks || [],
       mocks: c.browserMocks,
       filename: c._testFunctionFilename!,
     });

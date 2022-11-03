@@ -1,6 +1,6 @@
 import { spyOn, fn, expell } from 'expell';
 
-export const importActual = window.__xbell_context__.importActual;
+export const importActual: <T = any>(path: string) => Promise<T> = window.__xbell_context__.importActual;
 
 export const expect = expell;
 export {

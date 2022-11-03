@@ -5,6 +5,7 @@ import { collector } from './collector';
 import { getCallSite } from '../utils/error';
 import debug from 'debug';
 import type { BrowserTestArguments } from '../browser/index';
+import { getSortValue } from '../utils/sort';
 
 const debugStandard = debug('xbell:standard');
 
@@ -185,6 +186,7 @@ export function createBrowserTest<BrowserExtArgs = {}>(
       {
         callback: browserCallback,
         filename: fileURLToPath(callSiteFilename!),
+        sortValue: getSortValue(),
       }
     ]);
   };
@@ -324,6 +326,7 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
       {
         callback: browserCallback,
         filename: fileURLToPath(callSiteFilename),
+        sortValue: getSortValue(),
       }
     ]);
   }

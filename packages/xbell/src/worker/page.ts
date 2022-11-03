@@ -40,7 +40,7 @@ interface EvaluateHandler {
 declare global {
   interface Window {
     __xbell_context__: {
-      importActual(path: string): Promise<any>;
+      importActual<T = any>(path: string): Promise<T>;
       mocks: Map<string, any>;
     }
     __xbell_getImportActualUrl__(path: string): Promise<string>
@@ -53,14 +53,16 @@ export class Page implements XBellPage {
     browserCallbacks,
     mocks,
     filename,
+    setupCalbacks,
   }: {
     browserContext: PWBroContext;
+    setupCalbacks: XBellBrowserCallback[];
     browserCallbacks: XBellBrowserCallback[];
     mocks: XBellMocks;
     filename: string;
   }) {
     const _page = await browserContext.newPage();
-    const page = new Page(_page, browserCallbacks, mocks, filename);
+    const page = new Page(_page, setupCalbacks, browserCallbacks, mocks, filename);
     await page.setup()
     return page;
   }
@@ -68,12 +70,12 @@ export class Page implements XBellPage {
   public keyboard: Keyboard;
 
   public mouse: Mouse;
-  // protected _settingPromise: Promise<void>;
 
   protected _currentFilename: string;
 
   constructor(
     protected _page: PWPage,
+    protected _setupCalbacks: XBellBrowserCallback[],
     protected _browserCallbacks: XBellBrowserCallback[],
     protected _mocks: XBellMocks,
     protected _filename: string,
@@ -115,13 +117,13 @@ export class Page implements XBellPage {
     debugPage('__xbell_context__ done');
   }
 
-  protected async _setupUserContext() {
+  protected async _setEvaluate(callbacks: XBellBrowserCallback[]) {
     let handle: {
       evaluateHandle: PWPage['evaluateHandle']
       evaluate: PWPage['evaluate']
     } = this;
-    debugPage('_setupUserContext_')
-    for (const { filename, callback } of this._browserCallbacks) {
+    debugPage('_setEvaluate', callbacks.length);
+    for (const { filename, callback } of callbacks) {
       this._currentFilename = filename;
       handle = await handle.evaluateHandle(callback);
     }
@@ -154,18 +156,6 @@ export class Page implements XBellPage {
       const url = request.url();
       const urlObj = new URL(url);
       const pathnameWithoutPrefix = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '');
-      // if (url.includes('@vite/client')) {
-      //   route.continue()
-      //   // route.fulfill({
-      //   //     status: 200,
-      //   //     headers: {
-      //   //       'content-type': 'application/javascript'
-      //   //     },
-      //   //     // mock vite hmr, don't throw error
-      //   //     body: 'const createHotContext = () => {}; const removeStyle = () => {}; const updateStyle = () => {}; export { createHotContext, removeStyle, updateStyle };'
-      //   // });
-      //   return;
-      // }
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
       urlObj.port = String(port);
@@ -175,13 +165,10 @@ export class Page implements XBellPage {
       // pre fetch url
       const moduleUrlMapByPath = await workerContext.channel.request('queryModuleUrls', modulePaths);
       const targetModule = moduleUrlMapByPath.find(item => item.url === pathnameWithoutPrefix);
-      debugPage('moduleUrls', moduleUrlMapByPath, urlObj.href);
-      const targetUrl = `${urlObj.pathname + urlObj.search}`.replace(XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX);
-      debugPage('targetModule', targetModule, targetUrl);
       if (targetModule) {
         const factory = this._mocks?.get(targetModule?.path);
-        if (!factory) throw new Error(`The mocking path is "${targetModule.path}" missing factory function`)
-        const obj = await this._page.evaluateHandle(factory);
+        if (!factory) throw new Error(`The mocking path is "${targetModule.path}" missing factory function`);
+        const obj = await this.evaluateHandle(factory);
 
         await obj.evaluate((factoryReturnValue, modulePath) => {
           window.__xbell_context__.mocks.set(modulePath, factoryReturnValue);
@@ -212,23 +199,6 @@ export class Page implements XBellPage {
         });
       }
     });
-
-    // this._page.route((url) => {
-    //   console.log('url function');
-    //   return true;
-    // }, (route) => {
-    //   route.continue();
-    // });
-
-    // this._page.route('/' + XBELL_BUNDLE_PREFIX + '/' + '', (route) => {
-    //   route.fulfill({
-    //     status: 200,
-    //     contentType: 'application/javascript',
-    //     // mock vite hmr, don't throw error
-    //     body: `export cosnt createHotContext = () => {};`
-    //   });
-    // });
-
   }
 
   async _settingGotoRoute(url: string, html: string) {
@@ -256,7 +226,8 @@ export class Page implements XBellPage {
     const ret = await this._page.goto(url, otherOptons);
     if (options?.html) {
       await this._setupXBellContext();
-      await this._setupUserContext();
+      await this._setEvaluate(this._setupCalbacks);
+      await this._setEvaluate(this._browserCallbacks);
     }
 
     return ret;

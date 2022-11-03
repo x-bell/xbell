@@ -65,7 +65,8 @@ export function genLazyPage({
       browserContext,
       browserCallbacks,
       mocks: browserMocks,
-      filename
+      filename,
+      setupCalbacks: [],
     })
     return {
       page: _lazyPage,
