@@ -64,7 +64,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@babel/code-frame": "^7.16.7",
     "@swc/core": "1.2.208",
     "@xbell/code-stack": "workspace:*",
     "@xbell/color": "workspace:*",
@@ -78,15 +77,12 @@
     "istanbul-lib-report": "^3.0.0",
     "istanbul-lib-source-maps": "^4.0.1",
     "istanbul-reports": "^3.1.5",
-    "lodash": "^4.17.21",
     "log-update": "^5.0.1",
-    "pirates": "^4.0.5",
     "pixelmatch": "^5.3.0",
     "playwright-core": "^1.27.0",
     "pngjs": "^6.0.0",
     "reflect-metadata": "^0.1.13",
     "source-map-js": "^1.0.2",
-    "stack-utils": "^2.0.5",
     "strip-ansi": "^7.0.1",
     "vite": "^3.1.8",
     "vite-plugin-istanbul": "^2.9.0"
@@ -98,10 +94,8 @@
     "@types/istanbul-lib-report": "^3.0.0",
     "@types/istanbul-lib-source-maps": "^4.0.1",
     "@types/istanbul-reports": "^3.0.1",
-    "@types/lodash": "^4.14.182",
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",
-    "@types/reflect-metadata": "^0.1.0",
-    "@types/stack-utils": "^2.0.1"
+    "@types/reflect-metadata": "^0.1.0"
   }
 }
