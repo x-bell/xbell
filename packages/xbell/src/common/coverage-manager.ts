@@ -41,7 +41,7 @@ class CoverageManager {
     types.forEach((type) => {
       const options =  {
         skipFull: undefined,
-        projectRoot: process.cwd(),
+        projectRoot: pathManager.projectDir,
       };
       reports.create(type, options).execute(context);
     })

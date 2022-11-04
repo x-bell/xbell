@@ -11,6 +11,7 @@ import { printer } from './printer';
 import { prompter } from '../prompter';
 import { workerPool } from './worker-pool';
 import { htmlReporter } from '../common/html-reporter';
+import { pathManager } from '../common/path-manager';
 
 class XBell {
   async setup() {
@@ -37,7 +38,7 @@ class XBell {
 
   async findTestFiles() {
     const { globalConfig } = configurator;
-    const testDir = process.cwd();
+    const testDir = pathManager.projectDir;
     const testFiles = glob.sync(
       globalConfig.include,
       {

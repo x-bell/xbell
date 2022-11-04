@@ -11,6 +11,7 @@ import { isCase, isGroup } from '../utils/is';
 import { recorder } from './recorder';
 import { relative } from 'node:path';
 import { createLogUpdate } from 'log-update';
+import { pathManager } from '../common/path-manager';
 const FOLD_ARROW = '❯';
 
 const log = createLogUpdate(process.stdout);
@@ -160,7 +161,7 @@ class Printer {
   }
 
   getFilename(filepath: string) {
-    const relativePath = filepath.split(process.cwd() + '/').pop()!;
+    const relativePath = filepath.split(pathManager.projectDir + '/').pop()!;
     const paths = relativePath.split('/');
     const filename = paths.pop();
     return color.gray(paths.join('/') + '/') + filename;

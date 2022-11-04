@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import debug from 'debug';
 import { ProcessEnvKeys } from './env';
+import { pathManager } from './path-manager';
 
 const debugConfigurator = debug('xbell:configurator');
 
@@ -73,7 +74,7 @@ export class Configurator implements XBellConfigurator {
 
   protected async loadGlobalConfig(): Promise<Required<XBellConfig>> {
     const cliConfig = this.getCLIConfig();
-    const projectDir = process.cwd();
+    const projectDir = pathManager.projectDir;
     const { XBellConfigFilePaths, XBellDefaultConfig } = Configurator;
     const fullPaths = XBellConfigFilePaths.map(filepath => join(projectDir, filepath))
     const targetConfigFilePath = fullPaths.find((filepath) => existsSync(filepath))

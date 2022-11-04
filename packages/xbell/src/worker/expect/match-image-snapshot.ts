@@ -6,6 +6,7 @@ import pixcelMatch from 'pixelmatch';
 import { PageScreenshotOptions, ElementHandleScreenshotOptions } from '../../types/pw';
 import debug from 'debug';
 import { ensureDir } from '../../utils/fs';
+import { pathManager } from '../../common/path-manager';
 
 const snapshotDebug = debug('xbell:snapshot');
 export interface ToMatchSnapshotOptions {
@@ -71,7 +72,7 @@ export async function _matchImageSnapshot({
   const { maxDiffPixels, maxDiffPixelRatio, name, threshold = 0.2 } = options;
   const messages: string[] = [];
   const snapshotPath = getSnapshotPath({
-    rootDir: process.cwd(),
+    rootDir: pathManager.projectDir,
     imgName: name,
     projectName,
     filepath,

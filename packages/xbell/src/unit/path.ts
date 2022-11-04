@@ -1,8 +1,7 @@
 import * as path from 'path';
-
-const cwd = process.cwd();
+import { pathManager } from '../common/path-manager';
 
 export function getBrowserCaseDirPath(filename: string) {
   const relativePath = path.dirname(path.relative(cwd, filename));
-  return path.join(cwd, '.xbell/unit', relativePath);
+  return path.join(pathManager.projectDir, '.xbell/unit', relativePath);
 }
