@@ -1,28 +1,23 @@
 import * as path from 'node:path';
 import * as url from 'node:url';
-// import { program } from 'commander';
-import type { CommandOptions } from '../types/cli';
-import { program } from '../command';
+import { ProcessEnvKeys } from '../constants/env'
 
-const opts = program.opts<CommandOptions>();
 
 const rootPath = (() => {
-  if (!opts.root) {
+  const root = process.env[ProcessEnvKeys.CLIRoot];
+  if (!root) {
     return process.cwd();
   }
 
-  if (opts.root.startsWith('/')) {
-    return opts.root;
+  if (root.startsWith('/')) {
+    return root;
   }
 
   return path.join(
     process.cwd(),
-    opts.root,
+    root,
   );
 })();
-
-console.log('rootPath', opts, rootPath);
-process.exit(0);
 
 class PathManager {
   projectDir = rootPath;

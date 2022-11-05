@@ -8,7 +8,7 @@ dist
 .DS_Store
 deprecated
 __snapshots__
-coverage
+**/tests/**/coverage
 test-report
 internal
 multi-projects

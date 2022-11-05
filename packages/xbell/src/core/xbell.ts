@@ -29,7 +29,7 @@ class XBell {
     recorder.setStartTime(Date.now());
     const testFiles = await this.findTestFiles()
     if (!testFiles.length) {
-      prompter.displayError('NotFoundTestFiles');
+      prompter.displayError('NotFoundTestFiles', { exit: true });
     } else {
       await scheduler.run(testFiles);
     }

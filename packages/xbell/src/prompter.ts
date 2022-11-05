@@ -1,3 +1,5 @@
+import color from '@xbell/color';
+
 interface XBellErrorTips {
   NotFoundTestFiles: string;
 }
@@ -11,7 +13,9 @@ class Prompter {
 
   displayError(tip: keyof XBellErrorTips, options?: Partial<{ exit: boolean }>) {
     const message = this.tips[tip]
-    console.log('message', message);
+    console.log(
+      color.red(message)
+    );
     if (options?.exit) {
       process.exit(0);
     }

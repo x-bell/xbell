@@ -3,26 +3,9 @@ import process from 'node:process';
 import * as fs from 'node:fs';
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { join, dirname } from 'node:path';
-import { compiler } from "../dist/compiler/compiler.mjs";
+import { compileNodeJSCode } from "../dist/compiler/compile-node.mjs";
 
 process.setSourceMapsEnabled(true);
-
-export async function load(url, context, nextLoad) {
-  if (/\.(tsx|ts)$/.test(url)) {
-    const filePath = fileURLToPath(url);
-    const { code } = await compiler.compileNodeJSCode(
-      fs.readFileSync(filePath, "utf-8"),
-      filePath
-    );
-
-    return {
-      shortCircuit: true,
-      format: 'module',
-      source: code,
-    };
-  }
-  return nextLoad(url, context);
-}
 
 const fileProtocol = 'file://';
 
@@ -84,4 +67,21 @@ export function resolve(specifier, context, nextResolve) {
   }
 
   return nextResolve(specifier, context);
+}
+
+export async function load(url, context, nextLoad) {
+  if (/\.(tsx|ts)$/.test(url)) {
+    const filePath = fileURLToPath(url);
+    const { code } = await compileNodeJSCode(
+      fs.readFileSync(filePath, "utf-8"),
+      filePath
+    );
+
+    return {
+      shortCircuit: true,
+      format: 'module',
+      source: code,
+    };
+  }
+  return nextLoad(url, context);
 }

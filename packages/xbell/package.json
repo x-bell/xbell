@@ -68,6 +68,7 @@
     "@xbell/code-stack": "workspace:^",
     "@xbell/color": "workspace:^",
     "@xbell/reporter": "workspace:^",
+    "@xbell/coverage": "workspace:^",
     "commander": "^9.2.0",
     "debug": "^4.3.4",
     "expell": "workspace:^",
@@ -84,8 +85,7 @@
     "reflect-metadata": "^0.1.13",
     "source-map-js": "^1.0.2",
     "strip-ansi": "^7.0.1",
-    "vite": "^3.1.8",
-    "vite-plugin-istanbul": "^2.9.0"
+    "vite": "^3.1.8"
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.0.3",

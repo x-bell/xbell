@@ -54,7 +54,7 @@ export class ArgumentManager {
   async genCoverage() {
     if (this.page.used && configurator.globalConfig.coverage?.enabled) {
       const coverage = await this.page.evaluate(() => {
-        return window.__coverage__;
+        return window.__xbell_coverage__;
       });
       return coverage;
     }

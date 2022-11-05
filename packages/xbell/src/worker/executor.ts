@@ -178,7 +178,7 @@ export class Executor {
       await page.evaluate(c.testFunction);
       debugExecutor('page.evaluate.end');
       const coverage = coverageConfig?.enabled ? await page.evaluate(() => {
-        return window.__coverage__;
+        return window.__xbell_coverage__;
       }) : undefined;
       const pageResult = await terdown();
       const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;

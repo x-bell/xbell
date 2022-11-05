@@ -7,7 +7,8 @@ import {
   mergeConfig,
   InlineConfig,
 } from 'vite';
-import istanbul from 'vite-plugin-istanbul';
+// import istanbul from 'vite-plugin-istanbul';
+import { viteCoveragePlugin } from '@xbell/coverage';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import type { XBellWorkerQueryModuleUrl } from '../types';
 import { get } from '../utils/http';
@@ -44,10 +45,9 @@ class BrowserBuilder {
         hmr: false,
       },
       plugins: [
-        configurator.globalConfig.coverage?.enabled ? istanbul({
-          exclude: ['node_modules', 'test/'],
+        configurator.globalConfig.coverage?.enabled ? viteCoveragePlugin({
+          exclude: ['node_modules'],
           extension: ['.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs', '.vue'],
-          requireEnv: false,
         }) : undefined,
       ].filter(Boolean),
       build: {
@@ -113,12 +113,6 @@ class BrowserBuilder {
       }
     };
   }
-
-  async test() {
-    const s = await this._server;
-
-  }
-
 }
 
 export const browserBuilder = new BrowserBuilder();

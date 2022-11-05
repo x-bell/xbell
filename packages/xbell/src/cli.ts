@@ -3,9 +3,12 @@ import 'reflect-metadata';
 import { checkDownloadSpeed } from './utils/network';
 // @ts-ignore
 import * as pwServer from 'playwright-core/lib/server';
-import { ProcessEnvKeys } from './common/env';
+import { ProcessEnvKeys } from './constants/env';
 import type { CommandOptions } from './types/cli';
-import { program } from './command';
+import { Command } from 'commander';
+import { VERSION } from './pkg';
+
+const program = new Command();
 
 const BROWSER_SOURCES = [
   'https://cnpmjs.org/mirrors/playwright',
@@ -58,16 +61,15 @@ async function tryToDownlaod1M(sourceUrl: string) {
 
 
 program
+  .version(VERSION)
   .option('--coverage', 'enable coverage report')
-  .option('-r', '--root <path>', 'specifying the root directory')
-  .help();
+  .option('-r, --root <type>', 'specifying the root directory')
 
 program
   .command('run', { isDefault: true })
   .action(async (commandOptions: CommandOptions) => {
     const { xbell } = await import('./core/xbell');
 
-    process.env[ProcessEnvKeys.CLICoverage] = commandOptions.coverage ? String(commandOptions.coverage) : '';
     await xbell.setup();
     await xbell.runTest();
   });
@@ -84,8 +86,10 @@ program
     process.exit(0);
   });
 
-console.log('parse');
-program.parse();
 
+  program.parse(process.argv);
+  
+const cliOpts = program.opts<CommandOptions>();
 
-
+process.env[ProcessEnvKeys.CLICoverage] = cliOpts.coverage ? String(cliOpts.coverage) : '';
+process.env[ProcessEnvKeys.CLIRoot] = cliOpts.root ? cliOpts.root : '';

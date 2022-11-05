@@ -2,7 +2,7 @@ import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig } from '../types'
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import debug from 'debug';
-import { ProcessEnvKeys } from './env';
+import { ProcessEnvKeys } from '../constants/env';
 import { pathManager } from './path-manager';
 
 const debugConfigurator = debug('xbell:configurator');
@@ -12,7 +12,7 @@ interface XBellConfigurator {
   queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig>
 }
 
-function _mergeConfigImp (config1: XBellConfig, config2: XBellConfig): XBellConfig {
+function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfig {
   return {
     ...config1,
     ...config2,

@@ -28,7 +28,7 @@ import { Keyboard } from './keyboard';
 import { Console } from 'node:console';
 import type { XBellMocks } from '../types/test';
 import type { XBellBrowserCallback } from '../types/config';
-import { idToUrl, resolvePath } from '../utils/path';
+import { idToUrl } from '../utils/path';
 
 const debugPage = debug('xbell:page');
 

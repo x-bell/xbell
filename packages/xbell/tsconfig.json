@@ -12,7 +12,9 @@
     "strict": true,
     "outDir": "./dist",
     "esModuleInterop": true,
-    "extendedDiagnostics": false
+    "extendedDiagnostics": false,
+    "resolveJsonModule": true,
+    "rootDir": "src"
   },
   "include": [
     "src"
