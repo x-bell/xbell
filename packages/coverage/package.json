@@ -1,0 +1,24 @@
+{
+  "name": "@xbell/coverage",
+  "type": "module",
+  "version": "0.6.0",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "vite": "3.x",
+    "rollup": "~2.78.0"
+  },
+  "dependencies": {
+    "test-exclude": "^6.0.0",
+    "@xbell/color": "workspace:^",
+    "istanbul-lib-instrument": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/istanbul-lib-instrument": "^1.7.4"
+  }
+}

@@ -1,17 +1,11 @@
 import 'reflect-metadata';
-import { Command } from 'commander';
 
 import { checkDownloadSpeed } from './utils/network';
 // @ts-ignore
 import * as pwServer from 'playwright-core/lib/server';
-import { xbell } from './core/xbell';
 import { ProcessEnvKeys } from './common/env';
-const program = new Command();
-
-
-interface CommandOptions {
-  coverage?: boolean;
-}
+import type { CommandOptions } from './types/cli';
+import { program } from './command';
 
 const BROWSER_SOURCES = [
   'https://cnpmjs.org/mirrors/playwright',
@@ -63,14 +57,20 @@ async function tryToDownlaod1M(sourceUrl: string) {
 //   });
 
 
-  program
-    .command('run', { isDefault: true })
-    .option('--coverage', 'enable coverage report')
-    .action(async (commandOptions: CommandOptions) => {
-      process.env[ProcessEnvKeys.CLICoverage] = commandOptions.coverage ? String(commandOptions.coverage) : '';
-      await xbell.setup();
-      await xbell.runTest();
-    });
+program
+  .option('--coverage', 'enable coverage report')
+  .option('-r', '--root <path>', 'specifying the root directory')
+  .help();
+
+program
+  .command('run', { isDefault: true })
+  .action(async (commandOptions: CommandOptions) => {
+    const { xbell } = await import('./core/xbell');
+
+    process.env[ProcessEnvKeys.CLICoverage] = commandOptions.coverage ? String(commandOptions.coverage) : '';
+    await xbell.setup();
+    await xbell.runTest();
+  });
 
 program
   .command('install [browser...]')
@@ -84,5 +84,8 @@ program
     process.exit(0);
   });
 
-
+console.log('parse');
 program.parse();
+
+
+
