@@ -3,20 +3,12 @@ import type { ExistingRawSourceMap } from 'rollup';
 import { createInstrumenter } from 'istanbul-lib-instrument';
 // @ts-expect-error missing types
 import TestExclude from 'test-exclude';
-
+import { CoverageOptions } from './types';
+import { DEFAULT_EXCLUDE, DEFAULT_EXTENSION } from './config';
 declare global {
   var __xbell_coverage__: any;
 }
 
-export interface IstanbulPluginOptions {
-  include?: string | string[];
-  exclude?: string | string[];
-  extension?: string | string[];
-  cwd?: string;
-  enabled?: boolean;
-}
-
-const DEFAULT_EXTENSION = ['.js', '.cjs', '.mjs', '.ts', '.tsx', '.jsx', '.vue'];
 const PLUGIN_NAME = 'vite:xbell-istanbul';
 const MODULE_PREFIX = '/@modules/';
 const NULL_STRING = '\0';
@@ -27,7 +19,7 @@ function sanitizeSourceMap(rawSourceMap: ExistingRawSourceMap): ExistingRawSourc
   return JSON.parse(JSON.stringify(sourceMap));
 }
 
-function createTestExclude(opts: IstanbulPluginOptions): TestExclude {
+function createTestExclude(opts: CoverageOptions): TestExclude {
   const { include, exclude, extension } = opts;
   const cwd = opts.cwd ?? process.cwd();
 
@@ -36,13 +28,13 @@ function createTestExclude(opts: IstanbulPluginOptions): TestExclude {
   return new TestExclude({
     cwd,
     include: include,
-    exclude: exclude,
+    exclude: exclude ?? DEFAULT_EXCLUDE,
     extension: extension ?? DEFAULT_EXTENSION,
     excludeNodeModules: true,
   });
 }
 
-export function viteCoveragePlugin(opts: IstanbulPluginOptions = {}): Plugin {
+export function viteCoveragePlugin(opts: CoverageOptions = {}): Plugin {
   const testExclude = createTestExclude(opts);
   const instrumenter = createInstrumenter({
     coverageVariable: XBELL_COVERAGE_NAME,

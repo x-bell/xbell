@@ -7,7 +7,6 @@ import {
   mergeConfig,
   InlineConfig,
 } from 'vite';
-// import istanbul from 'vite-plugin-istanbul';
 import { viteCoveragePlugin } from '@xbell/coverage';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import type { XBellWorkerQueryModuleUrl } from '../types';
