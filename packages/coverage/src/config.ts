@@ -5,5 +5,5 @@ export const DEFAULT_EXCLUDE = [
   '**/dist/**',
   '**/cypress/**',
   '**/.{idea,git,cache,output,temp}/**',
-  '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress}.config.*'
+  '**/{xbell,playwright,karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress}.config.*'
 ];

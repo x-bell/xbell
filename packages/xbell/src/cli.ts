@@ -63,10 +63,10 @@ async function tryToDownlaod1M(sourceUrl: string) {
 program
   .version(VERSION)
   .option('--coverage', 'enable coverage report')
-  .option('-r, --root <type>', 'specifying the root directory')
+  .option('-r, --root <path>', 'specifying the root directory')
 
 program
-  .command('run [...filters]', { isDefault: true })
+  .command('run [filters...]', { isDefault: true })
   .action(async (filters: string[], commandOptions: CommandOptions) => {
     const { xbell } = await import('./core/xbell');
 

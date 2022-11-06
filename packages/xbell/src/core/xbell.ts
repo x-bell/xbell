@@ -30,13 +30,13 @@ class XBell {
     let testFiles = await this.findTestFiles();
 
     if (filters?.length) {
-      testFiles = testFiles.filter(filename => filters.some(filter => filename.includes(filter)));
+      testFiles = testFiles.filter(({ relativeFilepath }) => filters.some(filter => relativeFilepath.includes(filter)));
     }
 
     if (!testFiles.length) {
       prompter.displayError('NotFoundTestFiles', { exit: true });
     } else {
-      await scheduler.run(testFiles);
+      await scheduler.run(testFiles.map(item => item.absoluteFileath));
     }
   }
 
@@ -49,7 +49,10 @@ class XBell {
         cwd: testDir,
         ignore: globalConfig.exclude,
       }
-    ).map(relativeFilepath => join(testDir, relativeFilepath));
+    ).map(relativeFilepath => ({
+      absoluteFileath: join(testDir, relativeFilepath),
+      relativeFilepath
+    }));
 
     return testFiles;
   }
