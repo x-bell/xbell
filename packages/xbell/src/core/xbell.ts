@@ -25,15 +25,19 @@ class XBell {
     });
   }
 
-  async runTest() {
+  async runTest(filters?: string[]) {
     recorder.setStartTime(Date.now());
-    const testFiles = await this.findTestFiles()
+    let testFiles = await this.findTestFiles();
+
+    if (filters?.length) {
+      testFiles = testFiles.filter(filename => filters.some(filter => filename.includes(filter)));
+    }
+
     if (!testFiles.length) {
       prompter.displayError('NotFoundTestFiles', { exit: true });
     } else {
       await scheduler.run(testFiles);
     }
-
   }
 
   async findTestFiles() {

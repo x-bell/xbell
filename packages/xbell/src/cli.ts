@@ -66,12 +66,12 @@ program
   .option('-r, --root <type>', 'specifying the root directory')
 
 program
-  .command('run', { isDefault: true })
-  .action(async (commandOptions: CommandOptions) => {
+  .command('run [...filters]', { isDefault: true })
+  .action(async (filters: string[], commandOptions: CommandOptions) => {
     const { xbell } = await import('./core/xbell');
 
     await xbell.setup();
-    await xbell.runTest();
+    await xbell.runTest(filters);
   });
 
 program
