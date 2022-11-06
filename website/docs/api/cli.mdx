@@ -2,17 +2,35 @@
 title: CLI
 ---
 
-## `xbell`
+## xbell
 
-Run testing
+Run XBell test in the current directory.
 
-## `xbell install browser`
+```bash
+$ xbell
+```
 
-Install browser
+If you want to specify certain test files to run, you can pass the filename to the CLI.
+
+```bash
+$ xbell example.test.ts
+# or
+$ xbell example
+```
+
+## xbell install browser
+
+XBell will not download the browser by default, if you need browser testing, you can use the CLI command to install.
+
+```bash
+$ xbell install browser
+```
 
 ## Options
 
 |  Options   | Description  |
 |  ----  | ----  |
+| [filters] | Filter files |
+| -r, --root &lt;path&gt; | Specifying the root directory |
 | --coverage  | Enable coverage report |
 

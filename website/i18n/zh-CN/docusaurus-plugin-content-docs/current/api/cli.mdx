@@ -2,16 +2,36 @@
 title: CLI
 ---
 
-## `xbell`
+## xbell
 
-运行测试
+在当前目录下运行 XBell。
 
-## `xbell install browser`
 
-安装浏览器
+```bash
+$ xbell
+```
+
+如果您想指定要运行的某些测试文件，您可以将文件名传递给CLI。
+
+```bash
+$ xbell example.test.ts
+# or
+$ xbell example
+```
+
+## xbell install browser
+
+XBell默认不会下载浏览器，如果需要测试浏览器，可以使用CLI命令安装。
+
+```bash
+$ xbell install browser
+```
 
 ## 选项
 
 |  选项   | 描述  |
 |  ----  | ----  |
+| [filenames] | 指定文件名 |
+| -r, --root &lt;path&gt; | 指定根目录 |
 | --coverage  | 开启覆盖率输出 |
+
