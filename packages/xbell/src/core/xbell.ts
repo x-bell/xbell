@@ -23,6 +23,8 @@ class XBell {
     recorder.subscribe((records) => {
       printer.print(records);
     });
+
+    await configurator.runConfigSetup();
   }
 
   async runTest(filters?: string[]) {

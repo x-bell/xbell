@@ -1,6 +1,6 @@
-import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig } from '../types';
+import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig, XBellConfigRequired } from '../types';
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import * as path from 'node:path';
 import debug from 'debug';
 import { ProcessEnvKeys } from '../constants/env';
 import { pathManager } from './path-manager';
@@ -45,7 +45,7 @@ export class Configurator implements XBellConfigurator {
     devServer: {},
   };
 
-  static XBellDefaultConfig: Required<XBellConfig> = {
+  static XBellDefaultConfig: XBellConfigRequired = {
     projects: [
       { name: '' }
     ],
@@ -76,7 +76,7 @@ export class Configurator implements XBellConfigurator {
     const cliConfig = this.getCLIConfig();
     const projectDir = pathManager.projectDir;
     const { XBellConfigFilePaths, XBellDefaultConfig } = Configurator;
-    const fullPaths = XBellConfigFilePaths.map(filepath => join(projectDir, filepath))
+    const fullPaths = XBellConfigFilePaths.map(filepath => path.join(projectDir, filepath))
     const targetConfigFilePath = fullPaths.find((filepath) => existsSync(filepath))
     if (!targetConfigFilePath) {
       return mergeConfig(XBellDefaultConfig, cliConfig) as Required<XBellConfig>;
@@ -101,6 +101,28 @@ export class Configurator implements XBellConfigurator {
   public async queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig> {
     const globalConfig = await this.globalConfig;
     return mergeConfig(globalConfig, caseConfig);
+  }
+
+  public async runConfigSetup() {
+    const setup = this.globalConfig.setup;
+    if (typeof setup === 'function') {
+      await this.runSetupCallback(setup);
+    } else if (typeof setup === 'string') {
+      await this.runSetupFiles([setup]);
+    } else if (Array.isArray(setup)) {
+      await this.runSetupFiles(setup);
+    }
+  }
+
+  protected async runSetupFiles(files: string[]) {
+    for (const file of files) {
+      const fullpath = file.startsWith('.') ? path.join(pathManager.projectDir, file) : file;
+      await import(fullpath)
+    }
+  }
+
+  protected async runSetupCallback(callback: Function) {
+    await callback();
   }
 }
 

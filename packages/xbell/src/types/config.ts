@@ -9,7 +9,7 @@ export interface XBellBrowserConfig {
   viewport?: {
     width: number;
     height: number;
-  },
+  };
   /** browser dev server */
   devServer?: {
     viteConfig?: UserConfigExport;
@@ -17,6 +17,10 @@ export interface XBellBrowserConfig {
 }
 
 export interface XBellConfig {
+  /** setup */
+  setup?: string[] | string | (() => Promise<void> | void);
+  /** teardown */
+  teardown?: string[] | string | (() => Promise<void> | void);
   /** browser config */
   browser?: XBellBrowserConfig;
   /** projects */
@@ -35,6 +39,9 @@ export interface XBellConfig {
     enabled?: boolean;
   }
 }
+
+export type XBellConfigRequired = Required<Omit<XBellConfig, 'setup' | 'teardown'>>;
+
 
 export type XBellTaskConfig = Partial<
   Pick<
