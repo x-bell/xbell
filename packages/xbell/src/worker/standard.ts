@@ -164,7 +164,7 @@ export function createBrowserTest<BrowserExtArgs = {}>(
   }
 
   browser.mock = (mockPath: string, factory) => {
-    if (mockPath.includes('.')) {
+    if (mockPath.startsWith('.')) {
       const callSite = getCallSite();
       const callSiteFilename = callSite[1].getFileName()!;
       mockPath = path.join(
@@ -332,7 +332,7 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
   }
 
   test.mock = (mockPath: string, factory) => {
-    if (mockPath.includes('.')) {
+    if (mockPath.startsWith('.')) {
       const callSite = getCallSite();
       const callSiteFilename = callSite[1]!.getFileName()!;
       if (callSiteFilename) {
