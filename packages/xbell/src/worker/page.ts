@@ -29,6 +29,7 @@ import { Console } from 'node:console';
 import type { XBellMocks } from '../types/test';
 import type { XBellBrowserCallback } from '../types/config';
 import { idToUrl } from '../utils/path';
+import { BrowserContext } from '../types/browser-context';
 
 const debugPage = debug('xbell:page');
 
@@ -43,7 +44,8 @@ declare global {
       importActual<T = any>(path: string): Promise<T>;
       mocks: Map<string, any>;
     }
-    __xbell_getImportActualUrl__(path: string): Promise<string>
+    __xbell_getImportActualUrl__(path: string): Promise<string>;
+    __xbell_page__: any;
   }
 }
 
@@ -102,6 +104,7 @@ export class Page implements XBellPage {
 
       return idToUrl(id, XBELL_ACTUAL_BUNDLE_PREFIX);
     });
+
     await this._page.evaluate(() => {
       window.__xbell_context__ = {
         mocks: new Map(),
@@ -264,6 +267,10 @@ export class Page implements XBellPage {
   async queryByTestId(testId: string): Promise<ElementHandle | null> {
     const elmentHandle = await this._page.$(`data-testid=${testId}`);
     return elmentHandle ? new ElementHandle(elmentHandle) : null;
+  }
+
+  context(): BrowserContext {
+    return this._page.context();
   }
 
   close() {

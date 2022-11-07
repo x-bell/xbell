@@ -12,6 +12,7 @@ import type { XBellLocator } from './locator';
 import type { XBellElementHandle } from './element-handle';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
+import type { BrowserContext } from './browser-context';
 
 export interface XBellPage<BrowserExtensionArg = {}> {
   evaluate<R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, arg?: Args): Promise<R>;
@@ -41,4 +42,5 @@ export interface XBellPage<BrowserExtensionArg = {}> {
   keyboard: Keyboard;
   mouse: Mouse;
   video(): Promise<Video | null>;
+  context(): BrowserContext;
 }
