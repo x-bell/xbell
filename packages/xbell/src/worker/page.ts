@@ -6,7 +6,7 @@ import type {
 } from 'playwright-core';
 
 import type {
-  XBellPage,
+  Page as PageInterface,
 } from '../types/page';
 
 import type {
@@ -49,7 +49,7 @@ declare global {
   }
 }
 
-export class Page implements XBellPage {
+export class Page implements PageInterface {
   static async from({
     browserContext,
     browserCallbacks,

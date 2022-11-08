@@ -14,9 +14,9 @@ import type {
   Request,
 } from './pw';
 
-import type { XBellElementHandle } from './element-handle';
+import type { ElementHandle } from './element-handle';
 
-export interface XBellLocator {
+export interface Locator {
   focus(options?: TimeoutOptions): Promise<void>
   click(options?: ElementHandleClickOptions): Promise<void>;
   dblclick(options?: ElementHandleDblclickOptions): Promise<void>;
@@ -29,12 +29,12 @@ export interface XBellLocator {
   isHidden(options?: TimeoutOptions): Promise<boolean>;
   boundingBox(options?: TimeoutOptions): Promise<Rect | null>;
   screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
-  getByText(text: string): XBellLocator;
-  getByTestId(testId: string): XBellLocator;
-  getByClass(className: string): XBellLocator;
-  queryByText(text: string): Promise<XBellElementHandle | null>;
-  queryByTestId(testId: string): Promise<XBellElementHandle | null>;
-  queryByClass(className: string): Promise<XBellElementHandle | null>;
+  getByText(text: string): Locator;
+  getByTestId(testId: string): Locator;
+  getByClass(className: string): Locator;
+  queryByText(text: string): Promise<ElementHandle | null>;
+  queryByTestId(testId: string): Promise<ElementHandle | null>;
+  queryByClass(className: string): Promise<ElementHandle | null>;
   setInputFiles(files: string | Array<string> | {
     /**
      * File name

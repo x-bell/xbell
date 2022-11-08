@@ -3,7 +3,7 @@ import type {
 } from 'playwright-core';
 
 import type {
-  XBellElementHandle,
+  ElementHandle as ElementHandleInterface,
 } from '../types';
 
 import type {
@@ -16,7 +16,7 @@ import type {
   ElementHandleScreenshotOptions
 } from '../types/pw'
 
-export class ElementHandle implements XBellElementHandle {
+export class ElementHandle implements ElementHandleInterface {
   constructor(protected _elementHandle: PWElementHandle<SVGElement | HTMLElement>) {
   }
 

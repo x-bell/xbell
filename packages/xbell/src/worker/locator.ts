@@ -4,7 +4,7 @@ import type {
 } from 'playwright-core';
 
 import type {
-  XBellLocator,
+  Locator as LocatorInterface,
 } from '../types/locator';
 
 import type {
@@ -22,7 +22,7 @@ import { ElementHandle } from './element-handle';
 function createElementHandle(e: PWElementHandle<SVGElement | HTMLElement> | null) {
   return e ? new ElementHandle(e) : null;
 }
-export class Locator implements XBellLocator {
+export class Locator implements LocatorInterface {
   constructor(protected _locator: PWLocator) {}
 
   isChecked(options?: TimeoutOptions | undefined): Promise<boolean> {

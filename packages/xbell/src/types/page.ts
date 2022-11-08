@@ -8,25 +8,25 @@ import type {
   PageFunction,
   Video,
 } from './pw';
-import type { XBellLocator } from './locator';
-import type { XBellElementHandle } from './element-handle';
+import type { Locator } from './locator';
+import type { ElementHandle } from './element-handle';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
 
-export interface XBellPage<BrowserExtensionArg = {}> {
+export interface Page<BrowserExtensionArg = {}> {
   evaluate<R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, arg?: Args): Promise<R>;
   evaluateHandle: <R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, args?: Args) => Promise<SmartHandle<R>>;
   close(): Promise<void>;
   goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
   screenshot(options?: PageScreenshotOptions): Promise<Buffer>
-  getByText(text: string): XBellLocator;
-  getByTestId(testId: string): XBellLocator;
-  getByClass(className: string): XBellLocator;
-  queryByText(text: string): Promise<XBellElementHandle | null>;
-  queryByTestId(testId: string): Promise<XBellElementHandle | null>;
-  queryByClass(className: string): Promise<XBellElementHandle | null>;
+  getByText(text: string): Locator;
+  getByTestId(testId: string): Locator;
+  getByClass(className: string): Locator;
+  queryByText(text: string): Promise<ElementHandle | null>;
+  queryByTestId(testId: string): Promise<ElementHandle | null>;
+  queryByClass(className: string): Promise<ElementHandle | null>;
   url(): Promise<string>;
   waitForNavigation(options?: {
     timeout?: number;

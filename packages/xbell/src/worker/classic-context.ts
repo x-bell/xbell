@@ -1,7 +1,7 @@
 // import { XBellTestCaseClassic } from '../types/index';
 // import { getMetadataKeys } from '../utils/property';
 // import { MetaDataType } from '../constants/index';
-// import { XBellPage } from '../types';
+// import { Page } from '../types';
 // import { Page } from './page';
 
 
@@ -10,7 +10,7 @@
 //   protected _internalMap = new Map()
 //   constructor(
 //     protected _case: XBellTestCaseClassic,
-//     protected _page: XBellPage<any>,
+//     protected _page: Page<any>,
 //   ) {
 //     this._internalMap.set(Page, this._page);
 //   }

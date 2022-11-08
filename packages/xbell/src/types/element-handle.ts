@@ -14,7 +14,7 @@ import type {
   Request,
 } from './pw';
 
-export interface XBellElementHandle {
+export interface ElementHandle {
   focus(): Promise<void>
   click(options?: ElementHandleClickOptions): Promise<void>;
   dblclick(options?: ElementHandleDblclickOptions): Promise<void>;

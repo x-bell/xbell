@@ -1,7 +1,7 @@
 import type { fn, spyOn } from 'expell';
 import type { XBellTaskConfig, XBellRuntimeOptions, XBellProject } from './config';
 import type { Expect } from '../worker/expect/expect';
-import type { XBellPage } from './page';
+import type { Page } from './page';
 import type {
   XBellTestCaseStatus,
   XBellError,
@@ -144,7 +144,7 @@ export interface XBellTestGroupFunction {
 }
 
 export interface XBellTestCaseFunctionArguments<BrowserExtensionArg = {}> {
-  page: XBellPage<BrowserExtensionArg>;
+  page: Page<BrowserExtensionArg>;
   project: XBellProject;
   expect: Expect;
   fn: typeof fn;
