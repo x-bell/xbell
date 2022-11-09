@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import color from '@xbell/color';
 import { PNG } from 'pngjs'
+import { Buffer } from 'node:buffer';
 import pixcelMatch from 'pixelmatch';
 import { PageScreenshotOptions, ElementHandleScreenshotOptions } from '../../types/pw';
 import debug from 'debug';
@@ -63,7 +64,7 @@ export async function _matchImageSnapshot({
   projectName,
   filepath,
 }: {
-  buffer: Buffer;
+  buffer: Buffer | Uint8Array;
   options: ToMatchSnapshotOptions;
   projectName?: string;
   filepath: string;
@@ -85,7 +86,7 @@ export async function _matchImageSnapshot({
     fs.writeFileSync(snapshotPath, buffer)
   } else {
     const originSnatshot = PNG.sync.read(fs.readFileSync(snapshotPath))
-    const currentSnapshot = PNG.sync.read(buffer)
+    const currentSnapshot = PNG.sync.read(Buffer.from(buffer))
     const { width, height } = originSnatshot
     const diffPNG = new PNG({ width, height });
     const diff = pixcelMatch(originSnatshot.data, currentSnapshot.data, diffPNG.data, width, height, {

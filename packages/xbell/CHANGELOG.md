@@ -70,7 +70,7 @@
 
 ### Patch Changes
 
-- 362fa38: support queryByClassName queryByTestId queryById queryByPlaceholder
+- 362fa38: support getElementByClassName getElementByTestId queryById queryByPlaceholder
 
 ## 0.2.4
 

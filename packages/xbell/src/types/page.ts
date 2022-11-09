@@ -14,20 +14,23 @@ import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
 
-export interface Page<BrowserExtensionArg = {}> {
+export interface CommonPage {
+  screenshot(options?: PageScreenshotOptions): Promise<Uint8Array>;
+  getByText(text: string): Locator;
+  getByTestId(testId: string): Locator;
+  getByClass(className: string): Locator;
+  getElementByText(text: string): Promise<ElementHandle | null>;
+  getElementByTestId(testId: string): Promise<ElementHandle | null>;
+  getElementByClass(className: string): Promise<ElementHandle | null>;
+  url(): Promise<string>;
+}
+
+export interface Page<BrowserExtensionArg = {}> extends CommonPage {
   evaluate<R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, arg?: Args): Promise<R>;
   evaluateHandle: <R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, args?: Args) => Promise<SmartHandle<R>>;
   close(): Promise<void>;
   goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
-  screenshot(options?: PageScreenshotOptions): Promise<Buffer>
-  getByText(text: string): Locator;
-  getByTestId(testId: string): Locator;
-  getByClass(className: string): Locator;
-  queryByText(text: string): Promise<ElementHandle | null>;
-  queryByTestId(testId: string): Promise<ElementHandle | null>;
-  queryByClass(className: string): Promise<ElementHandle | null>;
-  url(): Promise<string>;
   waitForNavigation(options?: {
     timeout?: number;
     url?: string | RegExp|((url: URL) => boolean);

@@ -5,7 +5,8 @@ import type {
 
 import type {
   Locator as LocatorInterface,
-} from '../types/locator';
+  ElementHandle as ElementHandleInterface
+} from '../types';
 
 import type {
   ElementHandleCheckOptions,
@@ -17,11 +18,9 @@ import type {
   TimeoutOptions,
   ElementHandleScreenshotOptions,
 } from '../types/pw';
-import { ElementHandle } from './element-handle';
+import { createElementHandle } from './element-handle';
 
-function createElementHandle(e: PWElementHandle<SVGElement | HTMLElement> | null) {
-  return e ? new ElementHandle(e) : null;
-}
+
 export class Locator implements LocatorInterface {
   constructor(protected _locator: PWLocator) {}
 
@@ -73,30 +72,30 @@ export class Locator implements LocatorInterface {
     return this._locator.screenshot(options);
   }
   
-  getByText(text: string): Locator {
+  getByText(text: string): LocatorInterface {
     return new Locator(this._locator.locator(`text=${text}`));
   }
 
-  getByTestId(testId: string): Locator {
+  getByTestId(testId: string): LocatorInterface {
     return new Locator(this._locator.locator(`data-testid=${testId}`));
   }
 
-  getByClass(className: string): Locator {
+  getByClass(className: string): LocatorInterface {
     const cls = className.startsWith('.') ? className : `.${className}`;
     return new Locator(this._locator.locator(cls));
   }
   
-  async queryByText(text: string): Promise<ElementHandle | null> {
+  async getElementByText(text: string): Promise<ElementHandleInterface | null> {
     const handle = await this._locator.elementHandle();
     return createElementHandle(await handle?.$(`text=${text}`) ?? null);
   }
 
-  async queryByTestId(testId: string): Promise<ElementHandle | null> {
+  async getElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
     const handle = await this._locator.elementHandle();
     return createElementHandle(await handle?.$(`data-testid=${testId}`) ?? null);
   }
 
-  async queryByClass(className: string): Promise<ElementHandle | null> {
+  async getElementByClass(className: string): Promise<ElementHandleInterface | null> {
     const handle = await this._locator.elementHandle();
     const cls = className.startsWith('.') ? className : `.${className}`;
 

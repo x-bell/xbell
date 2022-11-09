@@ -32,9 +32,9 @@ export interface Locator {
   getByText(text: string): Locator;
   getByTestId(testId: string): Locator;
   getByClass(className: string): Locator;
-  queryByText(text: string): Promise<ElementHandle | null>;
-  queryByTestId(testId: string): Promise<ElementHandle | null>;
-  queryByClass(className: string): Promise<ElementHandle | null>;
+  getElementByText(text: string): Promise<ElementHandle | null>;
+  getElementByTestId(testId: string): Promise<ElementHandle | null>;
+  getElementByClass(className: string): Promise<ElementHandle | null>;
   setInputFiles(files: string | Array<string> | {
     /**
      * File name

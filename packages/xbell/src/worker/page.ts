@@ -7,7 +7,9 @@ import type {
 
 import type {
   Page as PageInterface,
-} from '../types/page';
+  Locator as LocatorInterface,
+  ElementHandle as ElementHandleInterface,
+} from '../types';
 
 import type {
   FrameGotoOptions,
@@ -30,9 +32,14 @@ import type { XBellMocks } from '../types/test';
 import type { XBellBrowserCallback } from '../types/config';
 import { idToUrl } from '../utils/path';
 import { BrowserContext } from '../types/browser-context';
-
+import { QueryItem } from '../browser/types';
 const debugPage = debug('xbell:page');
 
+
+let uuid = 1;
+function genUUID() {
+  return String(uuid++);
+}
 interface EvaluateHandler {
   evaluateHandle: PWPage['evaluateHandle'];
   evaluate: PWPage['evaluate']
@@ -45,8 +52,43 @@ declare global {
       mocks: Map<string, any>;
     }
     __xbell_getImportActualUrl__(path: string): Promise<string>;
-    __xbell_page__: any;
+    __xbell_page_screenshot__(): Promise<number[]>;
+    __xbell_page_url__(): Promise<string>;
+
+    // locator
+    __xbell_page_locator_expose__(queryItems: QueryItem[]): Promise<{
+      uuid: string;
+    }>;
+    __xbell_page_locator_execute__<T extends keyof LocatorInterface>(opts: {
+      uuid: string;
+      method: T;
+      args: Parameters<LocatorInterface[T]>;
+    }): ReturnType<LocatorInterface[T]>;
+
+    // element-handle
+    __xbell_page_element_handle_expose__(queryItems: QueryItem[], uuid?: string): Promise<{
+      uuid: string;
+    } | null>;
+    __xbell_page_element_handle_execute__<T extends keyof ElementHandleInterface>(opts: {
+      uuid: string;
+      method: T;
+      args: Parameters<ElementHandleInterface[T]>;
+    }): ReturnType<ElementHandleInterface[T]>;
   }
+}
+
+function getLocatorByQueryItem(locator: PageInterface | LocatorInterface, { type, value }: QueryItem): LocatorInterface {
+  if (type === 'class') return locator.getByClass(value);
+  if (type === 'testId') return locator.getByTestId(value);
+  // TODO: handle others
+  return locator.getByText(value);
+}
+
+function getElementHandleByQueryItem(locator: PageInterface | LocatorInterface | ElementHandleInterface, { type, value }: QueryItem): Promise<ElementHandleInterface | null> {
+  if (type === 'class') return locator.getElementByText(value);
+  if (type === 'testId') return locator.getElementByTestId(value);
+  // TODO: handle others
+  return locator.getElementByText(value);
 }
 
 export class Page implements PageInterface {
@@ -75,6 +117,10 @@ export class Page implements PageInterface {
 
   protected _currentFilename: string;
 
+  protected _locatorMap: Map<string, LocatorInterface> = new Map();
+
+  protected _elementHandleMap: Map<string, ElementHandleInterface> = new Map();
+
   constructor(
     protected _page: PWPage,
     protected _setupCalbacks: XBellBrowserCallback[],
@@ -91,13 +137,75 @@ export class Page implements PageInterface {
     await this._setting();
   }
 
+  protected async _setupBrowserPage() {
+    await this._page.exposeFunction('__xbell_page_url__', () => {
+      return this._page.url();
+    });
+
+    // locator
+    await this._page.exposeFunction(
+      '__xbell_page_locator_expose__',
+      (queryItems: QueryItem[]): Awaited<ReturnType<typeof window['__xbell_page_locator_expose__']>> => {
+        const [firstQuery, ...rest] = queryItems;
+        const locator = rest.reduce((locator, query) => getLocatorByQueryItem(locator, query), getLocatorByQueryItem(this, firstQuery));
+        const uuid = genUUID();
+        this._locatorMap.set(uuid, locator);
+        return {
+          uuid,
+        };
+      });
+
+    await this._page.exposeFunction(
+      '__xbell_page_locator_execute__',
+      (options: Parameters<typeof window['__xbell_page_locator_execute__']>[0]) => {
+        // TODO: snapshot
+        const { uuid, method, args } = options;
+        const locator = this._locatorMap.get(uuid)!
+        return Reflect.apply(locator[method], locator, args);
+      });
+
+    // element handle
+    await this._page.exposeFunction('__xbell_page_element_handle_expose__', async (queryItems: QueryItem[], uuid?: string): ReturnType<typeof window['__xbell_page_element_handle_expose__']> => {
+      let elementHandle: PageInterface | ElementHandleInterface | null = uuid ? this._elementHandleMap.get(uuid)! : this;
+      // TODO: handle empty array
+      for (const queryItem of queryItems) {
+        if (!elementHandle) break;
+        elementHandle = await getElementHandleByQueryItem(elementHandle, queryItem)
+      }
+
+      if (elementHandle) {
+        const uuid = genUUID();
+        this._elementHandleMap.set(uuid, elementHandle as ElementHandleInterface);
+        return {
+          uuid,
+        };
+      }
+
+      return null;
+    });
+
+    await this._page.exposeFunction(
+      '__xbell_page_element_handle_execute__',
+      (options: Parameters<typeof window['__xbell_page_element_handle_execute__']>[0]) => {
+        // TODO: snapshot
+        const { uuid, method, args } = options;
+        const locator = this._elementHandleMap.get(uuid)!
+        return Reflect.apply(locator[method], locator, args);
+      });
+
+    await this._page.exposeFunction('__xbell_page_screenshot__', async (...args: Parameters<PageInterface['screenshot']>) => {
+      const buffer = await this._page.screenshot(...args)
+      return Array.from(buffer);
+    });
+  }
+
   protected async _setupXBellContext() {
     await this._page.exposeFunction('__xbell_getImportActualUrl__', async (modulePath: string) => {
       const id = await workerContext.channel.request('queryModuleId', {
         modulePath: modulePath,
         importer: this._currentFilename,
       });
-      debugPage('execute.__xbell_getImportActualUrl__', modulePath, this._currentFilename, id);
+      // debugPage('execute.__xbell_getImportActualUrl__', modulePath, this._currentFilename, id);
       if (!id) {
         return null;
       }
@@ -117,7 +225,6 @@ export class Page implements PageInterface {
         },
       };
     });
-    debugPage('__xbell_context__ done');
   }
 
   protected async _setEvaluate(callbacks: XBellBrowserCallback[]) {
@@ -125,7 +232,6 @@ export class Page implements PageInterface {
       evaluateHandle: PWPage['evaluateHandle']
       evaluate: PWPage['evaluate']
     } = this;
-    debugPage('_setEvaluate', callbacks.length);
     for (const { filename, callback } of callbacks) {
       this._currentFilename = filename;
       handle = await handle.evaluateHandle(callback);
@@ -177,7 +283,7 @@ export class Page implements PageInterface {
           window.__xbell_context__.mocks.set(modulePath, factoryReturnValue);
         }, targetModule.path);
         const keys = Array.from((await obj.getProperties()).keys());
-        debugPage('keys', keys);
+        // debugPage('keys', keys);
 
         const exportPropertiesCodes = keys.map((key) => {
           return `export const ${key} = factory["${key}"];`
@@ -204,7 +310,7 @@ export class Page implements PageInterface {
     });
   }
 
-  async _settingGotoRoute(url: string, html: string) {
+  protected async _settingGotoRoute(url: string, html: string) {
     // empty
     const { html: finalHtml } = await workerContext.channel.request('transformHtml', { html, url });
 
@@ -229,6 +335,7 @@ export class Page implements PageInterface {
     const ret = await this._page.goto(url, otherOptons);
     if (options?.html) {
       await this._setupXBellContext();
+      await this._setupBrowserPage();
       await this._setEvaluate(this._setupCalbacks);
       await this._setEvaluate(this._browserCallbacks);
     }
@@ -240,7 +347,7 @@ export class Page implements PageInterface {
     return this._page.goBack();
   }
 
-  getByText(text: string): Locator {
+  getByText(text: string): LocatorInterface {
     return new Locator(this._page.locator(`text=${text}`));
   }
 
@@ -253,18 +360,18 @@ export class Page implements PageInterface {
     return new Locator(this._page.locator(`data-testid=${testId}`));
   }
 
-  async queryByText(text: string): Promise<ElementHandle | null> {
+  async getElementByText(text: string): Promise<ElementHandle | null> {
     const elmentHandle = await this._page.$(`text=${text}`);
     return elmentHandle ? new ElementHandle(elmentHandle) : null;
   }
 
-  async queryByClass(className: string): Promise<ElementHandle | null> {
+  async getElementByClass(className: string): Promise<ElementHandle | null> {
     const cls = className.startsWith('.') ? className : `.${className}`;
     const elmentHandle = await this._page.$(cls);
     return elmentHandle ? new ElementHandle(elmentHandle) : null;
   }
 
-  async queryByTestId(testId: string): Promise<ElementHandle | null> {
+  async getElementByTestId(testId: string): Promise<ElementHandle | null> {
     const elmentHandle = await this._page.$(`data-testid=${testId}`);
     return elmentHandle ? new ElementHandle(elmentHandle) : null;
   }

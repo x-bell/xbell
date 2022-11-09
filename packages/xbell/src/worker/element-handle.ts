@@ -12,13 +12,16 @@ import type {
   ElementHandleDblclickOptions,
   ElementHandleHoverOptions,
   ElementHandleUncheckOptions,
+  ElementHandleScreenshotOptions,
   Rect,
-  ElementHandleScreenshotOptions
 } from '../types/pw'
 
+export function createElementHandle(e: PWElementHandle<SVGElement | HTMLElement> | null) {
+  return e ? new ElementHandle(e) : null;
+}
+
 export class ElementHandle implements ElementHandleInterface {
-  constructor(protected _elementHandle: PWElementHandle<SVGElement | HTMLElement>) {
-  }
+  constructor(protected _elementHandle: PWElementHandle<SVGElement | HTMLElement>) {}
 
   focus(): Promise<void> {
     return this._elementHandle.focus();
@@ -66,5 +69,18 @@ export class ElementHandle implements ElementHandleInterface {
 
   screenshot(options?: ElementHandleScreenshotOptions | undefined): Promise<Buffer> {
     return this._elementHandle.screenshot(options);
+  }
+
+  async getElementByClass(className: string): Promise<ElementHandleInterface | null> {
+    const cls = className.startsWith('.') ? className : `.${className}`;
+    return createElementHandle(await this._elementHandle.$(cls));
+  }
+
+  async getElementByText(text: string): Promise<ElementHandleInterface | null> {
+    return createElementHandle(await this._elementHandle.$(`text=${text}`));
+  }
+
+  async getElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
+    return createElementHandle(await this._elementHandle.$(`text=${testId}`));
   }
 }
