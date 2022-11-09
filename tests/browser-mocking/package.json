@@ -1,0 +1,10 @@
+{
+  "name": "@xbell/test-browser-mocking",
+  "private": true,
+  "dependencies": {
+    "xbell": "workspace:*"
+  },
+  "scripts": {
+    "test": "xbell"
+  }
+}
