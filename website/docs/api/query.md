@@ -4,28 +4,28 @@ sidebar_label: 查询
 
 # 查询
 
-## ctx.page.queryByText
+## ctx.page.getElementByText
 
 **根据文本内容查询**
 
 ```typescript
-await ctx.page.queryByText('xxx').click();
+await ctx.page.getElementByText('xxx').click();
 ```
 
-## ctx.page.queryByTestId
+## ctx.page.getElementByTestId
 
 **根据属性data-testid查询**
 
 ```typescript
-await ctx.page.queryByTestId('xxx').click();
+await ctx.page.getElementByTestId('xxx').click();
 ```
 
-## ctx.page.queryByClass
+## ctx.page.getElementByClass
 
 **根据class查询**
 
 ```typescript
-await ctx.page.queryByClass('xxx').click();
+await ctx.page.getElementByClass('xxx').click();
 ```
 
 ## ctx.page.queryById
@@ -33,5 +33,5 @@ await ctx.page.queryByClass('xxx').click();
 **根据id查询**
 
 ```typescript
-await ctx.page.queryByClass('xxx').click();
+await ctx.page.getElementByClass('xxx').click();
 ```
