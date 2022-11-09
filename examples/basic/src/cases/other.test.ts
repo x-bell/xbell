@@ -13,6 +13,6 @@ export class OtherTestGroup {
   async testSnapshot() {
     const { page, expect } = this.ctx;
     await this.ctx.page.goto('https://x-bell.github.io/xbell/');
-    await expect(page.queryByClass('features_t9lD')).toMatchSnapshot({ name: '功能介绍' });
+    await expect(page.getElementByClass('features_t9lD')).toMatchSnapshot({ name: '功能介绍' });
   }
 }
