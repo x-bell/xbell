@@ -1,3 +1,5 @@
+import { test, expect } from 'xbell';
+
 import { format } from '../src';
 
 function getArgumentsType(..._args: Array<unknown>) {
@@ -22,24 +24,23 @@ const symbolOutput = `{
 }`;
 
 // TODO: use xbell test
-const test = (description: string, cb: Function) => {
-  try {
-    cb();
-  } catch(error: unknown) {
-    console.error(`Case Failed: ${description}\n${error instanceof Error ? error.message: ''}`)
-  }
-}
+// const test = (description: string, cb: Function) => {
+//   try {
+//     cb();
+//   } catch(error: unknown) {
+//     console.error(`Case Failed: ${description}\n${error instanceof Error ? error.message: ''}`)
+//   }
+// }
 
-const expect = (received: string) => {
-  return {
-    toBe(expected: string) {
-      if (received != expected) {
-        throw new Error( `Expected:\n${expected}\nReceived:\n${received}`)
-      }
-    }
-  }
-};
-
+// const expect = (received: string) => {
+//   return {
+//     toBe(expected: string) {
+//       if (received != expected) {
+//         throw new Error( `Expected:\n${expected}\nReceived:\n${received}`)
+//       }
+//     }
+//   }
+// };
 test('bool<true>', () => {
   expect(format(true)).toBe('true');
 });
@@ -77,9 +78,18 @@ test('new function', () => {
   expect(format(new Function())).toBe('[Function anonymous]');
 });
 
+test('callback function', () => {
+  let val;
+  function f(cb: () => void) {
+    val = cb;
+  }
+  f(() => {});
+  expect(format(val)).toBe('[Function anonymous]');
+});
+
 test('arrow function', () => {
   const arrowFun = () => {}
-  expect(format(arrowFun)).toBe('[Function anonymous]');
+  expect(format(arrowFun)).toBe('[Function arrowFun]');
 });
 
 test('function with name', () => {
@@ -256,4 +266,26 @@ test('map with complex key value', () => {
     '}',
   ].join('\n');
   expect(format(map)).toBe(expected);
-})
+});
+
+test('empty set', () => {
+  const val = new Set();
+  expect(format(val)).toBe('Set {}');
+});
+
+test('set with string value', () => {
+  const val = new Set();
+  val.add('value1');
+  val.add('value2');
+  expect(format(val)).toBe('Set {\n  "value1",\n  "value2"\n}');
+});
+
+test('WeakMap', () => {
+  const val = new WeakMap();
+  expect(format(val)).toBe('WeakMap {}');
+});
+
+test('WeakSet', () => {
+  const val = new WeakSet();
+  expect(format(val)).toBe('WeakSet {}');
+});

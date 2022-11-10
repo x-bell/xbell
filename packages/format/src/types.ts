@@ -33,4 +33,3 @@ export interface FormatContext {
   currentIndent: number;
   format(v: any, config: FormatConfig, context: FormatContext): string
 }
-

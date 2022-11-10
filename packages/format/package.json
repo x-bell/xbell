@@ -7,7 +7,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm test && pnpm build",
+    "test": "xbell"
   },
   "devDependencies": {
     "typescript": "^4.6.4",

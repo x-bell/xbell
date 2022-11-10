@@ -100,3 +100,10 @@ export function formatMap<K, V>(v: Map<K, V>, config: FormatConfig, context: For
   }
   return `Map {${_formatObjectEntries(Array.from(v), config, context, ' => ')}}`;
 }
+
+export function formatSet<T>(v: Set<T>, config: FormatConfig, context: FormatContext): string {
+  if (v.size === 0) {
+    return 'Set {}'
+  }
+  return `Set {${_formatArrayItems(Array.from(v), config, context)}}`;
+}

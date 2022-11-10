@@ -38,12 +38,12 @@ export function isSymbol(v: any): v is symbol {
 
 export function isWeakMap<K extends object, V>(v: WeakMap<K, V>): v is WeakMap<K, V>;
 export function isWeakMap(v: any): v is WeakMap<any, any> {
-  return v instanceof WeakMap;
+  return objectToString(v) === '[object WeakMap]';
 }
 
 export function isWeakSet<T extends object>(v: WeakSet<T>): v is WeakSet<T>;
 export function isWeakSet(v: any): v is WeakSet<any> {
-  return v instanceof WeakMap;
+  return objectToString(v) === '[object WeakSet]';
 }
 
 export function isRegExp(v: any): v is RegExp {
@@ -69,6 +69,11 @@ export function isObject(v: any): v is object {
 export function isMap<K, V>(v: Map<K, V>): v is Map<K, V>;
 export function isMap(v: any): v is Map<any, any> {
   return objectToString(v) === '[object Map]';
+}
+
+export function isSet<T extends object>(v: Set<T>): v is Set<T>;
+export function isSet(v: any): v is Set<any> {
+  return objectToString(v) === '[object Set]';
 }
 
 export function isArray(v: any): v is any[] {

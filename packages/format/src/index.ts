@@ -15,6 +15,7 @@ import {
   formatTypedArray,
   formatObject,
   formatMap,
+  formatSet,
 } from './format';
 import {
   isBoolean,
@@ -34,8 +35,9 @@ import {
   isObject,
   isMap,
   isTypedArray,
-  isArray
+  isArray,
 } from './utils/is';
+import { isSet } from 'util/types';
 
 function formatImp(val: any, config: FormatConfig, context: FormatContext): string {
   if (isUndefined(val)) return 'undefined';
@@ -55,6 +57,7 @@ function formatImp(val: any, config: FormatConfig, context: FormatContext): stri
   if (isTypedArray(val)) return formatTypedArray(val, config, context);
   if (isArray(val)) return formatArray(val, config, context);
   if (isMap(val)) return formatMap(val, config, context);
+  if (isSet(val)) return formatSet(val, config, context);
   if (isObject(val)) return formatObject(val, config, context);
   return '';
 }
