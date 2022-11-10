@@ -1,40 +1,38 @@
-import { test, it } from 'node:test';
-import * as assert from 'assert';
-import color from '../dist/index.mjs';
+import { test, expect } from 'xbell';
+import color from '../src/index';
 
 test('support automatic casting to string', () => {
-	assert.equal(color.bold(['foo', 'bar']), '\x1b[1mfoo,bar\x1b[22m');
-	assert.equal(color.green(98_765), '\x1b[32m98765\x1b[39m');
+	expect(color.bold(['foo', 'bar'])).toBe('\x1b[1mfoo,bar\x1b[22m');
+	expect(color.green(98_765)).toBe('\x1b[32m98765\x1b[39m');
 });
 
 test('style string', () => {
-	assert.equal(color.underline('foo'), '\x1b[4mfoo\x1b[24m');
-	assert.equal(color.red('foo'), '\x1b[31mfoo\x1b[39m');
-	assert.equal(color.bgRed('foo'), '\x1b[41mfoo\x1b[49m');
+	expect(color.underline('foo')).toBe('\x1b[4mfoo\x1b[24m');
+	expect(color.red('foo')).toBe('\x1b[31mfoo\x1b[39m');
+	expect(color.bgRed('foo')).toBe('\x1b[41mfoo\x1b[49m');
 });
 
 test('support applying multiple styles at once', () => {
-	assert.equal(color.red.bgGreen.underline('foo'), '\x1b[31m\x1b[42m\x1b[4mfoo\x1b[24m\x1b[49m\x1b[39m');
-	assert.equal(color.underline.red.bgGreen('foo'), '\x1b[4m\x1b[31m\x1b[42mfoo\x1b[49m\x1b[39m\x1b[24m');
+	expect(color.red.bgGreen.underline('foo')).toBe('\x1b[31m\x1b[42m\x1b[4mfoo\x1b[24m\x1b[49m\x1b[39m');
+	expect(color.underline.red.bgGreen('foo')).toBe('\x1b[4m\x1b[31m\x1b[42mfoo\x1b[49m\x1b[39m\x1b[24m');
 });
 
 test('support nesting styles', () => {
-	assert.equal(
-		color.red('foo' + color.underline.bgBlue('bar') + '!'),
+	expect(color.red('foo' + color.underline.bgBlue('bar') + '!')).toBe(
 		'\x1b[31mfoo\x1b[4m\x1b[44mbar\x1b[49m\x1b[24m!\x1b[39m',
 	);
 });
 
 test('support nesting styles of the same type (color, underline, bg)', () => {
 	
-	assert.equal(
-		color.red('a' + color.yellow('b' + color.green('c') + 'b') + 'c'),
+	expect(
+		color.red('a' + color.yellow('b' + color.green('c') + 'b') + 'c')).toBe(
 		'\x1b[31ma\x1b[33mb\x1b[32mc\x1b[33mb\x1b[31mc\x1b[39m',
 	);
 });
 
 test('reset all styles with `.reset()`', () => {
-	assert.equal(color.reset(color.red.bgGreen.underline('foo') + 'foo'), '\x1b[0m\x1b[31m\x1b[42m\x1b[4mfoo\x1b[24m\x1b[49m\x1b[39mfoo\x1b[0m');
+	expect(color.reset(color.red.bgGreen.underline('foo') + 'foo')).toBe('\x1b[0m\x1b[31m\x1b[42m\x1b[4mfoo\x1b[24m\x1b[49m\x1b[39mfoo\x1b[0m');
 });
 
 test('support caching multiple styles', () => {
@@ -42,40 +40,40 @@ test('support caching multiple styles', () => {
 	const redBold = red.bold;
 	const greenBold = green.bold;
 
-	assert.notEqual(red('foo'), green('foo'));
-	assert.notEqual(redBold('bar'), greenBold('bar'));
-	assert.notEqual(green('baz'), greenBold('baz'));
+	expect(red('foo')).not.toBe(green('foo'));
+	expect(redBold('bar')).not.toBe(greenBold('bar'));
+	expect(green('baz')).not.toBe(greenBold('baz'));
 });
 
 test('gray', () => {
-	assert.equal(color.gray('foo'), '\x1b[90mfoo\x1b[39m');
+	expect(color.gray('foo')).toBe('\x1b[90mfoo\x1b[39m');
 });
 
 test('support falsy values', () => {
-	assert.equal(color.red(0), '\x1b[31m0\x1b[39m');
+	expect(color.red(0)).toBe('\x1b[31m0\x1b[39m');
 });
 
 test('keep Function.prototype methods', () => {
-	assert.equal(Reflect.apply(color.gray, null, ['foo']), '\x1b[90mfoo\x1b[39m');
+	expect(Reflect.apply(color.gray, null, ['foo'])).toBe('\x1b[90mfoo\x1b[39m');
 });
 
 test('throws with apply/call/bind', () => {
-	assert.throws(() => {
+	expect(() => {
 		color.reset(color.red.bgGreen.underline.bind(null)('foo') + 'foo');
-	});
+	}).toThrow();
 
-	assert.throws(() => {
+	expect(() => {
 		color.red.blue.black.call(null, '');
-	});
+	}).toThrow();
 
-	assert.throws(() => {
+	expect(() => {
 		color.red.blue.black.apply(null, ['']);
-	});
+	}).toThrow();
 });
 
 
 test('rbg', () => {
-	assert.equal(color.hex('#FF0000')('hello'), '\x1b[38;2;255;0;0mhello\x1b[39m');
+	expect(color.hex('#FF0000')('hello')).toBe('\x1b[38;2;255;0;0mhello\x1b[39m');
 });
 
 

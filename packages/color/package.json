@@ -7,9 +7,9 @@
     "url": "https://github.com/xlianghang"
   },
   "scripts": {
-    "test": "node --test __tests__",
+    "test": "xbell",
     "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
-    "prepublishOnly": "pnpm build && pnpm test"
+    "prepublishOnly": "pnpm test && pnpm build"
   },
   "files": [
     "dist"

@@ -14,6 +14,7 @@
     "deploy": "turbo run deploy && gh-pages -d website/build"
   },
   "devDependencies": {
+    "xbell": "workspace:*",
     "@changesets/cli": "^2.22.0",
     "eslint": "^7.32.0",
     "eslint-config-xbell": "workspace:*",
