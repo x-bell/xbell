@@ -1,10 +1,18 @@
 import { Request, Response } from 'playwright-core';
-import { CommonPage as CommoPage, Locator as LocatorInterface, ElementHandle as ElementHandleInterface } from '../types';
+import { CommonPage, Page as PageInterface, PageMethods, Locator as LocatorInterface, ElementHandle as ElementHandleInterface } from '../types';
 import { FrameGotoOptions, PageFunction, PageScreenshotOptions } from '../types/pw';
 import { Locator } from './locator';
 import { getElementHandle } from './element-handle';
 
-export class Page implements CommoPage {
+export class Page implements CommonPage {
+
+  private async _execute<T extends keyof PageMethods>(method: T, ...args: Parameters<PageMethods[T]>): Promise<ReturnType<PageMethods[T]>> {
+    return window.__xbell_page_execute__({
+      method,
+      args,
+    });
+  }
+
   getByClass(className: string): LocatorInterface {
     return new Locator([{
       type: 'class',
@@ -25,8 +33,6 @@ export class Page implements CommoPage {
       value: text,
     }]);
   }
-
-
   // goto(url: string, options?: FrameGotoOptions | undefined): Promise<Response | null> {
 
   // }
@@ -75,5 +81,9 @@ export class Page implements CommoPage {
 
   url(): Promise<string> {
     return window.__xbell_page_url__();
+  }
+
+  async waitForLoadState(state?: 'load' | 'domcontentloaded' | 'networkidle' | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<void> {
+    return await this._execute('waitForLoadState', state, options);
   }
 }

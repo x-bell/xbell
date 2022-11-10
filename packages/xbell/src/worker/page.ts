@@ -9,6 +9,7 @@ import type {
   Page as PageInterface,
   Locator as LocatorInterface,
   ElementHandle as ElementHandleInterface,
+  PageMethods,
 } from '../types';
 
 import type {
@@ -55,6 +56,10 @@ declare global {
     __xbell_page_screenshot__(): Promise<number[]>;
     __xbell_page_url__(): Promise<string>;
 
+    __xbell_page_execute__<T extends keyof PageMethods>(opts: {
+      method: T;
+      args: Parameters<PageMethods[T]>;
+    }): ReturnType<PageMethods[T]>
     // locator
     __xbell_page_locator_expose__(queryItems: QueryItem[]): Promise<{
       uuid: string;
@@ -138,6 +143,14 @@ export class Page implements PageInterface {
   }
 
   protected async _setupBrowserPage() {
+
+    await this._page.exposeFunction(
+      '__xbell_page_execute__',
+      (options: Parameters<typeof window['__xbell_page_execute__']>[0]): ReturnType<typeof window['__xbell_page_execute__']> => {
+        const { method, args } = options;
+        return Reflect.apply(this[method], this, args);
+      }
+    );
     await this._page.exposeFunction('__xbell_page_url__', () => {
       return this._page.url();
     });
@@ -153,7 +166,8 @@ export class Page implements PageInterface {
         return {
           uuid,
         };
-      });
+      }
+    );
 
     await this._page.exposeFunction(
       '__xbell_page_locator_execute__',
@@ -162,27 +176,31 @@ export class Page implements PageInterface {
         const { uuid, method, args } = options;
         const locator = this._locatorMap.get(uuid)!
         return Reflect.apply(locator[method], locator, args);
-      });
+      }
+    );
 
     // element handle
-    await this._page.exposeFunction('__xbell_page_element_handle_expose__', async (queryItems: QueryItem[], uuid?: string): ReturnType<typeof window['__xbell_page_element_handle_expose__']> => {
-      let elementHandle: PageInterface | ElementHandleInterface | null = uuid ? this._elementHandleMap.get(uuid)! : this;
-      // TODO: handle empty array
-      for (const queryItem of queryItems) {
-        if (!elementHandle) break;
-        elementHandle = await getElementHandleByQueryItem(elementHandle, queryItem)
-      }
+    await this._page.exposeFunction(
+      '__xbell_page_element_handle_expose__',
+      async (queryItems: QueryItem[], uuid?: string): ReturnType<typeof window['__xbell_page_element_handle_expose__']> => {
+        let elementHandle: PageInterface | ElementHandleInterface | null = uuid ? this._elementHandleMap.get(uuid)! : this;
+        // TODO: handle empty array
+        for (const queryItem of queryItems) {
+          if (!elementHandle) break;
+          elementHandle = await getElementHandleByQueryItem(elementHandle, queryItem)
+        }
 
-      if (elementHandle) {
-        const uuid = genUUID();
-        this._elementHandleMap.set(uuid, elementHandle as ElementHandleInterface);
-        return {
-          uuid,
-        };
-      }
+        if (elementHandle) {
+          const uuid = genUUID();
+          this._elementHandleMap.set(uuid, elementHandle as ElementHandleInterface);
+          return {
+            uuid,
+          };
+        }
 
-      return null;
-    });
+        return null;
+      }
+    );
 
     await this._page.exposeFunction(
       '__xbell_page_element_handle_execute__',
@@ -191,7 +209,8 @@ export class Page implements PageInterface {
         const { uuid, method, args } = options;
         const locator = this._elementHandleMap.get(uuid)!
         return Reflect.apply(locator[method], locator, args);
-      });
+      }
+    );
 
     await this._page.exposeFunction('__xbell_page_screenshot__', async (...args: Parameters<PageInterface['screenshot']>) => {
       const buffer = await this._page.screenshot(...args)

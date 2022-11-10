@@ -23,14 +23,16 @@ export interface CommonPage {
   queryElementByTestId(testId: string): Promise<ElementHandle | null>;
   queryElementByClass(className: string): Promise<ElementHandle | null>;
   url(): Promise<string>;
+  waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
 }
 
 export interface Page<BrowserExtensionArg = {}> extends CommonPage {
+  keyboard: Keyboard;
+  mouse: Mouse;
   evaluate<R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, arg?: Args): Promise<R>;
   evaluateHandle: <R, Args>(pageFunction: PageFunction<BrowserExtensionArg & Args, R>, args?: Args) => Promise<SmartHandle<R>>;
   close(): Promise<void>;
   goto(url: string, options?: FrameGotoOptions): Promise<Response | null>;
-  waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
   waitForNavigation(options?: {
     timeout?: number;
     url?: string | RegExp|((url: URL) => boolean);
@@ -42,8 +44,8 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
   waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
     timeout?: number;
   }): Promise<Response>;
-  keyboard: Keyboard;
-  mouse: Mouse;
   video(): Promise<Video | null>;
   context(): BrowserContext;
 }
+
+export type PageMethods = Omit<Page, 'mouse' | 'keyboard'>;
