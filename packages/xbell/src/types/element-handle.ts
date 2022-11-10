@@ -27,7 +27,7 @@ export interface ElementHandle {
   isHidden(): Promise<boolean>;
   boundingBox(): Promise<Rect | null>;
   screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>;
-  getElementByClass(className: string): Promise<ElementHandle | null>;
-  getElementByTestId(testId: string): Promise<ElementHandle | null>;
-  getElementByText(text: string): Promise<ElementHandle | null>;
+  queryElementByClass(className: string): Promise<ElementHandle | null>;
+  queryElementByTestId(testId: string): Promise<ElementHandle | null>;
+  queryElementByText(text: string): Promise<ElementHandle | null>;
 }

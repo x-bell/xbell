@@ -71,16 +71,16 @@ export class ElementHandle implements ElementHandleInterface {
     return this._elementHandle.screenshot(options);
   }
 
-  async getElementByClass(className: string): Promise<ElementHandleInterface | null> {
+  async queryElementByClass(className: string): Promise<ElementHandleInterface | null> {
     const cls = className.startsWith('.') ? className : `.${className}`;
     return createElementHandle(await this._elementHandle.$(cls));
   }
 
-  async getElementByText(text: string): Promise<ElementHandleInterface | null> {
+  async queryElementByText(text: string): Promise<ElementHandleInterface | null> {
     return createElementHandle(await this._elementHandle.$(`text=${text}`));
   }
 
-  async getElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
+  async queryElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
     return createElementHandle(await this._elementHandle.$(`text=${testId}`));
   }
 }

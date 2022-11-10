@@ -72,21 +72,21 @@ export class ElementHandle implements ElementHandleInterface {
     return await this._execute('isVisible');    
   }
 
-  getElementByClass(className: string): Promise<ElementHandleInterface | null> {
+  queryElementByClass(className: string): Promise<ElementHandleInterface | null> {
     return getElementHandle([{
       type: 'class',
       value: className,
     }], this._uuid);
   }
 
-  getElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
+  queryElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
     return getElementHandle([{
       type: 'testId',
       value: testId,
     }], this._uuid);
   }
 
-  getElementByText(text: string): Promise<ElementHandleInterface | null> {
+  queryElementByText(text: string): Promise<ElementHandleInterface | null> {
     return getElementHandle([{
       type: 'text',
       value: text,

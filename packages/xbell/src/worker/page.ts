@@ -85,10 +85,10 @@ function getLocatorByQueryItem(locator: PageInterface | LocatorInterface, { type
 }
 
 function getElementHandleByQueryItem(locator: PageInterface | LocatorInterface | ElementHandleInterface, { type, value }: QueryItem): Promise<ElementHandleInterface | null> {
-  if (type === 'class') return locator.getElementByText(value);
-  if (type === 'testId') return locator.getElementByTestId(value);
+  if (type === 'class') return locator.queryElementByText(value);
+  if (type === 'testId') return locator.queryElementByTestId(value);
   // TODO: handle others
-  return locator.getElementByText(value);
+  return locator.queryElementByText(value);
 }
 
 export class Page implements PageInterface {
@@ -360,18 +360,18 @@ export class Page implements PageInterface {
     return new Locator(this._page.locator(`data-testid=${testId}`));
   }
 
-  async getElementByText(text: string): Promise<ElementHandle | null> {
+  async queryElementByText(text: string): Promise<ElementHandle | null> {
     const elmentHandle = await this._page.$(`text=${text}`);
     return elmentHandle ? new ElementHandle(elmentHandle) : null;
   }
 
-  async getElementByClass(className: string): Promise<ElementHandle | null> {
+  async queryElementByClass(className: string): Promise<ElementHandle | null> {
     const cls = className.startsWith('.') ? className : `.${className}`;
     const elmentHandle = await this._page.$(cls);
     return elmentHandle ? new ElementHandle(elmentHandle) : null;
   }
 
-  async getElementByTestId(testId: string): Promise<ElementHandle | null> {
+  async queryElementByTestId(testId: string): Promise<ElementHandle | null> {
     const elmentHandle = await this._page.$(`data-testid=${testId}`);
     return elmentHandle ? new ElementHandle(elmentHandle) : null;
   }

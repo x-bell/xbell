@@ -52,21 +52,21 @@ export class Page implements CommoPage {
     
   // }
 
-  getElementByClass(className: string): Promise<ElementHandleInterface | null> {
+  queryElementByClass(className: string): Promise<ElementHandleInterface | null> {
     return getElementHandle([{
       type: 'class',
       value: className,
     }]);
   }
 
-  getElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
+  queryElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
     return getElementHandle([{
       type: 'testId',
       value: testId,
     }]);
   }
 
-  getElementByText(text: string): Promise<ElementHandleInterface | null> {
+  queryElementByText(text: string): Promise<ElementHandleInterface | null> {
     return getElementHandle([{
       type: 'text',
       value: text,

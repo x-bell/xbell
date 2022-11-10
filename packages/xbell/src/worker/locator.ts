@@ -85,17 +85,17 @@ export class Locator implements LocatorInterface {
     return new Locator(this._locator.locator(cls));
   }
   
-  async getElementByText(text: string): Promise<ElementHandleInterface | null> {
+  async queryElementByText(text: string): Promise<ElementHandleInterface | null> {
     const handle = await this._locator.elementHandle();
     return createElementHandle(await handle?.$(`text=${text}`) ?? null);
   }
 
-  async getElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
+  async queryElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
     const handle = await this._locator.elementHandle();
     return createElementHandle(await handle?.$(`data-testid=${testId}`) ?? null);
   }
 
-  async getElementByClass(className: string): Promise<ElementHandleInterface | null> {
+  async queryElementByClass(className: string): Promise<ElementHandleInterface | null> {
     const handle = await this._locator.elementHandle();
     const cls = className.startsWith('.') ? className : `.${className}`;
 

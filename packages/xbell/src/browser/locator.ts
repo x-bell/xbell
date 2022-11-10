@@ -43,15 +43,15 @@ export class Locator implements LocatorInterface {
     return new Locator(this.appendQueryItem('testId', testId));
   }
 
-  async getElementByClass(className: string): Promise<ElementHandleInterface | null> {
+  async queryElementByClass(className: string): Promise<ElementHandleInterface | null> {
     return getElementHandle(this.appendQueryItem('class', className));
   }
 
-  async getElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
+  async queryElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
     return getElementHandle(this.appendQueryItem('testId', testId));
   }
 
-  async getElementByText(text: string): Promise<ElementHandleInterface | null> {
+  async queryElementByText(text: string): Promise<ElementHandleInterface | null> {
     return getElementHandle(this.appendQueryItem('text', text));
   }
 
