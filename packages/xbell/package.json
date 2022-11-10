@@ -66,17 +66,16 @@
   "dependencies": {
     "@xbell/code-stack": "workspace:^",
     "@xbell/color": "workspace:^",
-    "@xbell/reporter": "workspace:^",
     "@xbell/coverage": "workspace:^",
+    "@xbell/reporter": "workspace:^",
+    "@xbell/snapshot": "workspace:^",
     "@swc/core": "1.2.208", 
     "commander": "^9.2.0",
     "debug": "^4.3.4",
     "expell": "workspace:^",
     "fast-glob": "^3.2.11",
     "log-update": "^5.0.1",
-    "pixelmatch": "^5.3.0",
     "playwright-core": "^1.27.0",
-    "pngjs": "^6.0.0",
     "reflect-metadata": "^0.1.13",
     "source-map-js": "^1.0.2",
     "strip-ansi": "^7.0.1",
@@ -84,8 +83,6 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/pixelmatch": "^5.2.4",
-    "@types/pngjs": "^6.0.1",
     "@types/reflect-metadata": "^0.1.0"
   }
 }

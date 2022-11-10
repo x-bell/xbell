@@ -4,7 +4,7 @@ import color from '@xbell/color';
 import { format } from '@xbell/format';
 import { ensureDir, getSnapshotFilePath } from './utils';
 
-export interface ToMatchJavaScriptSnapshot {
+export interface ToMatchJavaScriptSnapshotOptions {
   /**
    * js file name
    */
@@ -34,19 +34,19 @@ export function getJSContent(filepath: string) {
 // TODO: write diff.js.snap
 export function matchJavaScriptSnapshot({
   value,
-  name,
+  options,
   filepath,
   projectName
 }: {
   value: any;
-  name: string;
+  options: ToMatchJavaScriptSnapshotOptions;
   filepath: string;
   projectName?: string;
 }) {
   const { filepath: snapshotPath, newFilepath, diffFilepath } = getSnapshotFilePath({
     projectName,
     filepath,
-    name,
+    name: options.name,
     type: 'js',
   });
 
@@ -67,7 +67,7 @@ export function matchJavaScriptSnapshot({
           color.red('Received: ') + color.red.underline(newFilepath),
           color.yellow('    Diff: ') + color.yellow.underline(diffFilepath)
         ].join('\n'),
-      }
+      };
     }
   } else {
     const dirPath = path.dirname(snapshotPath);
@@ -75,4 +75,8 @@ export function matchJavaScriptSnapshot({
     writeSnapshot(snapshotPath, jsContent);
   }
 
+  return {
+    pass: true,
+    message: () => '',
+  };
 }

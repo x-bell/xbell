@@ -17,7 +17,7 @@ class Prompter {
       color.red(message)
     );
     if (options?.exit) {
-      process.exit(0);
+      process.exit(1);
     }
   }
 }
