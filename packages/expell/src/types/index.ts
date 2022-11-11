@@ -1,9 +1,9 @@
 export {
-  Expell,
-  ExpellMatcher,
-  ExpellMatchObject,
-  ExpellMatchResult,
-  ExpellMatchState,
-  ExpellMatchPromiseFunction,
-  ExpellMatchFunction
-} from './expell'
+  Expect,
+  ExpectMatcher,
+  ExpectMatchObject,
+  ExpectMatchResult,
+  ExpectMatchState,
+  ExpectMatchPromiseFunction,
+  ExpectMatchFunction
+} from './expect'

@@ -1,10 +1,10 @@
-// import type { ExpellMatchPromiseFunction, ExpellMatchFunction  } from '../types';
+// import type { ExpectMatchPromiseFunction, ExpectMatchFunction  } from '../types';
 import type { Mock } from '../spy';
-import { defineMatcher } from '../expell';
+import { defineMatcher } from '../expect';
 import { getAssertionMessage } from '../message';
 import { equals, iterableEquality } from '../equal';
 
-// interface ExpellFunctionAssertion {
+// interface ExpectFunctionAssertion {
 //   // functions
 //   toHaveBeenCalled(): any;
 //   toHaveBeenCalledTimes(times: number): any;

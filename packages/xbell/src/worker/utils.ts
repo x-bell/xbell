@@ -1,4 +1,4 @@
 export {
   spyOn,
   fn
-} from 'expell';
+} from '@xbell/assert';

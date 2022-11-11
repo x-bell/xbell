@@ -1,13 +1,13 @@
 import { format } from '@xbell/format';
-import { defineMatcher } from '../expell';
+import { defineMatcher } from '../expect';
 import { getAssertionMessage, getMatcherMessage } from '../message';
-import { ExpellMatchFunction, ExpellMatchPromiseFunction } from '../types';
+import { ExpectMatchFunction, ExpectMatchPromiseFunction } from '../types';
 import { getConstructorName } from '../proto';
 import { equals, iterableEquality, typeEquality, sparseArrayEquality, arrayBufferEquality } from '../equal';
 import { isPromise } from 'util/types';
 
-interface ExpellAnyAssertion {
-  // not: ExpellAssertion<T>
+interface ExpectAnyAssertion {
+  // not: ExpectAssertion<T>
   toBe(expected: any): void;
   toHaveProperty(property: string | string[], value?: unknown): void;
   toBeDefined(): void;

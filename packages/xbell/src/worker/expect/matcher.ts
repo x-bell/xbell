@@ -1,36 +1,57 @@
 import type { ToMatchImageSnapshotOptions, ToMatchJavaScriptSnapshotOptions } from '@xbell/snapshot';
 import type { Locator, ElementHandle, Page } from '../../types';
+import type { TimeoutOptions } from '../../types/pw';
 import { matchImageSnapshot, matchJavaScriptSnapshot } from '@xbell/snapshot';
-import { defineMatcher } from 'expell';
+import { defineMatcher, getAssertionMessage } from '@xbell/assert';
 import { stateManager } from '../state-manager';
 
 export const elementMatcher = defineMatcher({
-  async toBeChecked(received: Locator | ElementHandle) {
-    const pass = await received.isChecked();
+  async toBeChecked(received: Locator | ElementHandle, options?: TimeoutOptions) {
+    const pass = await received.isChecked(options);
     return {
       pass,
-      message: ({ not }) => ``,
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toBeChecked',
+        ignoreExpected: true,
+        // additionalMessage: '',
+      })
     };
   },
-  async toBeDisabled(received: Locator | ElementHandle) {
-    const pass = await received.isDisabled();
+  async toBeDisabled(received: Locator | ElementHandle, options?: TimeoutOptions) {
+    const pass = await received.isDisabled(options);
     return {
       pass,
-      message: () => ``,
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toBeDisabled',
+        ignoreExpected: true,
+        // additionalMessage: '',
+      }),
     }
   },
-  async toBeVisible(received: Locator | ElementHandle) {
-    const pass = await received.isVisible();
+  async toBeVisible(received: Locator | ElementHandle, options?: TimeoutOptions) {
+    const pass = await received.isVisible(options);
     return {
       pass,
-      message: () => ``,
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toBeVisible',
+        ignoreExpected: true,
+        // additionalMessage: '',
+      })
     }
   },
-  async toBeHidden(received: Locator | ElementHandle) {
-    const pass = await received.isHidden();
+  async toBeHidden(received: Locator | ElementHandle, options?: TimeoutOptions) {
+    const pass = await received.isHidden(options);
     return {
       pass,
-      message: ({ not }) => ``,
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toBeHidden',
+        ignoreExpected: true,
+        // additionalMessage: '',
+      })
     }
   },
   async toMatchImageScreenshot(received: Uint8Array | Buffer, options: ToMatchImageSnapshotOptions | string) {
@@ -54,6 +75,40 @@ export const elementMatcher = defineMatcher({
       filepath: state.filepath,
     })
   },
+  toThrowErrorMatchingJavaScriptSnapshot(received: Function, options: ToMatchJavaScriptSnapshotOptions) {
+    const validOpts: ToMatchJavaScriptSnapshotOptions = typeof options === 'string' ? { name: options } : options;
+
+    let err: any;
+    let isThrow = false;
+    try {
+      received()
+    } catch (e) {
+      isThrow = true;
+      err = e;
+    }
+
+    if (!isThrow) {
+      return {
+        pass: false,
+        message: state => getAssertionMessage({
+          ...state,
+          assertionName: 'toThrowErrorMatchingJavaScriptSnapshot',
+          ignoreExpected: true,
+          ignoreReceived: true,
+        }),
+      };
+    }
+
+    const state = stateManager.getCurrentState();
+
+    return matchJavaScriptSnapshot({
+      value: err?.message,
+      options: validOpts,
+      projectName: state.projectName,
+      filepath: state.filepath,
+    });
+
+  },
   async toMatchScreenshot(received: Locator | ElementHandle | Page, options: ToMatchImageSnapshotOptions | string) {
     if (typeof received?.screenshot !== 'function') {
       throw new Error('toMatchScreenshot: The received object is missing the "sreenshot" method');
@@ -71,4 +126,4 @@ export const elementMatcher = defineMatcher({
       filepath: state.filepath,
     });
   },
-})
+});

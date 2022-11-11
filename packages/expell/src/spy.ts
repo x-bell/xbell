@@ -1,5 +1,5 @@
 
-// interface ExpellFunctionAssertion {
+// interface ExpectFunctionAssertion {
 //   // functions
 //   toHaveBeenCalled(): void;
 //   toHaveBeenCalledTimes(times: number): void;

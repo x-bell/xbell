@@ -1,4 +1,4 @@
-import type { fn, spyOn } from 'expell';
+import type { fn, spyOn } from '@xbell/assert';
 import type { XBellTaskConfig, XBellRuntimeOptions, XBellProject } from './config';
 import type { Expect } from '../worker/expect/expect';
 import type { Page } from './page';

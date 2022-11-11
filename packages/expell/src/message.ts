@@ -1,6 +1,6 @@
 import color from '@xbell/color';
 import { format } from '@xbell/format';
-import type { ExpellMatchState } from './types';
+import type { ExpectMatchState } from './types';
 
 type ColorType =
   | 'black'
@@ -28,56 +28,62 @@ export function getMatcherMessage({
   ignoreExpected?: boolean;
   matcherReceived?: string;
   matcherExpected?: string;
-} & ExpellMatchState): string {
+} & ExpectMatchState): string {
   return `${color.gray('expect(')}${color.red(matcherReceived)}${color.gray(')')}${resolves ? '.resolves' : ''}${rejects ? '.rejects' : ''}${not ? '.not' : ''}.${assertionName}(${(ignoreExpected || !matcherExpected) ? '' : color.green(matcherExpected)})`;
 }
 
-export function getAssertionMessage(options: {
-  received: any;
-  expected: any;
-  assertionName: string;
-  additionalMessage?: string;
-  receivedLabel?: string;
-  expectedLabel?: string;
-  matcherReceived?: string;
-  matcherExpected?: string;
-} & ExpellMatchState): string;
 
-export function getAssertionMessage(options: {
-  assertionName: string;
-  receivedFormat: string;
-  expectedFormat: string;
-  ignoreExpected?: false;
-  receivedLabel?: string;
-  expectedLabel?: string;
-  matcherReceived?: string;
-  matcherExpected?: string;
-} & ExpellMatchState): string;
-export function getAssertionMessage(options: {
-  received: any;
-  ignoreExpected: true;
-  assertionName: string;
-  receivedLabel?: string;
-  expectedLabel?: string;
-  matcherReceived?: string;
-  matcherExpected?: string;
-} & ExpellMatchState): string;
-export function getAssertionMessage(options: {
-  assertionName: string;
-  expectedFormat: string;
-  ignoreExpected?: false;
-  received: any;
-  receivedLabel?: string;
-  expectedLabel?: string;
-  matcherReceived?: string;
-  matcherExpected?: string;
-} & ExpellMatchState): string;
+// type ReceivedOptions = {
+//   receivedLabel?: string;
+// }
+
+// export function getAssertionMessage(options: {
+//   received: any;
+//   expected: any;
+//   assertionName: string;
+//   additionalMessage?: string;
+//   receivedLabel?: string;
+//   expectedLabel?: string;
+//   matcherReceived?: string;
+//   matcherExpected?: string;
+// } & ExpectMatchState): string;
+
+// export function getAssertionMessage(options: {
+//   assertionName: string;
+//   receivedFormat: string;
+//   expectedFormat: string;
+//   receivedLabel?: string;
+//   expectedLabel?: string;
+//   matcherReceived?: string;
+//   matcherExpected?: string;
+// } & ExpectMatchState): string;
+// export function getAssertionMessage(options: {
+//   received: any;
+//   ignoreExpected: true;
+//   assertionName: string;
+//   receivedLabel?: string;
+//   expectedLabel?: string;
+//   matcherReceived?: string;
+//   matcherExpected?: string;
+// } & ExpectMatchState): string;
+// export function getAssertionMessage(options: {
+//   assertionName: string;
+//   expectedFormat: string;
+//   ignoreExpected?: false;
+//   received: any;
+//   receivedLabel?: string;
+//   expectedLabel?: string;
+//   matcherReceived?: string;
+//   matcherExpected?: string;
+// } & ExpectMatchState): string;
+
 export function getAssertionMessage({
   received,
   expected,
   expectedFormat,
   assertionName,
   ignoreExpected,
+  ignoreReceived,
   additionalMessage,
   receivedFormat,
   receivedLabel = 'Received',
@@ -94,17 +100,18 @@ export function getAssertionMessage({
   receivedFormat?: string;
   expected?: any,
   ignoreExpected?: boolean;
+  ignoreReceived?: boolean;
   additionalMessage?: string
   receivedLabel?: string;
   expectedLabel?: string;
   matcherReceived?: string;
   matcherExpected?: string;
-} & ExpellMatchState): string {
+} & ExpectMatchState): string {
   return [
     getMatcherMessage({ assertionName, ignoreExpected, matcherReceived, matcherExpected, not, rejects, resolves }),
-    '',
+    !ignoreExpected || !ignoreReceived ? '' : undefined,
     !ignoreExpected && `${expectedLabel}: ${color.green(expectedFormat ?? format(expected))}`,
-    `${receivedLabel}: ${color.red(receivedFormat ?? format(received))}`,
+    !ignoreReceived && `${receivedLabel}: ${color.red(receivedFormat ?? format(received))}`,
     additionalMessage ? '' : undefined,
     additionalMessage
   ].filter(item => item != null).join('\n')

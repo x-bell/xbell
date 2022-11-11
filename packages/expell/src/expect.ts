@@ -1,9 +1,9 @@
 import type { ConditionType } from './types/utils'
-import type { ExpellMatchObject, Expell, ExpellMatchResult, ExpellMatchState } from './types';
+import type { ExpectMatchObject, Expect, ExpectMatchResult, ExpectMatchState } from './types';
 
 
 
-// interface ExpellFunctionAssertion {
+// interface ExpectFunctionAssertion {
 //   // functions
 //   toHaveBeenCalled(): void;
 //   toHaveBeenCalledTimes(times: number): void;
@@ -18,13 +18,13 @@ import type { ExpellMatchObject, Expell, ExpellMatchResult, ExpellMatchState } f
 // }
 
 
-interface ExpellArrayAssertion {
+interface ExpectArrayAssertion {
   // array
   toHaveLength(length: number): void;
 }
 
-interface ExpellAssertionABC {
-  // not: ExpellAssertion<T>
+interface ExpectAssertionABC {
+  // not: ExpectAssertion<T>
   toBe(expected: any): void;
   toHaveProperty(property: string | string[], value?: unknown): void;
   toBeCloseTo(num: number, numDigits: number): void;
@@ -62,9 +62,9 @@ function isPromise<T>(v: T | Promise<T>): v is Promise<T> {
 }
 
 
-export function createExpell<MatchObject extends ExpellMatchObject, Type = any, DefaultObject = {}>(matchObject: MatchObject): Expell<MatchObject, Type, DefaultObject> {
-  const expell: Omit<Expell<MatchObject, Type, DefaultObject>, 'extend'> = <Received>(received: Received) => {
-    const state: ExpellMatchState = {
+export function createExpect<MatchObject extends ExpectMatchObject, Type = any, DefaultObject = {}>(matchObject: MatchObject): Expect<MatchObject, Type, DefaultObject> {
+  const expect: Omit<Expect<MatchObject, Type, DefaultObject>, 'extend'> = <Received>(received: Received) => {
+    const state: ExpectMatchState = {
       not: false,
       resolves: false,
       rejects: false,
@@ -89,13 +89,13 @@ export function createExpell<MatchObject extends ExpellMatchObject, Type = any, 
 
         if (typeof matchObject[propKey as string] === 'function') {
           return (...args: any[]) => {
-            const innerRet: ExpellMatchResult | Promise<ExpellMatchResult> = state.resolves
+            const innerRet: ExpectMatchResult | Promise<ExpectMatchResult> = state.resolves
               ? Promise.resolve(received).then(res => Reflect.apply(matchObject[propKey as string], state, [res, ...args]))
               : state.rejects
                 ? Promise.resolve(received).catch(res => Reflect.apply(matchObject[propKey as string], state, [res, ...args]))
                 : Reflect.apply(matchObject[propKey as string], state, [received, ...args])
 
-            const handleResult = (ret: ExpellMatchResult) => {
+            const handleResult = (ret: ExpectMatchResult) => {
               const rawPass = typeof ret.pass === 'function' ? ret.pass(state) : ret.pass;
 
                 const handlePass = (rawPass: boolean) => {
@@ -125,19 +125,19 @@ export function createExpell<MatchObject extends ExpellMatchObject, Type = any, 
     return proxy;
   }
 
-  const extend: Expell<MatchObject, Type, DefaultObject>['extend'] = <ExtendMatchObject extends ExpellMatchObject, ExtendType>(extendMatchObject: ExtendMatchObject): Expell<ExtendMatchObject, ExtendType, ConditionType<Type, MatchObject, DefaultObject>> => {
-    return createExpell<ExtendMatchObject, ExtendType, ConditionType<Type, MatchObject, DefaultObject>>({
+  const extend: Expect<MatchObject, Type, DefaultObject>['extend'] = <ExtendMatchObject extends ExpectMatchObject, ExtendType>(extendMatchObject: ExtendMatchObject): Expect<ExtendMatchObject, ExtendType, ConditionType<Type, MatchObject, DefaultObject>> => {
+    return createExpect<ExtendMatchObject, ExtendType, ConditionType<Type, MatchObject, DefaultObject>>({
       ...matchObject,
       ...extendMatchObject,
     });
   };
 
-  (expell as Expell<MatchObject, Type, DefaultObject>).extend = extend;
+  (expect as Expect<MatchObject, Type, DefaultObject>).extend = extend;
 
-  return expell as Expell<MatchObject, Type, DefaultObject>;
+  return expect as Expect<MatchObject, Type, DefaultObject>;
 }
 
-export function defineMatcher<K extends ExpellMatchObject>(matchObject: K): K {
+export function defineMatcher<K extends ExpectMatchObject>(matchObject: K): K {
   return matchObject;
 }
 
@@ -165,13 +165,13 @@ export function defineMatcher<K extends ExpellMatchObject>(matchObject: K): K {
 //   }
 // })
 
-// const expell = createExpell<typeof stringMatcher, string>(stringMatcher)
+// const expect = createExpect<typeof stringMatcher, string>(stringMatcher)
 //   .extend<typeof numberMatcher, number>(numberMatcher);
 
-// const ret = expell('123').stringHaveLength('123', 123)
-// const promiseRet = expell('abc').stringEqualAsync(2)
+// const ret = expect('123').stringHaveLength('123', 123)
+// const promiseRet = expect('abc').stringEqualAsync(2)
 
-// const promiseRetWithPromiseArg = expell(Promise.resolve(2)).resolves.numberLessThan(3)
+// const promiseRetWithPromiseArg = expect(Promise.resolve(2)).resolves.numberLessThan(3)
 
 
 // console.log('rest', ret, promiseRet, promiseRetWithPromiseArg);

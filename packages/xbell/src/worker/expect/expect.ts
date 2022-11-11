@@ -1,6 +1,6 @@
-import { expell } from 'expell';
+import { expect as basic } from '@xbell/assert';
 import { elementMatcher } from '../expect/matcher';
 
-export const expect = expell.extend(elementMatcher);
+export const expect = basic.extend(elementMatcher);
 
 export type Expect = typeof expect;

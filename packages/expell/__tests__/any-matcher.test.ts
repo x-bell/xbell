@@ -1,19 +1,19 @@
-import { expell } from '../src';
-import { test } from './internal-test';
+import { test } from 'xbell';
 import { format } from '@xbell/format';
+import { expect } from '../src';
 
 test('#toBe: does not throw', () => {
-  expell('a').not.toBe('b');
-  expell('a').toBe('a');
-  expell(1).not.toBe(2);
-  expell(1).toBe(1);
-  expell(null).not.toBe(undefined);
-  expell(null).toBe(null);
-  expell(undefined).toBe(undefined);
-  expell(NaN).toBe(NaN);
-  expell(BigInt(1)).not.toBe(BigInt(2));
-  expell(BigInt(1)).not.toBe(1);
-  expell(BigInt(1)).toBe(BigInt(1));
+  expect('a').not.toBe('b');
+  expect('a').toBe('a');
+  expect(1).not.toBe(2);
+  expect(1).toBe(1);
+  expect(null).not.toBe(undefined);
+  expect(null).toBe(null);
+  expect(undefined).toBe(undefined);
+  expect(NaN).toBe(NaN);
+  expect(BigInt(1)).not.toBe(BigInt(2));
+  expect(BigInt(1)).not.toBe(1);
+  expect(BigInt(1)).toBe(BigInt(1));
 });
 
 [
@@ -188,36 +188,36 @@ test('#toBe: does not throw', () => {
   test(`{pass: false} expect(${format(a)}).toEqual(${format(
     b,
   )})`, () => {
-    expell(a).not.toEqual(b);
+    expect(a).not.toEqual(b);
   });
 });
 
 test('#toBeFalsy()', () => {
-  expell(0).toBeFalsy();
-  expell(null).toBeFalsy();
-  expell(undefined).toBeFalsy();
-  expell(false).toBeFalsy();
-  expell(NaN).toBeFalsy();
+  expect(0).toBeFalsy();
+  expect(null).toBeFalsy();
+  expect(undefined).toBeFalsy();
+  expect(false).toBeFalsy();
+  expect(NaN).toBeFalsy();
 });
 
 test('#toBeTruthy()', () => {
-  expell(1).toBeTruthy();
-  expell(-1).toBeTruthy();
-  expell(true).toBeTruthy();
-  expell({}).toBeTruthy();
-  expell([]).toBeTruthy();
+  expect(1).toBeTruthy();
+  expect(-1).toBeTruthy();
+  expect(true).toBeTruthy();
+  expect({}).toBeTruthy();
+  expect([]).toBeTruthy();
 });
 
 test('#toBeDefined()', () => {
-  expell({}).toBeDefined();
-  expell([]).toBeDefined();
-  expell('').toBeDefined();
-  expell(null).toBeDefined();
+  expect({}).toBeDefined();
+  expect([]).toBeDefined();
+  expect('').toBeDefined();
+  expect(null).toBeDefined();
 });
 
 test('#toBeUndefined()', () => {
-  expell(undefined).toBeUndefined();
-  expell({}).not.toBeUndefined();
+  expect(undefined).toBeUndefined();
+  expect({}).not.toBeUndefined();
 });
 
 test('toBeInstanceOf', () => {
@@ -259,14 +259,14 @@ test('toBeInstanceOf', () => {
     [new HasStaticNameMethod(), HasStaticNameMethod], // Expected
   ].forEach(([a, b]) => {
     test(`passing ${format(a)} and ${format(b)}`, () => {
-      expell(a).toBeInstanceOf(b);
+      expect(a).toBeInstanceOf(b);
     });
   })
 });
 
 test('#toBeNull', () => {
-  expell(null).toBeNull();
-  expell(undefined).not.toBeNull();
+  expect(null).toBeNull();
+  expect(undefined).not.toBeNull();
 });
 
 

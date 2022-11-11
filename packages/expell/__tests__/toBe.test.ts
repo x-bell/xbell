@@ -1,22 +1,22 @@
-import { expell, fn } from '../dist';
 import { format } from '@xbell/format';
-import { test, genSnapshotError } from './internal-test';
+import { expect, test } from 'xbell';
+// import { test } from './internal-test';
 
-const snapshotError = genSnapshotError('toBe.test.ts');
+// const snapshotError = genSnapshotError('toBe.test.ts');
 
 (async () => {
   test('#toBe: does not throw', () => {
-    expell('a').not.toBe('b');
-    expell('a').toBe('a');
-    expell(1).not.toBe(2);
-    expell(1).toBe(1);
-    expell(null).not.toBe(undefined);
-    expell(null).toBe(null);
-    expell(undefined).toBe(undefined);
-    expell(NaN).toBe(NaN);
-    expell(BigInt(1)).not.toBe(BigInt(2));
-    expell(BigInt(1)).not.toBe(1);
-    expell(BigInt(1)).toBe(BigInt(1));
+    expect('a').not.toBe('b');
+    expect('a').toBe('a');
+    expect(1).not.toBe(2);
+    expect(1).toBe(1);
+    expect(null).not.toBe(undefined);
+    expect(null).toBe(null);
+    expect(undefined).toBe(undefined);
+    expect(NaN).toBe(NaN);
+    expect(BigInt(1)).not.toBe(BigInt(2));
+    expect(BigInt(1)).not.toBe(1);
+    expect(BigInt(1)).toBe(BigInt(1));
   });
 
   [
@@ -46,11 +46,14 @@ const snapshotError = genSnapshotError('toBe.test.ts');
     [-0, +0],
   ].forEach(([a, b], idx) => {
     test(`fails for: ${format(a)} and ${format(b)}`, () => {
+      expect(() => {
+        expect(a).toBe(b);
+      })();
       snapshotError(`error-${idx}`, () => {
-        expell(a).toBe(b);
+        
       });
       snapshotError(`error-not-${idx}`, () => {
-        expell(a).not.toBe(a);
+        expect(a).not.toBe(a);
       })
     });
   });

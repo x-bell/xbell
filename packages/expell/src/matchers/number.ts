@@ -1,5 +1,5 @@
 import { format } from '@xbell/format';
-import { defineMatcher } from '../expell';
+import { defineMatcher } from '../expect';
 import { getAssertionMessage } from '../message';
 
 export const numberMatcher = defineMatcher({

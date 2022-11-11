@@ -1,9 +1,9 @@
 import type { Mock } from './spy';
-import { createExpell } from './expell';
+import { createExpect } from './expect';
 import { spy } from './spy';
 import { spyMatcher } from './matchers/spy';
 
-const expect = createExpell<typeof spyMatcher, Mock>(spyMatcher)
+const expect = createExpect<typeof spyMatcher, Mock>(spyMatcher)
 
 const ret = expect(spy(() => 1)).not.toHaveBeenCalled()
 expect(spy(() => {})).toHaveBeenCalled()

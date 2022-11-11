@@ -1,12 +1,12 @@
 {
-  "name": "expell",
+  "name": "@xbell/assert",
   "version": "0.6.5",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
-    "test": "npm run build && node --loader ../../scripts/loader.mjs ../../scripts/test.mjs",
+    "test": "xbell",
     "prepublishOnly": "npm run test"
   },
   "dependencies": {
