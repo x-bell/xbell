@@ -10,7 +10,9 @@
     "prepublishOnly": "npm run test"
   },
   "dependencies": {
+    "debug": "^4.3.4",
     "@xbell/format": "workspace:^",
-    "@xbell/color": "workspace:^"
+    "@xbell/color": "workspace:^",
+    "@types/debug": "^4.1.7"
   }
 }

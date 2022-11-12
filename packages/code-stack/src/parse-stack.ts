@@ -71,7 +71,7 @@ const FILE_PREFIX = 'file://';
 
 function _getFilenamePath (filename: string, cwd = process.cwd()) {
   if (filename.startsWith(FILE_PREFIX)) {
-    filename = filename.slice(filename.length);
+    filename = filename.slice(FILE_PREFIX.length);
   }
   // filename = filename.replace(/\\/g, '/');
   // if (filename.startsWith(`${cwd}/`)) {

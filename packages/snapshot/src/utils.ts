@@ -25,20 +25,21 @@ export function getSnapshotFilePath({
 }) {
   const suffix = type === 'image' ? '.png' : '.js.snap';
   const diffSuffix = type === 'image' ? '.png' : '.log';
-  const snapshotFilename = name + (projectName ? `-[${projectName}]` : '') + suffix;
+  const withProjectName = name + (projectName ? `-[${projectName}]` : '');
 
   const snapshotBasePath = path.join(
     path.dirname(filepath),
     '__snapshots__',
     path.basename(filepath),
-    snapshotFilename
+    withProjectName
   );
+  const snapshotPath = snapshotBasePath + suffix;
 
   const newDir = snapshotBasePath + '-new';
 
   return {
-    filepath: snapshotBasePath + suffix,
-    newFilepath: path.join(newDir, snapshotFilename),
+    filepath: snapshotPath,
+    newFilepath: path.join(newDir, snapshotPath),
     diffFilepath: path.join(newDir, `diff${diffSuffix}`),
   };
 }

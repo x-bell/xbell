@@ -13,16 +13,16 @@ export interface XBellCompilerDeps {
   queryResolveId(path: string, importer: string): Promise<string>;
 }
 
-export interface XBellCompiler {
-  compileNodeJSCode(sourceCode: string, filename: string): Promise<{ code: string }>
-  compileBrowserCode(sourceCode: string): Promise<{ code: string }>
-}
+// export interface XBellCompiler {
+//   compileNodeJSCode(sourceCode: string, filename: string): Promise<{ code: string }>
+//   compileBrowserCode(sourceCode: string): Promise<{ code: string }>
+// }
 
 
 
-export interface XBellCompilerConstructor {
-  new (desp: XBellCompilerDeps): XBellCompiler
-}
+// export interface XBellCompilerConstructor {
+//   new (desp: XBellCompilerDeps): XBellCompiler
+// }
 
 export class Compiler {
   public nodeJSCache = new Map<string, { code: string }>();
@@ -33,7 +33,7 @@ export class Compiler {
     sourceCode: string,
     filename: string
   ) {
-    return compileNodeJSCode(sourceCode, filename, this.nodeJSCache);
+    return compileNodeJSCode(sourceCode, filename, true, this.nodeJSCache);
   }
 
   public async compileBrowserCode(sourceCode: string) {

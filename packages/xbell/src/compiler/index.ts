@@ -1,1 +1,1 @@
-export { Compiler, XBellCompiler } from './compiler';
+export { Compiler } from './compiler';

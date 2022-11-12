@@ -43,6 +43,8 @@ type ExpectAssertion<Received, MatchObject, Type, DefaultObject, IsCallPromise e
       : ConditionResult<Received, Type, MatchObject, DefaultObject>)
   : ({
     not: Omit<ExpectAssertion<Received, MatchObject, Type, DefaultObject, IsCallPromise>, 'not' | 'extend'>
+    resolves: ExpectAssertion<Received, MatchObject, Type, DefaultObject, true>
+    rejects: ExpectAssertion<Received, MatchObject, Type, DefaultObject, true>
   }) & (ConditionResult<Received, Type, MatchObject, DefaultObject> extends ExpectMatchObject
     ? ExpectMatcher<ConditionResult<Received, Type, MatchObject, DefaultObject>, Received, IsCallPromise>
     : ConditionResult<Received, Type, MatchObject, DefaultObject>

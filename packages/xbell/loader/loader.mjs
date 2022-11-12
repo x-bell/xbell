@@ -1,12 +1,12 @@
-
 import process from 'node:process';
 import * as fs from 'node:fs';
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { join, dirname } from 'node:path';
 import { compileNodeJSCode } from "../dist/compiler/compile-node.mjs";
+import debug from 'debug';
 
 process.setSourceMapsEnabled(true);
-
+const debugLoader = debug('xbell:loader')
 const fileProtocol = 'file://';
 
 function isPath(urlOrPath) {
@@ -60,23 +60,30 @@ export function resolve(specifier, context, nextResolve) {
 
   if (ret) {
     const url = pathToFileURL(ret).href;
+    // if (url.endsWith('ts')) {
+    //   debugLoader('url', url);
+    // }
     return {
       url,
       shortCircuit: true,
-    }
+    };
   }
 
   return nextResolve(specifier, context);
 }
 
 export async function load(url, context, nextLoad) {
+  // debugLoader('url', url);
   if (/\.(tsx|ts)$/.test(url)) {
     const filePath = fileURLToPath(url);
-    const { code } = await compileNodeJSCode(
+    const { code } = compileNodeJSCode(
       fs.readFileSync(filePath, "utf-8"),
-      filePath
+      filePath,
+      'inline',
     );
-
+    // if (filePath.endsWith('ts')) {
+    //   debugLoader('code', filePath, code);
+    // }
     return {
       shortCircuit: true,
       format: 'module',

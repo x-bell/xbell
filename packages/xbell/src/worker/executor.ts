@@ -32,6 +32,7 @@ export class Executor {
   async run(file: XBellTestFile) {
     stateManager.setCurrentFilepath(file.filename);
     const { tasks } = file;
+
     for (const task of tasks) {
       if (task.type === 'group') {
         await this.runGroup(task);
@@ -101,7 +102,7 @@ export class Executor {
         uuid: c.uuid,
         error: {
           message: err?.message || 'Run case error',
-          name: err?.name || 'UnkonwError',
+          name: err?.name || 'UnknowError',
           stack: err?.stack,
         },
         videos,

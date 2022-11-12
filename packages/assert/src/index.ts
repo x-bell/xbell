@@ -5,6 +5,7 @@ import { spyMatcher } from './matchers/spy';
 import { spy as fn } from './spy';
 import { spyOn } from './spyOn';
 import type { Mock } from './spy';
+import type { ExpectMatchState } from './types/expect';
 import { getAssertionMessage } from './message';
 
 export const expect =
@@ -14,6 +15,6 @@ export const expect =
 
 export { defineMatcher, fn, spyOn, getAssertionMessage };
 
-export type { Mock };
+export type { Mock, ExpectMatchState };
 
 

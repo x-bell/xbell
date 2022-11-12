@@ -25,18 +25,21 @@ class NodeJSVisitor extends Visitor {
   }
 }
 
-export async function compileNodeJSCode(
+export function compileNodeJSCode(
   sourceCode: string,
   filename: string,
-  cache?: Map<string, { code: string }>,
-): Promise<{ code: string; }> {
+  sourceMaps: boolean | 'inline',
+  cache?: Map<string, { code: string, map?: string }>,
+): { code: string; map?: string } {
   const program = parseSync(sourceCode, {
     ...tsParserConfig,
   });
   const vistor = new NodeJSVisitor(filename);
   const finalProgram = vistor.visitProgram(program);
   const { code, map } = transformSync(finalProgram, {
-    sourceMaps: 'inline',
+    filename,
+    sourceFileName: filename,
+    sourceMaps,
     module: {
       type: 'nodenext',
     },
@@ -47,9 +50,9 @@ export async function compileNodeJSCode(
   // debugCompiler('nodejs:code', { map, code });
   if (cache) {
     if (!cache.has(filename)) {
-      cache.set(filename, { code });
+      cache.set(filename, { code, map });
     }
   }
 
-  return { code }!;
+  return { code, map }!;
 }

@@ -1,6 +1,6 @@
 import color from '@xbell/color';
 import { format } from '@xbell/format';
-import type { ExpectMatchState } from './types';
+import type { ExpectMatchState } from './types/expect';
 
 type ColorType =
   | 'black'
@@ -89,10 +89,10 @@ export function getAssertionMessage({
   receivedLabel = 'Received',
   expectedLabel = 'Expected',
   matcherReceived = 'received',
+  matcherExpected = 'expected',
   not,
   resolves,
   rejects,
-  matcherExpected
 }: {
   assertionName: string,
   received?: any,
@@ -109,9 +109,9 @@ export function getAssertionMessage({
 } & ExpectMatchState): string {
   return [
     getMatcherMessage({ assertionName, ignoreExpected, matcherReceived, matcherExpected, not, rejects, resolves }),
-    !ignoreExpected || !ignoreReceived ? '' : undefined,
-    !ignoreExpected && `${expectedLabel}: ${color.green(expectedFormat ?? format(expected))}`,
-    !ignoreReceived && `${receivedLabel}: ${color.red(receivedFormat ?? format(received))}`,
+    (ignoreExpected && ignoreReceived) ? undefined : '',
+    ignoreExpected ? undefined : `${expectedLabel}: ${color.green(expectedFormat ?? format(expected))}`,
+    ignoreReceived ? undefined :  `${receivedLabel}: ${color.red(receivedFormat ?? format(received))}`,
     additionalMessage ? '' : undefined,
     additionalMessage
   ].filter(item => item != null).join('\n')

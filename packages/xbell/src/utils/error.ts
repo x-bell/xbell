@@ -75,25 +75,24 @@ function parseStackLines(stack: string) {
   }
 }
 
-async function getNodeJSFileMap(filename: string): Promise<{
+function getNodeJSFileMap(filename: string): {
   code: string;
   map: RawSourceMap;
-} | null> {
-
-  const compileRet = await compiler.compileNodeJSCode(
+} | null {
+  const compileRet = compiler.compileNodeJSCode(
     fs.readFileSync(filename, 'utf-8'),
     filename
   );
   if (compileRet) {
-
-    const [code, mapBase64] = compileRet.code.split('//# sourceMappingURL=data:application/json;base64,');
-    const buff = Buffer.from(mapBase64, 'base64');
-    const map = buff.toString('utf-8');
-
+    
+    const { code, map } = compileRet;
+    // const buff = Buffer.from(mapBase64!, 'base64');
+    // const map = buff.toString('utf-8');
+    debugError('map', typeof map, map);
     try {
       return {
         code,
-        map: JSON.parse(map) as RawSourceMap,
+        map: JSON.parse(map!) as RawSourceMap,
       };
     } catch {}
   }
@@ -113,7 +112,7 @@ function getOriginPosition(map: RawSourceMap, position: { column: number, line: 
 }
 
 
-export async function formatError(error: Error, options: Partial<{
+async function formatBrowserError(error: Error, options: Partial<{
   browserTestFunction: {
     body: string;
     filename: string;
@@ -123,10 +122,10 @@ export async function formatError(error: Error, options: Partial<{
     return error;
   }
   const { browserTestFunction } = options;
+  const server = await browserBuilder.server
   const stackResult = parseStackLines(error.stack!);
   debugError('error:before', (error.stack!));
   debugError('error:after', stackResult);
-  const server = await browserBuilder.server
   const inProjectLines = stackResult.lines.filter(item => item.isInProjectPath || isEvaluateCalback(item.content));
   const [firstLine] = (inProjectLines.length ? inProjectLines : stackResult.lines) || [];
   const isEvaluateFunction = !!firstLine.parsed && isEvaluateCalback(firstLine.content) && !!browserTestFunction;
@@ -136,7 +135,7 @@ export async function formatError(error: Error, options: Partial<{
   debugError('error', error.name, 'msg:', error.message);
   if (isEvaluateFunction && firstLine.parsed) {
     const originEvaluatePosition = firstLine.parsed;
-    const { map: fileMap, code: fileCompiledCode } = await getNodeJSFileMap(browserTestFunction.filename) ?? {};
+    const { map: fileMap, code: fileCompiledCode } = getNodeJSFileMap(browserTestFunction.filename) ?? {};
     const indexInCompiledCode = fileCompiledCode!.indexOf(browserTestFunction.body);
 
     if (fileMap && indexInCompiledCode !== -1) {
@@ -168,7 +167,7 @@ export async function formatError(error: Error, options: Partial<{
           column: originPosition.column,
         });
         const formatMessage = [
-          color.red(stackResult.head),
+          color.white(stackResult.head),
           '',
           stackMessage,
           '',
@@ -206,7 +205,7 @@ export async function formatError(error: Error, options: Partial<{
         column: originPosition.column,
       });
       const formatMessage = [
-        color.red(stackResult.head),
+        color.white(stackResult.head),
         '',
         stackMessage,
         '',
@@ -225,6 +224,67 @@ export async function formatError(error: Error, options: Partial<{
 
   return error;
 }
+
+
+function formatNodeJSError(error: Error): XBellError {
+  if (!error.stack) return error;
+  const stackResult = parseStackLines(error.stack!);
+  const inProjectLines = stackResult.lines.filter(item => item.isInProjectPath || isEvaluateCalback(item.content));
+  const [firstLine] = (inProjectLines.length ? inProjectLines : stackResult.lines) || [];
+  const parsed = firstLine?.parsed;
+  if (!parsed) {
+    return error;
+  }
+
+  // debugError('parsed', parsed);
+  // const ret = getNodeJSFileMap(
+  //   fileURLToPath(parsed.filename)
+  // );
+
+  // debugError('ret', ret);
+
+  // if (!ret) return error;
+
+  // const originPosition = getOriginPosition(ret.map, {
+  //   column: parsed.column,
+  //   line: parsed.line,
+  // });
+
+  // debugError('originPosition', originPosition);
+
+  const stackMessage = formatStack(
+    parsed.filename, {
+    line: parsed.line,
+    column: parsed.column,
+  });
+  const formatMessage = [
+    color.white(stackResult.head),
+    '',
+    stackMessage,
+    '',
+    color.white.dim(firstLine.content.replace(STACK_LINE_REG, () => {
+      return `${getProjectRelativePath(parsed.filename)}:${parsed.line}:${parsed.column}`;
+    })),
+  ].join('\n');
+  return {
+    ...error,
+    formatMessage,
+  };
+}
+
+export async function formatError(error: Error, options: Partial<{
+  browserTestFunction: {
+    body: string;
+    filename: string;
+  }
+}>): Promise<XBellError> {
+  if (options.browserTestFunction) {
+    return formatBrowserError(error, options);
+  }
+
+  return formatNodeJSError(error);
+}
+
 
 export function getCallSite(): NodeJS.CallSite[] {
   const _prepareStackTrace = Error.prepareStackTrace;

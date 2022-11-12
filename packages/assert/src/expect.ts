@@ -1,7 +1,9 @@
 import type { ConditionType } from './types/utils'
-import type { ExpectMatchObject, Expect, ExpectMatchResult, ExpectMatchState } from './types';
-
-
+import type { ExpectMatchObject, Expect, ExpectMatchResult, ExpectMatchState } from './types/expect';
+import color from '@xbell/color';
+import { format } from '@xbell/format';
+import { isPromise, checkRejects, AssertionError, getPromiseValue, toMatch } from './validate';
+import { getAssertionMessage } from './message';
 
 // interface ExpectFunctionAssertion {
 //   // functions
@@ -53,14 +55,6 @@ interface ExpectAssertionABC {
   toThrowErrorMatchingInlineSnapshot(): void;
 }
 
-function isPromise<T>(v: T | Promise<T>): v is Promise<T> {
-  if (v && typeof (v as any).then === 'function') {
-    return true;
-  }
-
-  return false;
-}
-
 
 export function createExpect<MatchObject extends ExpectMatchObject, Type = any, DefaultObject = {}>(matchObject: MatchObject): Expect<MatchObject, Type, DefaultObject> {
   const expect: Omit<Expect<MatchObject, Type, DefaultObject>, 'extend'> = <Received>(received: Received) => {
@@ -89,35 +83,102 @@ export function createExpect<MatchObject extends ExpectMatchObject, Type = any, 
 
         if (typeof matchObject[propKey as string] === 'function') {
           return (...args: any[]) => {
-            const innerRet: ExpectMatchResult | Promise<ExpectMatchResult> = state.resolves
-              ? Promise.resolve(received).then(res => Reflect.apply(matchObject[propKey as string], state, [res, ...args]))
-              : state.rejects
-                ? Promise.resolve(received).catch(res => Reflect.apply(matchObject[propKey as string], state, [res, ...args]))
-                : Reflect.apply(matchObject[propKey as string], state, [received, ...args])
+            // rejects
+            if (state.rejects) {
+              const { isValid, promise } = checkRejects(received);
+              if (!isValid) {
+                const msg = getAssertionMessage({
+                  ...state,
+                  assertionName: propKey.toString(),
+                  ignoreExpected: true,
+                  ignoreReceived: true,
+                  additionalMessage: [
+                    `${color.red('received')} value must be a promise or a function returning a promise`,
+                    '',
+                    `Received has type:  ${typeof received}`,
+                    `Received has value: ${color.red(format(received))}`,
+                  ].join('\n')
+                });
+                // NOTE: throw
+                throw new AssertionError(msg);
+              }
 
-            const handleResult = (ret: ExpectMatchResult) => {
-              const rawPass = typeof ret.pass === 'function' ? ret.pass(state) : ret.pass;
+              return getPromiseValue(promise).then(({ isThrow, result, reason }) => {
+                // handle resolve
+                if (!isThrow) {
+                  const msg = getAssertionMessage({
+                    ...state,
+                    assertionName: propKey.toString(),
+                    ignoreExpected: true,
+                    ignoreReceived: true,
+                    additionalMessage: [
+                      'Received promise resolved instead of rejected',
+                      `Resolved to value: ${color.red(result)}`,
+                    ].join('\n')
+                  });
 
-                const handlePass = (rawPass: boolean) => {
-                  const pass = state.not ? !rawPass : rawPass;
-                  if (!pass) {
-                    const err = new Error(ret.message(state));
-                    err.name = 'AssertionError';
-                    throw err;
-                  }
+                  throw new AssertionError(msg);
                 }
-                if (isPromise(rawPass)) {
-                  return rawPass.then(handlePass);
-                }
-                return handlePass(rawPass);
+                return toMatch({
+                  matchObject,
+                  propKey,
+                  received: reason,
+                  args,
+                  state,
+                });
+              });
             }
-            
+            // resolves
+            if (state.resolves) {
+              if (!isPromise(received)) {
+                const msg = getAssertionMessage({
+                  ...state,
+                  assertionName: propKey.toString(),
+                  ignoreExpected: true,
+                  ignoreReceived: true,
+                  additionalMessage: [
+                    `${color.red('received')} value must be a promise`,
+                    '',
+                    `Received has type:  ${typeof received}`,
+                    `Received has value: ${color.red(format(received))}`,
+                  ].join('\n'),
+                });
+                throw new AssertionError(msg);
+              }
 
-            if (isPromise(innerRet)) {
-              return innerRet.then(handleResult)
-            } else {
-              return handleResult(innerRet);
+              return getPromiseValue(received).then(({ isThrow, result, reason }) => {
+                if (isThrow) {
+                  const msg = getAssertionMessage({
+                    ...state,
+                    assertionName: propKey.toString(),
+                    ignoreExpected: true,
+                    ignoreReceived: true,
+                    additionalMessage: [
+                      'Received promise rejected instead of resolved',
+                      `Rejected to value: ${color.red(reason)}`,
+                    ].join('\n')
+                  });
+
+                  throw new AssertionError(msg);
+                }
+
+                return toMatch({
+                  matchObject,
+                  propKey,
+                  received: result,
+                  args,
+                  state,
+                });
+              });
             }
+
+            return toMatch({
+              received,
+              matchObject,
+              propKey,
+              state,
+              args,
+            });
           };
         }
       },

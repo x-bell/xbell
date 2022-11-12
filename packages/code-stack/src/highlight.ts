@@ -1,11 +1,8 @@
 import type { Token as JSToken, JSXToken } from 'js-tokens';
 import jsTokens from 'js-tokens';
-
-import {
-  isStrictReservedWord,
-  isKeyword,
-} from './utils'
 import color from '@xbell/color';
+
+import { isStrictReservedWord, isKeyword } from './utils'
 
 const sometimesKeywords = new Set(['as', 'async', 'from', 'get', 'of', 'set']);
 
@@ -96,7 +93,7 @@ function getTokenType(
     default:
       return 'uncolored';
   }
-};
+}
 
 
 function* tokenize(text: string): Generator<Token> {
@@ -125,7 +122,7 @@ function* tokenize(text: string): Generator<Token> {
         };
     }
   }
-};
+}
 
 export function highlight(code: string): string {
   if (!code)  return code;

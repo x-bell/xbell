@@ -1,10 +1,8 @@
 import { format } from '@xbell/format';
 import { defineMatcher } from '../expect';
 import { getAssertionMessage, getMatcherMessage } from '../message';
-import { ExpectMatchFunction, ExpectMatchPromiseFunction } from '../types';
 import { getConstructorName } from '../proto';
 import { equals, iterableEquality, typeEquality, sparseArrayEquality, arrayBufferEquality } from '../equal';
-import { isPromise } from 'util/types';
 
 interface ExpectAnyAssertion {
   // not: ExpectAssertion<T>
@@ -40,6 +38,7 @@ export const anyMatcher = defineMatcher({
         ...state,
         assertionName: 'toBe',
         received,
+        expectedFormat: state.not ? `not ${format(received)}` : format(received),
         expected
       })
     }

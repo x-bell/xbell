@@ -17,6 +17,7 @@ function writeSnapshot(
 ) {
   fs.writeFileSync(filename, [
     '// XBell Snapshot v1',
+    '',
     'export default `',
     content,
     '`;'
@@ -43,6 +44,7 @@ export function matchJavaScriptSnapshot({
   filepath: string;
   projectName?: string;
 }) {
+  let pass = true;
   const { filepath: snapshotPath, newFilepath, diffFilepath } = getSnapshotFilePath({
     projectName,
     filepath,
@@ -58,16 +60,7 @@ export function matchJavaScriptSnapshot({
     if (existedJSContent !== jsContent) {
       ensureDir(path.dirname(newFilepath));
       writeSnapshot(newFilepath, jsContent);
-      return {
-        pass: false,
-        message: ({ not }: { not: boolean }) => [
-          `JavaScriptSnapshot "${name}" ${not ? 'matched' : 'mismatched'}`,
-          '',
-          color.green('Expected: ') + color.green.underline(snapshotPath),
-          color.red('Received: ') + color.red.underline(newFilepath),
-          color.yellow('    Diff: ') + color.yellow.underline(diffFilepath)
-        ].join('\n'),
-      };
+      pass = false;
     }
   } else {
     const dirPath = path.dirname(snapshotPath);
@@ -76,7 +69,13 @@ export function matchJavaScriptSnapshot({
   }
 
   return {
-    pass: true,
-    message: () => '',
+    pass,
+    message: ({ not }: { not: boolean }) => [
+      `JavaScriptSnapshot "${options.name}" ${not ? 'matched' : 'mismatched'}`,
+      '',
+      color.green('Expected: ') + color.green.underline(snapshotPath),
+      color.red('Received: ') + color.red.underline(newFilepath),
+      color.yellow('    Diff: ') + color.yellow.underline(diffFilepath)
+    ].join('\n'),
   };
 }
