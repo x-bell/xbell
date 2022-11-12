@@ -12,6 +12,5 @@
     "xbell": "workspace:*"
   },
   "devDependencies": {
-     "eslint-config-xbell": "^0.1.0"
   }
 }
