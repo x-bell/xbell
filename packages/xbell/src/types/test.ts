@@ -192,9 +192,9 @@ export interface XBellBrowserTest<BrowserExtArgs = {}> {
 
   todo(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
 
-  each<T>(items: T[]): (caseDescription: string | ((item: T) => string), testCaseFunction: XBellBrowserTestCaseFunction & { item: T }) => void;
+  each<T>(items: T[]): (caseDescription: string | ((item: T, index: number) => string), testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs & { item: T; index: number }>) => void;
 
-  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtArgs & { item: T }>) => void;
+  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtArgs & { item: T; index: number }>) => void;
 
   extend<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<Awaited<ReturnType<T>>>;
 
@@ -218,9 +218,9 @@ export interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
 
   todo(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
 
-  each<T>(items: T[]): (caseDescription: string | ((item: T) => string), testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T }, BrowserExtArgs>) => void;
+  each<T>(items: T[]): (caseDescription: string | ((item: T, index: number) => string), testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T; index: number }, BrowserExtArgs>) => void;
 
-  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T }, BrowserExtArgs>) => void;
+  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T; index: number; }, BrowserExtArgs>) => void;
 
   browser: XBellBrowserTest<BrowserExtArgs>;
 

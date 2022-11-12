@@ -104,12 +104,16 @@ export class Page implements PageInterface {
     mocks,
     filename,
     setupCalbacks,
+    // batch,
   }: {
     browserContext: PWBroContext;
     setupCalbacks: XBellBrowserCallback[];
     browserCallbacks: XBellBrowserCallback[];
     mocks: XBellMocks;
     filename: string;
+    // batch?: {
+    //   items: any[];
+    // }
   }) {
     const _page = await browserContext.newPage();
     const page = new Page(_page, setupCalbacks, browserCallbacks, mocks, filename);
@@ -133,6 +137,7 @@ export class Page implements PageInterface {
     protected _browserCallbacks: XBellBrowserCallback[],
     protected _mocks: XBellMocks,
     protected _filename: string,
+    protected _batch?: { items: any [] }
   ) {
     this._currentFilename = _filename;
     this.keyboard = new Keyboard(this._page.keyboard);

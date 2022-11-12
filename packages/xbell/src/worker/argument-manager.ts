@@ -26,14 +26,15 @@ export class ArgumentManager {
     this.project = project;
   }
 
-  getArguments(): XBellTestCaseFunctionArguments {
+  getArguments(): XBellTestCaseFunctionArguments & Partial<{ item: any, index: number }>{
     return {
       page: this.page,
       project: this.project,
       expect,
       spyOn,
-      fn
-    }
+      fn,
+      ...(this._case.options.each ? this._case.options.each : {}),
+    };
   }
 
   async terdown() {

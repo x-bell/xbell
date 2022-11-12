@@ -38,8 +38,7 @@ export const anyMatcher = defineMatcher({
         ...state,
         assertionName: 'toBe',
         received,
-        expectedFormat: state.not ? `not ${format(received)}` : format(received),
-        expected
+        expectedFormat: state.not ? `not ${format(expected)}` : format(expected),
       })
     }
   },

@@ -336,8 +336,8 @@ class Printer {
       counter.failed ? color.bold.red(counter.failed + ' failed') : undefined,
       counter.waiting ? color.bold.yellow(counter.waiting + ' waiting') : undefined,
       counter.running ? color.bold.yellow(counter.running + ' running') : undefined,
-      counter.skipped + counter.todo ? color.bold.gray(counter.skipped + counter.todo + ' skipped') : undefined,
       counter.successed ? color.bold.green(counter.successed + ' passed') : undefined,
+      counter.skipped + counter.todo ? color.bold.gray(counter.skipped + counter.todo + ' skipped') : undefined,
       total + ' total',
     ].filter(Boolean).join(', ')
   }

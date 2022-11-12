@@ -10,8 +10,22 @@ import { join } from 'path';
 import debug from 'debug';
 import { htmlReporter } from '../common/html-reporter';
 import * as url from 'url';
-import { getSortValue } from '../utils/sort';
+// import { Page as PWPage } from 'playwright-core';
+// import { getSortValue } from '../utils/sort';
 
+// const p: PWPage;
+
+// const next = await p.evaluateHandle(() => {
+//   return {
+//     key: 'value'
+//   }
+// });
+
+// next.evaluateHandle(({ key }, { a }) => {
+//   return {
+//     ...args
+//   }
+// }, { a: 'k' })
 const __filename = url.fileURLToPath(import.meta.url);
 
 const debugExecutor = debug('xbell:executor');
@@ -76,7 +90,19 @@ export class Executor {
   protected async runClassicCaseInNode(c: XBellTestCaseClassic, argManager: ArgumentManager) {
     const cls = c.class as new () => any;
     const instance = new cls();
-    await instance[c.propertyKey](argManager.getArguments());
+    const batchItems = c.options.batch?.items;
+    if (Array.isArray(batchItems)) {
+      for (const [index, item] of batchItems.entries()) {
+        const args = argManager.getArguments();
+        await instance[c.propertyKey]({
+          ...args,
+          item,
+          index,
+        });
+      }
+    } else {
+      await instance[c.propertyKey](argManager.getArguments());
+    }
   }
 
   protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>, argManager: ArgumentManager) {
@@ -164,6 +190,7 @@ export class Executor {
       browserCallbacks: c.runtimeOptions.browserCallbacks || [],
       mocks: c.browserMocks,
       filename: c._testFunctionFilename!,
+      // batch: c.options.batch,
     });
     const terdown = async () => {
       const video = await page.video();
@@ -189,7 +216,36 @@ export class Executor {
         html: '<body></body>',
       });
       debugExecutor('page.goto.end', page.evaluate);
-      await page.evaluate(c.testFunction);
+      if (Array.isArray(c.options.batch?.items)) {
+        let batchContext: {
+          evaluateHandle: typeof page['evaluateHandle']
+          evaluate: typeof page['evaluate'];
+        } = page;
+        for (const [index, item] of c.options.batch!.items.entries()) {
+          // @ts-ignore
+          batchContext = await batchContext.evaluateHandle((args, { item, index }) => {
+            return {
+              ...args,
+              item,
+              index,
+            };
+          }, { item, index });
+          await batchContext.evaluate(c.testFunction); 
+        }
+      } else if (c.options.each) {
+        const { index, item } = c.options.each!;
+        // @ts-ignore
+        const eachContext = await page.evaluateHandle((args, { item, index }) => {
+          return {
+            ...args,
+            item,
+            index,
+          };
+        }, { item, index });
+        await eachContext.evaluateHandle(c.testFunction);
+      } else {
+        await page.evaluate(c.testFunction); 
+      }
       debugExecutor('page.evaluate.end');
       const coverage = coverageConfig?.enabled ? await page.evaluate(() => {
         return window.__xbell_coverage__;

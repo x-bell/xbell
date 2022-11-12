@@ -1,4 +1,4 @@
-import { spyOn, fn, expect, defineMatcher } from '@xbell/assert';
+import { spyOn, fn, expect } from '@xbell/assert';
 import { Page } from './page';
 
 export const importActual: <T = any>(path: string) => Promise<T> = window.__xbell_context__.importActual;
@@ -6,6 +6,7 @@ export const importActual: <T = any>(path: string) => Promise<T> = window.__xbel
 export {
   fn,
   spyOn,
+  expect,
 };
 
 export const page = new Page();

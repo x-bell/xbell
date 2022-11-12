@@ -36,8 +36,8 @@ import {
   isMap,
   isTypedArray,
   isArray,
+  isSet,
 } from './utils/is';
-import { isSet } from 'util/types';
 
 function formatImp(val: any, config: FormatConfig, context: FormatContext): string {
   if (isUndefined(val)) return 'undefined';

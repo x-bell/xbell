@@ -89,8 +89,8 @@ export function createBrowserTest<BrowserExtArgs = {}>(
 
   browser.each = (items) => {
     return (caseDescriptionArg, testCaseFunction) => {
-      items.forEach((item, index) => {
-        const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item) : caseDescriptionArg;
+      for (const [index, item] of items.entries()) {
+        const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item, index) : caseDescriptionArg;
         collector.collectCase({
           caseDescription,
           testCaseFunction,
@@ -106,7 +106,7 @@ export function createBrowserTest<BrowserExtArgs = {}>(
             browserCallbacks,
           },
         });
-      })
+      }
     }
   }
 
@@ -227,7 +227,7 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
   test.each = (items) => {
     return (caseDescriptionArg, testCaseFunction) => {
       items.forEach((item, index) => {
-        const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item) : caseDescriptionArg;
+        const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item, index) : caseDescriptionArg;
         collector.collectCase({
           caseDescription,
           testCaseFunction,

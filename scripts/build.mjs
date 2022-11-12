@@ -31,11 +31,11 @@ const fixExt = () => {
   });
 }
 
-const indexDTS = join(distPath, 'index.d.ts');
-if (existsSync(indexDTS)) {
-  const indexDTSContent = readFileSync(indexDTS, 'utf-8')
-  const indexDMTS = join(distPath, 'index.d.mts');
-  writeFileSync(indexDMTS, indexDTSContent);
-}
+// const indexDTS = join(distPath, 'index.d.ts');
+// if (existsSync(indexDTS)) {
+//   const indexDTSContent = readFileSync(indexDTS, 'utf-8')
+//   const indexDMTS = join(distPath, 'index.d.mts');
+//   writeFileSync(indexDMTS, indexDTSContent);
+// }
 
 fixExt();
