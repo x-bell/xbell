@@ -21,7 +21,9 @@ function getUpLevelStatus({
   successed,
   failed,
   running,
-  waiting
+  waiting,
+  skipped,
+  todo
 }: Record<XBellTestCaseStatus, boolean | number>): XBellTestCaseStatus {
   if (running) {
     return 'running';
@@ -36,7 +38,19 @@ function getUpLevelStatus({
     return 'failed';
   }
 
-  return 'successed'
+  if (successed) {
+    return 'successed';
+  }
+
+  if (skipped) {
+    return 'skipped';
+  }
+
+  if (todo) {
+    return 'todo';
+  }
+
+  return 'successed';
 }
 
 const defaultCounter: Record<XBellTestCaseStatus, number> = {
@@ -201,6 +215,10 @@ class Printer {
     if (status === 'failed') {
       return color.bold.inverse.red(' FAIL ');
     }
+
+    if (status === 'skipped' || status === 'todo') {
+      return color.bold.inverse.gray(' SKIP ');
+    }
   }
 
   print(testFileRecords: XBellTestFileRecord[]) {
@@ -318,7 +336,8 @@ class Printer {
       counter.failed ? color.bold.red(counter.failed + ' failed') : undefined,
       counter.waiting ? color.bold.yellow(counter.waiting + ' waiting') : undefined,
       counter.running ? color.bold.yellow(counter.running + ' running') : undefined,
-      color.bold.green(counter.successed + ' passed'),
+      counter.skipped + counter.todo ? color.bold.gray(counter.skipped + counter.todo + ' skipped') : undefined,
+      counter.successed ? color.bold.green(counter.successed + ' passed') : undefined,
       total + ' total',
     ].filter(Boolean).join(', ')
   }

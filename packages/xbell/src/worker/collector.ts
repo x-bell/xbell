@@ -122,6 +122,17 @@ export class Collector {
     }
   }
 
+  protected updateFileOptions(task: XBellTestCaseStandard<any, any> | XBellTestGroup) {
+     // group: skip, case: only, will be { skip: true, only: true }, same as { skip: true }
+     if (task.options.skip) {
+      this.currentFile!.options.skip++;
+    } else if (task.options.todo) {
+      this.currentFile!.options.todo++;
+    } else if (task.options.only) {
+      this.currentFile!.options.only++;
+    }
+  }
+
   public genUuid() {
     return String(workerContext.workerData.workerId) + '-' + String(this.uuid ++);
   }
@@ -161,7 +172,8 @@ export class Collector {
       options,
     });
     this.currentFile!.tasks.push(this.currentGroup);
-    await testGroupFunction();
+    this.updateFileOptions(this.currentGroup!);
+    testGroupFunction();
     this.currentGroup = undefined;
   }
 
@@ -198,15 +210,7 @@ export class Collector {
     } else {
       this.currentFile!.tasks.push(testCase);
     }
-
-    // group: skip, case: only, will be { skip: true, only: true }, same as { skip: true }
-    if (testCase.options.skip) {
-      this.currentFile!.options.skip++;
-    } else if (testCase.options.todo) {
-      this.currentFile!.options.todo++;
-    } else if (testCase.options.only) {
-      this.currentFile!.options.only++;
-    }
+    this.updateFileOptions(testCase);
   }
 
   public collectMock(mockPath: string, factory: (args: any) => any) {
