@@ -38,27 +38,10 @@ export interface XBellCollectorConstructor {
 }
 
 export class Collector {
-  currentFile?: XBellTestFile;
-  currentGroup?: XBellTestGroup;
-  protected uuid: number = 1;
+  public currentFile?: XBellTestFile;
+  public currentGroup?: XBellTestGroup;
   public classic = new ClassicCollector(this);
-
-  public genUuid() {
-    return String(workerContext.workerData.workerId) + '-' + String(this.uuid ++);
-  }
-
-  public async collect(filename: string) {
-      this.currentFile = this.createFile(filename);
-      this.classic.startFileCollection(this.currentFile);
-      await import(filename);
-      const tasksFromClassic = this.classic.finishFileCollection();
-      debugCollector(tasksFromClassic);
-      this.currentFile.tasks = [
-        ...this.currentFile.tasks,
-        ...tasksFromClassic,
-      ]
-      return this.currentFile;
-  }
+  protected uuid: number = 1;
 
   protected createFile(filename: string): XBellTestFile {
     return {
@@ -76,11 +59,17 @@ export class Collector {
     };
   }
 
-  protected createGroup(
+  protected createGroup({
+    groupDescription,
+    config,
+    runtimeOptions,
+    options,
+  }: {
     groupDescription: string,
     config: XBellTaskConfig,
     runtimeOptions: XBellRuntimeOptions,
-  ): XBellTestGroup {
+    options: XBellOptions,
+  }): XBellTestGroup {
     return {
       uuid: this.genUuid(),
       type: 'group',
@@ -89,7 +78,7 @@ export class Collector {
       cases: [],
       config,
       runtimeOptions,
-      options: {}
+      options,
     }
   }
 
@@ -123,20 +112,54 @@ export class Collector {
       config,
       runtimeOptions,
       uuid: this.genUuid(),
-      options,
+      options: {
+        ...options,
+        ...this.currentGroup?.options,
+      },
       _testFunctionFilename,
       mocks: this.currentFile!.mocks,
       browserMocks: this.currentFile!.browserMocks,
     }
   }
 
+  public genUuid() {
+    return String(workerContext.workerData.workerId) + '-' + String(this.uuid ++);
+  }
+
+  public async collect(filename: string) {
+      this.currentFile = this.createFile(filename);
+      this.classic.startFileCollection(this.currentFile);
+      await import(filename);
+      const tasksFromClassic = this.classic.finishFileCollection();
+      debugCollector(tasksFromClassic);
+      this.currentFile.tasks = [
+        ...this.currentFile.tasks,
+        ...tasksFromClassic,
+      ]
+      return this.currentFile;
+  }
+
   public async collectGroup(
-    groupDescription: string,
-    testGroupFunction: XBellTestGroupFunction,
-    config: XBellTaskConfig,
-    runtimeOptions: XBellRuntimeOptions,
+    {
+      groupDescription,
+      testGroupFunction,
+      runtimeOptions,
+      config,
+      options
+    }: {
+      groupDescription: string,
+      testGroupFunction: XBellTestGroupFunction,
+      config: XBellTaskConfig,
+      runtimeOptions: XBellRuntimeOptions,
+      options: XBellOptions,
+    }
   ) {
-    this.currentGroup = this.createGroup(groupDescription, config, runtimeOptions);
+    this.currentGroup = this.createGroup({
+      groupDescription,
+      config,
+      runtimeOptions,
+      options,
+    });
     this.currentFile!.tasks.push(this.currentGroup);
     await testGroupFunction();
     this.currentGroup = undefined;
@@ -176,12 +199,13 @@ export class Collector {
       this.currentFile!.tasks.push(testCase);
     }
 
-    if (testCase.options.only) {
-      this.currentFile!.options.only++;
+    // group: skip, case: only, will be { skip: true, only: true }, same as { skip: true }
+    if (testCase.options.skip) {
+      this.currentFile!.options.skip++;
     } else if (testCase.options.todo) {
       this.currentFile!.options.todo++;
-    } else if (testCase.options.skip) {
-      this.currentFile!.options.skip++;
+    } else if (testCase.options.only) {
+      this.currentFile!.options.only++;
     }
   }
 

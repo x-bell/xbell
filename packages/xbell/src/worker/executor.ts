@@ -57,7 +57,8 @@ export class Executor {
     const hasSelfOnly = c.options.only;
     const hasOthersOnly = file.options.only > 0;
     if (hasSelfSkipOrTodo || (hasOthersOnly && !hasSelfOnly)) {
-      workerContext.channel.emit('onCaseExecuteSkipped', { uuid: c.uuid });
+      if (c.options.todo) workerContext.channel.emit('onCaseExecuteTodo', { uuid: c.uuid });
+      else workerContext.channel.emit('onCaseExecuteSkipped', { uuid: c.uuid })
       return;
     }
 

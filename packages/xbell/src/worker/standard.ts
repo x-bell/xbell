@@ -1,4 +1,12 @@
-import type { XBellBrowserTestCaseFunction, XBellTestCaseFunction, XBellTestGroupFunction, XBellTestCaseFunctionArguments, FixtureFunction, XBellBrowserCallback } from '../types';
+import type {
+  XBellTestCaseFunction,
+  XBellTestGroupFunction,
+  XBellTestCaseFunctionArguments,
+  XBellBrowserTest,
+  XBellTest,
+  XBellDescribe,
+  XBellBrowserCallback
+} from '../types';
 import * as path from 'node:path';
 import { fileURLToPath } from '../utils/path';
 import { collector } from './collector';
@@ -9,48 +17,6 @@ import { getSortValue } from '../utils/sort';
 
 const debugStandard = debug('xbell:standard');
 
-interface XBellBrowserTest<BrowserExtArgs = {}> {
-  (caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
-
-  only(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
-
-  skip(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
-
-  todo(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
-
-  each<T>(items: T[]): (caseDescription: string | ((item: T) => string), testCaseFunction: XBellBrowserTestCaseFunction & { item: T }) => void;
-
-  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtArgs & { item: T }>) => void;
-
-  extend<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<Awaited<ReturnType<T>>>;
-
-  mock(path: string, factory: (args: BrowserExtArgs) => any): void;
-}
-
-export interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
-  /** group */
-  describe(groupDescription: string, testGroupFunction: XBellTestGroupFunction): void;
-
-  only(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
-
-  skip(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
-
-  todo(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
-
-  each<T>(items: T[]): (caseDescription: string | ((item: T) => string), testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T }, BrowserExtArgs>) => void;
-
-  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T }, BrowserExtArgs>) => void;
-
-  browser: XBellBrowserTest<BrowserExtArgs>;
-
-  extend<T extends (args: XBellTestCaseFunctionArguments<BrowserExtArgs>) => any>(nodeJSCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs>;
-   /** case */
-  (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
-   
-  mock(path: string, factory: (args: NodeJSExtArgs) => any): void;
-
-  extendBrowser<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, Awaited<ReturnType<T>>>;
-}
 
 export function createBrowserTest<BrowserExtArgs = {}>(
   browserCallbacks: XBellBrowserCallback[] = [],
@@ -300,9 +266,55 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     }
   }
 
-  test.describe = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
-    collector.collectGroup(groupDescription, testGroupFunction, {}, {});
+  const describe: XBellDescribe = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
+    collector.collectGroup({
+      groupDescription,
+      testGroupFunction,
+      config: {},
+      runtimeOptions: {},
+      options: {},
+    });
   };
+
+  describe.todo = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
+    collector.collectGroup({
+      groupDescription,
+      testGroupFunction,
+      config: {},
+      runtimeOptions: {},
+      options: {
+        todo: true,
+      },
+    });
+  };
+
+
+  describe.skip = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
+    collector.collectGroup({
+      groupDescription,
+      testGroupFunction,
+      config: {},
+      runtimeOptions: {},
+      options: {
+        skip: true,
+      },
+    });
+  };
+
+  describe.only = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
+    collector.collectGroup({
+      groupDescription,
+      testGroupFunction,
+      config: {},
+      runtimeOptions: {},
+      options: {
+        only: true,
+      },
+    });
+  };
+
+
+  test.describe = describe;
 
   test.extend = <T extends (args: XBellTestCaseFunctionArguments<NodeJSExtArgs>) => any>(nodejsCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs> => {
     return createTest([
