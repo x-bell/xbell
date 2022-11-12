@@ -35,24 +35,32 @@ export class Executor {
 
     for (const task of tasks) {
       if (task.type === 'group') {
-        await this.runGroup(task);
+        await this.runGroup(task, file);
       } else {
-        await this.runCase(task);
+        await this.runCase(task, file);
       }
     }
   }
 
-  async runGroup(group: XBellTestGroup) {
+  async runGroup(group: XBellTestGroup, file: XBellTestFile) {
     for (const task of group.cases) {
       if (task.type === 'group') {
-        await this.runGroup(task);
+        await this.runGroup(task, file);
       } else {
-        await this.runCase(task);
+        await this.runCase(task, file);
       }
     }
   }
 
-  async runCase(c: XBellTestCase<any, any>) {
+  async runCase(c: XBellTestCase<any, any>, file: XBellTestFile) {
+    const hasSelfSkipOrTodo = c.options.skip || c.options.todo;
+    const hasSelfOnly = c.options.only;
+    const hasOthersOnly = file.options.only > 0;
+    if (hasSelfSkipOrTodo || (hasOthersOnly && !hasSelfOnly)) {
+      workerContext.channel.emit('onCaseExecuteSkipped', { uuid: c.uuid });
+      return;
+    }
+
     if (c.runtime === 'node') {
       await this.runCaseInNode(c);
     } else {

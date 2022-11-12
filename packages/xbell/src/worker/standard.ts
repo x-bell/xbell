@@ -304,7 +304,6 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     collector.collectGroup(groupDescription, testGroupFunction, {}, {});
   };
 
-
   test.extend = <T extends (args: XBellTestCaseFunctionArguments<NodeJSExtArgs>) => any>(nodejsCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs> => {
     return createTest([
       ...nodejsCallbacks,

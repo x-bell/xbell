@@ -2,7 +2,9 @@ export type XBellTestCaseStatus =
   | 'successed'
   | 'failed'
   | 'running'
-  | 'waiting';
+  | 'waiting'
+  | 'skipped'
+  | 'todo';
 
 // export type XBellError = { name: string; message: string; stack?: string };
 

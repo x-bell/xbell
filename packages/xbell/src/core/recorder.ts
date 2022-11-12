@@ -60,6 +60,14 @@ class Recorder implements XBellRecorder {
     this._setCaseStatus(c.uuid, 'successed', { coverage: c.coverage, videos: c.videos });
   }
 
+  onCaseExecuteSkipped(c: { uuid: string; }): void {
+    this._setCaseStatus(c.uuid, 'skipped')
+  }
+
+  onCaseExecuteTodo(c: { uuid: string; }): void {
+    this._setCaseStatus(c.uuid, 'todo')
+  }
+
   async onCaseExecuteFailed(c: Parameters<XBellWorkerLifecycle['onCaseExecuteFailed']>[0]) {
     let error = c.error;
     try {

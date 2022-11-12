@@ -44,6 +44,8 @@ const defaultCounter: Record<XBellTestCaseStatus, number> = {
   failed: 0,
   running: 0,
   waiting: 0,
+  skipped: 0,
+  todo: 0,
 }
 
 const INDENT = 5;
@@ -56,7 +58,10 @@ class Printer {
     failed: color.red('×'),
     waiting: color.yellow('●'),
     running: color.yellow('●'),
+    todo: color.gray('↓'),
+    skipped: color.gray('↓'),
   }
+
   protected timer?: NodeJS.Timer;
   protected currentFrame = 0;
   protected files?: XBellTestFileRecord[]

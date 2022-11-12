@@ -76,6 +76,8 @@ export class Scheduler {
       worker.channel.addListener('onLog', (...args) => recorder.onLog(...args))
       worker.channel.addListener('onFileCollectSuccesed', (...args) => recorder.onFileCollectSuccesed(...args));
       worker.channel.addListener('onFileCollectFailed', (...args) => recorder.onFileCollectFailed(...args));
+      worker.channel.addListener('onCaseExecuteTodo', (...args) => recorder.onCaseExecuteTodo(...args))
+      worker.channel.addListener('onCaseExecuteSkipped', (...args) => recorder.onCaseExecuteSkipped(...args))
       worker.channel.addListener('onCaseExecuteStart', (...args) => recorder.onCaseExecuteStart(...args))
       worker.channel.addListener('onCaseExecuteSuccessed', (...args) => recorder.onCaseExecuteSuccessed(...args))
       worker.channel.addListener('onCaseExecuteFailed', (...args) => recorder.onCaseExecuteFailed(...args))

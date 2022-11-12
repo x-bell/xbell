@@ -68,7 +68,12 @@ export class Collector {
       logs: [],
       mocks: new Map(),
       browserMocks: new Map(),
-    }
+      options: {
+        only: 0,
+        skip: 0,
+        todo: 0,
+      },
+    };
   }
 
   protected createGroup(
@@ -169,6 +174,14 @@ export class Collector {
       this.currentGroup.cases.push(testCase);
     } else {
       this.currentFile!.tasks.push(testCase);
+    }
+
+    if (testCase.options.only) {
+      this.currentFile!.options.only++;
+    } else if (testCase.options.todo) {
+      this.currentFile!.options.todo++;
+    } else if (testCase.options.skip) {
+      this.currentFile!.options.skip++;
     }
   }
 

@@ -11,15 +11,6 @@ import type {
 
 export type XBellMocks = Map<string, ((args: any) => any) | undefined>;
 
-export interface XBellTestFile {
-  filename: string;
-  tasks: XBellTestTask[];
-  config: XBellTaskConfig;
-  logs: XBellWorkerLog[];
-  mocks: XBellMocks;
-  browserMocks: XBellMocks;
-}
-
 export interface XBellOptions {
   skip?: boolean;
   todo?: boolean;
@@ -31,6 +22,16 @@ export interface XBellOptions {
   batch?: {
     items?: any[];
   }
+}
+
+export interface XBellTestFile {
+  filename: string;
+  options:  Record<'only' | 'skip' | 'todo', number>;
+  tasks: XBellTestTask[];
+  config: XBellTaskConfig;
+  logs: XBellWorkerLog[];
+  mocks: XBellMocks;
+  browserMocks: XBellMocks;
 }
 
 export interface XBellTestGroup {
@@ -173,6 +174,8 @@ export interface XBellWorkerLifecycle {
   onLog(log: XBellWorkerLog & { filename: string }): void;
   onFileCollectSuccesed(file: XBellTestFileRecord): void;
   onFileCollectFailed(file: XBellTestFileRecord): void;
+  onCaseExecuteSkipped(c: { uuid: string }): void;
+  onCaseExecuteTodo(c: { uuid: string }): void;
   onCaseExecuteStart(c: { uuid: string }): void;
   onCaseExecuteSuccessed(c: { uuid: string, coverage?: any, videos?: string[] }): void;
   onCaseExecuteFailed(c: { uuid: string, error: XBellError, videos?: string[], browserTestFunction?: { body: string; filename: string; } }): void;
