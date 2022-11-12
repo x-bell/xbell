@@ -48,6 +48,7 @@ interface EvaluateHandler {
 
 declare global {
   interface Window {
+    __xbell_coverage__?: any;
     __xbell_context__: {
       importActual<T = any>(path: string): Promise<T>;
       mocks: Map<string, any>;

@@ -72,11 +72,8 @@ export type {
   FixtureFunction,
   XBellConfig,
   XBellProject as Project,
+  XBellTest,
 } from './types';
-
-export type {
-  XBellTest
-} from './worker/standard';
 
 // @ts-ignore
 // resolve swc problem https://github.com/swc-project/swc/issues/1065
