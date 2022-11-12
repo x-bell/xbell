@@ -1,0 +1,10 @@
+{
+  "name": "@xbell/test-browser-tags",
+  "private": true,
+  "dependencies": {
+    "xbell": "workspace:*"
+  },
+  "scripts": {
+    "test": "xbell"
+  }
+}
