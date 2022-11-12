@@ -148,7 +148,14 @@ class Printer {
         status: 'failed',
       } as const : this.getTaskInfo(file.tasks, 0, caseStatusCounter, caseErrors);
       fileStatusCounter[status]++;
-      return this.getStatusLabel(status) + ' ' + color.white(this.getFilename(file.filename)) + (status === 'successed' ? '' : this.startWithNewLine(text)) + this.startWithNewLine(this.getFileLogs(file)) + this.startWithNewLine(this.getFileError(file));
+      return (
+        this.getStatusLabel(status) +
+        ' ' +
+        color.white(this.getFilename(file.filename)) +
+        (status === 'failed' ? this.startWithNewLine(text) : '' )+
+        this.startWithNewLine(this.getFileLogs(file)) +
+        this.startWithNewLine(this.getFileError(file))
+      );
     })
     .join('\n');
 
