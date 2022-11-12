@@ -1,8 +1,5 @@
 import { expect, test } from 'xbell';
 import { expect as innerExpect, fn } from '../src';
-// import { test, genSnapshotError } from './internal-test';
-
-// const snapshotError = genSnapshotError('toHaveBeenCalled.test.ts');
 
 const list = [
   [2, 1],

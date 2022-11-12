@@ -1,8 +1,5 @@
+import { test, expect } from 'xbell';
 import { expect as innerExpect } from '../src';
-import { expect } from 'xbell';
-import { test, genSnapshotError } from './internal-test';
-
-const snapshotError = genSnapshotError('toBeGreaterThanOrEqual.test.ts');
 
 const list = [
   [2, 1],
