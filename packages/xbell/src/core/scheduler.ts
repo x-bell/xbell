@@ -6,7 +6,7 @@
 import type { XBellWorkerTask, XBellProject } from '../types';
 import { configurator } from '../common/configurator';
 import { cpus } from 'node:os';
-import { workerPool, XBellWorkerItem } from './worker-pool';
+import { workerPool, XBellWorkerItem, XBellTaskQuque } from './worker-pool';
 import { recorder } from './recorder';
 import { browserBuilder } from './browser-builder';
 import { compiler } from '../compiler/compiler';
@@ -25,26 +25,7 @@ export class Scheduler {
   async setup() {
   }
 
-  protected async setupWorkers({
-    threads
-  }: {
-    threads: number;
-  }) {
-    if (workerPool.workers) {
-      for (const { worker } of workerPool.workers) {
-        await worker.terminate();
-      }
-    }
-    await workerPool.resetWorkers({
-      threads,
-    });
-
-    for (const worker of workerPool.workers!) {
-      this.setupWorker(worker);
-    }
-  }
-
-  protected setupWorker(worker: XBellWorkerItem) {
+  protected setupWorker = (worker: XBellWorkerItem) => {
      // requests
      worker.channel.registerRoutes({
       // async queryModuleUrl(modules) {
@@ -104,29 +85,33 @@ export class Scheduler {
     worker.channel.addListener('onCaseExecuteFailed', (...args) => recorder.onCaseExecuteFailed(...args))
   }
 
-  async run({
-    project,
-    testFiles
-  }: {
+  async run(list: {
     project: XBellProject;
     testFiles: string[];
-  }) {
-    // const globalConfig = await configurator.globalConfig;
-    const tasks: XBellWorkerTask[] = testFiles.map((testFilename) => ({
-      type: 'run',
-      payload: {
-        testFiles: [{
-          filepath: testFilename,
-          projectName: project.name,
-        }],
-      },
-    }));
-    // TODO: custom threads
-    const threads = Math.min(cpus().length, tasks.length) || 1;
-    await this.setupWorkers({
-      threads,
+  }[]) {
+    debugScheduler('list', list);
+    workerPool.setupWorker = this.setupWorker;
+    const multiProjectTasks = list.map<XBellTaskQuque>(({ project, testFiles }) => {
+      const tasks: XBellWorkerTask[] = testFiles.map((testFilename) => ({
+        type: 'run',
+        payload: {
+          testFiles: [{
+            filepath: testFilename,
+            projectName: project.name,
+          }],
+        },
+      }));
+      return {
+        tasks,
+        projectName: project.name,
+      }
     });
-    workerPool.addTasks(tasks);
+
+    workerPool.setup({
+      maxThreads: cpus().length,
+      queueList: multiProjectTasks,
+    });
+
     await workerPool.runAllTasks();
   }
 }

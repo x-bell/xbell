@@ -16,6 +16,21 @@ const FOLD_ARROW = '❯';
 
 const log = createLogUpdate(process.stdout);
 
+const projectsColors = [
+  color.cyan,
+  color.hex('#9392ef'),
+  color.hex('#ec407a'),
+  color.hex('#e7e86f'),
+  color.hex('#e6e4bf'),
+  color.hex('#fe8980'),
+  color.magenta,
+  color.blue,
+  color.hex('#01d6af'),
+];
+
+function getProjectColorByIndex(idx: number) {
+  return projectsColors[idx % projectsColors.length];
+}
 
 function getUpLevelStatus({
   successed,
@@ -161,17 +176,24 @@ class Printer {
     const fileStatusCounter = { ...defaultCounter };
     const caseStatusCounter = { ...defaultCounter };
     const caseErrors: string[] = [];
+    const projectsIndexMap: Record<string, number> = {};
     const text = this.files!.map(file => {
       const { text, status } = file.error ? {
         text: '',
         status: 'failed',
       } as const : this.getTaskInfo(file.tasks, 0, caseStatusCounter, caseErrors);
       fileStatusCounter[status]++;
+      if (file.projectName && projectsIndexMap[file.projectName] == null) {
+        projectsIndexMap[file.projectName] = Object.keys(projectsIndexMap).length;
+      }
+      const projectColorIndex = projectsIndexMap[file.projectName];
+      const projectColor = getProjectColorByIndex(projectColorIndex);
       return (
         this.getStatusLabel(status) +
         ' ' +
+        (file.projectName ? projectColor(`[${file.projectName}] `): '') +
         color.white(this.getFilename(file.filename)) +
-        (status === 'failed' ? this.startWithNewLine(text) : '' )+
+        (status === 'failed' ? this.startWithNewLine(text) : '' ) +
         this.startWithNewLine(this.getFileLogs(file)) +
         this.startWithNewLine(this.getFileError(file))
       );

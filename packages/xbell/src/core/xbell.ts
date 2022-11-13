@@ -33,10 +33,15 @@ class XBell {
     recorder.setStartTime(Date.now());
     const { projects } =  configurator.globalConfig;
     debugContext('projects', projects);
-    for (const project of projects) {
-      debugContext('projects', project.name);
-      await this.runProject({ project, filters });
-    }
+    const multiProjects = await Promise.all(
+      projects.map(async (project) => {
+        return {
+          project,
+          testFiles: await this.findTestFiles({ project, filters })
+        }
+      }),
+    );
+    await scheduler.run(multiProjects);
     await recorder.onAllDone();
   }
 
@@ -71,24 +76,24 @@ class XBell {
   }
 
 
-  async runProject({
-    project,
-    filters,
-  }: {
-    project: XBellProject;
-    filters?: string[];
-  }) {
+  // async runProject({
+  //   project,
+  //   filters,
+  // }: {
+  //   project: XBellProject;
+  //   filters?: string[];
+  // }) {
 
-    const testFiles = await this.findTestFiles({ project, filters });
-    if (!testFiles.length) {
-      prompter.displayError('NotFoundTestFiles', { exit: true });
-    } else {
-      await scheduler.run({
-        project,
-        testFiles,
-      });
-    }
-  }
+  //   const testFiles = await this.findTestFiles({ project, filters });
+  //   if (!testFiles.length) {
+  //     prompter.displayError('NotFoundTestFiles', { exit: true });
+  //   } else {
+  //     await scheduler.run({
+  //       project,
+  //       testFiles,
+  //     });
+  //   }
+  // }
 }
 
 export const xbell = new XBell()
