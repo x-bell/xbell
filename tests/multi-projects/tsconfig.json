@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "xbell-env.d.ts",
+    "xbell.config.ts",
+    "**/**.test.ts",
+    "**/**.spec.ts",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@xbell/multi-projects",
+  "private": true,
+  "scripts": {
+    "test": "xbell"
+  },
+  "devDependencies": {
+    "xbell": "workspace:*"
+  }
+}
