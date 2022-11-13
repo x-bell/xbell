@@ -1,15 +1,17 @@
-import type { XBellTestFile, XBellWorkerData, XBellWorkerLog } from '../types';
+import type { XBellTestFile, XBellWorkerData, XBellWorkerLog, XBellProject } from '../types';
 
-import { workerData as wd } from 'node:worker_threads';
+import { workerData as wd, parentPort } from 'node:worker_threads';
 import { Console } from 'node:console';
 import { Writable } from 'node:stream';
 import { Channel } from '../common/channel';
+import { configurator } from '../common/configurator';
 
 
 class WorkerContext {
   workerData = wd as XBellWorkerData;
   channel = new Channel(wd.port);
   currentTestFile?: XBellTestFile;
+  projectName?: string;
 
   constructor() {
     this.initConsole();
@@ -60,7 +62,10 @@ class WorkerContext {
       colorMode: true,
     });
   }
-}
 
+  getProject(): XBellProject {
+    return configurator.globalConfig.projects.find(projct => projct.name === this.projectName)!;
+  }
+}
 
 export const workerContext = new WorkerContext()

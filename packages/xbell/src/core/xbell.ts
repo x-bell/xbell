@@ -1,4 +1,5 @@
 
+import type { XBellProject } from '../types';
 import { configurator } from '../common/configurator';
 import { Scheduler, XBellScheduler } from './scheduler';
 import { logger, Logger, XBellLogger } from '../common/logger';
@@ -29,34 +30,60 @@ class XBell {
 
   async runTest(filters?: string[]) {
     recorder.setStartTime(Date.now());
-    let testFiles = await this.findTestFiles();
+    const { projects } =  configurator.globalConfig;
+    for (const project of projects) {
+      await this.runProject({ project, filters });
+    }
+  }
+
+  async findTestFiles({
+    project,
+    filters,
+  }: {
+    project: XBellProject;
+    filters?: string[];
+  }) {
+    const { globalConfig } = configurator;
+    const testDir = pathManager.projectDir;
+    const include = project.config?.include ?? globalConfig.include;
+    const exclude = project.config?.exclude ?? globalConfig.exclude;
+
+    let testFiles = (await glob(
+      include,
+      {
+        cwd: testDir,
+        ignore: exclude,
+      }
+    )).map(relativeFilepath => ({
+      absoluteFileath: join(testDir, relativeFilepath),
+      relativeFilepath
+    }));
 
     if (filters?.length) {
       testFiles = testFiles.filter(({ relativeFilepath }) => filters.some(filter => relativeFilepath.includes(filter)));
     }
 
+    return testFiles.map(item => item.absoluteFileath);
+  }
+
+
+  async runProject({
+    project,
+    filters,
+  }: {
+    project: XBellProject;
+    filters?: string[];
+  }) {
+
+    const testFiles = await this.findTestFiles({ project, filters });
     if (!testFiles.length) {
       prompter.displayError('NotFoundTestFiles', { exit: true });
     } else {
-      await scheduler.run(testFiles.map(item => item.absoluteFileath));
+      await scheduler.run({
+        project,
+        testFiles,
+      });
     }
-  }
-
-  async findTestFiles() {
-    const { globalConfig } = configurator;
-    const testDir = pathManager.projectDir;
-    const testFiles = glob.sync(
-      globalConfig.include,
-      {
-        cwd: testDir,
-        ignore: globalConfig.exclude,
-      }
-    ).map(relativeFilepath => ({
-      absoluteFileath: join(testDir, relativeFilepath),
-      relativeFilepath
-    }));
-
-    return testFiles;
   }
 }
 

@@ -44,7 +44,7 @@ export class Executor {
   }
 
   async run(file: XBellTestFile) {
-    stateManager.setCurrentFilepath(file.filename);
+    stateManager.setCurrentFile(file);
     const { tasks } = file;
 
     for (const task of tasks) {
@@ -80,7 +80,7 @@ export class Executor {
     }
 
     if (c.runtime === 'node') {
-      await this.runCaseInNode(c);
+      await this.runCaseInNode(c, file);
     } else {
       // TODO:
       await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
@@ -110,8 +110,8 @@ export class Executor {
     await testFunction(argManager.getArguments());
   }
 
-  async runCaseInNode(c: XBellTestCase<any, any>) {
-    const argManager = new ArgumentManager(c);
+  async runCaseInNode(c: XBellTestCase<any, any>, file: XBellTestFile) {
+    const argManager = new ArgumentManager(file, c);
     const { hooks } = configurator.globalConfig;
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,

@@ -43,8 +43,15 @@ export class Collector {
   public classic = new ClassicCollector(this);
   protected uuid: number = 1;
 
-  protected createFile(filename: string): XBellTestFile {
+  protected createFile({
+    filename,
+    projectName,
+  }: {
+    filename: string;
+    projectName: string;
+  }): XBellTestFile {
     return {
+      projectName,
       filename,
       tasks: [],
       config: {},
@@ -137,8 +144,17 @@ export class Collector {
     return String(workerContext.workerData.workerId) + '-' + String(this.uuid ++);
   }
 
-  public async collect(filename: string) {
-      this.currentFile = this.createFile(filename);
+  public async collect({
+    filename,
+    projectName
+  }: {
+    filename: string;
+    projectName: string;
+  }) {
+      this.currentFile = this.createFile({
+        filename,
+        projectName,
+      });
       this.classic.startFileCollection(this.currentFile);
       await import(filename);
       const tasksFromClassic = this.classic.finishFileCollection();

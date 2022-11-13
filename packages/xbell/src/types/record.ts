@@ -53,6 +53,7 @@ export type XBellTestTaskRecord =
 
 
 export interface XBellTestFileRecord {
+  projectName: string;
   filename: string;
   tasks: XBellTestTaskRecord[];
   logs: XBellWorkerLog[];

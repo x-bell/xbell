@@ -2,7 +2,7 @@ import type { MessagePort } from 'node:worker_threads';
 import type { XBellConfig } from './config';
 
 export interface XBellWorkerTaskPayload {
-  testFilenames: string[];
+  testFiles: { filepath: string; projectName: string }[];
 }
 
 export interface XBellWorkerTask {
@@ -13,5 +13,4 @@ export interface XBellWorkerTask {
 export interface XBellWorkerData {
   port: MessagePort;
   workerId: number;
-  projectName: XBellProjects['names'];
 }

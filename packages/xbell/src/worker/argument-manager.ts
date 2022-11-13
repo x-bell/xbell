@@ -1,4 +1,4 @@
-import type { XBellTestCase, XBellTestCaseFunctionArguments } from '../types/test';
+import type { XBellTestCase, XBellTestCaseFunctionArguments, XBellTestFile } from '../types/test';
 import type { XBellProject } from '../types/config';
 import { genLazyPage } from './lazy-page';
 import { workerContext } from './worker-context';
@@ -16,10 +16,12 @@ export class ArgumentManager {
 
   project: XBellProject;
 
-  constructor(protected _case: XBellTestCase<any, any>) {
-    const { projectName } = workerContext.workerData;
+  constructor(
+    protected _file: XBellTestFile,
+    protected _case: XBellTestCase<any, any>
+  ) {
     const { globalConfig } = configurator;
-    const project = globalConfig.projects!.find(project => project.name === projectName);
+    const project = globalConfig.projects!.find(project => project.name === _file.projectName);
     if (!project) {
       throw new Error('Not found project');
     }

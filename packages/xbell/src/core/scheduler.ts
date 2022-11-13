@@ -3,7 +3,7 @@
 // import { Executor } from '../executor/executor';
 // import { Worker } from 'node:worker_threads';
 
-import type { XBellWorkerTask } from '../types';
+import type { XBellWorkerTask, XBellProject } from '../types';
 import { configurator } from '../common/configurator';
 import { workerPool } from './worker-pool';
 import { recorder } from './recorder';
@@ -84,18 +84,27 @@ export class Scheduler {
     });
   }
 
-  async run(testFiles: string[]) {
-    const globalConfig = await configurator.globalConfig;
+  async run({
+    project,
+    testFiles
+  }: {
+    project: XBellProject;
+    testFiles: string[];
+  }) {
+    // const globalConfig = await configurator.globalConfig;
     const tasks: XBellWorkerTask[] = testFiles.map((testFilename) => ({
       type: 'run',
       payload: {
-        testFilenames: [testFilename],
+        testFiles: [{
+          filepath: testFilename,
+          projectName: project.name,
+        }],
       },
     }));
     workerPool.addTasks(tasks);
     await workerPool.runAllTasks();
 
-    recorder.onAllDone();
+    await recorder.onAllDone();
   }
 }
 

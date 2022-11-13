@@ -29,6 +29,7 @@ export function toTestTaskRecord(task: XBellTestTask): XBellTestTaskRecord {
 
 export function toTestFileRecord(testFile: XBellTestFile): XBellTestFileRecord {
   return {
+    projectName: testFile.projectName,
     filename: testFile.filename,
     tasks: testFile.tasks.map(toTestTaskRecord),
     logs: [],

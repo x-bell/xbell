@@ -10,20 +10,24 @@ import { configurator } from '../common/configurator';
 
 const debugWorker = debug('xbell:worker');
 
-export async function run(workData: XBellWorkerTaskPayload) {
-  const testFiles = (await Promise.all(workData.testFilenames.map(async (filename) => {
+export async function run(taskPayload: XBellWorkerTaskPayload) {
+  const testFiles = (await Promise.all(taskPayload.testFiles.map(async ({ filepath, projectName }) => {
     try {
-      debugWorker('startCollect', filename);
-      const ret = await collector.collect(filename);
+      debugWorker('startCollect', filepath);
+      const ret = await collector.collect({
+        filename: filepath,
+        projectName,
+      });
       const testRecord = toTestFileRecord(ret);
       workerContext.channel.emit('onFileCollectSuccesed', testRecord);
-      debugWorker('startCollect.done', filename, testRecord);
+      debugWorker('startCollect.done', filepath, testRecord);
       return ret;
     } catch(error: any) {
-      debugWorker('startCollect.failed', filename);
+      debugWorker('startCollect.failed', filepath);
       // TODO: collect failed
       workerContext.channel.emit('onFileCollectFailed', {
-        filename,
+        projectName,
+        filename: filepath,
         logs: [],
         tasks: [],
         error: {
@@ -38,7 +42,7 @@ export async function run(workData: XBellWorkerTaskPayload) {
   for (const testFile of testFiles) {
     workerContext.setCurrentTestFile(testFile);
     const executor = new Executor({
-      projectName:  workerContext.workerData.projectName,
+      projectName: testFile.projectName,
       globalConfig: configurator.globalConfig,
     }); 
     await executor.run(testFile);

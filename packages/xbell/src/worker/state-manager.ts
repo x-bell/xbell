@@ -1,18 +1,19 @@
+import type { XBellTestFile } from '../types';
 import { workerContext } from './worker-context';
 
 class StateManager {
-  currentFilepath?: string;
+  currentFile?: XBellTestFile;
 
   public getCurrentState() {
-    const { projectName } = workerContext.workerData;
+    const { filename, projectName } = this.currentFile!;
     return {
       projectName,
-      filepath: this.currentFilepath!,
+      filepath: filename!,
     };
   }
 
-  setCurrentFilepath(filepath: string) {
-    this.currentFilepath = filepath;
+  setCurrentFile(filepath: XBellTestFile) {
+    this.currentFile = filepath;
   }
 }
 

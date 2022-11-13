@@ -190,7 +190,8 @@ class Printer {
     const relativePath = filepath.split(pathManager.projectDir + '/').pop()!;
     const paths = relativePath.split('/');
     const filename = paths.pop();
-    return color.gray(paths.join('/') + '/') + filename;
+    const prefix = paths.join('/');
+    return color.gray(prefix ? prefix + '/' : '') + filename;
   }
 
   protected getStatusIcon(status: XBellTestCaseStatus) {

@@ -30,15 +30,12 @@ export class WorkerPool {
   ) {}
 
   async setup() {
-    const { globalConfig } = configurator;
-    const projects = globalConfig.projects!
-    this.workers = this.genWorkers(projects);
+    this.workers = this.genWorkers();
   }
 
-  protected genWorkers(projects: XBellProject[]): XBellWorkerItem[] {
+  protected genWorkers(): XBellWorkerItem[] {
     // TODO: multi-project2
-    const project = projects[0];
-    // const { workerPort } = this.channel;
+    // TODO: custom threads
     return Array.from(new Array(this.threads), (_, idx) => {
       const { port1: mainPort, port2: workerPort } = new MessageChannel();
       const channel = new Channel(mainPort);
@@ -50,7 +47,6 @@ export class WorkerPool {
           workerData: <XBellWorkerData>{
             port: workerPort,
             workerId,
-            projectName: project.name,
           },
         }),
         busy: false,
@@ -117,6 +113,7 @@ export class WorkerPool {
     workerItem.busy = false;
     this.checkQueue(resolve, reject);
   }
+
 }
 
 export const workerPool = new WorkerPool(pathManager.workerPath);

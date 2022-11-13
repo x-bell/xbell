@@ -1,7 +1,7 @@
 import type { XBellTestFileRecord, XBellWorkerLog, XBellWorkerLifecycle } from '../types';
-import type { MessagePort } from 'worker_threads';
-import { EventEmitter } from 'events';
-import { randomUUID } from 'crypto';
+import type { MessagePort } from 'node:worker_threads';
+import { EventEmitter } from 'node:events';
+import { randomUUID } from 'node:crypto';
 
 import debug from 'debug';
 
@@ -82,11 +82,11 @@ export class Channel extends EventEmitter {
 
   protected async handleRequest(message: XBellWorkerRequestMessage) {
     const { requestId, api, data } = message.payload;
-    if (!this._router) {
-      throw new Error('Unregistered routes');
+    if (!this._router || !this._router![api]) {
+      throw new Error('Unregistered route');
     }
 
-    const ret = await this._router![api](data);
+    const ret = await this._router![api]!(data);
 
     // send response
     const responseMessage: XBellWorkerResponseMessage = {

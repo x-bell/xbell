@@ -25,6 +25,7 @@ export interface XBellOptions {
 }
 
 export interface XBellTestFile {
+  projectName: string;
   filename: string;
   options:  Record<'only' | 'skip' | 'todo', number>;
   tasks: XBellTestTask[];
