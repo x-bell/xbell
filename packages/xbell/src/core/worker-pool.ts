@@ -6,14 +6,13 @@ import type {
 
 import { Worker, MessageChannel, isMainThread } from 'node:worker_threads';
 // import type { MessagePort } from 'node:worker_threads';
-import { cpus } from 'node:os';
 import { Channel } from '../common/channel';
 import { pathManager } from '../common/path-manager';
 import { configurator } from '../common/configurator';
 import debug from 'debug';
 
 const debugWorkerPool = debug('xbell:workerPool');
-interface XBellWorkerItem {
+export interface XBellWorkerItem {
   worker: Worker;
   busy: boolean;
   workerId: number;
@@ -22,21 +21,31 @@ interface XBellWorkerItem {
 
 export class WorkerPool {
   protected queue: XBellWorkerTask[] = []
-  public workers!: XBellWorkerItem[];
+  public workers?: XBellWorkerItem[];
 
   constructor(
     public workPath: string,
-    public threads = cpus().length,
+    // public threads = cpus().length,
   ) {}
 
-  async setup() {
-    this.workers = this.genWorkers();
+  async resetWorkers({
+    threads
+  }: {
+    threads: number
+  }) {
+    this.workers = this.genWorkers({
+      threads
+    });
   }
 
-  protected genWorkers(): XBellWorkerItem[] {
+  protected genWorkers({
+    threads
+  }: {
+    threads: number;
+  }): XBellWorkerItem[] {
     // TODO: multi-project2
     // TODO: custom threads
-    return Array.from(new Array(this.threads), (_, idx) => {
+    return Array.from(new Array(threads), (_, idx) => {
       const { port1: mainPort, port2: workerPort } = new MessageChannel();
       const channel = new Channel(mainPort);
 
@@ -60,7 +69,7 @@ export class WorkerPool {
     // const hasTask = Object.entries(this.queueMap).some(([_, tasks]) => tasks.length)
 
     if (!this.queue.length) {
-      const isAllFinished = this.workers.every(worker => !worker.busy)
+      const isAllFinished = this.workers!.every(worker => !worker.busy)
       if (isAllFinished) {
         // TODO:
         resolve();
@@ -69,11 +78,8 @@ export class WorkerPool {
       return;
     }
 
-    const idleWorkerItems = this.workers.filter(worker => !worker.busy)
+    const idleWorkerItems = this.workers!.filter(worker => !worker.busy)
     for (const workerItem of idleWorkerItems) {
-      if (!this.queue.length) {
-        return;
-      }
       const { worker } = workerItem;
       workerItem.busy = true;
       worker.once('message', (event) => {

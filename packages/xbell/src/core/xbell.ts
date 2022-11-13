@@ -13,11 +13,12 @@ import { prompter } from '../prompter';
 import { workerPool } from './worker-pool';
 import { htmlReporter } from '../common/html-reporter';
 import { pathManager } from '../common/path-manager';
+import debug from 'debug';
 
+const debugContext = debug('xbell:context');
 class XBell {
   async setup() {
     await configurator.setup();
-    await workerPool.setup();
     await scheduler.setup();
     await htmlReporter.setup();
 
@@ -31,9 +32,12 @@ class XBell {
   async runTest(filters?: string[]) {
     recorder.setStartTime(Date.now());
     const { projects } =  configurator.globalConfig;
+    debugContext('projects', projects);
     for (const project of projects) {
+      debugContext('projects', project.name);
       await this.runProject({ project, filters });
     }
+    await recorder.onAllDone();
   }
 
   async findTestFiles({
