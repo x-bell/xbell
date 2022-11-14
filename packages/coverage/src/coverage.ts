@@ -1,5 +1,6 @@
 import type { ReportOptions } from 'istanbul-reports';
 import type { CoverageMap } from 'istanbul-lib-coverage'
+import * as path from 'node:path';
 import libCoverage from 'istanbul-lib-coverage'
 import libSourceMaps from 'istanbul-lib-source-maps'
 import libReport from 'istanbul-lib-report'
@@ -41,10 +42,11 @@ export class CoverageManager {
     }, {});
 
     const sourceMapStore = libSourceMaps.createSourceMapStore();
-    const coverageMap: CoverageMap = await sourceMapStore.transformCoverage(mergedCoverage)
-    const rootDir = this.opts.cwd ?? process.cwd();
+    const coverageMap: CoverageMap = await sourceMapStore.transformCoverage(mergedCoverage);
+    const cwd = this.opts.cwd ?? process.cwd();
+    const outputDir = this.opts.outputDir ?? path.join(cwd, 'coverage');
     const contextOptions = {
-      dir: rootDir,
+      dir: outputDir,
       coverageMap,
       sourceFinder: sourceMapStore.sourceFinder,
     };
@@ -56,7 +58,7 @@ export class CoverageManager {
     types.forEach((type) => {
       const options =  {
         skipFull: undefined,
-        projectRoot: rootDir,
+        projectRoot: cwd,
       };
       reports.create(type, options).execute(context);
     })

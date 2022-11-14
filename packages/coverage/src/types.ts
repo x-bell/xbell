@@ -3,5 +3,6 @@ export interface CoverageOptions {
   exclude?: string | string[];
   extension?: string | string[];
   cwd?: string;
+  outputDir?: string;
   enabled?: boolean;
 }
