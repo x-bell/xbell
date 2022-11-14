@@ -4,10 +4,10 @@ import { Worker, MessageChannel, isMainThread } from 'node:worker_threads';
 // import type { MessagePort } from 'node:worker_threads';
 import { Channel } from '../common/channel';
 import { pathManager } from '../common/path-manager';
-import { configurator } from '../common/configurator';
-import debug from 'debug';
+// import { configurator } from '../common/configurator';
+// import debug from 'debug';
 
-const debugWorkerPool = debug('xbell:workerPool');
+// const debugWorkerPool = debug('xbell:workerPool');
 export interface XBellWorkerItem {
   worker: Worker;
   busy: boolean;
@@ -43,12 +43,6 @@ export class WorkerPool {
   }) {
     this.maxThreads = maxThreads;
     this.queueList = queueList;
-    // let restThreads = maxThreads;
-    for (const { tasks, projectName } of this.queueList) {
-      const worker = this.genWorker({ projectName });
-      this.workers!.push(worker);
-      if (this.workers.length === this.maxThreads) break;
-    }
   }
 
   public runAllTasks() {
@@ -87,59 +81,57 @@ export class WorkerPool {
     return workerItem;
   }
 
-  protected isEmptyQuque() {
+  protected isEmptyQueue() {
     return this.queueList.every((item) => !item.tasks.length);
   }
 
   protected checkQueue() {
-    if (this.isEmptyQuque()) {
+    if (this.isEmptyQueue()) {
       return;
     }
     const nextQuque = this.queueList.find((item) => item.tasks.length);
     if (nextQuque) {
-      const task = nextQuque.tasks.shift()!;
-      this.runTask({ task, projectName: nextQuque.projectName });
+      this.runTask({ queue: nextQuque });
     }
   }
 
   protected runTask({
-    projectName,
-    task,
+    queue,
   }: {
-    task: XBellWorkerTask;
-    projectName: string;
+    queue: XBellTaskQuque;
   }) {
-    const workers = this.workers!;
+
+    const { projectName } = queue;
+    const workers = this.workers;
     const idleWorker = workers.find(
       (worker) => !worker.busy && worker.projectName === projectName
     );
     if (idleWorker) {
       this.executeWorker({
         workerItem: idleWorker,
-        task,
+        queue,
       });
     } else if (workers.length < this.maxThreads) {
       const newWorker = this.genWorker({ projectName });
-      this.workers!.push(newWorker);
+      this.workers.push(newWorker);
       this.executeWorker({
         workerItem: newWorker,
-        task,
+        queue,
       });
     }
   }
 
   protected executeWorker({
     workerItem,
-    task,
+    queue,
   }: {
     workerItem: XBellWorkerItem;
-    task: XBellWorkerTask;
+    queue: XBellTaskQuque;
   }) {
     const { worker } = workerItem;
     workerItem.busy = true;
     worker.once('message', (event) => {
       if (event?.type === 'finished') {
-        debugWorkerPool('finishedTask');
         this.finishedTask(workerItem);
       }
     });
@@ -151,8 +143,7 @@ export class WorkerPool {
       process.exit(0);
       // this.finishedTask(workerItem, resolve, reject);
     });
-    // const task = this.queue.shift();
-    debugWorkerPool('remove queue', task);
+    const task = queue.tasks.shift();
     worker.postMessage(task);
     this.checkQueue();
   }
@@ -167,10 +158,10 @@ export class WorkerPool {
 
     if (!targetQueue.tasks.length) {
       await workerItem.worker.terminate();
-      this.workers = this.workers!.filter((item) => item !== workerItem);
+      this.workers = this.workers.filter((item) => item !== workerItem);
     }
 
-    if (this.isEmptyQuque() && this.workers!.every(workerItem => !workerItem.busy)) {
+    if (this.isEmptyQueue() && this.workers.every(workerItem => !workerItem.busy)) {
       this._promise?.resolve();
     } else {
       this.checkQueue();

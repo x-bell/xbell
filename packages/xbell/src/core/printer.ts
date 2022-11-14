@@ -18,14 +18,14 @@ const log = createLogUpdate(process.stdout);
 
 const projectsColors = [
   color.cyan,
-  color.hex('#9392ef'),
   color.hex('#ec407a'),
+  color.hex('#9392ef'),
+  color.hex('#01d6af'),
   color.hex('#e7e86f'),
   color.hex('#e6e4bf'),
   color.hex('#fe8980'),
   color.magenta,
   color.blue,
-  color.hex('#01d6af'),
 ];
 
 function getProjectColorByIndex(idx: number) {
@@ -94,6 +94,7 @@ class Printer {
   protected timer?: NodeJS.Timer;
   protected currentFrame = 0;
   protected files?: XBellTestFileRecord[]
+  public isAllDone = false;
   constructor() {}
 
   public getTaskInfo(
@@ -335,7 +336,7 @@ class Printer {
     fileStatusCounter: Record<XBellTestCaseStatus, number>;
     caseStatusCounter: Record<XBellTestCaseStatus, number>
   }) {
-    const isAllPassed = fileStatusCounter.failed === 0 && fileStatusCounter.running === 0 && fileStatusCounter.waiting === 0;
+    const isAllPassed = fileStatusCounter.failed === 0 && fileStatusCounter.running === 0 && fileStatusCounter.waiting === 0 && this.isAllDone;
 
     return [
       'Test ' + 'Files: ' + this.getTotals(fileStatusCounter),
@@ -382,6 +383,11 @@ class Printer {
       (c.groupDescription || ''),
       c.caseDescription,
     ].filter(Boolean).join(color.gray(' > '))
+  }
+
+  onAllDone(testFileRecords: XBellTestFileRecord[]) {
+    this.isAllDone = true;
+    this.print(testFileRecords);
   }
 }
 

@@ -42,6 +42,7 @@ class XBell {
       }),
     );
     await scheduler.run(multiProjects);
+    printer.onAllDone(recorder.tree);
     await recorder.onAllDone();
   }
 

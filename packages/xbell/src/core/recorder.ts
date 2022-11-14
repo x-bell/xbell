@@ -17,6 +17,7 @@ import { isCase } from '../utils/is';
 import { coverageManager } from '../common/coverage-manager';
 import { htmlReporter } from '../common/html-reporter';
 import { formatError } from '../utils/error';
+import { configurator } from '../common/configurator';
 
 interface XBellRecorder extends Omit<XBellWorkerLifecycle, 'onExit'> {
 
@@ -29,7 +30,7 @@ class Recorder implements XBellRecorder {
   subscribers: Array<XBellRecordSubscriber>;
   protected _startTime?: number;
 
-  protected _taskMap = new Map<string, XBellTestTaskRecord>()
+  protected _taskMap = new Map<string, XBellTestTaskRecord>();
 
   constructor() {
     this.tree = [];
@@ -126,11 +127,32 @@ class Recorder implements XBellRecorder {
   }  
 
   protected _addTestFile(testFile: XBellTestFileRecord) {
-    this.tree.push(testFile);
+    this.tree = this.sortByProject([
+      ...this.tree,
+      testFile
+    ]);
     eachTask(testFile.tasks, (task) => {
       this._taskMap.set(task.uuid, task);
     });
     this._broadcast();
+  }
+
+  protected sortByProject(files: XBellTestFileRecord[]) {
+    const { projects } = configurator.globalConfig;
+    if (projects.length < 2) {
+      return files;
+    }
+    const indexMap = projects.reduce<Record<string, number>>((acc, project, index) => {
+      acc[project.name] = index;
+      return acc;
+    }, {});
+
+    return files.reduce<XBellTestFileRecord[][]>((groupList, file) => {
+      const groupIndex = indexMap[file.projectName];
+      if (!groupList[groupIndex]) groupList[groupIndex] = [];
+      groupList[groupIndex].push(file);
+      return groupList;
+    }, []).reduce((acc, group) => [...acc, ...group], []);
   }
   
   protected _broadcast() {
@@ -138,4 +160,4 @@ class Recorder implements XBellRecorder {
   }
 }
 
-export const recorder = new Recorder()
+export const recorder = new Recorder();
