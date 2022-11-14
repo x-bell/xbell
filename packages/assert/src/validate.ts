@@ -20,6 +20,13 @@ export function isPromise<T>(v: T | Promise<T>): v is Promise<T> {
   return false;
 }
 
+export function isIterable(obj: any): obj is IterableIterator<any> {
+  if (obj == null) {
+    return false;
+  }
+  return typeof obj[Symbol.iterator] === 'function';
+}
+
 export function checkRejects(received: any) {
   const isFunction = typeof received === 'function';
   if (isFunction) {

@@ -5,56 +5,6 @@ import { format } from '@xbell/format';
 import { isPromise, checkRejects, AssertionError, getPromiseValue, toMatch } from './validate';
 import { getAssertionMessage } from './message';
 
-// interface ExpectFunctionAssertion {
-//   // functions
-//   toHaveBeenCalled(): void;
-//   toHaveBeenCalledTimes(times: number): void;
-//   toHaveBeenCalledWith(arg1, arg2, ...args): void;
-//   toHaveBeenLastCalledWith(arg1, arg2, ...args): void;
-//   toHaveBeenNthCalledWith(nthCall: number, arg2, ...args): void;
-//   toHaveReturned(): void;
-//   toHaveReturnedTimes(): void;
-//   toHaveReturnedWith(value: unknown): void;
-//   toHaveLastReturnedWith(value: unknown): void;
-//   toHaveNthReturnedWith(nthCall: number, value: unknown): void;
-// }
-
-
-interface ExpectArrayAssertion {
-  // array
-  toHaveLength(length: number): void;
-}
-
-interface ExpectAssertionABC {
-  // not: ExpectAssertion<T>
-  toBe(expected: any): void;
-  toHaveProperty(property: string | string[], value?: unknown): void;
-  toBeCloseTo(num: number, numDigits: number): void;
-  toBeDefined(): void;
-  toBeFalsy(): void;
-  toBeGreaterThan(num: number | bigint): void;
-  toBeGreaterThanOrEqual(num: number | bigint): void;
-  toBeLessThan(num: number | bigint): void;
-  toBeLessThanOrEqual(num: number | bigint): void;
-  toBeInstanceOf(cls: unknown): void;
-  toBeNull(): void;
-  toBeTruthy(): void;
-  toBeUndefined(): void;
-  toBeNaN(): void;
-  toContain(item: unknown): void;
-  toContainEqual(item: unknown): void;
-  toEqual(value: unknown): void;
-  toMatch(reg: RegExp | string): void;
-  // todo
-  toMatchObject(value: unknown): void;
-  toMatchSnapshot(): void;
-  toMatchInlineSnapshot(): void;
-  toStrictEqual(): void;
-  toThrow(): void;
-  toThrowErrorMatchingSnapshot(): void;
-  toThrowErrorMatchingInlineSnapshot(): void;
-}
-
 
 export function createExpect<MatchObject extends ExpectMatchObject, Type = any, DefaultObject = {}>(matchObject: MatchObject): Expect<MatchObject, Type, DefaultObject> {
   const expect: Omit<Expect<MatchObject, Type, DefaultObject>, 'extend'> = <Received>(received: Received) => {
