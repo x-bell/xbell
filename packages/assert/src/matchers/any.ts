@@ -227,6 +227,55 @@ export const anyMatcher = defineMatcher({
       }
     }
   },
+  toHaveProperty(received: unknown, ...args: [keyPath: string | string[], value?: any]) {
+    let [keyPath, value] = args;
+    if (typeof keyPath !== 'string' && !Array.isArray(keyPath)) {
+      return {
+        pass: false,
+        message: state => getAssertionMessage({
+          ...state,
+          assertionName: 'toHaveProperty',
+          ignoreExpected: true,
+          ignoreReceived: true,
+          additionalMessage: [
+            `${color.green('expected')} path must be a string or array`,
+            '',
+            `Expected has type:  ${typeof keyPath}`,
+            `Expected has value: ${format(keyPath)}`,
+          ].join('\n')
+        }),
+      };
+    }
+
+    const fixKey = (key: unknown) => String(key).replace(/\[(\d+)\]/g, '.$1');
+    const keyPathStr = Array.isArray(keyPath) ? keyPath.map(item => fixKey(item)).join('.') : fixKey('key')
+    const paths = keyPathStr.split('.');
+    let result: any = received
+    const lastKey = paths.pop();
+    const receivedPath: string[] = [];
+    for (const key of paths) {
+      if (Object.prototype.hasOwnProperty.call(result, key)) {
+        result = result[key]
+        receivedPath.push(key);
+      } else {
+        break;
+      }
+    }
+    return {
+      pass: lastKey != null &&
+        Object.prototype.hasOwnProperty.call(result, lastKey) &&
+        (args.length < 2 || equals(result[lastKey], value, [iterableEquality])),
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toHaveProperty',
+        expectedLabel: 'Expected path',
+        expectedFormat: keyPathStr,
+        receivedLabel: 'Received path',
+        receivedFormat: receivedPath.join('.'),
+        matcherExpected: 'matcherExpected',
+      })
+    }
+  },
   toThrow(received: unknown, expected?: string | RegExp | Error) {
     let message;
     return {
@@ -264,5 +313,5 @@ export const anyMatcher = defineMatcher({
         return 'toThrow Error';
       }
     }
-  }
+  },
 });
