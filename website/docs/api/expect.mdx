@@ -106,6 +106,74 @@ import TabItem from '@theme/TabItem';
 
 </Tabs>
 
+### toEqual
+**Signature: expect(received).toEqual(value)**
+- `received` <type>any</type>
+- `value` <type>any</type>
+
+**Returns** <type>void</type>
+
+`toEqual` is used to assert that compare recursively all properties of object instances (also known as "deep" equality). 
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toEqual', ({ expect }) => {
+  const obj1 = {
+    key: 'value',
+  };
+
+  const obj2 = {
+    key: 'value',
+  };
+
+  expect(obj1).not.toBe(obj2);
+  // to euqal
+  expect(obj1).toEqual(obj2);
+});
+```
+
+### toContain
+**Signature: expect(received).toContain(value)**
+
+- `received`<type>Array | string | IterableIterator</type>
+- `value` <type>any</type>
+
+**Returns** <type>void</type>
+
+`toContain` is used to assert that an item is in an array. It uses `===`, a strict equality check.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toContain', ({ expect }) => {
+  expect([1, 2, 3]).toContain(1);
+  expect('abc').toContain('a');
+});
+```
+
+### toContainEqual
+**Signature: expect(received).toContainEqual(value)**
+
+- `received`<type>Array | string | IterableIterator</type>
+- `value` <type>any</type>
+
+**Returns** <type>void</type>
+
+`toContainEqual` is used to assert that an item is in an array. It uses `toEqual` to compare item.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toContainEqual', ({ expect }) => {
+  expect([{ key: 'value' }]).toContainEqual({ key: 'value' });
+  expect('abc').toContainEqual('a');
+});
+```
+
 ### toBeDefined<tag type="node.js" /><tag type="browser" />
 
 **Signature: expect(received).toBeDefined()**
@@ -118,6 +186,7 @@ import TabItem from '@theme/TabItem';
 
 Usually used to check if a function has a return value.
 
+**Example**
 ```javascript
 import { test, expect } from 'xbell';
 
@@ -141,6 +210,8 @@ test('it always creates something', () => {
 `toBeUndefined()` is used to assert that the value is `undefined` , same as `toBe(undefined)` .
 
 Usually used to check if a function returns undefined.
+
+**Exmaple**
 ```javascript
 import { test, expect } from 'xbell';
 
@@ -298,6 +369,22 @@ test('getName returns undefined when passed a empty value', () => {
   </TabItem>
 </Tabs>
 
+### toHaveLength
+**Signature: expect(received).toHaveLength(length)**
+- `received` <type>{ length: number }</type>
+- `length` <type>number</type>
+
+`toHaveLength` is used to check that an object has a `.length` property and it is set to a certain numeric value.
+
+**Example**
+
+```typescript
+test('toHaveLength', ({ expect }) => {
+  expect([1, 2, 3]).toHaveLength(3);
+  expect('a').toHaveLength(1);
+  expect('').not.toHaveLength(1);
+});
+```
 ### toBeTypeOf
 
 **Signature: expect(received).toBeTypeOf(type)**
@@ -368,13 +455,102 @@ test('getName returns undefined when passed a empty value', () => {
 
 **Returns** <type>void</type>
 
-### toBeNaN
+`toBeLessThanOrEqual` is used to assert that the value is less than or equal to the target value.
 
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toBeLessThanOrEqual', ({ expect }) => {
+  expect(6).toBeLessThanOrEqual(6);
+  expect(6).toBeLessThanOrEqual(8);
+});
+```
+
+### toBeGreaterThan
+
+**Signature: expect(received).toBeGreaterThan(num)**
+
+- `received` <type>number</type>
+- `num` <type>number</type>
+
+**Returns** <type>void</type>
+
+`toBeGreaterThan` is used to assert that the value is greater than the target value.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toBeLessThanOrEqual', ({ expect }) => {
+  expect(6).toBeGreaterThan(5);
+});
+```
+
+### toBeGreaterThanOrEqual
+**Signature: expect(received).toBeGreaterThanOrEqual(num)**
+
+- `received` <type>number</type>
+- `num` <type>number</type>
+
+**Returns** <type>void</type>
+
+`toBeGreaterThanOrEqual` is used to assert that the value is greater than or equal to the target value.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toBeGreaterThanOrEqual', ({ expect }) => {
+  expect(6).toBeGreaterThanOrEqual(5);
+  expect(6).toBeGreaterThanOrEqual(6);
+});
+```
+
+### toBeNaN
 **Signature: expect(received).toBeNaN()**
 
 - `received` <type>number</type>
 
 **Returns** <type>void</type>
+
+`toBeNaN` is used to assert that the value is `NaN`.
+
+**Example**
+```typescript
+test('toBeNaN', ({ expect }) => {
+  expect(NaN).toBeNaN();
+  expect(1).not.toBeNaN();
+});
+```
+
+### toBeCloseTo
+**Signature: expect(received).toBeCloseTo(num, numDigits?)**
+
+- `received` <type>number</type>
+- `num` <type>number</type>
+- `numDigits` <type>number</type>
+
+**Returns** <type>void</type>
+
+Use `toBeCloseTo` to compare floating point numbers for approximate equality.
+
+The optional numDigits argument limits the number of digits to check after the decimal point. For the default value `2`, the test criterion is `Math.abs(expected - received) < 0.005` (that is, `10 ** -2 / 2`).
+
+Intuitive equality comparisons often fail, because arithmetic on decimal (base 10) values often have rounding errors in limited precision binary (base 2) representation. For example, this test fails:
+```typescript
+test('adding works sanely with decimals', ({ expect }) => {
+  expect(0.2 + 0.1).toBe(0.3); // Fails!
+});
+```
+
+**Example**
+
+```typescript
+test('adding works sanely with decimals', ({ expect }) => {
+  expect(0.2 + 0.1).toBeCloseTo(0.3);
+});
+```
 
 ### toHaveProperty
 
@@ -386,11 +562,58 @@ test('getName returns undefined when passed a empty value', () => {
 
 **Returns** <type>void</type>
 
-### isVisible <tag type="node.js" />
+### toHaveBeenCalled
 
-**Signature: expect(received).isVisible()**
+### toHaveBeenCalledTimes
+
+### toHaveBeenCalledWith
+
+### toHaveBeenLastCalledWith
+
+### toHaveBeenNthCalledWith
+
+### toHaveReturned
+
+### toHaveReturnedTimes
+
+### toHaveReturnedWith
+
+### toHaveLastReturnedWith
+
+### toHaveNthReturnedWith
+
+### toBeVisible <tag type="node.js" />
+
+**Signature: expect(received).toBeVisible()**
 
 - `received` <type>locator | elementHandle</type>
 
 **Returns** <type>void</type>
 
+### toBeHidden
+
+### toBeChecked
+
+### toBeDisabled
+
+### toBeEmpty
+
+### toBeEnabled
+
+### toBeFocused
+
+### toHaveText
+
+### toContainText
+
+### toHaveAttribute
+
+### toHaveClass
+
+### toHaveId
+
+### toHaveCount
+
+### toMatchImageScreenshot
+
+### toMatchJavaScriptSnapshot

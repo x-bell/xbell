@@ -64,9 +64,9 @@ async function tryToDownlaod1M(sourceUrl: string) {
 
 program
   .version(VERSION)
-  .option('--coverage', 'enable coverage report')
-  .option('-r, --root <path>', 'specifying the root directory')
-  .option('--projects [names...]', 'list of projects run with xbell');
+  .option('--coverage', 'Enable coverage report')
+  .option('-r, --root <path>', 'Specifying the root directory')
+  .option('--projects [names...]', 'List of projects run with xbell');
 
 program
   .command('run [filters...]', { isDefault: true })
