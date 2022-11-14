@@ -1,33 +1,10 @@
 import { format } from '@xbell/format';
+import color from '@xbell/color';
 import { defineMatcher } from '../expect';
 import { getAssertionMessage, getMatcherMessage } from '../message';
 import { getConstructorName } from '../proto';
 import { equals, iterableEquality, typeEquality, sparseArrayEquality, arrayBufferEquality } from '../equal';
-
-interface ExpectAnyAssertion {
-  // not: ExpectAssertion<T>
-  toBe(expected: any): void;
-  toHaveProperty(property: string | string[], value?: unknown): void;
-  toBeDefined(): void;
-  toBeFalsy(): void;
-  toBeInstanceOf(cls: unknown): void;
-  toBeNull(): void;
-  toBeTruthy(): void;
-  toBeUndefined(): void;
-  toBeNaN(): void;
-  toContain(item: unknown): void;
-  toContainEqual(item: unknown): void;
-  toEqual(value: unknown): void;
-  toMatch(reg: RegExp | string): void;
-  // todo
-  toMatchObject(value: unknown): void;
-  toMatchSnapshot(): void;
-  toMatchInlineSnapshot(): void;
-  toStrictEqual(): void;
-  toThrow(): void;
-  toThrowErrorMatchingSnapshot(): void;
-  toThrowErrorMatchingInlineSnapshot(): void;
-}
+import { isIterable } from '../validate';
 
 export const anyMatcher = defineMatcher({
   toBe(received: unknown, expected: unknown) {
@@ -52,6 +29,75 @@ export const anyMatcher = defineMatcher({
         ...state,
       }),
     }
+  },
+  toContain(received: unknown, expected: unknown) {
+    if (!isIterable(received)) {
+      return {
+        pass: false,
+        message: state => getAssertionMessage({
+          ...state,
+          assertionName: 'toContain',
+          ignoreExpected: true,
+          ignoreReceived: true,
+          additionalMessage: `${color.red('received')} value must be iterable`,
+        }),
+      }
+    }
+
+    let pass = false;
+
+    for (const item of received) {
+      if (item === expected) {
+        pass = true;
+        break;
+      }
+    }
+
+    return {
+      pass,
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toContain',
+        expectedLabel: 'Expected value',
+        receivedLabel: 'Received array',
+        received,
+        expected,
+      }),
+    };
+  },
+  toContainEqual(received: unknown, expected: unknown) {
+    if (!isIterable(received)) {
+      return {
+        pass: false,
+        message: state => getAssertionMessage({
+          ...state,
+          assertionName: 'toContainEqual',
+          ignoreExpected: true,
+          ignoreReceived: true,
+          additionalMessage: `${color.red('received')} value must be iterable`,
+        }),
+      }
+    }
+    let pass = false;
+
+    for (const item of received) {
+      if (equals(item, expected, [iterableEquality])) {
+        pass = true;
+        break;
+      }
+    }
+
+    return {
+      pass,
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toContainEqual',
+        expectedLabel: 'Expected value',
+        receivedLabel: 'Received array',
+        received,
+        expected,
+      }),
+    };
   },
   toStrictEqual(received: unknown, expected: unknown) {
     return {
@@ -135,6 +181,19 @@ export const anyMatcher = defineMatcher({
       }),
     }
   },
+  toHaveLength(received: any, length: number) {
+    return {
+      pass: received?.length === length,
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toHaveLength',
+        expectedLabel: 'Expected length',
+        receivedLabel: 'Received length',
+        received: received?.length,
+        expected: length,
+      })
+    }
+  },
   toBeInstanceOf(received: unknown, expected: Function) {
     return {
       pass: received instanceof expected,
@@ -166,6 +225,55 @@ export const anyMatcher = defineMatcher({
           expectedLabel: receivedConstructorName ? 'Expected Constructor' : 'Expected Value',
         });
       }
+    }
+  },
+  toHaveProperty(received: unknown, ...args: [keyPath: string | string[], value?: any]) {
+    let [keyPath, value] = args;
+    if (typeof keyPath !== 'string' && !Array.isArray(keyPath)) {
+      return {
+        pass: false,
+        message: state => getAssertionMessage({
+          ...state,
+          assertionName: 'toHaveProperty',
+          ignoreExpected: true,
+          ignoreReceived: true,
+          additionalMessage: [
+            `${color.green('expected')} path must be a string or array`,
+            '',
+            `Expected has type:  ${typeof keyPath}`,
+            `Expected has value: ${format(keyPath)}`,
+          ].join('\n')
+        }),
+      };
+    }
+
+    const fixKey = (key: unknown) => String(key).replace(/\[(\d+)\]/g, '.$1');
+    const keyPathStr = Array.isArray(keyPath) ? keyPath.map(item => fixKey(item)).join('.') : fixKey('key')
+    const paths = keyPathStr.split('.');
+    let result: any = received
+    const lastKey = paths.pop();
+    const receivedPath: string[] = [];
+    for (const key of paths) {
+      if (Object.prototype.hasOwnProperty.call(result, key)) {
+        result = result[key]
+        receivedPath.push(key);
+      } else {
+        break;
+      }
+    }
+    return {
+      pass: lastKey != null &&
+        Object.prototype.hasOwnProperty.call(result, lastKey) &&
+        (args.length < 2 || equals(result[lastKey], value, [iterableEquality])),
+      message: state => getAssertionMessage({
+        ...state,
+        assertionName: 'toHaveProperty',
+        expectedLabel: 'Expected path',
+        expectedFormat: keyPathStr,
+        receivedLabel: 'Received path',
+        receivedFormat: receivedPath.join('.'),
+        matcherExpected: 'matcherExpected',
+      })
     }
   },
   toThrow(received: unknown, expected?: string | RegExp | Error) {
@@ -205,5 +313,5 @@ export const anyMatcher = defineMatcher({
         return 'toThrow Error';
       }
     }
-  }
+  },
 });

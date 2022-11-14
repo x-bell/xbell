@@ -1,6 +1,6 @@
 {
   "name": "create-xbell",
-  "version": "0.6.0",
+  "version": "0.7.0-alpha.0",
   "author": "lianghang",
   "main": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -25,7 +25,7 @@
     "inquirer": "^8.2.4",
     "nunjucks": "^3.2.3",
     "ora": "^5.4.1",
-    "@xbell/color": "workspace:^"
+    "@xbell/color": "workspace:*"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",

@@ -2,6 +2,7 @@
   "name": "xband",
   "version": "0.1.0",
   "type": "module",
+  "private": true,
   "dependencies": {
     "@types/debug": "^4.1.7",
     "@types/ws": "^8.5.3",

@@ -47,8 +47,8 @@ const sidebars = {
   api: [
     'api/test',
     'api/config',
-    'api/cli',
     'api/expect',
+    'api/cli',
     'api/mocking',
     'api/page',
     'api/locator',

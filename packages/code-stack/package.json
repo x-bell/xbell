@@ -1,6 +1,6 @@
 {
   "name": "@xbell/code-stack",
-  "version": "0.6.4",
+  "version": "0.7.0-alpha.0",
   "author": {
     "name": "Hang Liang",
     "email": "xlianghang@163.com",
@@ -16,7 +16,7 @@
   "dependencies": {
     "debug": "^4.3.4",
     "js-tokens": "^8.0.0",
-    "@xbell/color": "workspace:^"
+    "@xbell/color": "workspace:*"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7"
