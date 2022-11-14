@@ -1,10 +1,10 @@
 import * as path from 'node:path';
 import * as url from 'node:url';
-import { ProcessEnvKeys } from '../constants/env'
+import { commander } from '../common/commander';
 
 
 const rootPath = (() => {
-  const root = process.env[ProcessEnvKeys.CLIRoot];
+  const root = commander.getOptions().root;
   if (!root) {
     return process.cwd();
   }

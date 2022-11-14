@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "test": "xbell",
-    "test:coverage": "xbell --coverage"
+    "test:coverage": "xbell --coverage",
+    "test:projects": "xbell --projects project1 project2"
   },
   "devDependencies": {
     "xbell": "workspace:*"

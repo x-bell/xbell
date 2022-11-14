@@ -14,6 +14,7 @@ import { htmlReporter } from '../common/html-reporter';
 import { pathManager } from '../common/path-manager';
 import { coverageManager } from '../common/coverage-manager';
 import debug from 'debug';
+import { commander } from '../common/commander';
 
 const debugContext = debug('xbell:context');
 class XBell {
@@ -32,7 +33,7 @@ class XBell {
 
   async runTest(filters?: string[]) {
     recorder.setStartTime(Date.now());
-    const { projects } =  configurator.globalConfig;
+    const projects = this.getFilterProjects();
     debugContext('projects', projects);
     const multiProjects = await Promise.all(
       projects.map(async (project) => {
@@ -77,25 +78,19 @@ class XBell {
     return testFiles.map(item => item.absoluteFileath);
   }
 
+  protected getFilterProjects() {
+    const { projects } =  configurator.globalConfig;
+    const projectNames = commander.getOptions().projects;
+    if (!projectNames) {
+      return projects;
+    }
+    const filterProjects = projects.filter(project => projectNames.some(name => project.name === name));
+    if (!filterProjects.length) {
+      throw new Error(`Not found projects: [${projectNames.join(', ')}]`);
+    }
 
-  // async runProject({
-  //   project,
-  //   filters,
-  // }: {
-  //   project: XBellProject;
-  //   filters?: string[];
-  // }) {
-
-  //   const testFiles = await this.findTestFiles({ project, filters });
-  //   if (!testFiles.length) {
-  //     prompter.displayError('NotFoundTestFiles', { exit: true });
-  //   } else {
-  //     await scheduler.run({
-  //       project,
-  //       testFiles,
-  //     });
-  //   }
-  // }
+    return filterProjects;
+  }
 }
 
 export const xbell = new XBell()

@@ -3,11 +3,13 @@ import 'reflect-metadata';
 import { checkDownloadSpeed } from './utils/network';
 // @ts-ignore
 import * as pwServer from 'playwright-core/lib/server';
-import { ProcessEnvKeys } from './constants/env';
+import { commander } from './common/commander';
 import type { CommandOptions } from './types/cli';
 import { Command } from 'commander';
 import { VERSION } from './pkg';
+import debug from 'debug';
 
+const debugCLI = debug('xbell:cli');
 const program = new Command();
 
 const BROWSER_SOURCES = [
@@ -64,6 +66,7 @@ program
   .version(VERSION)
   .option('--coverage', 'enable coverage report')
   .option('-r, --root <path>', 'specifying the root directory')
+  .option('--projects [names...]', 'list of projects run with xbell');
 
 program
   .command('run [filters...]', { isDefault: true })
@@ -91,5 +94,5 @@ program
   
 const cliOpts = program.opts<CommandOptions>();
 
-process.env[ProcessEnvKeys.CLICoverage] = cliOpts.coverage ? String(cliOpts.coverage) : '';
-process.env[ProcessEnvKeys.CLIRoot] = cliOpts.root ? cliOpts.root : '';
+commander.setup(cliOpts);
+debugCLI('options', cliOpts);

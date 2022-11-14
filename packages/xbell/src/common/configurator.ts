@@ -2,8 +2,8 @@ import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig, XBellConfigRequi
 import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import debug from 'debug';
-import { ProcessEnvKeys } from '../constants/env';
 import { pathManager } from './path-manager';
+import { commander } from './commander';
 
 const debugConfigurator = debug('xbell:configurator');
 
@@ -87,11 +87,11 @@ export class Configurator implements XBellConfigurator {
   }
 
   protected getCLIConfig(): XBellConfig {
-    const CLI_COVERAGE = process.env[ProcessEnvKeys.CLICoverage];
-    debugConfigurator('cli', CLI_COVERAGE, typeof CLI_COVERAGE);
+    const hasCLICoverage = commander.getOptions().coverage;
+
     const config: XBellConfig = {};
 
-    if (CLI_COVERAGE) {
+    if (hasCLICoverage) {
       config.coverage = { enabled: true };
     }
 
