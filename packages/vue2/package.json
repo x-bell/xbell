@@ -1,6 +1,6 @@
 {
   "name": "@xbell/vue2",
-  "version": "0.6.5",
+  "version": "0.7.0-alpha.0",
   "author": {
     "name": "Hang Liang",
     "email": "xlianghang@163.com",
@@ -18,7 +18,7 @@
     "vue": "2.x"
   },
   "dependencies": {
-    "xbell": "workspace:^"
+    "xbell": "workspace:*"
   },
   "devDependencies": {
     "vue": "^2.7.13"
