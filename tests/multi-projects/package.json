@@ -2,7 +2,8 @@
   "name": "@xbell/multi-projects",
   "private": true,
   "scripts": {
-    "test": "xbell"
+    "test": "xbell",
+    "test:coverage": "xbell --coverage"
   },
   "devDependencies": {
     "xbell": "workspace:*"
