@@ -39,7 +39,7 @@ export function getSnapshotFilePath({
 
   return {
     filepath: snapshotPath,
-    newFilepath: path.join(newDir, snapshotPath),
+    newFilepath: path.join(newDir, path.basename(snapshotPath)),
     diffFilepath: path.join(newDir, `diff${diffSuffix}`),
   };
 }
