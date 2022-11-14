@@ -37,6 +37,8 @@ export interface XBellConfig {
 
   coverage?: {
     enabled?: boolean;
+    include?: string[];
+    exclude?: string[];
   }
 }
 

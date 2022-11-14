@@ -17,11 +17,12 @@ export class CoverageManager {
   constructor(
     private opts: CoverageOptions
   ) {
+    const { exclude = [], include, cwd, extension } = opts;
     this.testExclude = new TestExclude({
-      cwd: opts.cwd ?? process.cwd(),
-      include: opts.include,
-      exclude: opts.exclude ?? DEFAULT_EXCLUDE,
-      extension: opts.extension ?? DEFAULT_EXTENSION,
+      cwd: cwd ?? process.cwd(),
+      include,
+      exclude: [...DEFAULT_EXCLUDE, ...(typeof exclude === 'string' ? [exclude] : exclude)],
+      extension: extension ?? DEFAULT_EXTENSION,
       excludeNodeModules: true,
     });
   }

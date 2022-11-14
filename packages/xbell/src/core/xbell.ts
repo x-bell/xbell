@@ -10,15 +10,16 @@ import process from 'node:process';
 import { recorder } from './recorder';
 import { printer } from './printer';
 import { prompter } from '../prompter';
-import { workerPool } from './worker-pool';
 import { htmlReporter } from '../common/html-reporter';
 import { pathManager } from '../common/path-manager';
+import { coverageManager } from '../common/coverage-manager';
 import debug from 'debug';
 
 const debugContext = debug('xbell:context');
 class XBell {
   async setup() {
     await configurator.setup();
+    coverageManager.setup();
     await scheduler.setup();
     await htmlReporter.setup();
 

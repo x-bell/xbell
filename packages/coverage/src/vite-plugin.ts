@@ -5,6 +5,7 @@ import { createInstrumenter } from 'istanbul-lib-instrument';
 import TestExclude from 'test-exclude';
 import { CoverageOptions } from './types';
 import { DEFAULT_EXCLUDE, DEFAULT_EXTENSION } from './config';
+
 declare global {
   var __xbell_coverage__: any;
 }
@@ -20,15 +21,16 @@ function sanitizeSourceMap(rawSourceMap: ExistingRawSourceMap): ExistingRawSourc
 }
 
 function createTestExclude(opts: CoverageOptions): TestExclude {
-  const { include, exclude, extension } = opts;
+  const { include, exclude = [], extension } = opts;
   const cwd = opts.cwd ?? process.cwd();
 
   // Only instrument when we want to, as we only want instrumentation in test
   // By default the plugin is always on
+  const finalExclude = [...DEFAULT_EXCLUDE, ...(typeof exclude === 'string' ? [exclude] : exclude)];
   return new TestExclude({
     cwd,
     include: include,
-    exclude: exclude ?? DEFAULT_EXCLUDE,
+    exclude: finalExclude,
     extension: extension ?? DEFAULT_EXTENSION,
     excludeNodeModules: true,
   });

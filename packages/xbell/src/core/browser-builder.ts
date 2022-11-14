@@ -34,6 +34,7 @@ class BrowserBuilder {
     //   filename
     // ));
     // const { default: projectConfig } = targetConfigFile ? await import(targetConfigFile) : { default: {} };
+    const { coverage } = configurator.globalConfig;
     const testConfig = defineConfig({
       base: `/${XBELL_BUNDLE_PREFIX}/`,
       optimizeDeps: {
@@ -44,9 +45,9 @@ class BrowserBuilder {
         hmr: false,
       },
       plugins: [
-        configurator.globalConfig.coverage?.enabled ? viteCoveragePlugin({
-          exclude: ['node_modules'],
-          extension: ['.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs', '.vue'],
+        coverage?.enabled ? viteCoveragePlugin({
+          exclude: coverage.exclude,
+          include: coverage.include,
         }) : undefined,
       ].filter(Boolean),
       build: {

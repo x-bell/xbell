@@ -20,22 +20,26 @@ const config: XBellConfig = {
     {
       name: 'project5',
     },
-    {
-      name: 'project6',
-    },
-    {
-      name: 'project7',
-    },
-    {
-      name: 'project8',
-    },
-    {
-      name: 'project9',
-    },
-    {
-      name: 'project10',
-    }
-  ]
+    // {
+    //   name: 'project6',
+    // },
+    // {
+    //   name: 'project7',
+    // },
+    // {
+    //   name: 'project8',
+    // },
+    // {
+    //   name: 'project9',
+    // },
+    // {
+    //   name: 'project10',
+    // }
+  ],
+  coverage: {
+    enabled: true,
+    exclude: ['**/add.ts']
+  }
 }
 
 export default config;
