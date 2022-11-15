@@ -35,6 +35,10 @@ export interface Locator {
   queryElementByText(text: string): Promise<ElementHandle | null>;
   queryElementByTestId(testId: string): Promise<ElementHandle | null>;
   queryElementByClass(className: string): Promise<ElementHandle | null>;
+  waitFor(options?: {
+    state?: 'attached' | 'detached' | 'visible' | 'hidden';
+    timeout?: number;
+  }): Promise<void>;
   setInputFiles(files: string | Array<string> | {
     /**
      * File name

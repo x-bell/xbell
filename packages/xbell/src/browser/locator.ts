@@ -106,4 +106,8 @@ export class Locator implements LocatorInterface {
   async setInputFiles(files: string | string[] | { name: string; mimeType: string; buffer: Buffer; } | { name: string; mimeType: string; buffer: Buffer; }[], options?: { noWaitAfter?: boolean | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
     return await this._execute('setInputFiles', files, options);
   }
+
+  async waitFor(options?: { state?: 'attached' | 'detached' | 'visible' | 'hidden' | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
+    return await this._execute('waitFor', options);
+  }
 }
