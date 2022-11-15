@@ -1,3 +1,3 @@
 interface XBellProjects {
-  names: string;
+  name: string;
 }

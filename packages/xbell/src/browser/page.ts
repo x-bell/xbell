@@ -50,6 +50,7 @@ export class Page implements CommonPage {
 
   getFrame(selector: string): FrameLocatorInterface {
     return new FrameLocator([{
+      isFrame: true,
       value: selector,
     }]);
   }

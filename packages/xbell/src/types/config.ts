@@ -52,9 +52,9 @@ export type XBellTaskConfig = Partial<
 >;
 
 export type XBellProject = {
-  name: XBellProjects['names'];
+  name: XBellProjects['name'];
   config?: XBellConfig;
-} & Omit<XBellProjects, 'names'>;
+} & Omit<XBellProjects, 'name'>;
 
 export interface XBellBrowserCallback {
   callback: (...args: any) => any;

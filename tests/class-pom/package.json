@@ -1,5 +1,6 @@
 {
   "name": "@xbell/test-class-pom",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "test": "xbell"

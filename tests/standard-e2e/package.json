@@ -1,5 +1,6 @@
 {
   "name": "@xbell/test-standard-e2e",
+  "version": "0.0.0",
   "private": true,
   "dependencies": {
     "xbell": "workspace:*"

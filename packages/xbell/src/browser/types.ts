@@ -10,4 +10,5 @@ type LocatorMethod<T extends LocatorMethodKeys> = {
 export type QueryItem<T = any> = T extends LocatorMethodKeys ? LocatorMethod<T> : {
   type?: 'text' | 'testId' | 'class' | 'role' | 'title' | 'title';
   value: string;
+  isFrame?: boolean;
 };

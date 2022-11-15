@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "xbell": "workspace:*",
-    "@changesets/cli": "^2.22.0",
+    "@changesets/cli": "^2.25.2",
     "eslint": "^7.32.0",
     "gh-pages": "^4.0.0",
     "prettier": "^2.5.1",

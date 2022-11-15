@@ -10,4 +10,4 @@ deprecated
 __snapshots__
 **/tests/**/coverage
 test-report
-internal
+internal-*
