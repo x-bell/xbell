@@ -1,5 +1,5 @@
 {
-  "name": "browser-vue2-vite-ts",
+  "name": "@xbell/test-browser-vue2-vite-ts",
   "private": true,
   "version": "0.0.0",
   "type": "module",

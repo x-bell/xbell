@@ -1,6 +1,5 @@
 {
-  "name": "complex-example",
-  "author": "{{author}}",
+  "name": "@xbell/example-complex",
   "version": "1.0.0",
   "private": true,
   "description": "自动化测试项目",

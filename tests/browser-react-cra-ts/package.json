@@ -1,5 +1,5 @@
 {
-  "name": "browser-react-cra-ts",
+  "name": "@xbell/test-browser-react-cra-ts",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
