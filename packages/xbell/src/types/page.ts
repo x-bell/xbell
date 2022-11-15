@@ -14,11 +14,11 @@ import type { ElementHandle } from './element-handle';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
-import { Page as PWPage } from 'playwright-core';
+// import { Page as PWPage } from 'playwright-core';
 
 // const page: PWPage;
 
-// page.frameLocator
+// page.reload
 
 export interface CommonPage {
   screenshot(options?: PageScreenshotOptions): Promise<Uint8Array>;
@@ -54,6 +54,10 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
   }): Promise<Response>;
   video(): Promise<Video | null>;
   context(): BrowserContext;
+  reload(options: {
+    timeout?: number;
+    waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
+  }): Promise<Response | null>;
 }
 
 export type PageMethods = Omit<Page, 'mouse' | 'keyboard'>;

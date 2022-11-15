@@ -375,6 +375,10 @@ export class Page implements PageInterface {
     return this._page.goBack();
   }
 
+  reload(options: { timeout?: number | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; }): Promise<Response | null> {
+    return this._page.reload(options);
+  }
+
   getFrame(selector: string): FrameLocatorInterface {
     return new FrameLocator(this._page.frameLocator(selector));
   }

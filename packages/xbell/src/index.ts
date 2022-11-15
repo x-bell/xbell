@@ -28,7 +28,13 @@
 //   MultiEnvData
 // } from './types/index';
 
-import type { TestArguments as TestArgumentsType } from './types/parameter';
+import type {
+  TestArguments as TestArgumentsType,
+  Page as PageType,
+  Locator as LocatorType,
+  FrameLocator as FrameLocatorType,
+  ElementHandle as ElementHandleType,
+} from './types';
 export {
   test,
   describe,
@@ -56,18 +62,6 @@ export {
   DisplayName,
 } from './worker/classic-decorators';
 
-export {
-  Page,
-} from './worker/page';
-
-export {
-  Locator,
-} from './worker/locator';
-
-export {
-  ElementHandle,
-} from './worker/element-handle';
-
 export type {
   FixtureFunction,
   XBellConfig,
@@ -78,9 +72,25 @@ export type {
 // @ts-ignore
 // resolve swc problem https://github.com/swc-project/swc/issues/1065
 const testArguments: TestArgumentsType = {};
+// @ts-ignore
+const page: PageType = {};
+// @ts-ignore
+const locator: LocatorType = {};
+// @ts-ignore
+const frameLocator: FrameLocatorType = {};
+// @ts-ignore
+const elementHandle: ElementHandleType = {};
 
 export {
   testArguments as TestArguments,
+  page as Page,
+  locator as Locator,
+  frameLocator as FrameLocator,
+  elementHandle as ElementHandle,
 };
 
+export type Page = PageType;
+export type FrameLocator = FrameLocatorType;
+export type Locator = LocatorType;
+export type ElementHandle = ElementHandleType;
 export type TestArguments = TestArgumentsType;
