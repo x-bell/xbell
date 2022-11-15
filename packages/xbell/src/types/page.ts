@@ -14,11 +14,11 @@ import type { ElementHandle } from './element-handle';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
-// import { Page as PWPage } from 'playwright-core';
+import { Page as PWPage } from 'playwright-core';
 
 // const page: PWPage;
 
-// page.reload
+// page.locator().fill()
 
 export interface CommonPage {
   screenshot(options?: PageScreenshotOptions): Promise<Uint8Array>;

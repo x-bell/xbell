@@ -70,4 +70,11 @@ export interface Locator {
     noWaitAfter?: boolean;
     timeout?: number;
   }): Promise<void>;
+  count(): Promise<number>;
+  first(): Locator;
+  last(): Locator;
+  nth(index: number): Locator;
+  fill(value: string, options?: {
+    timeout?: number;
+  }): Promise<void>;
 }

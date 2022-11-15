@@ -27,36 +27,49 @@ export class Locator implements LocatorInterface {
     });
   }
 
-  private appendQueryItem(type: 'text' | 'class' | 'testId' | null, value: string) {
-    return [...this.queryItems, { type: type || undefined, value }];
+  private appendQueryItem(queryItem: QueryItem) {
+    return [...this.queryItems, queryItem];
   }
 
   get(selector: string): LocatorInterface {
-    return new Locator(this.appendQueryItem(null, selector));
+    return new Locator(this.appendQueryItem({ value: selector }));
   }
 
   getByText(text: string): LocatorInterface {
-    return new Locator(this.appendQueryItem('text', text));
+    return new Locator(this.appendQueryItem({ type: 'text', value: text }));
   }
 
   getByClass(className: string): LocatorInterface {
-    return new Locator(this.appendQueryItem('class', className));
+    return new Locator(this.appendQueryItem({ type: 'class', value: className }));
   }
 
   getByTestId(testId: string): LocatorInterface {
-    return new Locator(this.appendQueryItem('testId', testId));
+    return new Locator(this.appendQueryItem({ type: 'testId', value: testId }));
+  }
+
+
+  first(): LocatorInterface {
+    return new Locator(this.appendQueryItem({ method: 'first', args: [] }));
+  }
+
+  last(): LocatorInterface {
+    return new Locator(this.appendQueryItem({ method: 'last', args: [] }));
+  }
+
+  nth(index: number): LocatorInterface {
+    return new Locator(this.appendQueryItem({ method: 'nth', args: [index] }));
   }
 
   async queryElementByClass(className: string): Promise<ElementHandleInterface | null> {
-    return getElementHandle(this.appendQueryItem('class', className));
+    return getElementHandle(this.appendQueryItem({ type: 'class', value: className }));
   }
 
   async queryElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
-    return getElementHandle(this.appendQueryItem('testId', testId));
+    return getElementHandle(this.appendQueryItem({ type: 'testId', value: testId }));
   }
 
   async queryElementByText(text: string): Promise<ElementHandleInterface | null> {
-    return getElementHandle(this.appendQueryItem('text', text));
+    return getElementHandle(this.appendQueryItem({ type: 'text', value: text }));
   }
 
   async boundingBox(options?: TimeoutOptions | undefined): Promise<Rect | null> {
@@ -77,6 +90,10 @@ export class Locator implements LocatorInterface {
 
   async dblclick(options?: ElementHandleDblclickOptions | undefined): Promise<void> {
     await this._execute('dblclick', options);
+  }
+
+  async fill(value: string, options?: { timeout?: number | undefined; } | undefined): Promise<void> {
+    await this._execute('fill', value, options);
   }
 
   async hover(options?: ElementHandleHoverOptions | undefined): Promise<void> {
@@ -113,5 +130,9 @@ export class Locator implements LocatorInterface {
 
   async waitFor(options?: { state?: 'attached' | 'detached' | 'visible' | 'hidden' | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
     return await this._execute('waitFor', options);
+  }
+
+  async count(): Promise<number> {
+    return await this._execute('count');
   }
 }

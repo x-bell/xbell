@@ -49,6 +49,10 @@ export class Locator implements LocatorInterface {
     return this._locator.dblclick(options);
   }
 
+  fill(value: string, options?: { timeout?: number | undefined; } | undefined): Promise<void> {
+    return this._locator.fill(value, options);
+  }
+
   focus(options?: TimeoutOptions | undefined): Promise<void> {
     return this._locator.focus(options);
   }
@@ -71,6 +75,22 @@ export class Locator implements LocatorInterface {
 
   screenshot(options?: ElementHandleScreenshotOptions | undefined): Promise<Buffer> {
     return this._locator.screenshot(options);
+  }
+
+  count(): Promise<number> {
+    return this._locator.count();
+  }
+
+  first(): LocatorInterface {
+    return new Locator(this._locator.first());
+  }
+
+  last(): LocatorInterface {
+    return new Locator(this._locator.last());
+  }
+
+  nth(index: number): LocatorInterface {
+    return new Locator(this._locator.nth(index));
   }
 
   get(selector: string): LocatorInterface {
