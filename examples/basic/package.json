@@ -11,6 +11,5 @@
   "dependencies": {
     "xbell": "workspace:*"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
