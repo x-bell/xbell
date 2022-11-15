@@ -86,6 +86,7 @@ declare global {
 function getLocatorByQueryItem(locator: PageInterface | LocatorInterface, { type, value }: QueryItem): LocatorInterface {
   if (type === 'class') return locator.getByClass(value);
   if (type === 'testId') return locator.getByTestId(value);
+  if (type === 'text') return locator.getByText(value);
   // TODO: handle others
   return locator.getByText(value);
 }
@@ -370,6 +371,10 @@ export class Page implements PageInterface {
 
   goBack() {
     return this._page.goBack();
+  }
+  
+  get(selector: string): LocatorInterface {
+    return new Locator(this._page.locator(selector));
   }
 
   getByText(text: string): LocatorInterface {
