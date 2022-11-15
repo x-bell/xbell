@@ -1,5 +1,6 @@
 import type {
   Locator as PWLocator,
+  FrameLocator as PWFrameLocator,
   ElementHandle as PWElementHandle,
 } from 'playwright-core';
 
@@ -70,6 +71,10 @@ export class Locator implements LocatorInterface {
 
   screenshot(options?: ElementHandleScreenshotOptions | undefined): Promise<Buffer> {
     return this._locator.screenshot(options);
+  }
+
+  get(selector: string): LocatorInterface {
+    return new Locator(this._locator.locator(selector));
   }
   
   getByText(text: string): LocatorInterface {

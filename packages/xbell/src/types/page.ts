@@ -9,10 +9,16 @@ import type {
   Video,
 } from './pw';
 import type { Locator } from './locator';
+import type { FrameLocator } from './frame-locator';
 import type { ElementHandle } from './element-handle';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
+import { Page as PWPage } from 'playwright-core';
+
+// const page: PWPage;
+
+// page.frameLocator
 
 export interface CommonPage {
   screenshot(options?: PageScreenshotOptions): Promise<Uint8Array>;
@@ -20,6 +26,7 @@ export interface CommonPage {
   getByTestId(testId: string): Locator;
   getByClass(className: string): Locator;
   get(selector: string): Locator;
+  getFrame(selector: string): FrameLocator;
   queryElementByText(text: string): Promise<ElementHandle | null>;
   queryElementByTestId(testId: string): Promise<ElementHandle | null>;
   queryElementByClass(className: string): Promise<ElementHandle | null>;

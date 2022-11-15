@@ -1,7 +1,7 @@
 import type { ElementHandle as ElementHandleInterface, Locator as LocatorInterface } from '../types';
-import { ElementHandleCheckOptions, ElementHandleClickOptions, ElementHandleDblclickOptions, ElementHandleHoverOptions, ElementHandleScreenshotOptions, ElementHandleUncheckOptions, Rect, TimeoutOptions } from '../types/pw';
-import { ElementHandle, getElementHandle } from './element-handle';
+import type { ElementHandleCheckOptions, ElementHandleClickOptions, ElementHandleDblclickOptions, ElementHandleHoverOptions, ElementHandleScreenshotOptions, ElementHandleUncheckOptions, Rect, TimeoutOptions } from '../types/pw';
 import type { QueryItem } from './types';
+import { getElementHandle } from './element-handle';
 
 // TODO: browser-native impl
 export class Locator implements LocatorInterface {
@@ -27,8 +27,12 @@ export class Locator implements LocatorInterface {
     });
   }
 
-  private appendQueryItem(type: 'text' | 'class' | 'testId', value: string) {
-    return [...this.queryItems, { type, value }];
+  private appendQueryItem(type: 'text' | 'class' | 'testId' | null, value: string) {
+    return [...this.queryItems, { type: type || undefined, value }];
+  }
+
+  get(selector: string): LocatorInterface {
+    return new Locator(this.appendQueryItem(null, selector));
   }
 
   getByText(text: string): LocatorInterface {

@@ -8,6 +8,7 @@ import type {
 import type {
   Page as PageInterface,
   Locator as LocatorInterface,
+  FrameLocator as FrameLocatorInterface,
   ElementHandle as ElementHandleInterface,
   PageMethods,
 } from '../types';
@@ -34,6 +35,7 @@ import type { XBellBrowserCallback } from '../types/config';
 import { idToUrl } from '../utils/path';
 import { BrowserContext } from '../types/browser-context';
 import { QueryItem } from '../browser/types';
+import { FrameLocator } from './frame-locator';
 const debugPage = debug('xbell:page');
 
 
@@ -371,6 +373,10 @@ export class Page implements PageInterface {
 
   goBack() {
     return this._page.goBack();
+  }
+
+  getFrame(selector: string): FrameLocatorInterface {
+    return new FrameLocator(this._page.frameLocator(selector));
   }
   
   get(selector: string): LocatorInterface {

@@ -1,8 +1,16 @@
 import { Request, Response } from 'playwright-core';
-import { CommonPage, Page as PageInterface, PageMethods, Locator as LocatorInterface, ElementHandle as ElementHandleInterface } from '../types';
+import type {
+  CommonPage,
+  Page as PageInterface,
+  PageMethods,
+  Locator as LocatorInterface,
+  FrameLocator as FrameLocatorInterface,
+  ElementHandle as ElementHandleInterface
+} from '../types';
 import { FrameGotoOptions, PageFunction, PageScreenshotOptions } from '../types/pw';
 import { Locator } from './locator';
 import { getElementHandle } from './element-handle';
+import { FrameLocator } from './frame-locator';
 
 export class Page implements CommonPage {
 
@@ -37,6 +45,12 @@ export class Page implements CommonPage {
     return new Locator([{
       type: 'text',
       value: text,
+    }]);
+  }
+
+  getFrame(selector: string): FrameLocatorInterface {
+    return new FrameLocator([{
+      value: selector,
     }]);
   }
   // goto(url: string, options?: FrameGotoOptions | undefined): Promise<Response | null> {

@@ -7,5 +7,6 @@ export * from './worker-message';
 export * from './fixture';
 export * from './page';
 export * from './locator';
+export * from './frame-locator';
 export * from './element-handle';
 export * from './record';
