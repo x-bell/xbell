@@ -1,5 +1,5 @@
 interface XBellProjects {
-  names:
+  name:
     | "project1"
     | "project2"
     | "project3"

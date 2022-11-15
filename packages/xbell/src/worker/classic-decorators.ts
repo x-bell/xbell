@@ -114,7 +114,7 @@ export const Only = (): any => {
   }
 }
 
-export const RunProjects = (collect: Array<XBellProjects['names']> | ((project: XBellProject) => boolean)): any => {
+export const RunProjects = (collect: Array<XBellProjects['name']> | ((project: XBellProject) => boolean)): any => {
   return (target: Function | Object, propertyKey?: string | symbol) => {
     const isClass = typeof propertyKey === 'undefined';
     if (isClass) {
@@ -136,7 +136,7 @@ export const RunProjects = (collect: Array<XBellProjects['names']> | ((project: 
   }
 }
 
-export const SkipProjects = (filter: Array<XBellProjects['names']> | ((project: XBellProject) => boolean)): any => {
+export const SkipProjects = (filter: Array<XBellProjects['name']> | ((project: XBellProject) => boolean)): any => {
   return (target: Function | Object, propertyKey?: string | symbol) => {
     const isClass = typeof propertyKey === 'undefined';
     if (isClass) {

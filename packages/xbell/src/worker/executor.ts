@@ -38,7 +38,7 @@ export class Executor {
   protected _project: XBellProject;
   constructor(protected _deps: {
     globalConfig: XBellConfig;
-    projectName: XBellProjects['names']
+    projectName: XBellProjects['name']
   }) {
     this._project = _deps.globalConfig.projects!.find(project => project.name === _deps.projectName)!;
   }
