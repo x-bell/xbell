@@ -1,5 +1,6 @@
 {
   "name": "@xbell/test-page-evalute",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "test": "xbell"
