@@ -15,6 +15,7 @@ import type {
 } from './pw';
 
 import type { ElementHandle } from './element-handle';
+import type { FrameLocator } from './frame-locator';
 
 export interface Locator {
   focus(options?: TimeoutOptions): Promise<void>
@@ -30,6 +31,7 @@ export interface Locator {
   boundingBox(options?: TimeoutOptions): Promise<Rect | null>;
   screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
   get(selector: string): Locator;
+  getFrame(selector: string): FrameLocator;
   getByText(text: string): Locator;
   getByTestId(testId: string): Locator;
   getByClass(className: string): Locator;

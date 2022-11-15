@@ -8,9 +8,8 @@ import type {
   ElementHandle as ElementHandleInterface
 } from '../types';
 import { FrameGotoOptions, PageFunction, PageScreenshotOptions } from '../types/pw';
-import { Locator } from './locator';
+import { Locator, FrameLocator } from './locator';
 import { getElementHandle } from './element-handle';
-import { FrameLocator } from './frame-locator';
 
 export class Page implements CommonPage {
 

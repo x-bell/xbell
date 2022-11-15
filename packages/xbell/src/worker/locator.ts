@@ -6,7 +6,8 @@ import type {
 
 import type {
   Locator as LocatorInterface,
-  ElementHandle as ElementHandleInterface
+  ElementHandle as ElementHandleInterface,
+  FrameLocator as FrameLocatorInterface,
 } from '../types';
 
 import type {
@@ -96,6 +97,10 @@ export class Locator implements LocatorInterface {
   get(selector: string): LocatorInterface {
     return new Locator(this._locator.locator(selector));
   }
+
+  getFrame(selector: string): FrameLocator {
+    return new FrameLocator(this._locator.frameLocator(selector));
+  }
   
   getByText(text: string): LocatorInterface {
     return new Locator(this._locator.locator(`text=${text}`));
@@ -133,5 +138,42 @@ export class Locator implements LocatorInterface {
 
   waitFor(options?: { state?: 'attached' | 'detached' | 'visible' | 'hidden' | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
     return this._locator.waitFor(options);
+  }
+}
+
+export class FrameLocator implements FrameLocatorInterface {
+  constructor(protected _frameLocator: PWFrameLocator) {}
+
+  get(selector: string): LocatorInterface {
+    return new Locator(this._frameLocator.locator(selector));
+  }
+
+  getFrame(selector: string): FrameLocatorInterface {
+    return new FrameLocator(this._frameLocator.frameLocator(selector));
+  }
+
+  getByText(text: string): LocatorInterface {
+    return new Locator(this._frameLocator.getByText(text));
+  }
+
+  getByClass(className: string): LocatorInterface {
+    const cls = className.startsWith('.') ? className : `.${className}`;
+    return new Locator(this._frameLocator.locator(cls));
+  }
+
+  getByTestId(testId: string): LocatorInterface {
+    return new Locator(this._frameLocator.getByTestId(testId));
+  }
+
+  first(): FrameLocatorInterface {
+    return new FrameLocator(this._frameLocator.first());
+  }
+
+  nth(index: number): FrameLocatorInterface {
+    return new FrameLocator(this._frameLocator.nth(index));
+  }
+
+  last(): FrameLocatorInterface {
+    return new FrameLocator(this._frameLocator.last());
   }
 }

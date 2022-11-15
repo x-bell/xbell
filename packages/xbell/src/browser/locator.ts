@@ -1,4 +1,4 @@
-import type { ElementHandle as ElementHandleInterface, Locator as LocatorInterface } from '../types';
+import type { ElementHandle as ElementHandleInterface, Locator as LocatorInterface, FrameLocator as FrameLocatorInterface } from '../types';
 import type { ElementHandleCheckOptions, ElementHandleClickOptions, ElementHandleDblclickOptions, ElementHandleHoverOptions, ElementHandleScreenshotOptions, ElementHandleUncheckOptions, Rect, TimeoutOptions } from '../types/pw';
 import type { QueryItem } from './types';
 import { getElementHandle } from './element-handle';
@@ -58,6 +58,10 @@ export class Locator implements LocatorInterface {
 
   nth(index: number): LocatorInterface {
     return new Locator(this.appendQueryItem({ method: 'nth', args: [index] }));
+  }
+
+  getFrame(selector: string): FrameLocator {
+    return new FrameLocator(this.appendQueryItem({ isFrame: true, value: selector }));
   }
 
   async queryElementByClass(className: string): Promise<ElementHandleInterface | null> {
@@ -134,5 +138,67 @@ export class Locator implements LocatorInterface {
 
   async count(): Promise<number> {
     return await this._execute('count');
+  }
+}
+
+export class FrameLocator implements FrameLocatorInterface {
+  private _uuid?: Promise<string>;
+
+  constructor(private queryItems: QueryItem[]) {
+  }
+
+  private async _connectToLocator() {
+    if (!this._uuid) {
+      this._uuid = window.__xbell_page_locator_expose__(this.queryItems).then(res => res.uuid);
+    }
+
+    return this._uuid!;
+  }
+
+  private async _execute<T extends keyof FrameLocatorInterface>(method: T, ...args: Parameters<FrameLocatorInterface[T]>): Promise<ReturnType<FrameLocatorInterface[T]>> {
+    const uuid = await this._connectToLocator();
+
+    return window.__xbell_page_locator_execute__({
+      uuid,
+      method,
+      args,
+    });
+  }
+
+ 
+  private appendQueryItem(queryItem: QueryItem) {
+    return [...this.queryItems, queryItem];
+  }
+
+  get(selector: string): Locator {
+    return new Locator(this.appendQueryItem({ value: selector }));
+  }
+
+  getByText(text: string): LocatorInterface {
+    return  new Locator(this.appendQueryItem({ type: 'text', value: text }));
+  }
+
+  getByClass(className: string): LocatorInterface {
+    return  new Locator(this.appendQueryItem({ type: 'class', value: className }));
+  }
+
+  getByTestId(testId: string): LocatorInterface {
+    return  new Locator(this.appendQueryItem({ type: 'testId', value: testId }));
+  }
+
+  first(): FrameLocatorInterface {
+    return new FrameLocator(this.appendQueryItem({ method: 'first', args: [] }))
+  }
+
+  last(): FrameLocatorInterface {
+    return new FrameLocator(this.appendQueryItem({ method: 'last', args: [] }));
+  }
+
+  nth(index: number): FrameLocatorInterface {
+    return new FrameLocator(this.appendQueryItem({ method: 'nth', args: [index] }))
+  }
+  
+  getFrame(selector: string): FrameLocatorInterface {
+    return new FrameLocator(this.appendQueryItem({ isFrame: true, value: selector }));
   }
 }

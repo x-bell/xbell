@@ -5,4 +5,8 @@ export interface FrameLocator {
   getByTestId(testId: string): Locator;
   getByClass(className: string): Locator;
   get(selector: string): Locator;
+  first(): FrameLocator;
+  last(): FrameLocator;
+  nth(index: number): FrameLocator;
+  getFrame(selector: string): FrameLocator;
 }

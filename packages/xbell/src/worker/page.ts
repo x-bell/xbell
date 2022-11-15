@@ -25,7 +25,7 @@ import { workerContext } from './worker-context';
 import { XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
 import debug from 'debug';
-import { Locator } from './locator';
+import { Locator, FrameLocator } from './locator';
 import { ElementHandle } from './element-handle';
 import type { Mouse } from '../types/mouse';
 import { Keyboard } from './keyboard';
@@ -35,7 +35,6 @@ import type { XBellBrowserCallback } from '../types/config';
 import { idToUrl } from '../utils/path';
 import { BrowserContext } from '../types/browser-context';
 import { QueryItem } from '../browser/types';
-import { FrameLocator } from './frame-locator';
 const debugPage = debug('xbell:page');
 
 
@@ -72,6 +71,20 @@ declare global {
       method: T;
       args: Parameters<LocatorInterface[T]>;
     }): ReturnType<LocatorInterface[T]>;
+    __xbell_page_locator_execute__<T extends keyof FrameLocatorInterface>(opts: {
+      uuid: string;
+      method: T;
+      args: Parameters<FrameLocatorInterface[T]>;
+    }): ReturnType<FrameLocatorInterface[T]>;
+
+    // __xbell_page_frame_locator_expose__(queryItems: QueryItem[]): Promise<{
+    //   uuid: string;
+    // }>;
+    // __xbell_page_frame_locator_execute__<T extends keyof FrameLocator>(opts: {
+    //   uuid: string;
+    //   method: T;
+    //   args: Parameters<FrameLocator[T]>;
+    // }): ReturnType<FrameLocator[T]>;
 
     // element-handle
     __xbell_page_element_handle_expose__(queryItems: QueryItem[], uuid?: string): Promise<{
@@ -85,15 +98,27 @@ declare global {
   }
 }
 
-function getLocatorByQueryItem(locator: PageInterface | LocatorInterface, { type, value }: QueryItem): LocatorInterface {
-  if (type === 'class') return locator.getByClass(value);
-  if (type === 'testId') return locator.getByTestId(value);
-  if (type === 'text') return locator.getByText(value);
-  // TODO: handle others
-  return locator.getByText(value);
+function getLocatorByQueryItem(
+  locator: PageInterface | LocatorInterface | FrameLocatorInterface,
+  queryItem: QueryItem
+): LocatorInterface | FrameLocatorInterface {
+  if ('value' in queryItem) {
+    const { type, value, isFrame } = queryItem;
+    if (isFrame) {
+      return locator.getFrame(value);
+    }
+    if (type === 'class') return locator.getByClass(value);
+    if (type === 'testId') return locator.getByTestId(value);
+    if (type === 'text') return locator.getByText(value);
+    return locator.get(value);
+  }
+  const { method, args } = queryItem;
+  // @ts-ignore
+  return (locator as LocatorInterface)[method](...args);
 }
 
-function getElementHandleByQueryItem(locator: PageInterface | LocatorInterface | ElementHandleInterface, { type, value }: QueryItem): Promise<ElementHandleInterface | null> {
+function getElementHandleByQueryItem(locator: PageInterface | LocatorInterface | ElementHandleInterface, queryItem: QueryItem): Promise<ElementHandleInterface | null> {
+  // if (query)
   if (type === 'class') return locator.queryElementByText(value);
   if (type === 'testId') return locator.queryElementByTestId(value);
   // TODO: handle others
@@ -130,8 +155,7 @@ export class Page implements PageInterface {
 
   protected _currentFilename: string;
 
-  protected _locatorMap: Map<string, LocatorInterface> = new Map();
-
+  protected _locatorMap: Map<string, LocatorInterface | FrameLocatorInterface> = new Map();
   protected _elementHandleMap: Map<string, ElementHandleInterface> = new Map();
 
   constructor(
