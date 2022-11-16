@@ -1,4 +1,5 @@
 import { test as basicTest } from 'xbell';
+import type { expect } from '@xbell/assert';
 import type { Component } from 'vue';
 
 export const test = basicTest.extendBrowser(async (args) => {
