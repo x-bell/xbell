@@ -28,7 +28,7 @@ class XBell {
       printer.print(records);
     });
 
-    await configurator.runConfigSetup();
+    await configurator.runConfigSetup(configurator.globalConfig.setup);
   }
 
   async runTest(filters?: string[]) {

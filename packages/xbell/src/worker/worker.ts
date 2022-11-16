@@ -50,6 +50,7 @@ export async function run(taskPayload: XBellWorkerTaskPayload) {
 }
 
 async function setup() {
+  workerContext.setup();
   await configurator.setup()
 }
 

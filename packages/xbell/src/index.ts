@@ -61,6 +61,7 @@ export {
   Fixtrue,
   DisplayName,
 } from './worker/classic-decorators';
+export { Browser } from './common/browser';
 
 export type {
   FixtureFunction,

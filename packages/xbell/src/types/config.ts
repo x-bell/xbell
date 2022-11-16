@@ -11,7 +11,7 @@ export interface XBellBrowserConfig {
     height: number;
   };
   // cookies & origins(localStorage)
-  storageState?: StorageState | 'string';
+  storageState?: StorageState | string;
   /** browser dev server */
   devServer?: {
     viteConfig?: UserConfigExport;

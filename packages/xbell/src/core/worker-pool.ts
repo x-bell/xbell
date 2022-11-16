@@ -4,6 +4,7 @@ import { Worker, MessageChannel, isMainThread } from 'node:worker_threads';
 // import type { MessagePort } from 'node:worker_threads';
 import { Channel } from '../common/channel';
 import { pathManager } from '../common/path-manager';
+import { configurator } from '../common/configurator';
 // import { configurator } from '../common/configurator';
 // import debug from 'debug';
 
@@ -31,6 +32,8 @@ export class WorkerPool {
     resolve: (v: void) => void;
     reject: () => void;
   };
+
+  protected projectSetupMap = new Map<string, Promise<any>>();
 
   constructor(public workPath: string) {}
 
@@ -95,13 +98,16 @@ export class WorkerPool {
     }
   }
 
-  protected runTask({
+  protected async runTask({
     queue,
   }: {
     queue: XBellTaskQuque;
   }) {
 
     const { projectName } = queue;
+    // check setup
+    await this.runProjectSetup({ projectName });
+
     const workers = this.workers;
     const idleWorker = workers.find(
       (worker) => !worker.busy && worker.projectName === projectName
@@ -119,6 +125,17 @@ export class WorkerPool {
         queue,
       });
     }
+  }
+
+  protected runProjectSetup({ projectName }: { projectName: string }) {
+    if (!this.projectSetupMap.has(projectName)) {
+      const project = configurator.globalConfig.projects.find(project => project.name === projectName)!;
+      const setup = project.config?.setup;
+      const callbackReturnValue = configurator.runConfigSetup(setup);
+      this.projectSetupMap.set(projectName, callbackReturnValue);
+    }
+
+    return this.projectSetupMap.get(projectName);
   }
 
   protected executeWorker({

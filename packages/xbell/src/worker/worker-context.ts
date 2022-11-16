@@ -9,11 +9,15 @@ import { configurator } from '../common/configurator';
 
 class WorkerContext {
   workerData = wd as XBellWorkerData;
-  channel = new Channel(wd.port);
+  channel!: Channel;
   currentTestFile?: XBellTestFile;
   projectName?: string;
 
   constructor() {
+  }
+
+  setup () {
+    this.channel = new Channel(wd.port);
     this.initConsole();
   }
 
@@ -68,4 +72,4 @@ class WorkerContext {
   }
 }
 
-export const workerContext = new WorkerContext()
+export const workerContext = new WorkerContext();

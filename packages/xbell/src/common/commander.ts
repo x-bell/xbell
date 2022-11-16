@@ -1,6 +1,6 @@
 import process from 'node:process';
-import { ProcessEnvKeys } from '../constants/env';
 import type { CommandOptions } from '../types/cli';
+import { ProcessEnvKeys } from '../constants/env';
 
 class Commander {
   setup(cliOpts: CommandOptions) {

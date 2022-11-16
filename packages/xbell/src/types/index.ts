@@ -10,3 +10,5 @@ export * from './locator';
 export * from './frame-locator';
 export * from './element-handle';
 export * from './record';
+export * from './browser-context';
+export * from './mouse';

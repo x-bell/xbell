@@ -114,8 +114,7 @@ export class Configurator implements XBellConfigurator {
     return mergeConfig(globalConfig, caseConfig);
   }
 
-  public async runConfigSetup() {
-    const setup = this.globalConfig.setup;
+  public async runConfigSetup(setup: XBellConfig['setup']) {
     if (typeof setup === 'function') {
       await this.runSetupCallback(setup);
     } else if (typeof setup === 'string') {

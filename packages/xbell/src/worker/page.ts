@@ -11,6 +11,10 @@ import type {
   FrameLocator as FrameLocatorInterface,
   ElementHandle as ElementHandleInterface,
   PageMethods,
+  BrowserContext,
+  XBellMocks,
+  XBellBrowserCallback,
+  Mouse
 } from '../types';
 
 import type {
@@ -21,20 +25,18 @@ import type {
   PageFunction,
   SmartHandle,
 } from '../types/pw'
-import { workerContext } from './worker-context';
+import type { Channel } from '../common/channel';
+import type { QueryItem } from '../browser/types';
+
 import { XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
-import debug from 'debug';
 import { Locator, FrameLocator } from './locator';
 import { ElementHandle } from './element-handle';
-import type { Mouse } from '../types/mouse';
 import { Keyboard } from './keyboard';
-import { Console } from 'node:console';
-import type { XBellMocks } from '../types/test';
-import type { XBellBrowserCallback } from '../types/config';
 import { idToUrl } from '../utils/path';
-import { BrowserContext } from '../types/browser-context';
-import { QueryItem } from '../browser/types';
+import debug from 'debug';
+
+
 
 const debugPage = debug('xbell:page');
 
@@ -138,20 +140,22 @@ export class Page implements PageInterface {
     mocks,
     filename,
     setupCalbacks,
-    // batch,
+    needToSetupExpose,
+    channel
   }: {
     browserContext: PWBroContext;
     setupCalbacks: XBellBrowserCallback[];
     browserCallbacks: XBellBrowserCallback[];
     mocks: XBellMocks;
     filename: string;
-    // batch?: {
-    //   items: any[];
-    // }
+    needToSetupExpose: boolean;
+    channel?: Channel;
   }) {
     const _page = await browserContext.newPage();
-    const page = new Page(_page, setupCalbacks, browserCallbacks, mocks, filename);
-    await page.setup()
+    const page = new Page(_page, setupCalbacks, browserCallbacks, mocks, filename, needToSetupExpose, channel);
+    if (channel) {
+      await page.setup()
+    }
     return page;
   }
 
@@ -170,15 +174,16 @@ export class Page implements PageInterface {
     protected _browserCallbacks: XBellBrowserCallback[],
     protected _mocks: XBellMocks,
     protected _filename: string,
-    protected _batch?: { items: any [] }
+    protected _needToSetupExpose: boolean,
+    protected _channel?: Channel,
   ) {
     this._currentFilename = _filename;
     this.keyboard = new Keyboard(this._page.keyboard);
     this.mouse = this._page.mouse;
   }
 
-  async setup() {
-    await this._setting();
+  protected async setup() {
+    await this._proxyRoutes();
   }
 
   protected async _setupBrowserPage() {
@@ -259,7 +264,7 @@ export class Page implements PageInterface {
 
   protected async _setupXBellContext() {
     await this._page.exposeFunction('__xbell_getImportActualUrl__', async (modulePath: string) => {
-      const id = await workerContext.channel.request('queryModuleId', {
+      const id = await this._channel!.request('queryModuleId', {
         modulePath: modulePath,
         importer: this._currentFilename,
       });
@@ -299,8 +304,9 @@ export class Page implements PageInterface {
     this._currentFilename = this._filename;
   }
 
-  protected async _setting() {
-    const { port } = await workerContext.channel.request('queryServerPort');
+  protected async _proxyRoutes() {
+    const channle = this._channel!;
+    const { port } = await channle.request('queryServerPort');
     const modulePaths = Array.from(this._mocks.keys());
 
     this._page.route(new RegExp(XBELL_ACTUAL_BUNDLE_PREFIX), async (route, request) => {
@@ -330,7 +336,7 @@ export class Page implements PageInterface {
       // after get
       // const moduleUrls = await workerContext.channel.request('queryModuleUrl', modulePaths);
       // pre fetch url
-      const moduleUrlMapByPath = await workerContext.channel.request('queryModuleUrls', modulePaths);
+      const moduleUrlMapByPath = await channle.request('queryModuleUrls', modulePaths);
       const targetModule = moduleUrlMapByPath.find(item => item.url === pathnameWithoutPrefix);
       if (targetModule) {
         const factory = this._mocks?.get(targetModule?.path);
@@ -368,9 +374,9 @@ export class Page implements PageInterface {
     });
   }
 
-  protected async _settingGotoRoute(url: string, html: string) {
+  protected async _proxyGotoRoute(url: string, html: string) {
     // empty
-    const { html: finalHtml } = await workerContext.channel.request('transformHtml', { html, url });
+    const { html: finalHtml } = await this._channel!.request('transformHtml', { html, url });
 
     // handle goto.html
     await this._page.route(url, (route) => {
@@ -383,8 +389,8 @@ export class Page implements PageInterface {
   }
 
   async goto(url: string, options?: FrameGotoOptions | undefined): Promise<Response | null> {
-    if (options?.html) {
-      await this._settingGotoRoute(url, options.html);
+    if (options?.html && this._channel) {
+      await this._proxyGotoRoute(url, options.html);
     }
     const { html, ...otherOptons } = options || {};
     // debugPage('goto', url);
@@ -392,10 +398,10 @@ export class Page implements PageInterface {
     // @ts-ignore
     const ret = await this._page.goto(url, otherOptons);
     if (options?.html) {
-      await this._setupXBellContext();
-      await this._setupBrowserPage();
-      await this._setEvaluate(this._setupCalbacks);
-      await this._setEvaluate(this._browserCallbacks);
+      if (this._channel) await this._setupXBellContext();
+      if (this._needToSetupExpose) await this._setupBrowserPage();
+      if (this._setupCalbacks.length) await this._setEvaluate(this._setupCalbacks);
+      if (this._browserCallbacks.length) await this._setEvaluate(this._browserCallbacks);
     }
 
     return ret;
@@ -455,7 +461,12 @@ export class Page implements PageInterface {
   }
 
   protected async _transformBrowserFunction(browserFunction: Function | string) {
-    const { code: targetCode } = await workerContext.channel.request(
+    const channel = this._channel;
+    if (!channel) {
+      return browserFunction;
+    }
+
+    const { code: targetCode } = await channel.request(
       'transformBrowserCode',
       { code: browserFunction.toString() },
     );

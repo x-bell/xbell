@@ -6,6 +6,7 @@ import debug from 'debug';
 import * as path from 'node:path';
 import { configurator } from '../common/configurator';
 import { pathManager } from '../common/path-manager';
+import { workerContext } from './worker-context';
 
 const debugLazyPage = debug('xbell:lazyPage');
 
@@ -72,6 +73,8 @@ export function genLazyPage({
       mocks: browserMocks,
       filename,
       setupCalbacks: [],
+      needToSetupExpose: false,
+      channel: workerContext.channel,
     })
     return {
       page: _lazyPage,

@@ -193,7 +193,8 @@ export class Executor {
       browserCallbacks: c.runtimeOptions.browserCallbacks || [],
       mocks: c.browserMocks,
       filename: c._testFunctionFilename!,
-      // batch: c.options.batch,
+      needToSetupExpose: true,
+      channel: workerContext.channel,
     });
     const terdown = async () => {
       const video = await page.video();
