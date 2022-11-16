@@ -131,7 +131,8 @@ const GroupCard: React.FC<XBellTestGroupRecord> = ({
 const CaseCard: React.FC<XBellTestCaseRecord> = ({
   videos,
   status,
-  caseDescription
+  caseDescription,
+  error,
 }) => {
   const videoSrc = videos?.[0];
   const [videoModalOpen, setVideoModalOpen] = React.useState(false);
@@ -178,6 +179,11 @@ const CaseCard: React.FC<XBellTestCaseRecord> = ({
         </IconButton>}
       </div>
     </CaseItem>
+    {!!error && <div>
+      <p>name: {error.name}</p>
+      <p>message: {error.message}</p>
+      <p>stack: {error.stack}</p>
+    </div>}
     {!!videoSrc && <VideoDialog open={videoModalOpen} onClose={() => handleVideoClose()} src={videoSrc} />}
     </>
   );
