@@ -1,5 +1,6 @@
 import type {
   BrowserContext as PWBroContext,
+  Download,
   Page as PWPage,
   Request,
   Video,
@@ -195,9 +196,6 @@ export class Page implements PageInterface {
         return Reflect.apply(this[method], this, args);
       }
     );
-    await this._page.exposeFunction('__xbell_page_url__', () => {
-      return this._page.url();
-    });
 
     // locator
     await this._page.exposeFunction(
@@ -556,8 +554,12 @@ export class Page implements PageInterface {
     return this._page.screenshot(options);
   }
 
-  async url(): Promise<string> {
-    return this._page.url();
+  url(): Promise<string> {
+    return Promise.resolve(this._page.url());
+  }
+
+  title(): Promise<string> {
+    return this._page.title();
   }
 
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'> | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<void> {
@@ -574,6 +576,18 @@ export class Page implements PageInterface {
 
   waitForRequest(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
     return this._page.waitForRequest(urlOrPredicate, options);
+  }
+
+  waitForRequestFailed(optionsOrPredicate?: { predicate?: ((request: Request) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((request: Request) => boolean | Promise<boolean>) | undefined): Promise<Request> {
+    return this._page.waitForEvent('requestfailed', optionsOrPredicate);
+  }
+
+  waitForRequestFinished(optionsOrPredicate: { predicate?: ((request: Request) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request> {
+    return this._page.waitForEvent('requestfinished', optionsOrPredicate);
+  }
+
+  waitForDownload(optionsOrPredicate?: { predicate?: ((download: Download) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((download: Download) => boolean | Promise<boolean>) | undefined): Promise<Download> {
+    return this._page.waitForEvent('download', optionsOrPredicate);
   }
 
   async video(): Promise<Video | null> {

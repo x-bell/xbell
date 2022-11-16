@@ -81,4 +81,6 @@ export interface Locator {
   fill(value: string, options?: {
     timeout?: number;
   }): Promise<void>;
+  textContent(options?: TimeoutOptions): Promise<null | string>;
+  queryAttribute(name: string, options?: TimeoutOptions): Promise<null | string>;
 }

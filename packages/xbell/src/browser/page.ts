@@ -102,8 +102,12 @@ export class Page implements CommonPage {
     }]);
   }
 
-  url(): Promise<string> {
-    return window.__xbell_page_url__();
+  async url(): Promise<string> {
+    return await this._execute('url');
+  }
+
+  async title(): Promise<string> {
+    return await this._execute('title');
   }
 
   async waitForLoadState(state?: 'load' | 'domcontentloaded' | 'networkidle' | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<void> {

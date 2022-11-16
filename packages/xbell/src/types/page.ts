@@ -7,6 +7,7 @@ import type {
   SmartHandle,
   PageFunction,
   Video,
+  Download,
 } from './pw';
 import type { Locator } from './locator';
 import type { FrameLocator } from './frame-locator';
@@ -14,11 +15,6 @@ import type { ElementHandle } from './element-handle';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
-// import { Page as PWPage } from 'playwright-core';
-
-// const page: PWPage;
-
-// page.frameLocator().fmra()
 
 export interface CommonPage {
   screenshot(options?: PageScreenshotOptions): Promise<Uint8Array>;
@@ -31,6 +27,7 @@ export interface CommonPage {
   queryElementByTestId(testId: string): Promise<ElementHandle | null>;
   queryElementByClass(className: string): Promise<ElementHandle | null>;
   url(): Promise<string>;
+  title(): Promise<string>;
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
 }
 
@@ -49,9 +46,12 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
   waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
     timeout?: number;
   }): Promise<Request>;
+  waitForRequestFinished(optionsOrPredicate: { predicate?: (request: Request) => boolean | Promise<boolean>, timeout?: number } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request>;
+  waitForRequestFailed(optionsOrPredicate?: { predicate?: (request: Request) => boolean | Promise<boolean>, timeout?: number } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request>;
   waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
     timeout?: number;
   }): Promise<Response>;
+  waitForDownload(optionsOrPredicate?: { predicate?: (download: Download) => boolean | Promise<boolean>, timeout?: number } | ((download: Download) => boolean | Promise<boolean>)): Promise<Download>;
   video(): Promise<Video | null>;
   context(): BrowserContext;
   reload(options: {

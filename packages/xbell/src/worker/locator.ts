@@ -147,7 +147,15 @@ export class Locator implements LocatorInterface {
     return this._locator.waitFor({
       state: 'hidden',
       ...options,
-    })
+    });
+  }
+
+  textContent(options?: TimeoutOptions | undefined): Promise<string | null> {
+    return this._locator.textContent(options);
+  }
+
+  queryAttribute(name: string, options?: TimeoutOptions | undefined): Promise<string | null> {
+    return this._locator.getAttribute(name, options);
   }
 }
 

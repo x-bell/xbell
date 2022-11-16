@@ -102,7 +102,7 @@ export function genLazyPage({
       }
 
       return (...args: any[]) => {
-        if (propKey.startsWith('getBy')) {
+        if (propKey.startsWith('getBy') || propKey == 'get') {
           return new Proxy({}, {
             get(target, locatorKey: string) {
               // TODO: handle all keys that are not in the locator properties

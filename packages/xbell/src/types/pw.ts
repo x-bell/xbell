@@ -1,7 +1,7 @@
 
-import type { JSHandle, ElementHandle, BrowserContext } from 'playwright-core';
+import type { JSHandle, ElementHandle } from 'playwright-core';
 
-export type { Response, Request, Video } from 'playwright-core';
+export type { Response, Request, Video, Download } from 'playwright-core';
 
 export type StorageState = {
   cookies: Array<{

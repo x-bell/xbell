@@ -147,6 +147,14 @@ export class Locator implements LocatorInterface {
   async count(): Promise<number> {
     return await this._execute('count');
   }
+
+  async textContent(options?: TimeoutOptions | undefined): Promise<string | null> {
+    return await this._execute('textContent', options);
+  }
+
+  async queryAttribute(name: string, options?: TimeoutOptions | undefined): Promise<string | null> {
+    return await this._execute('queryAttribute', name, options)
+  }
 }
 
 export class FrameLocator implements FrameLocatorInterface {
