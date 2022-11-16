@@ -153,7 +153,7 @@ export class Executor {
     const { coverage: coverageConfig } = configurator.globalConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
 
-    const browser = await lazyBrowser.newContext('chromium', {
+    const browser = await lazyBrowser.newBrowser('chromium', {
       headless: !!headless,
     });
     workerContext.channel.emit('onCaseExecuteStart', {

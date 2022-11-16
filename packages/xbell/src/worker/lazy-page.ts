@@ -47,7 +47,7 @@ export function genLazyPage({
     }
 
     const { headless, viewport } = configurator.globalConfig.browser;
-    const browser = await lazyBrowser.newContext('chromium', {
+    const browser = await lazyBrowser.newBrowser('chromium', {
       headless: !!headless,
     });
     const videoDir = path.join(pathManager.tmpDir, 'videos');
