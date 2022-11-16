@@ -11,6 +11,7 @@ export type SelectorItem = {
   type?: 'text' | 'testId' | 'class' | 'role' | 'title' | 'title';
   value: string;
   isFrame?: boolean;
+  isElementHandle?: boolean;
 };
 
 export type QueryItem<T = any> = T extends LocatorMethodKeys ? LocatorMethod<T> : SelectorItem;

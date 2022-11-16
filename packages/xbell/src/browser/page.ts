@@ -82,6 +82,7 @@ export class Page implements CommonPage {
     return getElementHandle([{
       type: 'class',
       value: className,
+      isElementHandle: true,
     }]);
   }
 
@@ -89,6 +90,7 @@ export class Page implements CommonPage {
     return getElementHandle([{
       type: 'testId',
       value: testId,
+      isElementHandle: true,
     }]);
   }
 
@@ -96,6 +98,7 @@ export class Page implements CommonPage {
     return getElementHandle([{
       type: 'text',
       value: text,
+      isElementHandle: true,
     }]);
   }
 

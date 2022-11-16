@@ -65,15 +65,15 @@ export class Locator implements LocatorInterface {
   }
 
   async queryElementByClass(className: string): Promise<ElementHandleInterface | null> {
-    return getElementHandle(this.appendQueryItem({ type: 'class', value: className }));
+    return getElementHandle(this.appendQueryItem({ type: 'class', value: className, isElementHandle: true }));
   }
 
   async queryElementByTestId(testId: string): Promise<ElementHandleInterface | null> {
-    return getElementHandle(this.appendQueryItem({ type: 'testId', value: testId }));
+    return getElementHandle(this.appendQueryItem({ type: 'testId', value: testId, isElementHandle: true }));
   }
 
   async queryElementByText(text: string): Promise<ElementHandleInterface | null> {
-    return getElementHandle(this.appendQueryItem({ type: 'text', value: text }));
+    return getElementHandle(this.appendQueryItem({ type: 'text', value: text, isElementHandle: true }));
   }
 
   async boundingBox(options?: TimeoutOptions | undefined): Promise<Rect | null> {

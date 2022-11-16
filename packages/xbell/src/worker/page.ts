@@ -35,8 +35,8 @@ import type { XBellBrowserCallback } from '../types/config';
 import { idToUrl } from '../utils/path';
 import { BrowserContext } from '../types/browser-context';
 import { QueryItem } from '../browser/types';
-const debugPage = debug('xbell:page');
 
+const debugPage = debug('xbell:page');
 
 let uuid = 1;
 function genUUID() {
@@ -117,12 +117,18 @@ function getLocatorByQueryItem(
   return (locator as LocatorInterface)[method](...args);
 }
 
-function getElementHandleByQueryItem(locator: PageInterface | LocatorInterface | ElementHandleInterface, queryItem: QueryItem): Promise<ElementHandleInterface | null> {
-  // if (query)
-  if (type === 'class') return locator.queryElementByText(value);
-  if (type === 'testId') return locator.queryElementByTestId(value);
-  // TODO: handle others
-  return locator.queryElementByText(value);
+async function getElementHandleByQueryItem(locator: PageInterface | LocatorInterface | ElementHandleInterface, queryItem: QueryItem): Promise<ElementHandleInterface | LocatorInterface | null> {
+  if ('value' in queryItem) {
+    const { type, value, isElementHandle } = queryItem;
+    // if (query)
+    if (type === 'class') return isElementHandle ? locator.queryElementByText(value) : (locator as LocatorInterface).getByClass(value);
+    if (type === 'testId') return isElementHandle ? locator.queryElementByTestId(value) : (locator as LocatorInterface).queryElementByTestId(value);
+    // TODO: handle others
+    return isElementHandle ? locator.queryElementByText(value) : (locator as LocatorInterface).getByText(value);
+  }
+  const { method, args } = queryItem;
+  // @ts-ignore
+  return (locator as LocatorInterface)[method](...args);
 }
 
 export class Page implements PageInterface {

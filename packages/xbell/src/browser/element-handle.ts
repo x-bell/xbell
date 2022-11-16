@@ -76,6 +76,7 @@ export class ElementHandle implements ElementHandleInterface {
     return getElementHandle([{
       type: 'class',
       value: className,
+      isElementHandle: true,
     }], this._uuid);
   }
 
@@ -83,6 +84,7 @@ export class ElementHandle implements ElementHandleInterface {
     return getElementHandle([{
       type: 'testId',
       value: testId,
+      isElementHandle: true,
     }], this._uuid);
   }
 
@@ -90,6 +92,7 @@ export class ElementHandle implements ElementHandleInterface {
     return getElementHandle([{
       type: 'text',
       value: text,
+      isElementHandle: true,
     }], this._uuid);
   }
 }
