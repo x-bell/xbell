@@ -25,7 +25,7 @@ export interface XBellTestCaseDecorators {
   only?: boolean;
   each?: {
     items: any[];
-    caseDisplayName: ((item: any) => string);
+    caseDisplayName: ((item: any, index: number) => string);
   }
   batch?: {
     items: any[];
@@ -170,7 +170,7 @@ export class ClassicCollector {
           runtimeOptions: {
             browserCallbacks: [],
           },
-          caseDescription: caseDecorators.displayName ?? caseDecorators.propertyKey,
+          caseDescription: caseDecorators.each?.caseDisplayName(item, index) ?? caseDecorators.displayName ?? caseDecorators.propertyKey,
           filename: this.currentFile!.filename,
           propertyKey: caseDecorators.propertyKey,
           runtime: 'node',

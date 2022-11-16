@@ -17,15 +17,15 @@ const FOLD_ARROW = '❯';
 const log = createLogUpdate(process.stdout);
 
 const projectsColors = [
-  color.cyan,
-  color.hex('#ec407a'),
-  color.hex('#9392ef'),
-  color.hex('#01d6af'),
-  color.hex('#e7e86f'),
-  color.hex('#e6e4bf'),
-  color.hex('#fe8980'),
-  color.magenta,
-  color.blue,
+  color.bold.cyan,
+  color.bold.hex('#ec407a'),
+  color.bold.hex('#9392ef'),
+  color.bold.hex('#01d6af'),
+  color.bold.hex('#e7e86f'),
+  color.bold.hex('#e6e4bf'),
+  color.bold.hex('#fe8980'),
+  color.bold.magenta,
+  color.bold.blue,
 ];
 
 function getProjectColorByIndex(idx: number) {
@@ -98,6 +98,7 @@ class Printer {
   constructor() {}
 
   public getTaskInfo(
+    file: XBellTestFileRecord,
     tasks: XBellTestTaskRecord[],
     depth: number,
     caseCounter: Record<XBellTestCaseStatus, number>,
@@ -113,11 +114,11 @@ class Printer {
         counterForUpLevel[task.status]++;
         caseCounter[task.status]++;
         if (task.error) {
-          caseErrors.push(this.getCaseError(task));
+          caseErrors.push(this.getCaseError(file, task));
         }
         return `${SPACES}${'  '.repeat(depth)}  ${this.getStatusIcon(task.status)} ${task.caseDescription}`;
       } else {
-        const { status: groupStatus, text: childText } = this.getTaskInfo(task.cases, depth + 1, caseCounter, caseErrors);
+        const { status: groupStatus, text: childText } = this.getTaskInfo(file, task.cases, depth + 1, caseCounter, caseErrors);
         counterForUpLevel[groupStatus]++;
         return `${SPACES}${'  '.repeat(depth)}  ${this.getColorTextByStatus(groupStatus, FOLD_ARROW)} ${task.groupDescription}\n${childText}`;
       }
@@ -182,7 +183,7 @@ class Printer {
       const { text, status } = file.error ? {
         text: '',
         status: 'failed',
-      } as const : this.getTaskInfo(file.tasks, 0, caseStatusCounter, caseErrors);
+      } as const : this.getTaskInfo(file, file.tasks, 0, caseStatusCounter, caseErrors);
       fileStatusCounter[status]++;
       if (file.projectName && projectsIndexMap[file.projectName] == null) {
         projectsIndexMap[file.projectName] = Object.keys(projectsIndexMap).length;
@@ -366,15 +367,16 @@ class Printer {
     ].filter(Boolean).join(', ')
   }
 
-  getCaseError(c: XBellTestCaseRecord): string {
+  getCaseError(file: XBellTestFileRecord, c: XBellTestCaseRecord): string {
     if (!c.error?.stack) {
       return '';
     }
 
     return [
-      [this.getFilename(c.filename), c.groupDescription, c.caseDescription].filter(Boolean).join(color.gray(' > ')),
-      c.error.formatMessage ?? c.error.stack ?? c.error.message,
-    ].filter(Boolean).join('\n\n');
+      [
+        (file.projectName ? color.bold.yellow(`[${file.projectName}] `) : '') + this.getFilename(c.filename), c.groupDescription, c.caseDescription].filter(Boolean).join(color.gray(' > ')),
+        c.error.formatMessage ?? c.error.stack ?? c.error.message,
+      ].filter(Boolean).join('\n\n');
   }
 
   getCasePath(c: XBellTestCaseRecord): string {

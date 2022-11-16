@@ -30,6 +30,8 @@
 
 import type {
   TestArguments as TestArgumentsType,
+  TestBatchArguments as TestBatchArgumentsType,
+  TestEachArguments as TestEachArgumentsType,
   Page as PageType,
   Locator as LocatorType,
   FrameLocator as FrameLocatorType,
@@ -74,6 +76,10 @@ export type {
 // resolve swc problem https://github.com/swc-project/swc/issues/1065
 const testArguments: TestArgumentsType = {};
 // @ts-ignore
+const testEachArguments: TestEachArgumentsType = {};
+// @ts-ignore
+const testBatchArguments: TestBatchArgumentsType = {};
+// @ts-ignore
 const page: PageType = {};
 // @ts-ignore
 const locator: LocatorType = {};
@@ -82,8 +88,11 @@ const frameLocator: FrameLocatorType = {};
 // @ts-ignore
 const elementHandle: ElementHandleType = {};
 
+// TODO: types...
 export {
   testArguments as TestArguments,
+  testEachArguments as TestEachArguments,
+  testBatchArguments as TestBatchArguments,
   page as Page,
   locator as Locator,
   frameLocator as FrameLocator,
@@ -95,3 +104,5 @@ export type FrameLocator = FrameLocatorType;
 export type Locator = LocatorType;
 export type ElementHandle = ElementHandleType;
 export type TestArguments = TestArgumentsType;
+export type TestEachArguments<T> = TestEachArgumentsType<T>;
+export type TestBatchArguments<T> = TestBatchArgumentsType<T>;

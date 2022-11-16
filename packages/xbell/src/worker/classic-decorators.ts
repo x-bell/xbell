@@ -24,7 +24,7 @@ export const Fixtrue = genPropertyDecorator(MetaDataType.Fixtrue);
 
 export const PageParam = genParameterDecorator(ParameterType.Page)
 
-export const DisplayName = (name: string) => {
+export const DisplayName = (name: string): any => {
   const cb: ClassDecorator | PropertyDecorator = (target, propertyKey) => {
     const isClass = typeof propertyKey === 'undefined';
     if (isClass) {
@@ -172,7 +172,7 @@ export const Batch = <T>(items: T[]): PropertyDecorator => {
   }
 }
 
-export const Each = <T>(items: T[], caseDisplayNameFunction: (item: T) => string): PropertyDecorator => {
+export const Each = <T>(items: T[], caseDisplayNameFunction: (item: T, index: number) => string): PropertyDecorator => {
   return (target, propertyKey) => {
     collector.classic.setCaseDecorators({
       target,

@@ -106,8 +106,21 @@ export class Executor {
   }
 
   protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>, argManager: ArgumentManager) {
-    const { runtimeOptions, testFunction } = c;
-    await testFunction(argManager.getArguments());
+    const { runtimeOptions, testFunction, options } = c;
+    const batchItems = options.batch?.items;
+
+    if (Array.isArray(batchItems)) {
+      for (const [index, item] of batchItems.entries()) {
+        const args = argManager.getArguments();
+        await testFunction({
+          ...args,
+          item,
+          index,
+        });
+      }
+    } else {
+      await testFunction(argManager.getArguments());
+    }
   }
 
   async runCaseInNode(c: XBellTestCase<any, any>, file: XBellTestFile) {
@@ -221,13 +234,9 @@ export class Executor {
       });
       debugExecutor('page.goto.end', page.evaluate);
       if (Array.isArray(c.options.batch?.items)) {
-        let batchContext: {
-          evaluateHandle: typeof page['evaluateHandle']
-          evaluate: typeof page['evaluate'];
-        } = page;
         for (const [index, item] of c.options.batch!.items.entries()) {
           // @ts-ignore
-          batchContext = await batchContext.evaluateHandle((args, { item, index }) => {
+          const batchContext = await page.evaluateHandle((args, { item, index }) => {
             return {
               ...args,
               item,
