@@ -46,7 +46,7 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
   waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
     timeout?: number;
   }): Promise<Request>;
-  waitForRequestFinished(optionsOrPredicate: { predicate?: (request: Request) => boolean | Promise<boolean>, timeout?: number } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request>;
+  waitForRequestFinished(optionsOrPredicate?: { predicate?: (request: Request) => boolean | Promise<boolean>, timeout?: number } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request>;
   waitForRequestFailed(optionsOrPredicate?: { predicate?: (request: Request) => boolean | Promise<boolean>, timeout?: number } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request>;
   waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
     timeout?: number;
@@ -54,7 +54,7 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
   waitForDownload(optionsOrPredicate?: { predicate?: (download: Download) => boolean | Promise<boolean>, timeout?: number } | ((download: Download) => boolean | Promise<boolean>)): Promise<Download>;
   video(): Promise<Video | null>;
   context(): BrowserContext;
-  reload(options: {
+  reload(options?: {
     timeout?: number;
     waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
   }): Promise<Response | null>;

@@ -409,7 +409,7 @@ export class Page implements PageInterface {
     return this._page.goBack();
   }
 
-  reload(options: { timeout?: number | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; }): Promise<Response | null> {
+  reload(options?: { timeout?: number | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; }): Promise<Response | null> {
     return this._page.reload(options);
   }
 
@@ -582,7 +582,7 @@ export class Page implements PageInterface {
     return this._page.waitForEvent('requestfailed', optionsOrPredicate);
   }
 
-  waitForRequestFinished(optionsOrPredicate: { predicate?: ((request: Request) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request> {
+  waitForRequestFinished(optionsOrPredicate?: { predicate?: ((request: Request) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request> {
     return this._page.waitForEvent('requestfinished', optionsOrPredicate);
   }
 
