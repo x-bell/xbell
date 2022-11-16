@@ -54,9 +54,11 @@ async function setup() {
   await configurator.setup()
 }
 
+const setupPromise = setup();
+
 parentPort!.on('message', async ({ type, payload }: XBellWorkerTask) => {
   if (type === 'run') {
-    await setup();
+    await setupPromise;
     await run(payload);
     parentPort?.postMessage({
       type: 'finished',
