@@ -172,7 +172,7 @@ export interface XBellTestCaseLifecycle {
 }
 
 export interface XBellWorkerLifecycle {
-  onLog(log: XBellWorkerLog & { filename: string }): void;
+  onLog(log: XBellWorkerLog & { filename: string; projectName: string; }): void;
   onFileCollectSuccesed(file: XBellTestFileRecord): void;
   onFileCollectFailed(file: XBellTestFileRecord): void;
   onCaseExecuteSkipped(c: { uuid: string }): void;

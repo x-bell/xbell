@@ -31,7 +31,9 @@ class WorkerContext {
         if (this.currentTestFile) {
           const logItem: XBellWorkerLog & {
             filename: string
+            projectName: string;
           } = {
+            projectName: this.currentTestFile.projectName,
             filename: this.currentTestFile.filename,
             type: 'stdout',
             content: String(chunk),
