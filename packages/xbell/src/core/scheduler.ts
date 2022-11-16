@@ -108,7 +108,7 @@ export class Scheduler {
     });
 
     workerPool.setup({
-      maxThreads: cpus().length,
+      maxThreads: configurator.globalConfig.maxThreads,
       queueList: multiProjectTasks,
     });
 

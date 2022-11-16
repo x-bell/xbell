@@ -32,6 +32,8 @@ export interface XBellConfig {
   /** exclude */
   exclude?: string[];
 
+  maxThreads?: number;
+
   hooks?: {
     beforeEach?: XBellTestCaseFunction;
     afterEach?: XBellTestCaseFunction;

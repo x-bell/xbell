@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import debug from 'debug';
 import { pathManager } from './path-manager';
 import { commander } from './commander';
+import { cpus } from 'node:os';
 
 const debugConfigurator = debug('xbell:configurator');
 
@@ -49,6 +50,7 @@ export class Configurator implements XBellConfigurator {
     projects: [
       { name: '' }
     ],
+    maxThreads: cpus().length,
     browser: this.XBellDefaultBrowserConfig,
     include: ['**/*.{spec,test}.{cjs,mjs,js,jsx,ts,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**'],
