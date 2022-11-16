@@ -101,7 +101,7 @@ declare global {
   }
 }
 
-function getLocatorByQueryItem(
+export function getLocatorByQueryItem(
   locator: PageInterface | LocatorInterface | FrameLocatorInterface,
   queryItem: QueryItem
 ): LocatorInterface | FrameLocatorInterface {
@@ -116,8 +116,7 @@ function getLocatorByQueryItem(
     return locator.get(value);
   }
   const { method, args } = queryItem;
-  // @ts-ignore
-  return (locator as LocatorInterface)[method](...args);
+  return Reflect.apply((locator as LocatorInterface)[method], locator, args);
 }
 
 async function getElementHandleByQueryItem(locator: PageInterface | LocatorInterface | ElementHandleInterface, queryItem: QueryItem): Promise<ElementHandleInterface | LocatorInterface | null> {

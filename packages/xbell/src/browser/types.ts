@@ -1,8 +1,9 @@
 import type { Locator } from '../types/locator';
 
-type LocatorMethodKeys = 'first' | 'nth' | 'last';
+export type PageSyncMethodKeys = 'get' | 'getByClass' | 'getByTestId' | 'getByText' | 'getFrame';
+export type LocatorSyncMethodKeys = 'first' | 'nth' | 'last' | PageSyncMethodKeys;
 
-type LocatorMethod<T extends LocatorMethodKeys> = {
+export type LocatorMethod<T extends LocatorSyncMethodKeys = LocatorSyncMethodKeys> = {
   method: T;
   args: Parameters<Locator[T]>;
 }
@@ -14,4 +15,4 @@ export type SelectorItem = {
   isElementHandle?: boolean;
 };
 
-export type QueryItem<T = any> = T extends LocatorMethodKeys ? LocatorMethod<T> : SelectorItem;
+export type QueryItem = LocatorMethod | SelectorItem;

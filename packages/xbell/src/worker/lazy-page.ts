@@ -1,14 +1,47 @@
-import type { Page as PageInterface, Locator, XBellMocks, XBellBrowserCallback, XBellTestFile } from '../types';
+import type { Page as PageInterface, Locator as LocatorInterface, FrameLocator as FrameLocatorInterface, XBellMocks, XBellBrowserCallback, XBellTestFile } from '../types';
 import type { Browser, BrowserContext } from 'playwright-core';
-import { Page } from './page';
+import { Page, getLocatorByQueryItem } from './page';
 import { lazyBrowser } from './browser';
 import debug from 'debug';
 import * as path from 'node:path';
 import { configurator } from '../common/configurator';
 import { pathManager } from '../common/path-manager';
 import { workerContext } from './worker-context';
+import type { LocatorMethod, LocatorSyncMethodKeys, PageSyncMethodKeys } from '../browser/types';
 
 const debugLazyPage = debug('xbell:lazyPage');
+
+
+const LOCATOR_SYNC_KEYS = new Set<LocatorSyncMethodKeys>([
+  'first',
+  'get',
+  'getByClass',
+  'getByTestId',
+  'getByText',
+  'getFrame',
+  'nth',
+  'last',
+]);
+
+const PAGE_SYNC_KEYS = new Set<PageSyncMethodKeys>([
+  'get',
+  'getByClass',
+  'getByText',
+  'getByTestId',
+  'getFrame',
+]);
+
+// const SYNC_KEYS = new Set<keyof PageInterface | keyof LocatorInterface>([
+//   'get',
+//   'getByClass',
+//   'getByClass',
+//   'getByTestId',
+//   'getByText',
+//   'getFrame',
+//   'first',
+//   'last',
+//   'nth'
+// ]);
 
 export function genLazyPage({
   browserCallbacks,
@@ -34,6 +67,36 @@ export function genLazyPage({
       }
     }) as Page[typeof pagePropKey];
 
+    return proxy;
+  }
+
+
+  function genLazyLocator(queryItem: LocatorMethod) {
+    const queryItems: LocatorMethod[] = [queryItem];
+    const proxy = new Proxy({}, {
+      get(target, propKey: string) {
+        if (propKey === 'then') {
+          return undefined;
+        }
+
+        return (...args: any) => {
+          if (LOCATOR_SYNC_KEYS.has(propKey as LocatorSyncMethodKeys)) {
+            queryItems.push({ method: propKey as LocatorSyncMethodKeys, args })
+            return proxy;
+          }
+
+          return getLazyPage().then(({ page }) => {
+           const locator= queryItems.reduce<LocatorInterface | FrameLocatorInterface | PageInterface>(
+              (locator, queryItem) =>
+                getLocatorByQueryItem(locator, queryItem),
+                page,
+            ) as LocatorInterface | FrameLocatorInterface;
+            // @ts-ignore
+            return Reflect.apply(locator[propKey], locator, args);
+          });
+        }
+      }
+    }) as LocatorInterface;
     return proxy;
   }
 
@@ -102,20 +165,24 @@ export function genLazyPage({
       }
 
       return (...args: any[]) => {
-        if (propKey.startsWith('getBy') || propKey == 'get') {
-          return new Proxy({}, {
-            get(target, locatorKey: string) {
-              // TODO: handle all keys that are not in the locator properties
-              if (locatorKey === 'then') {
-                return undefined;
-              }
-              return (...locatorArgs: any[]) => getLazyPage().then(({ page }) => {
-                const locator = Reflect.apply(page[propKey], page, args);
-                return Reflect.apply(locator[locatorKey], locator, locatorArgs);
-              });
-            }
-          });
+        if (PAGE_SYNC_KEYS.has(propKey as any)) {
+          return genLazyLocator({ method: propKey as LocatorSyncMethodKeys, args: args as any });
         }
+
+        // if (SYNC_KEYS.has(propKey)) {
+        //   return new Proxy({}, {
+        //     get(target, locatorKey: string) {
+        //       // TODO: handle all keys that are not in the locator properties
+        //       if (locatorKey === 'then') {
+        //         return undefined;
+        //       }
+        //       return (...locatorArgs: any[]) => getLazyPage().then(({ page }) => {
+        //         const locator = Reflect.apply(page[propKey], page, args);
+        //         return Reflect.apply(locator[locatorKey], locator, locatorArgs);
+        //       });
+        //     }
+        //   });
+        // }
         // unuse page, don't trigger close
         if (propKey === 'close') {
           if (usedFlag) {
