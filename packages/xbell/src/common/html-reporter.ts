@@ -16,10 +16,7 @@ class HTMLReporter {
     // const data = JSON.stringify(, undefined, 2);
     // const dataPath = path.join(pathManager.testReportDir, 'data.json');
     // fs.writeFileSync(dataPath, data, 'utf-8');
-    const htmlReport = generateHTML([{
-      projectName: '',
-      files: this._fixData(fileRecords),
-    }]);
+    const htmlReport = generateHTML(this._fixData(fileRecords));
 
     fs.writeFileSync(
       path.join(pathManager.testReportDir, 'index.html'),
@@ -88,7 +85,6 @@ class HTMLReporter {
       ''
     );
   }
-
 }
 
 export const htmlReporter = new HTMLReporter();

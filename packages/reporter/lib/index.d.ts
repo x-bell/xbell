@@ -39,6 +39,7 @@ export type XBellTestTaskRecord =
 
 
 export interface XBellTestFileRecord {
+  projectName: string;
   filename: string;
   tasks: XBellTestTaskRecord[];
   logs: XBellWorkerLog[];
@@ -50,4 +51,5 @@ export interface XBellTestProjectRecord {
   files: XBellTestFileRecord[];
 }
 
-export declare function generateHTML(reportResource: XBellTestProjectRecord[]): string;
+
+export declare function generateHTML(reportResource: XBellTestFileRecord[]): string;

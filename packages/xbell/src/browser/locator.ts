@@ -132,8 +132,16 @@ export class Locator implements LocatorInterface {
     return await this._execute('setInputFiles', files, options);
   }
 
-  async waitFor(options?: { state?: 'attached' | 'detached' | 'visible' | 'hidden' | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
-    return await this._execute('waitFor', options);
+  // async waitFor(options?: { state?: 'attached' | 'detached' | 'visible' | 'hidden' | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
+  //   return await this._execute('waitFor', options);
+  // }
+
+  async waitForHidden(options?: TimeoutOptions | undefined): Promise<void> {
+    return await this._execute('waitForHidden', options);
+  }
+
+  async waitForVisible(options?: TimeoutOptions | undefined): Promise<void> {
+    return await this._execute('waitForVisible', options);
   }
 
   async count(): Promise<number> {
@@ -170,7 +178,7 @@ export class FrameLocator implements FrameLocatorInterface {
     return [...this.queryItems, queryItem];
   }
 
-  get(selector: string): Locator {
+  get(selector: string): LocatorInterface {
     return new Locator(this.appendQueryItem({ value: selector }));
   }
 

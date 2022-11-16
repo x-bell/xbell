@@ -7,13 +7,24 @@ import theme from 'assets/theme';
 import { FileCard } from 'components/FileCard';
 import AccountBar from 'components/AccountBar';
 import { MaterialUIControllerProvider } from './context';
-import type { XBellTestProjectRecord } from '../lib/index';
+import type { XBellTestFileRecord, XBellTestProjectRecord } from '../lib/index';
 import { getFilesCounter } from './utils/count';
 
 import './App.css'
 
 // @ts-ignore
-const XBELL_RESOURCES: XBellTestProjectRecord[] = window.XBELL_RESOURCES;
+const XBELL_RESOURCES: XBellTestProjectRecord[] = Object.entries((window.XBELL_RESOURCES as XBellTestFileRecord[])
+  .reduce<Record<string, XBellTestFileRecord[]>>
+  ((acc, file) => {
+    if (!acc[file.projectName]) {
+      acc[file.projectName] = [];
+    }
+    acc[file.projectName] = [...acc[file.projectName], file];
+    return acc;
+  }, {})).map(([projectName, files]) => ({
+    projectName: projectName,
+    files,
+  }));
 
 const ListContainer = styled('div')`
   padding: 40px;

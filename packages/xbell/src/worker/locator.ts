@@ -136,8 +136,18 @@ export class Locator implements LocatorInterface {
     return this._locator.setInputFiles(files, options);
   }
 
-  waitFor(options?: { state?: 'attached' | 'detached' | 'visible' | 'hidden' | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
-    return this._locator.waitFor(options);
+  waitForVisible(options?: TimeoutOptions | undefined): Promise<void> {
+    return this._locator.waitFor({
+      state: 'visible',
+      ...options,
+    });
+  }
+
+  waitForHidden(options?: TimeoutOptions | undefined): Promise<void> {
+    return this._locator.waitFor({
+      state: 'hidden',
+      ...options,
+    })
   }
 }
 
