@@ -72,6 +72,10 @@ export type {
   XBellTest,
 } from './types';
 
+export type {
+  BrowserTestArguments
+} from './browser/index';
+
 // @ts-ignore
 // resolve swc problem https://github.com/swc-project/swc/issues/1065
 const testArguments: TestArgumentsType = {};

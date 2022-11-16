@@ -1,7 +1,7 @@
 import { test as basicTest } from 'xbell';
 import type { Component } from 'vue';
 
-export const test = basicTest.extendBrowser(async (...args) => {
+export const test = basicTest.extendBrowser(async (args) => {
   const { default: Vue } = await import('vue');
 
   function mount<T extends Component>(C: T, props?: T extends Component<any, any, any, infer P> ? P : any, rootElement?: HTMLElement | string) {
