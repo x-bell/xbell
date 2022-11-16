@@ -46,14 +46,20 @@ class WorkerContext {
     const stderr = new Writable({
       write: (chunk, endcode, callback) => {
         if (this.currentTestFile) {
+          const content = String(chunk);
           const logItem: XBellWorkerLog & {
             filename: string
+            projectName: string;
           } = {
+            projectName: this.currentTestFile.projectName,
             filename: this.currentTestFile.filename,
             type: 'stderr',
-            content: String(chunk),
+            content,
           };
-          this.currentTestFile.logs.push();
+          this.currentTestFile.logs.push({
+            type: 'stderr',
+            content,
+          });
           this.channel.emit('onLog', logItem);
         }
         callback();

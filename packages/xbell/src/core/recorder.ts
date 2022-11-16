@@ -89,8 +89,8 @@ class Recorder implements XBellRecorder {
     }, 1000);
   }
 
-  onLog(data: XBellWorkerLog & { filename: string; }): void {
-    const targetFile = this.tree.find(file => file.filename === data.filename)
+  onLog(data: XBellWorkerLog & { filename: string; projectName: string; }): void {
+    const targetFile = this.tree.find(file => file.filename === data.filename && file.projectName === data.projectName);
     if (targetFile) {
       targetFile.logs.push({
         type: data.type,
