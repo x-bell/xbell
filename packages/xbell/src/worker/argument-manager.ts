@@ -12,6 +12,7 @@ export class ArgumentManager {
     browserMocks: this._case.browserMocks,
     // TODO: _testFunctionFilename in node
     filename: this._case._testFunctionFilename ?? this._case.filename,
+    file: this._file,
   });
 
   project: XBellProject;

@@ -1,4 +1,4 @@
-import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig, XBellConfigRequired } from '../types';
+import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig, XBellBrowserConfigRequired, XBellConfigRequired } from '../types';
 import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import debug from 'debug';
@@ -27,8 +27,8 @@ function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfi
   }
 }
 
-const mergeConfig = (...configs: XBellConfig[]): XBellConfig => 
-  configs
+const mergeConfig = (...configs: Array<XBellConfig>): XBellConfig => 
+  (configs)
     .slice(1)
     .reduce(
       (acc, config) => _mergeConfigImp(acc, config),
@@ -36,7 +36,7 @@ const mergeConfig = (...configs: XBellConfig[]): XBellConfig =>
     );
 
 export class Configurator implements XBellConfigurator {
-  static XBellDefaultBrowserConfig: Required<XBellBrowserConfig> = {
+  static XBellDefaultBrowserConfig: XBellBrowserConfigRequired = {
     headless: true,
     viewport: {
       width: 1280,
@@ -65,25 +65,25 @@ export class Configurator implements XBellConfigurator {
     'xbell.config.cjs',
   ];
 
-  globalConfig!: Required<XBellConfig>;
+  globalConfig!: XBellConfigRequired;
 
   async setup() {
     this.globalConfig = await this.loadGlobalConfig()
     debugConfigurator('globalConfig', this.globalConfig);
   }
 
-  protected async loadGlobalConfig(): Promise<Required<XBellConfig>> {
+  protected async loadGlobalConfig(): Promise<XBellConfigRequired> {
     const cliConfig = this.getCLIConfig();
     const projectDir = pathManager.projectDir;
     const { XBellConfigFilePaths, XBellDefaultConfig } = Configurator;
     const fullPaths = XBellConfigFilePaths.map(filepath => path.join(projectDir, filepath))
     const targetConfigFilePath = fullPaths.find((filepath) => existsSync(filepath))
     if (!targetConfigFilePath) {
-      return mergeConfig(XBellDefaultConfig, cliConfig) as Required<XBellConfig>;
+      return mergeConfig(XBellDefaultConfig, cliConfig) as XBellConfigRequired;
     }
     
     const { default: userConfig } = await import(targetConfigFilePath);
-    return mergeConfig(XBellDefaultConfig, userConfig, cliConfig) as Required<XBellConfig>;
+    return mergeConfig(XBellDefaultConfig, userConfig, cliConfig) as XBellConfigRequired;
   }
 
   protected getCLIConfig(): XBellConfig {
@@ -97,9 +97,20 @@ export class Configurator implements XBellConfigurator {
 
     return config;
   }
+  
+  public getProjectConfig({ projectName }: {
+    projectName: string
+  }): XBellConfigRequired {
+    const { projects } = this.globalConfig;
+    const project = projects.find(project => project.name === projectName)
+    if (project?.config) {
+      return mergeConfig(this.globalConfig, project.config) as XBellConfigRequired;
+    }
+    return this.globalConfig;
+  }
 
   public async queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig> {
-    const globalConfig = await this.globalConfig;
+    const globalConfig = this.globalConfig;
     return mergeConfig(globalConfig, caseConfig);
   }
 

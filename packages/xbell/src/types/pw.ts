@@ -1,7 +1,40 @@
 
-import type { JSHandle, ElementHandle } from 'playwright-core';
+import type { JSHandle, ElementHandle, BrowserContext } from 'playwright-core';
 
 export type { Response, Request, Video } from 'playwright-core';
+
+export type StorageState = {
+  cookies: Array<{
+    name: string;
+
+    value: string;
+
+    domain: string;
+
+    path: string;
+
+    /**
+     * Unix time in seconds.
+     */
+    expires: number;
+
+    httpOnly: boolean;
+
+    secure: boolean;
+
+    sameSite: "Strict"|"Lax"|"None";
+  }>;
+
+  origins: Array<{
+    origin: string;
+
+    localStorage: Array<{
+      name: string;
+
+      value: string;
+    }>;
+  }>;
+}
 
 export type SmartHandle<T> = T extends Node ? ElementHandle<T> : JSHandle<T>;
 

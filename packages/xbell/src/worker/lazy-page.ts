@@ -1,4 +1,4 @@
-import type { Page as PageInterface, Locator, XBellMocks, XBellBrowserCallback } from '../types';
+import type { Page as PageInterface, Locator, XBellMocks, XBellBrowserCallback, XBellTestFile } from '../types';
 import type { Browser, BrowserContext } from 'playwright-core';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
@@ -12,12 +12,16 @@ const debugLazyPage = debug('xbell:lazyPage');
 export function genLazyPage({
   browserCallbacks,
   browserMocks,
-  filename
+  file,
+  filename,
 }: {
   browserCallbacks: Array<XBellBrowserCallback>,
   browserMocks: XBellMocks,
+  file: XBellTestFile,
+  // callback loc
   filename: string,
 }): PageInterface & { used: boolean } {
+  const { projectName } = file;
   function genProxy(pagePropKey: 'mouse' | 'keyboard') {
     const proxy = new Proxy({}, {
       get(target, propKey: keyof Page[typeof pagePropKey]) {
@@ -45,8 +49,8 @@ export function genLazyPage({
         browser: _lazyBrowser,
       };
     }
-
-    const { headless, viewport } = configurator.globalConfig.browser;
+    const projectConfig = configurator.getProjectConfig({ projectName });
+    const { headless, viewport, storageState } = projectConfig.browser;
     const browser = await lazyBrowser.newBrowser('chromium', {
       headless: !!headless,
     });
@@ -57,7 +61,8 @@ export function genLazyPage({
       recordVideo: {
         dir: videoDir,
         size: viewport,
-      }
+      },
+      storageState
     });
     _lazyContext = browserContext;
     _lazyBrowser = browser;

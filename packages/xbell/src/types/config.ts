@@ -1,6 +1,6 @@
 import type { UserConfigExport } from 'vite';
 import type { XBellTestCaseFunction } from './test';
-
+import type { StorageState } from './pw';
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
 export interface XBellBrowserConfig {
@@ -10,6 +10,8 @@ export interface XBellBrowserConfig {
     width: number;
     height: number;
   };
+  // cookies & origins(localStorage)
+  storageState?: StorageState | 'string';
   /** browser dev server */
   devServer?: {
     viteConfig?: UserConfigExport;
@@ -42,8 +44,18 @@ export interface XBellConfig {
   }
 }
 
-export type XBellConfigRequired = Required<Omit<XBellConfig, 'setup' | 'teardown'>>;
+type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser';
+type XBellBrowserConfigOptionalsKeys = 'storageState';
 
+export type XBellBrowserConfigRequired =
+  Required<Omit<XBellBrowserConfig, XBellBrowserConfigOptionalsKeys>> &
+  Partial<Pick<XBellBrowserConfig, XBellBrowserConfigOptionalsKeys>>;;
+  
+export type XBellConfigRequired =
+  Required<Omit<XBellConfig, XBellConfigOptionalsKeys>> &
+  Partial<Pick<XBellConfig, XBellConfigOptionalsKeys>> & {
+    browser: XBellBrowserConfigRequired;
+  };
 
 export type XBellTaskConfig = Partial<
   Pick<

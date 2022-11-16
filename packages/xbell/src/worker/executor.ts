@@ -83,7 +83,7 @@ export class Executor {
       await this.runCaseInNode(c, file);
     } else {
       // TODO:
-      await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>);
+      await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>, file);
     }
   }
 
@@ -112,7 +112,7 @@ export class Executor {
 
   async runCaseInNode(c: XBellTestCase<any, any>, file: XBellTestFile) {
     const argManager = new ArgumentManager(file, c);
-    const { hooks } = configurator.globalConfig;
+    const { hooks } = configurator.getProjectConfig({ projectName: file.projectName });
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,
     });
@@ -148,9 +148,11 @@ export class Executor {
     }
   }
 
-  async runCaseInBrowser(c: XBellTestCaseStandard<any, any>) {
-    const { viewport, headless } = configurator.globalConfig.browser;
-    const { coverage: coverageConfig } = configurator.globalConfig;
+  async runCaseInBrowser(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
+    // case config
+    const projectConfig = configurator.getProjectConfig({ projectName: file.projectName })
+    const { viewport, headless, storageState } = projectConfig.browser;
+    const { coverage: coverageConfig } = projectConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
 
     const browser = await lazyBrowser.newBrowser('chromium', {
@@ -167,6 +169,7 @@ export class Executor {
         size: viewport,
         dir: videoDir,
       },
+      storageState,
     });
     const page = await Page.from({
       browserContext,
