@@ -564,16 +564,178 @@ test('adding works sanely with decimals', ({ expect }) => {
 
 ### toHaveBeenCalled
 
+**Signature: expect(received).toHaveBeenCalled()**
+
+- `received` <type>Mock</type> The mock function
+
+**Returns** <type>void</type>
+
+Use `toHaveBeenCalled` to ensure that a mock function is called.
+
+**Exmaple**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveBeenCalled', ({ expect, fn, spyOn }) => {
+  const object = {
+    method() {}
+  };
+
+  const handleClick = fn();
+  spyOn(object, 'method');
+
+  handleClick();
+  object.method();
+
+  expect(handleClick).toHaveBeenCalled();
+  expect(object.method).toHaveBeenCalled();
+});
+```
+
 ### toHaveBeenCalledTimes
 
+**Signature: expect(received).toHaveBeenCalledTimes(times)**
+
+- `received` <type>Mock</type> The mock function
+- `times` <type>number</type>
+
+**Returns** <type>void</type>
+
+Use `toHaveBeenCalledTimes` to ensure that a mock function got called exact number of times.
+
+```typescript
+import { test } from 'xbell';
+
+test('toHaveBeenCalledTimes', ({ expect, fn, spyOn }) => {
+  const object = {
+    method() {}
+  };
+
+  const handleClick = fn();
+  spyOn(object, 'method');
+
+  handleClick();
+  object.method();
+  object.method();
+
+  expect(handleClick).toHaveBeenCalledTimes(1);
+  expect(object.method).toHaveBeenCalledTimes(2);
+});
+```
+
 ### toHaveBeenCalledWith
+**Signature: expect(received).toHaveBeenCalledWith(...args)**
+
+- `received` <type>Mock</type> The mock function
+- `args` <type>any[]</type> Expect arguments
+
+**Returns** <type>void</type>
+
+Use `toHaveBeenCalledWith` to ensure that a mock function was called with specific arguments. The arguments are checked with the same algorithm that `toEqual` uses.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveBeenCalledWith', ({ expect, fn, spyOn }) => {
+  const object = {
+    method() {}
+  };
+
+  const handleClick = fn();
+  spyOn(object, 'method');
+
+  handleClick('str');
+  object.method(1, 2);
+
+  expect(handleClick).toHaveBeenCalledWith('str');
+  expect(object.method).toHaveBeenCalledWith(1, 2);
+});
+```
 
 ### toHaveBeenLastCalledWith
+**Signature: expect(received).toHaveBeenLastCalledWith(...args)**
+- `received` <type>Mock</type> The mock function
+- `args` <type>any[]</type> Expect arguments
+
+**Returns** <type>void</type>
+
+Use `toHaveBeenLastCalledWith` to ensure that the mock function is called the last time with the specified arguments.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveBeenLastCalledWith', ({ expect, fn, spyOn }) => {
+  const handleClick = fn();
+
+  handleClick('str');
+  handleClick(1, 2);
+
+  expect(handleClick).toHaveBeenCalledWith('str');
+  expect(handleClick).toHaveBeenLastCalledWith(1, 2);
+});
+```
 
 ### toHaveBeenNthCalledWith
+**Signature: expect(received).toHaveBeenNthCalledWith(nthCall, ...args)**
+
+- `received` <type>Mock</type> The mock function
+- `nthCall` <type>number</type> Nth call
+- `args` <type>any[]</type> Expect arguments
+
+**Returns** <type>void</type>
+
+Use `toHaveBeenNthCalledWith` to ensure that the mock function is called the nth time with the specified arguments.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveBeenNthCalledWith', ({ expect, fn, spyOn }) => {
+  const handleClick = fn();
+
+  handleClick('one', 'one');
+  handleClick('two', 'two');
+  handleClick('three', 'three');
+
+  expect(handleClick).toHaveBeenNthCalledWith(1, 'one', 'one');
+  expect(handleClick).toHaveBeenNthCalledWith(3, 'three', 'three');
+});
+```
 
 ### toHaveReturned
+**Signature: expect(received).toHaveReturned(returnValue)**
 
+- `received` <type>Mock</type> The mock function
+- `returnValue` <type>any</type>
+
+**Returns** <type>void</type>
+
+Use `toHaveReturned` to ensure that a mock function was called with specific return value. The return value are checked with the same algorithm that `toEqual` uses.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveReturned', ({ expect, fn, spyOn }) => {
+  const add = (a: number, b: number) => a + b;
+  const someOne = {
+    makeSomething() {
+      return 'something';
+    },
+  };
+
+  const mockAdd = fn(add);
+  spyOn(someOne, 'makeSomething');
+
+  add(1, 1);
+  someOne.makeSomething();
+
+  expect(mockAdd).toHaveReturned(2);
+  expect(someOne.makeSomething).toHaveReturned('something');
+});
+```
 ### toHaveReturnedTimes
 
 ### toHaveReturnedWith

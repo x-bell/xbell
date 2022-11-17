@@ -33,6 +33,17 @@ This method scrolls element into view if needed, and then uses Page.mouse to cli
 **Returns** <type>Promise&lt;void&gt;</type>
 This method scrolls element into view if needed, and then uses Page.mouse to double click in the center of the element. If the element is detached from DOM, the method throws an error.
 
+## locator.fill
+**Signature: locator.fill(value, options?)**
+
+- `value` <type>string</type> Value to set for the  &lt;input&gt;, &lt;textarea&gt; or `contenteditable` element.
+- `options?` <type>object</type>
+  - `timeout?` <type>number</type>
+
+This method waits for actionability checks, focuses the element, fills it and triggers an input event after filling. Note that you can pass an empty string to clear the input field.
+
+If the target element is not an &lt;input&gt;, &lt;textarea&gt; or `contenteditable` element, this method throws an error. However, if the element is inside the &lt;label&gt; element that has an associated control, the control will be filled instead.
+
 ## locator.check
 
 **Signature: locator.check(options?)**
@@ -138,9 +149,18 @@ Returns whether the element is disabled, the opposite of enabled.
 ## locator.count
 **Signature: locator.count()**
 
-**Returns**: <type>Promise&lt;number&gt;</type>>
+**Returns** <type>Promise&lt;number&gt;</type>>
 
 Returns the number of elements matching given selector.
+
+## locator.get
+**Signature: locator.get(selector)**
+
+- `selector` <type>string</type> A selector to use when resolving DOM element
+
+**Returns** <type>Locator</type>
+
+The method finds an element matching the specified selector in the locator's subtree.
 
 ## locator.getByText
 

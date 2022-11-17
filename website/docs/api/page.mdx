@@ -136,6 +136,17 @@ This method fetches an element with selector, scrolls it into view if needed, an
 - **Returns** <type>Promise&lt;void&gt;</type>
 This method fetches an element with selector and focuses it. If there's no element matching selector, the method throws an error.
 
+## page.get
+**Signature: page.get(selector)**
+
+- `selector` <type>string</type> A selector to use when resolving DOM element.
+
+**Returns** <type>Locator</type>
+
+The method returns an element locator that can be used to perform actions on this page / frame. Locator is resolved to the element immediately before performing an action, so a series of actions on the same locator can in fact be performed on different DOM elements. That would happen if the DOM structure between those actions has changed.
+
+
+
 ## page.getByText
 **Signature: page.getByText(text)**
 
@@ -205,6 +216,11 @@ const [response] = await Promise.all([
 
 - **Returns** <type>Promise&lt;void&gt;</type>
 
+Returns when the required load state has been reached.
+
+This resolves when the page reaches a required load state, load by default. The navigation must have been committed when this method is called. If current document has already reached the required state, resolves immediately.
+
+
 ## page.waitForRequest
 
 **Signature: page.waitForRequest(urlOrPredicate, options?)**
@@ -214,6 +230,30 @@ const [response] = await Promise.all([
   - `timeout?` <type>number</type> Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the page.setDefaultTimeout(timeout) method.
 - **Returns** <type>Promise&lt;Request&gt;</type>
 
+## page.waitForRequestFailed
+
+**Signature: page.waitForRequestFailed(optionsOrPredicate)**
+
+- `optionsOrPredicate` <type>function | object</type>
+  - `predicate?` <type>(request: Request) => boolean | Promise&lt;boolean&gt;</type> receives a request object and resolves to truthy value when the waiting should resolve.
+  - `timeout?` <type>number</type> Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the page.setDefaultTimeout(timeout) method.
+
+**Returns** <type>Promise&lt;Request&gt;</type>
+
+Waits for the matching request failed and returns it.
+
+## page.waitForRequestFinished
+
+**Signature: page.waitForRequestFinished(optionsOrPredicate)**
+
+- `optionsOrPredicate` <type>function | object</type>
+  - `predicate?` <type>(request: Request) => boolean | Promise&lt;boolean&gt;</type> receives a request object and resolves to truthy value when the waiting should resolve.
+  - `timeout?` <type>number</type> Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the page.setDefaultTimeout(timeout) method.
+
+**Returns** <type>Promise&lt;Request&gt;</type>
+
+Waits for the matching request finished and returns it.
+
 ## page.waitForResponse
 **Signature: page.waitForResponse(urlOrPredicate, options?)**
 
@@ -221,3 +261,5 @@ const [response] = await Promise.all([
 - `options?` <type>object</type>
   - timeout? <type>number</type> Maximum wait time in milliseconds, defaults to 30 seconds, pass 0 to disable the timeout. The default value can be changed by using the browserContext.setDefaultTimeout(timeout) or page.setDefaultTimeout(timeout) methods.
 - **Returns**: <type>Promise&lt;Response&gt;</type>
+
+Waits for the matching response and returns it.
