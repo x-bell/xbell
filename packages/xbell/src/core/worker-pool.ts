@@ -105,9 +105,6 @@ export class WorkerPool {
   }) {
 
     const { projectName } = queue;
-    // check setup
-    await this.runProjectSetup({ projectName });
-
     const workers = this.workers;
     const idleWorker = workers.find(
       (worker) => !worker.busy && worker.projectName === projectName
@@ -138,7 +135,7 @@ export class WorkerPool {
     return this.projectSetupMap.get(projectName);
   }
 
-  protected executeWorker({
+  protected async executeWorker({
     workerItem,
     queue,
   }: {
@@ -161,6 +158,7 @@ export class WorkerPool {
       // this.finishedTask(workerItem, resolve, reject);
     });
     const task = queue.tasks.shift();
+    await this.runProjectSetup({ projectName: queue.projectName });
     worker.postMessage(task);
     this.checkQueue();
   }
