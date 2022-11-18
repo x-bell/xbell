@@ -118,7 +118,7 @@ export type FrameGotoOptions = {
   timeout?: number,
   waitUntil?: LifecycleEvent,
   referer?: string,
-  html?: string;
+  mockHTML?: string;
 };
 
 export type ElementHandleScreenshotOptions = {

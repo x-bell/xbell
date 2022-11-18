@@ -386,15 +386,15 @@ export class Page implements PageInterface {
   }
 
   async goto(url: string, options?: FrameGotoOptions | undefined): Promise<Response | null> {
-    if (options?.html && this._channel) {
-      await this._proxyGotoRoute(url, options.html);
+    if (options?.mockHTML && this._channel) {
+      await this._proxyGotoRoute(url, options.mockHTML);
     }
-    const { html, ...otherOptons } = options || {};
+    const { mockHTML, ...otherOptons } = options || {};
     // debugPage('goto', url);
     // TODO: playwright version
     // @ts-ignore
     const ret = await this._page.goto(url, otherOptons);
-    if (options?.html) {
+    if (options?.mockHTML) {
       if (this._channel) await this._setupXBellContext();
       if (this._needToSetupExpose) await this._setupBrowserPage();
       if (this._setupCalbacks.length) await this._setEvaluate(this._setupCalbacks);

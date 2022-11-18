@@ -5,7 +5,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 test('renders learn react link', async ({ page }) => {
   await page.goto('https://www.gaoding.com', {
-    html: '<div id="root"></div>'
+    mockHTML: '<div id="root"></div>'
   })
 
   await page.evaluate(async () => {

@@ -230,7 +230,7 @@ export class Executor {
       debugExecutor('page.goto');
 
       await page.goto('https://xbell.test', {
-        html: '<body></body>',
+        mockHTML: '<body><div id="root"></div></body>',
       });
       debugExecutor('page.goto.end', page.evaluate);
       if (Array.isArray(c.options.batch?.items)) {

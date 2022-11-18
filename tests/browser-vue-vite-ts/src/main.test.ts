@@ -2,7 +2,7 @@ import { test } from 'xbell';
 
 test('render app', async ({ page, expect }) => {
   await page.goto('https://github.com', {
-    html: '<div id="app"></div>'
+    mockHTML: '<div id="app"></div>'
   });
 
   await page.evaluate(async () => {

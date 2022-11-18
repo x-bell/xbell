@@ -11,7 +11,7 @@ const config: XBellConfig = {
   hooks: {
     async beforeEach({ page }) {
       await page.goto('https://github.com', {
-        html: '<div id="app"></div>'
+        mockHTML: '<div id="app"></div>'
       });
     }
   },

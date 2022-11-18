@@ -64,7 +64,7 @@ import { test } from 'xbell';
 
 test('#react demo', ({ page }) => {
   // create root element
-  await page.goto('https://my-custom.com', { mockHtml: '<div id="root"></div>' });
+  await page.goto('https://my-custom.com', { mockHTML: '<div id="root"></div>' });
 
   await page.evalute(async () => {
      // for jsx program
@@ -87,7 +87,7 @@ import { test } from 'xbell';
 
 test('#vue demo', ({ page }) => {
   // create root element
-  await page.goto('https://my-custom.com', { mockHtml: '<div id="root"></div>' });
+  await page.goto('https://my-custom.com', { mockHTML: '<div id="root"></div>' });
 
   await page.evalute(async () => {
     const { default: App } = await import('./App.vue');

@@ -15,7 +15,7 @@ class HomepageUnitTest {
   @BeforeEach()
   async render() {
     await this.page.goto(this.project.data.origin, {
-      html: `<div id="root"></div>`
+      mockHTML: `<div id="root"></div>`
     });
 
     await this.page.evaluate(async () => {

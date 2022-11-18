@@ -17,7 +17,7 @@ test.browser('react tests', async ({ page }) => {
   };
 
   await page.goto('https://my-custom-url.com', {
-    html: '<div></div>'
+    mockHTML: '<div><div id="root"></div></div>'
   });
 
   // for jsx
@@ -37,7 +37,7 @@ const testReact = test.browser.extend(async ({ page }) => {
   };
 
   await page.goto('https://my-custom-url.com', {
-    html: '<div></div>'
+    mockHTML: '<div id="root"></div>'
   });
 
   // for jsx
