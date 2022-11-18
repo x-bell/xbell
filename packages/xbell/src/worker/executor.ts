@@ -166,6 +166,7 @@ export class Executor {
     // case config
     const projectConfig = configurator.getProjectConfig({ projectName: file.projectName })
     const { viewport, headless, storageState, devServer } = projectConfig.browser;
+    const { url, html } = projectConfig.browserTest;
     const { coverage: coverageConfig } = projectConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
 
@@ -230,8 +231,8 @@ export class Executor {
     try {
       // A tentative decision
       // debugExecutor('page.goto');
-      await page.goto('https://xbell.test', {
-        mockHTML: devServer.html.content ?? (devServer.html.path != null ? fs.readFileSync(devServer.html.path, 'utf-8') : ''),
+      await page.goto(url ?? 'https://xbell.test', {
+        mockHTML: html?.content ?? (html?.path != null ? fs.readFileSync(html?.path, 'utf-8') : ''),
       });
       // debugExecutor('page.goto.end', page.evaluate);
       if (Array.isArray(c.options.batch?.items)) {

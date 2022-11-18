@@ -49,12 +49,7 @@ export class Configurator implements XBellConfigurator {
       width: 1280,
       height: 700,
     },
-    devServer: {
-      origin: 'https://xbell.test',
-      html: {
-        content: '<div id="root"></div>'
-      }
-    },
+    devServer: {},
   };
 
   static XBellDefaultConfig: XBellConfigRequired = {
@@ -68,7 +63,13 @@ export class Configurator implements XBellConfigurator {
     hooks: {},
     coverage: {
       enabled: false,
-    }
+    },
+    browserTest: {
+      url: 'https://xbell.test',
+      html: {
+        content: '<div id="root"></div>'
+      },
+    },
   }
 
   static XBellConfigFilePaths = [

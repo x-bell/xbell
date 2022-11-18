@@ -13,17 +13,6 @@ export interface XBellCompilerDeps {
   queryResolveId(path: string, importer: string): Promise<string>;
 }
 
-// export interface XBellCompiler {
-//   compileNodeJSCode(sourceCode: string, filename: string): Promise<{ code: string }>
-//   compileBrowserCode(sourceCode: string): Promise<{ code: string }>
-// }
-
-
-
-// export interface XBellCompilerConstructor {
-//   new (desp: XBellCompilerDeps): XBellCompiler
-// }
-
 export class Compiler {
   public nodeJSCache = new Map<string, { code: string }>();
   public browserSourceCodeMapByCode = new Map<string, { sourceCode: string; map: string; }>();

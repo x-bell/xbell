@@ -5,11 +5,6 @@ export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
 export interface XBellBrowserDevServerConfig {
   viteConfig?: UserConfigExport;
-  origin?: string;
-  html?: {
-    content?: string;
-    path?: string;
-  };
 }
 export interface XBellBrowserConfig {
   headless?: boolean;
@@ -50,6 +45,14 @@ export interface XBellConfig {
     include?: string[];
     exclude?: string[];
   }
+
+  browserTest?: {
+    url?: string;
+    html?: {
+      path?: string;
+      content?: string;
+    }
+  };
 }
 
 type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser';
