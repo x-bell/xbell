@@ -117,8 +117,9 @@ class BrowserBuilder {
         // debugBrowserBuilder('id', path, id, url, moduleInfo, ret, retFile, code);
         return ret?.url;
       },
-      transformIndexHtml(url: string, html: string) {
-        return server.transformIndexHtml(url, html);
+      async transformIndexHtml(url: string, html: string) {
+        const res = await server.transformIndexHtml(url, html);
+        return res.replace(`/${XBELL_BUNDLE_PREFIX}/@vite/client`, `/${XBELL_BUNDLE_PREFIX}/@vite/env`);
       }
     };
   }
