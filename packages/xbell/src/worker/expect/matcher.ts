@@ -67,7 +67,7 @@ export const elementMatcher = defineMatcher({
       filepath: state.filepath,
     });
   },
-  toMatchJavaScriptSnapshot(received: any, options: ToMatchJavaScriptSnapshotOptions | string) {
+  toMatchSnapshot(received: any, options: ToMatchJavaScriptSnapshotOptions | string) {
     const validOpts: ToMatchJavaScriptSnapshotOptions = typeof options === 'string' ? { name: options } : options;
     const state = stateManager.getCurrentState();
     const ret = matchJavaScriptSnapshot({
@@ -76,10 +76,10 @@ export const elementMatcher = defineMatcher({
       projectName: state.projectName,
       filepath: state.filepath,
     });
-    debugMatcher('toMatchJavaScriptSnapshot', ret);
+    debugMatcher('toMatchSnapshot', ret);
     return ret;
   },
-  toThrowErrorMatchingJavaScriptSnapshot(received: Function | Error, options: ToMatchJavaScriptSnapshotOptions) {
+  toThrowErrorMatchingSnapshot(received: Function | Error, options: ToMatchJavaScriptSnapshotOptions) {
     const validOpts: ToMatchJavaScriptSnapshotOptions = typeof options === 'string' ? { name: options } : options;
     const { projectName, filepath } = stateManager.getCurrentState();
     let message = '';

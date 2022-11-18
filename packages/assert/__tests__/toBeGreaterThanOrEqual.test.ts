@@ -41,13 +41,13 @@ for (let idx = 0; idx < list.length; idx++) {
       // snap
       await expect(async () => {
         innerExpect(n2).toBeGreaterThanOrEqual(n1);
-      }).toMatchJavaScriptSnapshot({
+      }).toMatchSnapshot({
         name: `error-${idx}`,
       });
 
       await expect(async () => {
         await innerExpect(Promise.resolve<number>(n2)).resolves.toBeGreaterThanOrEqual(n1);
-      }).toMatchJavaScriptSnapshot({
+      }).toMatchSnapshot({
         name: `error-resolves-${idx}`,
       });
 
