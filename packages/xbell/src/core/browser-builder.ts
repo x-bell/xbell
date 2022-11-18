@@ -6,6 +6,7 @@ import {
   defineConfig,
   mergeConfig,
   InlineConfig,
+  preview
 } from 'vite';
 import { viteCoveragePlugin } from '@xbell/coverage';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
@@ -13,8 +14,11 @@ import type { XBellWorkerQueryModuleUrl } from '../types';
 import { get } from '../utils/http';
 import { configurator } from '../common/configurator';
 import debug from 'debug';
+import { pathManager } from '../common/path-manager';
 
 const debugBrowserBuilder = debug('xbell:BrowserBuilder');
+
+(await preview({})).httpServer
 
 class BrowserBuilder {
   protected _server?: Promise<{
@@ -22,6 +26,7 @@ class BrowserBuilder {
     queryUrl(path: string, importer?: string): Promise<string | undefined>;
     port: number;
     getModuleById(url: string): Promise<{ code: string, map: RawSourceMap | null } | undefined>;
+    transformIndexHtml(url: string, html: string): Promise<string>;
   }>;
 
   get server() {
@@ -58,7 +63,7 @@ class BrowserBuilder {
     const userViteConfig = await (typeof rawUserViteConfig === 'function' ? rawUserViteConfig({ mode: 'testing', ssrBuild: false, command: 'serve' }) : rawUserViteConfig);
     const finalConfig: InlineConfig = mergeConfig(
       userViteConfig || {},
-      { ...testConfig, configFile: false, }
+      { ...testConfig, configFile: false, root: pathManager.projectDir, } as InlineConfig
     );
 
     debugBrowserBuilder('userViteConfig', userViteConfig);
@@ -111,6 +116,9 @@ class BrowserBuilder {
         // const retFile = id ? server.moduleGraph.getModulesByFile(id) : undefined;
         // debugBrowserBuilder('id', path, id, url, moduleInfo, ret, retFile, code);
         return ret?.url;
+      },
+      transformIndexHtml(url: string, html: string) {
+        return server.transformIndexHtml(url, html);
       }
     };
   }

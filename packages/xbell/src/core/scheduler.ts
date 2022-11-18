@@ -5,7 +5,6 @@
 
 import type { XBellWorkerTask, XBellProject } from '../types';
 import { configurator } from '../common/configurator';
-import { cpus } from 'node:os';
 import { workerPool, XBellWorkerItem, XBellTaskQuque } from './worker-pool';
 import { recorder } from './recorder';
 import { browserBuilder } from './browser-builder';
@@ -48,9 +47,9 @@ export class Scheduler {
         }
       },
       async transformHtml({ html, url }) {
-        // const server = await browserBuilder.server;
-        // const finalHtml = await server.transformIndexHtml(url, html);
-        return { html };
+        const server = await browserBuilder.server;
+        const finalHtml = await server.transformIndexHtml(url, html);
+        return { html: finalHtml };
       },
       async queryServerPort() {
         const { port } = await browserBuilder.server;
