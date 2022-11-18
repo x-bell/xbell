@@ -10,21 +10,21 @@ for (let idx = 0; idx < list.length; idx++) {
     const mockFn = fn();
     innerExpect(mockFn).not.toHaveBeenCalled();
 
-    expect( () => {
+    await expect( () => {
       innerExpect(mockFn).toHaveBeenCalled();
-    }).toThrowErrorMatchingJavaScriptSnapshot({
+    }).toThrowErrorMatchingSnapshot({
       name: 'error',
     });
 
     await expect(async () => {
       await innerExpect(Promise.resolve(mockFn)).resolves.toHaveBeenCalled();
-    }).rejects.toThrowErrorMatchingJavaScriptSnapshot({
+    }).rejects.toThrowErrorMatchingSnapshot({
       name: 'error-resolves',
     });
 
     await expect(async () => {
       await innerExpect(Promise.reject<typeof mockFn>(mockFn)).rejects.toHaveBeenCalled();
-    }).rejects.toThrowErrorMatchingJavaScriptSnapshot({
+    }).rejects.toThrowErrorMatchingSnapshot({
       name: 'error-rejects',
     });
 
@@ -33,21 +33,21 @@ for (let idx = 0; idx < list.length; idx++) {
 
     innerExpect(mockFn).toHaveBeenCalled();
 
-    expect(() => {
+    await expect(() => {
       innerExpect(mockFn).not.toHaveBeenCalled();
-    }).toThrowErrorMatchingJavaScriptSnapshot({
+    }).toThrowErrorMatchingSnapshot({
       name: 'error-not',
     });
 
     await expect(async () => {
       await innerExpect(Promise.resolve(mockFn)).resolves.not.toHaveBeenCalled();
-    }).rejects.toThrowErrorMatchingJavaScriptSnapshot({
+    }).rejects.toThrowErrorMatchingSnapshot({
       name: 'error-resolves-not',
     });
 
     await expect(async () => {
       await innerExpect(Promise.reject<typeof mockFn>(mockFn)).rejects.not.toHaveBeenCalled();
-    }).rejects.toThrowErrorMatchingJavaScriptSnapshot({
+    }).rejects.toThrowErrorMatchingSnapshot({
       name: 'error-rejects-not',
     });
   });

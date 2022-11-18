@@ -7,7 +7,8 @@ import { stateManager } from '../state-manager';
 import debug from 'debug';
 
 const debugMatcher = debug('xbell:matcher');
-export const elementMatcher = defineMatcher({
+
+export const e2eMatcher = defineMatcher({
   async toBeChecked(received: Locator | ElementHandle, options?: TimeoutOptions) {
     const pass = await received.isChecked(options);
     return {
@@ -56,7 +57,7 @@ export const elementMatcher = defineMatcher({
       })
     }
   },
-  toMatchImageScreenshot(received: Uint8Array | Buffer, options: ToMatchImageSnapshotOptions | string) {
+  async toMatchImageScreenshot(received: Uint8Array | Buffer, options: ToMatchImageSnapshotOptions | string) {
     const validOpts: ToMatchImageSnapshotOptions = typeof options === 'string' ? { name: options } : options;
     const buffer = received;
     const state = stateManager.getCurrentState();
@@ -67,7 +68,7 @@ export const elementMatcher = defineMatcher({
       filepath: state.filepath,
     });
   },
-  toMatchSnapshot(received: any, options: ToMatchJavaScriptSnapshotOptions | string) {
+  async toMatchSnapshot(received: any, options: ToMatchJavaScriptSnapshotOptions | string) {
     const validOpts: ToMatchJavaScriptSnapshotOptions = typeof options === 'string' ? { name: options } : options;
     const state = stateManager.getCurrentState();
     const ret = matchJavaScriptSnapshot({
@@ -79,7 +80,7 @@ export const elementMatcher = defineMatcher({
     debugMatcher('toMatchSnapshot', ret);
     return ret;
   },
-  toThrowErrorMatchingSnapshot(received: Function | Error, options: ToMatchJavaScriptSnapshotOptions) {
+  async toThrowErrorMatchingSnapshot(received: Function | Error, options: ToMatchJavaScriptSnapshotOptions) {
     const validOpts: ToMatchJavaScriptSnapshotOptions = typeof options === 'string' ? { name: options } : options;
     const { projectName, filepath } = stateManager.getCurrentState();
     let message = '';
@@ -102,7 +103,7 @@ export const elementMatcher = defineMatcher({
         if (!isThrow) {
           message = getAssertionMessage({
             ...state,
-            assertionName: 'toThrowErrorMatchingJavaScriptSnapshot',
+            assertionName: 'toThrowErrorMatchingSnapshot',
             ignoreExpected: true,
             ignoreReceived: true,
           });
@@ -124,7 +125,7 @@ export const elementMatcher = defineMatcher({
 
   },
   async toMatchScreenshot(received: Locator | ElementHandle | Page, options: ToMatchImageSnapshotOptions | string) {
-    if (typeof received?.screenshot !== 'function') {
+    if ('screenshot' in received && typeof received?.screenshot !== 'function') {
       throw new Error('toMatchScreenshot: The received object is missing the "sreenshot" method');
     }
 

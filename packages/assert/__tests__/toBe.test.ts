@@ -42,15 +42,15 @@ test('#toBe: does not throw', () => {
   [null, undefined],
   [-0, +0],
 ].forEach(([a, b], idx) => {
-  test(`fails for: ${format(a)} and ${format(b)}`, () => {
-    expect(() => {
+  test(`fails for: ${format(a)} and ${format(b)}`, async () => {
+    await expect(() => {
       innerExpect(a).toBe(b);
-    }).toThrowErrorMatchingJavaScriptSnapshot({
+    }).toThrowErrorMatchingSnapshot({
       name: `error-${idx}`,
     });
-    expect(() => {
+    await expect(() => {
       expect(a).not.toBe(a);
-    }).toThrowErrorMatchingJavaScriptSnapshot({
+    }).toThrowErrorMatchingSnapshot({
       name: `error-not-${idx}`,
     });
   });

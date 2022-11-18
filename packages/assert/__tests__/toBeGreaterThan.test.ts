@@ -24,41 +24,41 @@ for (let idx = 0; idx < list.length; idx++) {
       expect(error.stack).toBe('1');
     }
     // // snap
-    expect(() => {
+    await expect(() => {
       innerExpect(n1).not.toBeGreaterThan(n2);
-    }).toThrowErrorMatchingJavaScriptSnapshot({
+    }).toThrowErrorMatchingSnapshot({
       name: `error-not-${idx}`
     });
 
     await expect(async () => {
       await innerExpect(Promise.resolve<number>(n1)).resolves.not.toBeGreaterThan(n2);
-    }).rejects.toThrowErrorMatchingJavaScriptSnapshot({
+    }).rejects.toThrowErrorMatchingSnapshot({
       name: `error-resolves-not-${idx}`
     });
 
     await expect(async () => {
       await innerExpect(Promise.reject<number>(n1)).rejects.not.toBeGreaterThan(n2);
-    }).rejects.toThrowErrorMatchingJavaScriptSnapshot({
+    }).rejects.toThrowErrorMatchingSnapshot({
       name: `error-rejects-not-${idx}`
     });
 
     if (n1 != n2) {
       // snap
-      expect(() => {
+      await expect(() => {
         innerExpect(n2).toBeGreaterThan(n1);
-      }).toThrowErrorMatchingJavaScriptSnapshot({
+      }).toThrowErrorMatchingSnapshot({
         name: `error-${idx}`
       });
 
       await expect(async () => {
         await innerExpect(Promise.resolve<number>(n2)).resolves.toBeGreaterThan(n1);
-      }).rejects.toThrowErrorMatchingJavaScriptSnapshot({
+      }).rejects.toThrowErrorMatchingSnapshot({
         name: `error-resolves-${idx}`
       });
 
       await expect(async () => {
         await innerExpect(Promise.reject<number>(n2)).rejects.toBeGreaterThan(n1);
-      }).rejects.toThrowErrorMatchingJavaScriptSnapshot({
+      }).rejects.toThrowErrorMatchingSnapshot({
         name: `error-rejects-${idx}`
       });
     }

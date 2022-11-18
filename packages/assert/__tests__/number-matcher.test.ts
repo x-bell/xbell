@@ -53,20 +53,20 @@ import { expect, test } from 'xbell';
   [0, -1],
   [-1, -2]
 ].forEach(([n1, n2], idx) => {
-  test(`{pass: true} expect(${n1}).toBeGreaterThan(${n2})`, () => {
+  test(`{pass: true} expect(${n1}).toBeGreaterThan(${n2})`, async () => {
     innerExpect(n1).toBeGreaterThan(n2);
 
     // snap
-    expect(() => {
+    await expect(() => {
       innerExpect(n1).not.toBeGreaterThan(n2);
-    }).toThrowErrorMatchingJavaScriptSnapshot({
+    }).toThrowErrorMatchingSnapshot({
       name: `toBeGreaterThan-error-not-${idx}`,
     });
 
     // snap
-    expect(() => {
+    await expect(() => {
       innerExpect(n2).toBeGreaterThan(n1);
-    }).toThrowErrorMatchingJavaScriptSnapshot({
+    }).toThrowErrorMatchingSnapshot({
       name: `toBeGreaterThan-error-${idx}`,
     });
   });
