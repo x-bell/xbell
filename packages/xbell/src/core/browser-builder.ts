@@ -54,7 +54,8 @@ class BrowserBuilder {
         sourcemap: true,
       },
     });
-    const userViteConfig = configurator.globalConfig.browser.devServer?.viteConfig;
+    const rawUserViteConfig = configurator.globalConfig.browser.devServer?.viteConfig;
+    const userViteConfig = await (typeof rawUserViteConfig === 'function' ? rawUserViteConfig({ mode: 'development', ssrBuild: false, command: 'serve' }) : rawUserViteConfig);
     const finalConfig: InlineConfig = mergeConfig(
       userViteConfig || {},
       { ...testConfig, configFile: false, }
