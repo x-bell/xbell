@@ -14,12 +14,18 @@ interface XBellConfigurator {
 }
 
 function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfig {
+  const browser1 = config1.browser ?? {};
+  const browser2 = config2.browser ?? {};
   return {
     ...config1,
     ...config2,
     browser: {
-      ...config1.browser,
-      ...config2.browser,
+      ...browser1,
+      ...browser2,
+      devServer: {
+        ...browser1.devServer,
+        ...browser2.devServer,
+      }
     },
     coverage: {
       ...config1.coverage,
@@ -43,7 +49,12 @@ export class Configurator implements XBellConfigurator {
       width: 1280,
       height: 700,
     },
-    devServer: {},
+    devServer: {
+      origin: 'https://xbell.test',
+      html: {
+        content: '<div id="root"></div>'
+      }
+    },
   };
 
   static XBellDefaultConfig: XBellConfigRequired = {

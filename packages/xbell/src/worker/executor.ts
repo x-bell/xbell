@@ -6,10 +6,11 @@ import { ArgumentManager } from './argument-manager';
 import { stateManager } from './state-manager';
 import { configurator } from '../common/configurator';
 import { pathManager } from '../common/path-manager';
-import { join } from 'path';
+import path, { join } from 'path';
 import debug from 'debug';
 import { htmlReporter } from '../common/html-reporter';
 import * as url from 'url';
+import * as fs from 'fs';
 // import { Page as PWPage } from 'playwright-core';
 // import { getSortValue } from '../utils/sort';
 
@@ -164,7 +165,7 @@ export class Executor {
   async runCaseInBrowser(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
     // case config
     const projectConfig = configurator.getProjectConfig({ projectName: file.projectName })
-    const { viewport, headless, storageState } = projectConfig.browser;
+    const { viewport, headless, storageState, devServer } = projectConfig.browser;
     const { coverage: coverageConfig } = projectConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
 
@@ -225,14 +226,14 @@ export class Executor {
         await browser.close();
       }
     }
+
     try {
       // A tentative decision
-      debugExecutor('page.goto');
-
+      // debugExecutor('page.goto');
       await page.goto('https://xbell.test', {
-        mockHTML: '<body><div id="root"></div></body>',
+        mockHTML: devServer.html.content ?? (devServer.html.path != null ? fs.readFileSync(devServer.html.path, 'utf-8') : ''),
       });
-      debugExecutor('page.goto.end', page.evaluate);
+      // debugExecutor('page.goto.end', page.evaluate);
       if (Array.isArray(c.options.batch?.items)) {
         for (const [index, item] of c.options.batch!.items.entries()) {
           // @ts-ignore
@@ -259,7 +260,7 @@ export class Executor {
       } else {
         await page.evaluate(c.testFunction); 
       }
-      debugExecutor('page.evaluate.end');
+      // debugExecutor('page.evaluate.end');
       const coverage = coverageConfig?.enabled ? await page.evaluate(() => {
         return window.__xbell_coverage__;
       }) : undefined;
@@ -268,7 +269,7 @@ export class Executor {
       workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, videos, coverage });
       
     } catch(err: any) {
-      debugExecutor('page.err', err);
+      // debugExecutor('page.err', err);
       const pageResult = await terdown();
       const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
       workerContext.channel.emit('onCaseExecuteFailed', {
