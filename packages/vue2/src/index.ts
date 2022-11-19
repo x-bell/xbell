@@ -1,6 +1,7 @@
 import { test as basicTest } from 'xbell';
 import type { expect } from '@xbell/assert';
 import type { Component } from 'vue';
+import type { expect as browserExpect } from 'xbell/dist/browser-test';
 
 export const test = basicTest.extendBrowser(async (args) => {
   const { default: Vue } = await import('vue');

@@ -74,8 +74,9 @@ export type {
 
 export type {
   BrowserTestArguments
-} from './browser/index';
+} from './browser-test/index';
 
+export type { ToMatchJavaScriptSnapshotOptions as ToMatchSnapshotOptions, ToMatchImageSnapshotOptions } from '@xbell/snapshot';
 // @ts-ignore
 // resolve swc problem https://github.com/swc-project/swc/issues/1065
 const testArguments: TestArgumentsType = {};

@@ -12,11 +12,10 @@ import { fileURLToPath } from '../utils/path';
 import { collector } from './collector';
 import { getCallSite } from '../utils/error';
 import debug from 'debug';
-import type { BrowserTestArguments } from '../browser/index';
+import type { BrowserTestArguments } from '../browser-test/index';
 import { getSortValue } from '../utils/sort';
 
 const debugStandard = debug('xbell:standard');
-
 
 export function createBrowserTest<BrowserExtArgs = {}>(
   browserCallbacks: XBellBrowserCallback[] = [],

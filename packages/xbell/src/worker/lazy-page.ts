@@ -7,7 +7,7 @@ import * as path from 'node:path';
 import { configurator } from '../common/configurator';
 import { pathManager } from '../common/path-manager';
 import { workerContext } from './worker-context';
-import type { LocatorMethod, LocatorSyncMethodKeys, PageSyncMethodKeys } from '../browser/types';
+import type { LocatorMethod, LocatorSyncMethodKeys, PageSyncMethodKeys } from '../browser-test/types';
 
 const debugLazyPage = debug('xbell:lazyPage');
 

@@ -192,7 +192,7 @@ export class Executor {
         {
           callback: async () => {
             // @ts-ignore
-            const { expect, fn, spyOn, importActual, page } = await import('xbell/browser');
+            const { expect, fn, spyOn, importActual, page } = await import('xbell/browser-test');
             return {
               expect,
               fn,

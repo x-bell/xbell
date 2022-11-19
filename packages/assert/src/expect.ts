@@ -4,6 +4,7 @@ import color from '@xbell/color';
 import { format } from '@xbell/format';
 import { isPromise, checkRejects, AssertionError, getPromiseValue, toMatch } from './validate';
 import { getAssertionMessage } from './message';
+import { expect } from '.';
 
 
 export function createExpect<MatchObject extends ExpectMatchObject, Type = any, DefaultObject = {}>(matchObject: MatchObject): Expect<MatchObject, Type, DefaultObject> {
@@ -168,13 +169,33 @@ export function defineMatcher<K extends ExpectMatchObject>(matchObject: K): K {
 // })
 
 // const numberMatcher = defineMatcher({
-//   numberLessThan(received: number, target: number) {
+//   async numberLessThan(received: number, target: number) {
 //     return {
 //       pass: received < target,
 //       message: () => `Received: ${received} \n` + `Expected: ${target} or less`,
 //     }
+//   },
+//   aF(a) {
+//     return (state) => {
+//       return {
+//         pass: true,
+//         message: () => '',
+//       }
+//     }
+//   },
+//   aFP(a) {
+//     return async (state) => {
+//       return {
+//         pass: true,
+//         message: () => '',
+//       }
+//     }
 //   }
-// })
+// });
+
+// await expect.extend(numberMatcher)('').aF();
+// await expect.extend(numberMatcher)('').resolves.aF();
+// await expect.extend(numberMatcher)('').rejects.aFP();
 
 // const expect = createExpect<typeof stringMatcher, string>(stringMatcher)
 //   .extend<typeof numberMatcher, number>(numberMatcher);

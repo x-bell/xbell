@@ -1,4 +1,12 @@
-import { ExpectMatchObject, ExpectMatchState, ExpectMatchResult } from "./types";
+import {
+  ExpectMatchObject,
+  ExpectMatchState,
+  ExpectMatchResult,
+  ExpectMatchFunction,
+  ExpectMatchPromiseFunction,
+  ExpectMatchFunctionReturnFunction,
+  ExpectMatchFunctionReturnPromiseFunction
+} from './types';
 import debug from 'debug';
 
 const debugValid = debug('xbell:valid');
@@ -9,8 +17,6 @@ export class AssertionError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
-
-// export class MatcherError extends AssertionError {}
 
 export function isPromise<T>(v: T | Promise<T>): v is Promise<T> {
   if (v && typeof (v as any).then === 'function') {
@@ -51,13 +57,13 @@ export async function getPromiseValue(promise: Promise<any>) {
   let reason;
   let isThrow = false;
   await promise
-  .then((ret) => {
-    result = ret;
-  })
-  .catch((error) => {
-    isThrow = true;
-    reason = error;
-  });
+    .then((ret) => {
+      result = ret;
+    })
+    .catch((error) => {
+      isThrow = true;
+      reason = error;
+    });
 
   return {
     isThrow,
@@ -72,7 +78,8 @@ function handleResult(ret: ExpectMatchResult, state: ExpectMatchState) {
   const handlePass = (rawPass: boolean) => {
     const pass = state.not ? !rawPass : rawPass;
     if (!pass) {
-      const err = new AssertionError(ret.message(state));
+      const msg = typeof ret.message === 'function' ? ret.message(state) : ret.message;
+      const err = new AssertionError(msg);
       throw err;
     }
   }
@@ -95,8 +102,10 @@ export function toMatch({
   propKey: string | symbol;
   args: any[];
 }) {
-  const ret: Promise<ExpectMatchResult> | ExpectMatchResult = Reflect.apply(matchObject[propKey as string], state, [received, ...args])
+  const matchReturnValue: ReturnType<ExpectMatchFunction | ExpectMatchPromiseFunction | ExpectMatchFunctionReturnFunction | ExpectMatchFunctionReturnPromiseFunction> = Reflect.apply(matchObject[propKey as string], state, [received, ...args])
   debugValid('toMatch', propKey, state, received, args);
+  const ret = typeof matchReturnValue === 'function' ? matchReturnValue(state) : matchReturnValue;
+
   return isPromise(ret) ? ret.then(r => handleResult(r, state)) : handleResult(ret, state);
 }
 

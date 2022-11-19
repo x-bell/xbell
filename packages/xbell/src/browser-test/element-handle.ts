@@ -15,7 +15,8 @@ export async function getElementHandle(queryItems: QueryItem[], uuid?: string) {
 }
 
 export class ElementHandle implements ElementHandleInterface {
-  constructor(protected _uuid: string) {}
+  private _type = 'element';
+  constructor(private _uuid: string) {}
 
   private async _execute<T extends keyof ElementHandleInterface>(method: T, ...args: Parameters<ElementHandleInterface[T]>): Promise<ReturnType<ElementHandleInterface[T]>> {
     return window.__xbell_page_element_handle_execute__({

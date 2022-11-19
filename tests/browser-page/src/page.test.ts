@@ -26,3 +26,8 @@ test.browser('trigger click', async ({ page, fn, expect }) => {
 
   expect(handleClick).toHaveBeenCalled();
 });
+
+test.browser('screen shot', async ({ page, expect }) => {
+  await import('./page');
+  await expect(page).toMatchScreenshot({ name: 'page-screenshot' });
+});

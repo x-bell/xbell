@@ -1,5 +1,6 @@
-import { spyOn, fn, expect } from '@xbell/assert';
+import { spyOn, fn } from '@xbell/assert';
 import { Page } from './page';
+import { expect } from './expect';
 
 export const importActual: <T = any>(path: string) => Promise<T> = window.__xbell_context__.importActual;
 

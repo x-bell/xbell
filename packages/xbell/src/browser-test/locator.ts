@@ -6,6 +6,7 @@ import { getElementHandle } from './element-handle';
 // TODO: browser-native impl
 export class Locator implements LocatorInterface {
   private _uuid?: Promise<string>;
+  private _type = 'locator';
   constructor(private queryItems: QueryItem[]) {
   }
 

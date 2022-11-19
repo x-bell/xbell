@@ -37,11 +37,13 @@ export function matchImageSnapshot({
   options,
   projectName,
   filepath,
+  not
 }: {
   buffer: Buffer | Uint8Array;
   options: ToMatchImageSnapshotOptions;
   projectName?: string;
   filepath: string;
+  not: boolean;
 }) {
   // snapshotDebug('_matchImageSnapshot');
   const { maxDiffPixels, maxDiffPixelRatio, name, threshold = 0.2 } = options;
@@ -96,7 +98,7 @@ export function matchImageSnapshot({
       );
       return {
         pass: false,
-        message: ({ not }: { not: boolean }) => [
+        message: () => [
           `ImageSnapshot "${name}" ${not ? 'matched' : 'mismatched'}`,
           '',
           color.green('Expected: ') + color.green.underline(snapshotPath),

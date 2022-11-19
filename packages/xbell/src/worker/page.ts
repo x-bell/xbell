@@ -27,7 +27,7 @@ import type {
   SmartHandle,
 } from '../types/pw'
 import type { Channel } from '../common/channel';
-import type { QueryItem } from '../browser/types';
+import type { QueryItem } from '../browser-test/types';
 
 import { XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
@@ -36,7 +36,8 @@ import { ElementHandle } from './element-handle';
 import { Keyboard } from './keyboard';
 import { idToUrl } from '../utils/path';
 import debug from 'debug';
-
+import type { e2eMatcher } from './expect/matcher';
+import type { ExpectMatchState } from '@xbell/assert';
 
 
 const debugPage = debug('xbell:page');
@@ -60,7 +61,14 @@ declare global {
     __xbell_getImportActualUrl__(path: string): Promise<string>;
     __xbell_page_screenshot__(): Promise<number[]>;
     __xbell_page_url__(): Promise<string>;
-
+    __xbell_page_expect__<M extends keyof typeof e2eMatcher>(opts: {
+      target?: any;
+      type?: 'locator' | 'element' | 'page'
+      uuid?: string;
+      method: M;
+      state: ExpectMatchState;
+      args: Parameters<typeof e2eMatcher[M]> extends [any, ...infer P] ? P : Parameters<typeof e2eMatcher[M]>;
+    }): Promise<{ message: string; pass: boolean; }>;
     __xbell_page_execute__<T extends keyof PageMethods>(opts: {
       method: T;
       args: Parameters<PageMethods[T]>;
@@ -256,6 +264,26 @@ export class Page implements PageInterface {
     await this._page.exposeFunction('__xbell_page_screenshot__', async (...args: Parameters<PageInterface['screenshot']>) => {
       const buffer = await this._page.screenshot(...args)
       return Array.from(buffer);
+    });
+
+    const { e2eMatcher } = await import('./expect/matcher');
+    this._page.exposeFunction('__xbell_page_expect__', async (opts: Parameters<typeof window['__xbell_page_expect__']>[0]): ReturnType<typeof window['__xbell_page_expect__']> => {
+      const { type, uuid, method, args, state, target: obj } = opts;
+      const target = (() => {
+        if (obj) return obj;
+        if (type === 'element') return this._elementHandleMap.get(uuid!)!;
+        if (type === 'locator') return this._locatorMap.get(uuid!);
+        return this;
+      })();
+      // @ts-ignore
+      const ret = await e2eMatcher[method](target as LocatorInterface, ...args)(state)
+      // @ts-ignore
+      const msg = ret.message(state);
+      const pass = ret.pass;
+      return {
+        pass,
+        message: msg,
+      };
     });
   }
 

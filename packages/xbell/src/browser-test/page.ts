@@ -12,7 +12,7 @@ import { Locator, FrameLocator } from './locator';
 import { getElementHandle } from './element-handle';
 
 export class Page implements CommonPage {
-
+  private _type = 'page';
   private async _execute<T extends keyof PageMethods>(method: T, ...args: Parameters<PageMethods[T]>): Promise<ReturnType<PageMethods[T]>> {
     return window.__xbell_page_execute__({
       method,

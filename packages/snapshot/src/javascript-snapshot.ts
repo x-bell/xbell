@@ -3,7 +3,6 @@ import * as path from 'node:path';
 import color from '@xbell/color';
 import { format } from '@xbell/format';
 import { ensureDir, getSnapshotFilePath } from './utils';
-
 export interface ToMatchJavaScriptSnapshotOptions {
   /**
    * js file name
@@ -37,12 +36,14 @@ export function matchJavaScriptSnapshot({
   value,
   options,
   filepath,
-  projectName
+  projectName,
+  not
 }: {
   value: any;
   options: ToMatchJavaScriptSnapshotOptions;
   filepath: string;
   projectName?: string;
+  not: boolean;
 }) {
   let pass = true;
   const { filepath: snapshotPath, newFilepath, diffFilepath } = getSnapshotFilePath({
@@ -70,8 +71,8 @@ export function matchJavaScriptSnapshot({
 
   return {
     pass,
-    message: ({ not }: { not: boolean }) => [
-      `JavaScriptSnapshot "${options.name}" ${not ? 'matched' : 'mismatched'}`,
+    message: () => [
+      `Snapshot "${options.name}" ${not ? 'matched' : 'mismatched'}`,
       '',
       color.green('Expected: ') + color.green.underline(snapshotPath),
       color.red('Received: ') + color.red.underline(newFilepath),
