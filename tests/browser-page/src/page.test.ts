@@ -28,6 +28,7 @@ test.browser('trigger click', async ({ page, fn, expect }) => {
 });
 
 test.browser('screen shot', async ({ page, expect }) => {
-  await import('./page');
+  const { renderButton } = await import('./page');
+  renderButton();
   await expect(page).toMatchScreenshot({ name: 'page-screenshot' });
 });
