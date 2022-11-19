@@ -41,7 +41,7 @@ for (let idx = 0; idx < list.length; idx++) {
       // snap
       await expect(async () => {
         innerExpect(n2).toBeGreaterThanOrEqual(n1);
-      }).toMatchScreenshot({
+      }).toMatchSnapshot({
         name: `error-${idx}`,
       });
 
