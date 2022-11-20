@@ -3,3 +3,44 @@ sidebar_position: 2
 ---
 
 # Component Testing
+
+## React
+```javascript
+import { test } from 'xbell';
+
+test('#react demo', ({ page }) => {
+  // create root element
+  await page.goto('https://my-custom.com', { mockHTML: '<div id="root"></div>' });
+
+  await page.evalute(async () => {
+     // for jsx program
+    const { default: React } = await import('react'); 
+    const { default: ReactDOM } = await import('react-dom');
+    const { default: App } = await import('./App');
+    ReactDOM.render(<App />, document.getElementById('root'));
+  });
+
+  await page.localByText('link').click()
+});
+```
+
+You can see Adavance React to learn more.
+
+## Vue
+
+```javascript
+import { test } from 'xbell';
+
+test('#vue demo', ({ page }) => {
+  // create root element
+  await page.goto('https://my-custom.com', { mockHTML: '<div id="root"></div>' });
+
+  await page.evalute(async () => {
+    const { default: App } = await import('./App.vue');
+    const { createApp } = await import('vue');
+    createApp(App).mount('#app');
+  });
+
+  await page.localByText('link').click()
+});
+```
