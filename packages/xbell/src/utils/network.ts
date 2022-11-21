@@ -1,10 +1,34 @@
 // const NetworkSpeed = require('network-speed');
-import * as http from 'http';
-import * as https from 'https';
+import * as http from 'node:http';
+import * as https from 'node:https';
+import * as net from 'node:net';
 
 function getProcotol(url: string) {
   const urlObj = new URL(url);
   return urlObj.protocol === 'http:' ? http : https
+}
+
+export function getPort(minPort: number, maxPort: number): Promise<number> {
+  function _getPortImp(minPort: number, maxPort: number, resolve: (num: number) => void, reject: (reson: any) => void) {
+    const server = net.createServer();
+    server.once('error', (err) => {
+      if ((err as any).code === 'EADDRINUSE') {
+        if (minPort >= maxPort) reject(err);
+        else _getPortImp(minPort + 1, maxPort, resolve, reject);
+        return 
+      }
+    });
+
+    server.once('listening', () => {
+      server.close();
+      resolve(minPort);
+    });
+
+    server.listen(minPort);
+  }
+  return new Promise((resolve, reject) => {
+    return _getPortImp(minPort, maxPort, resolve, reject);
+  });
 }
 
 interface CheckDownloadSpeedOptions {

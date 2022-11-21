@@ -6,7 +6,6 @@ import {
   defineConfig,
   mergeConfig,
   InlineConfig,
-  preview
 } from 'vite';
 import { viteCoveragePlugin } from '@xbell/coverage';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
@@ -15,10 +14,9 @@ import { get } from '../utils/http';
 import { configurator } from '../common/configurator';
 import debug from 'debug';
 import { pathManager } from '../common/path-manager';
+import { getPort } from '../utils/network';
 
 const debugBrowserBuilder = debug('xbell:BrowserBuilder');
-
-(await preview({})).httpServer
 
 class BrowserBuilder {
   protected _server?: Promise<{
@@ -35,6 +33,7 @@ class BrowserBuilder {
   }
 
   protected async startServer() {
+    const port = await getPort(6688, 7888);
     // const targetConfigFile = viteConfigNames.map(filename => join(projectDir, filename)).find(filename => existsSync(
     //   filename
     // ));
@@ -47,7 +46,12 @@ class BrowserBuilder {
         entries: '/___xbell_empty_vite_entry__/'
       },
       server: {
-        hmr: false,
+        hmr: {
+          host: 'localhost',
+          protocol: 'ws',
+          port,
+        },
+        port,
       },
       plugins: [
         coverage?.enabled ? viteCoveragePlugin({
@@ -69,11 +73,11 @@ class BrowserBuilder {
     debugBrowserBuilder('userViteConfig', userViteConfig);
     debugBrowserBuilder('finalConfigPlugins', finalConfig.plugins);
     const server = await createServer(finalConfig);
-  
+    await server.pluginContainer.buildStart({});
     await server.listen();
-    const addressInfo = server.httpServer?.address()!;
+    // const addressInfo = server.httpServer?.address()!;
 
-    const { port } = addressInfo as Exclude<typeof addressInfo, string>;
+    // const { port } = addressInfo as Exclude<typeof addressInfo, string>;
     // NOTE: vite must fetch internal modules first. otherwise, other requests cannot be answered
     await get(`http://localhost:${port}/${XBELL_BUNDLE_PREFIX}/@vite/env`);
 
@@ -119,7 +123,8 @@ class BrowserBuilder {
       },
       async transformIndexHtml(url: string, html: string) {
         const res = await server.transformIndexHtml(url, html);
-        return res.replace(`/${XBELL_BUNDLE_PREFIX}/@vite/client`, `/${XBELL_BUNDLE_PREFIX}/@vite/env`);
+        // return res.replace(`/${XBELL_BUNDLE_PREFIX}/@vite/client`, `/${XBELL_BUNDLE_PREFIX}/@vite/env`);
+        return res;
       }
     };
   }
