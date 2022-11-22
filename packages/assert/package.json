@@ -1,6 +1,6 @@
 {
   "name": "@xbell/assert",
-  "version": "0.7.0-alpha.15",
+  "version": "0.7.0-alpha.16",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
