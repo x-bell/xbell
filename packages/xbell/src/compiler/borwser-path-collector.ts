@@ -15,6 +15,8 @@ import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import { pathManager } from '../common/path-manager';
 import { idToUrl } from '../utils/path';
 
+const originModulePathByUrl = new Map<string, string>();
+
 export class BrowserPathCollector extends Visitor {
   public paths = new Set<string>()
   constructor(public idMapByFullpath?: Map<string, string>) {
@@ -95,10 +97,16 @@ export class BrowserPathCollector extends Visitor {
         // fullpath by node transform
         this.paths.add(n.arguments[0].expression.value);
       } else {
-        const rawValue = n.arguments[0].expression.value
+        let rawValue = n.arguments[0].expression.value;
+        if (rawValue.includes(XBELL_BUNDLE_PREFIX)) {
+          // restore origin module path for get new url
+          rawValue = originModulePathByUrl.get(rawValue)!;
+        }
         if (!rawValue.includes(XBELL_BUNDLE_PREFIX)) {
           const resolveId = this.idMapByFullpath.get(rawValue)!;
           const targetUrl = idToUrl(resolveId);
+          // @ts-ignore
+          originModulePathByUrl.set(targetUrl, n.arguments[0].expression.raw);
           // @ts-ignore
           delete n.arguments[0].expression.raw;
           n.arguments[0].expression.value = targetUrl as string;
