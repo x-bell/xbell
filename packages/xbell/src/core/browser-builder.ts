@@ -43,7 +43,10 @@ class BrowserBuilder {
       base: `/${XBELL_BUNDLE_PREFIX}/`,
       optimizeDeps: {
         // disable vite warning [https://github.com/vitejs/vite/blob/e7712ffb68b24fc6eafb9359548cf92c15a156c1/packages/vite/src/node/optimizer/scan.ts#L82]
-        entries: '/___xbell_empty_vite_entry__/'
+        entries: '/___xbell_empty_vite_entry__/',
+        include: [
+          'xbell/browser-test'
+        ]
       },
       server: {
         hmr: {
@@ -79,12 +82,12 @@ class BrowserBuilder {
 
     // const { port } = addressInfo as Exclude<typeof addressInfo, string>;
     // NOTE: vite must fetch internal modules first. otherwise, other requests cannot be answered
-    await get(`http://localhost:${port}/${XBELL_BUNDLE_PREFIX}/@vite/env`);
+    // await get(`http://localhost:${port}/${XBELL_BUNDLE_PREFIX}/@vite/env`);
 
     async function queryId(path: string, importer?: string) {
       debugBrowserBuilder('resolveId', {
         path,
-        importer
+        importer,
       });
       const ret = await server.pluginContainer.resolveId(path, importer, { ssr: false });
       return ret?.id
