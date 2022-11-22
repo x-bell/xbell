@@ -20,7 +20,6 @@ export class Browser {
       setupCalbacks: [],
       filename,
       mocks: new Map(),
-      needToSetupExpose: false,
     });
   }
 

@@ -12,6 +12,7 @@ import WebSocket from 'ws';
 import { htmlReporter } from '../common/html-reporter';
 import * as url from 'url';
 import * as fs from 'fs';
+import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 // import { Page as PWPage } from 'playwright-core';
 // import { getSortValue } from '../utils/sort';
 
@@ -46,13 +47,17 @@ async function executePage({
   execute: () => Promise<void>;
 }) {
   let isViteReload = false;
+  page._viteAssetReload = () => {
+    isViteReload = true;
+  };
 
-  const ws = new WebSocket(`ws://localhost:${port}`)
-  ws.on('message', (payload) => {
-    if ((payload as any)?.type === 'full-reload') {
+  const ws = new WebSocket(`ws://localhost:${port}/${XBELL_BUNDLE_PREFIX}/`, 'vite-hmr')
+  ws.addEventListener('message', ({ data }) => {
+    data = JSON.parse(data as string);
+    if ((data as any)?.type === 'full-reload') {
       isViteReload = true;
     }
-    debugExecutor('===ws:msg===', payload);
+    debugExecutor('===ws:msg===', data);
   });
 
   await execute().catch((ret) => {
@@ -61,17 +66,16 @@ async function executePage({
     }
   });
 
-  if (isViteReload) {
-    await page.reload();
-  }
-
   ws.close();
 
-  await executePage({
-    page,
-    execute,
-    port,
-  });
+  if (isViteReload) {
+    await page.reload();
+    await executePage({
+      page,
+      execute,
+      port,
+    });
+  }
 }
 
 export class Executor {
@@ -247,9 +251,10 @@ export class Executor {
       browserCallbacks: c.runtimeOptions.browserCallbacks || [],
       mocks: c.browserMocks,
       filename: c._testFunctionFilename!,
-      needToSetupExpose: true,
       channel: workerContext.channel,
     });
+
+    await page._setupExpose();
     const terdown = async () => {
       const video = await page.video();
       if (video) {
@@ -268,6 +273,7 @@ export class Executor {
     }
 
     try {
+      const { port } = await workerContext.channel.request('queryServerPort');
       // A tentative decision
       // debugExecutor('page.goto');
       await page.goto(url ?? 'https://xbell.test', {
@@ -276,22 +282,29 @@ export class Executor {
       // debugExecutor('page.goto.end', page.evaluate);
       if (Array.isArray(c.options.batch?.items)) {
         for (const [index, item] of c.options.batch!.items.entries()) {
-          // @ts-ignore
-          const batchContext = await page.evaluateHandle((args, { item, index }) => {
-            return {
-              ...args,
-              item,
-              index,
-            };
-          }, { item, index });
-          await batchContext.evaluate(c.testFunction); 
+         await executePage({
+          page,
+          port,
+          execute: async() => {
+            if (index === 0) await page._setupBrowserEnv();
+             // @ts-ignore
+            const batchContext = await page.evaluateHandle((args, { item, index }) => {
+              return {
+                ...args,
+                item,
+                index,
+              };
+            }, { item, index });
+            await batchContext.evaluate(c.testFunction); 
+          }
+         })
         }
       } else if (c.options.each) {
-        const { port } = await workerContext.channel.request('queryServerPort');
         const { index, item } = c.options.each!;
         await executePage({
           page,
           execute: async () => {
+            if (index === 0) await page._setupBrowserEnv();
             // @ts-ignore
             const eachContext = await page.evaluateHandle((args, { item, index }) => {
               return {
@@ -305,10 +318,12 @@ export class Executor {
           port,
         });
       } else {
-        const { port } = await workerContext.channel.request('queryServerPort');
         await executePage({
           page,
-          execute: () => page.evaluate(c.testFunction),
+          execute: async () => {
+            await page._setupBrowserEnv();
+            await page.evaluate(c.testFunction);
+          },
           port,
         });
       }
