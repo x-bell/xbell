@@ -64,13 +64,13 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@swc/core": "1.2.208",
+    "@xbell/assert": "workspace:*",
     "@xbell/code-stack": "workspace:*",
     "@xbell/color": "workspace:*",
     "@xbell/coverage": "workspace:*",
     "@xbell/reporter": "workspace:*",
     "@xbell/snapshot": "workspace:*",
-    "@xbell/assert": "workspace:*",
-    "@swc/core": "1.2.208",
     "commander": "^9.2.0",
     "debug": "^4.3.4",
     "fast-glob": "^3.2.11",
@@ -79,10 +79,12 @@
     "reflect-metadata": "^0.1.13",
     "source-map-js": "^1.0.2",
     "strip-ansi": "^7.0.1",
-    "vite": "^3.1.8"
+    "vite": "^3.1.8",
+    "ws": "^8.8.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/reflect-metadata": "^0.1.0"
+    "@types/reflect-metadata": "^0.1.0",
+    "@types/ws": "^8.5.3"
   }
 }

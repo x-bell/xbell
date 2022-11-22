@@ -8,6 +8,7 @@ import { configurator } from '../common/configurator';
 import { pathManager } from '../common/path-manager';
 import path, { join } from 'path';
 import debug from 'debug';
+import WebSocket from 'ws';
 import { htmlReporter } from '../common/html-reporter';
 import * as url from 'url';
 import * as fs from 'fs';
@@ -33,6 +34,44 @@ const debugExecutor = debug('xbell:executor');
 
 function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
   return typeof c.testFunction === 'function'
+}
+
+async function executePage({
+  page,
+  port,
+  execute
+}: {
+  page: Page;
+  port: number;
+  execute: () => Promise<void>;
+}) {
+  let isViteReload = false;
+
+  const ws = new WebSocket(`ws://localhost:${port}`)
+  ws.on('message', (payload) => {
+    if ((payload as any)?.type === 'full-reload') {
+      isViteReload = true;
+    }
+    debugExecutor('===ws:msg===', payload);
+  });
+
+  await execute().catch((ret) => {
+    if (!isViteReload) {
+      return Promise.reject(ret);
+    }
+  });
+
+  if (isViteReload) {
+    await page.reload();
+  }
+
+  ws.close();
+
+  await executePage({
+    page,
+    execute,
+    port,
+  });
 }
 
 export class Executor {
@@ -248,18 +287,30 @@ export class Executor {
           await batchContext.evaluate(c.testFunction); 
         }
       } else if (c.options.each) {
+        const { port } = await workerContext.channel.request('queryServerPort');
         const { index, item } = c.options.each!;
-        // @ts-ignore
-        const eachContext = await page.evaluateHandle((args, { item, index }) => {
-          return {
-            ...args,
-            item,
-            index,
-          };
-        }, { item, index });
-        await eachContext.evaluateHandle(c.testFunction);
+        await executePage({
+          page,
+          execute: async () => {
+            // @ts-ignore
+            const eachContext = await page.evaluateHandle((args, { item, index }) => {
+              return {
+                ...args,
+                item,
+                index,
+              };
+            }, { item, index });
+            await eachContext.evaluateHandle(c.testFunction);
+          },
+          port,
+        });
       } else {
-        await page.evaluate(c.testFunction); 
+        const { port } = await workerContext.channel.request('queryServerPort');
+        await executePage({
+          page,
+          execute: () => page.evaluate(c.testFunction),
+          port,
+        });
       }
       // debugExecutor('page.evaluate.end');
       const coverage = coverageConfig?.enabled ? await page.evaluate(() => {

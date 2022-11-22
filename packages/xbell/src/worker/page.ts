@@ -195,6 +195,18 @@ export class Page implements PageInterface {
   }
 
   protected async _setupBrowserPage() {
+    await this._page.exposeFunction('__xbell_getImportActualUrl__', async (modulePath: string) => {
+      const id = await this._channel!.request('queryModuleId', {
+        modulePath: modulePath,
+        importer: this._currentFilename,
+      });
+      // debugPage('execute.__xbell_getImportActualUrl__', modulePath, this._currentFilename, id);
+      if (!id) {
+        return null;
+      }
+
+      return idToUrl(id, XBELL_ACTUAL_BUNDLE_PREFIX);
+    });
 
     await this._page.exposeFunction(
       '__xbell_page_execute__',
@@ -288,19 +300,6 @@ export class Page implements PageInterface {
   }
 
   protected async _setupXBellContext() {
-    await this._page.exposeFunction('__xbell_getImportActualUrl__', async (modulePath: string) => {
-      const id = await this._channel!.request('queryModuleId', {
-        modulePath: modulePath,
-        importer: this._currentFilename,
-      });
-      // debugPage('execute.__xbell_getImportActualUrl__', modulePath, this._currentFilename, id);
-      if (!id) {
-        return null;
-      }
-
-      return idToUrl(id, XBELL_ACTUAL_BUNDLE_PREFIX);
-    });
-
     await this._page.evaluate(() => {
       window.__xbell_context__ = {
         mocks: new Map(),
@@ -423,21 +422,30 @@ export class Page implements PageInterface {
     // @ts-ignore
     const ret = await this._page.goto(url, otherOptons);
     if (options?.mockHTML) {
-      if (this._channel) await this._setupXBellContext();
       if (this._needToSetupExpose) await this._setupBrowserPage();
-      if (this._setupCalbacks.length) await this._setEvaluate(this._setupCalbacks);
-      if (this._browserCallbacks.length) await this._setEvaluate(this._browserCallbacks);
+      await this._setupMockHTML();
     }
 
     return ret;
+  }
+
+  async _setupMockHTML() {
+    if (this._channel) await this._setupXBellContext();
+    if (this._setupCalbacks.length) await this._setEvaluate(this._setupCalbacks);
+    if (this._browserCallbacks.length) await this._setEvaluate(this._browserCallbacks);
   }
 
   goBack() {
     return this._page.goBack();
   }
 
-  reload(options?: { timeout?: number | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; }): Promise<Response | null> {
-    return this._page.reload(options);
+  async reload(options?: { timeout?: number | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; }): Promise<Response | null> {
+    const ret = await this._page.reload(options);
+    // reset evaluate context
+    this.evaluate = this._originEvaluate;
+    this.evaluateHandle = this._originEvaluateHandle;
+    await this._setupMockHTML();
+    return ret;
   }
 
   getFrame(selector: string): FrameLocatorInterface {
@@ -575,7 +583,11 @@ export class Page implements PageInterface {
 
   evaluate = this._genEvaluate(this._page.evaluate.bind(this._page));
 
+  _originEvaluate = this.evaluate;
+
   evaluateHandle = this._genEvaluateHandle(this._page.evaluateHandle.bind(this._page));
+
+  _originEvaluateHandle = this.evaluateHandle;
 
   screenshot(options?: PageScreenshotOptions | undefined): Promise<Buffer> {
     return this._page.screenshot(options);
