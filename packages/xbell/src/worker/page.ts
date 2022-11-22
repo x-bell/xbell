@@ -2,8 +2,9 @@ import type {
   BrowserContext as PWBroContext,
   Download,
   Page as PWPage,
-  Request,
   Video,
+  Request as PWRequest,
+  Response as PWResponse,
 } from 'playwright-core';
 
 import type {
@@ -20,11 +21,13 @@ import type {
 
 import type {
   FrameGotoOptions,
-  Response,
   LifecycleEvent,
   PageScreenshotOptions,
   PageFunction,
   SmartHandle,
+  TimeoutOptions,
+  Request,
+  Response,
 } from '../types/pw'
 import type { Channel } from '../common/channel';
 import type { QueryItem } from '../browser-test/types';
@@ -38,9 +41,39 @@ import { idToUrl } from '../utils/path';
 import debug from 'debug';
 import type { e2eMatcher } from './expect/matcher';
 import type { ExpectMatchState } from '@xbell/assert';
+import { isRegExp } from '../utils/is';
 
 
 const debugPage = debug('xbell:page');
+
+function toCommonRequest(r: PWRequest): Request {
+  return {
+    url: r.url(),
+    headers: r.headers(),
+  }
+}
+
+function toCommonResponse(r: PWResponse): Response {
+  return {
+    url: r.url(),
+    headers: r.headers(),
+    status: r.status(),
+  }
+}
+
+function responseUrlOrPredicateToFunction(urlOrPredicate: string | RegExp | ((request: Response) => boolean | Promise<boolean>) | undefined): ((request: PWResponse) => Promise<boolean> | boolean) | undefined {
+  if (typeof urlOrPredicate === 'function') return request => urlOrPredicate(toCommonResponse(request));
+  if (isRegExp(urlOrPredicate)) return request => urlOrPredicate.test(request.url())
+  if (typeof urlOrPredicate === 'string') return request => request.url() === urlOrPredicate;
+  return undefined;
+}
+
+function requestUrlOrPredicateToFunction(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>) | undefined): ((request: PWRequest) => Promise<boolean> | boolean) | undefined {
+  if (typeof urlOrPredicate === 'function') return request => urlOrPredicate(toCommonRequest(request));
+  if (isRegExp(urlOrPredicate)) return request => urlOrPredicate.test(request.url())
+  if (typeof urlOrPredicate === 'string') return request => request.url() === urlOrPredicate;
+  return undefined;
+}
 
 let uuid = 1;
 function genUUID() {
@@ -58,6 +91,7 @@ declare global {
       importActual<T = any>(path: string): Promise<T>;
       mocks: Map<string, any>;
     }
+    __xbell_page_callbacks__: Map<string, (...args: any[]) => any>;
     __xbell_getImportActualUrl__(path: string): Promise<string>;
     __xbell_page_screenshot__(): Promise<number[]>;
     __xbell_page_url__(): Promise<string>;
@@ -69,6 +103,12 @@ declare global {
       state: ExpectMatchState;
       args: Parameters<typeof e2eMatcher[M]> extends [any, ...infer P] ? P : Parameters<typeof e2eMatcher[M]>;
     }): Promise<{ message: string; pass: boolean; }>;
+    __xbell_page_execute_with_callback__<T extends 'waitForResponse' | 'waitForRequest' | 'waitForRequestFailed' | 'waitForRequestFinished'>(opts: {
+      callbackUUID: string;
+      method: T;
+      timeoutOptions?: TimeoutOptions;
+    }): ReturnType<Page[T]>;
+
     __xbell_page_execute__<T extends keyof PageMethods>(opts: {
       method: T;
       args: Parameters<PageMethods[T]>;
@@ -206,10 +246,18 @@ export class Page implements PageInterface {
 
       return idToUrl(id, XBELL_ACTUAL_BUNDLE_PREFIX);
     });
-
+    await this._page.exposeFunction('__xbell_page_execute_with_callback__', ({ timeoutOptions, callbackUUID, method }: Parameters<typeof window.__xbell_page_execute_with_callback__>[0]): ReturnType<typeof window.__xbell_page_execute_with_callback__> => {
+        return this[method]((requestOrResponse) => {
+          return this._originEvaluate(({ callbackUUID, res }) => {
+            // @ts-ignore
+            const func = window.__xbell_page_callbacks__.get(callbackUUID)!
+            return func(res) as boolean;
+          }, { callbackUUID: callbackUUID, res: requestOrResponse })
+        }, timeoutOptions);
+    });
     await this._page.exposeFunction(
       '__xbell_page_execute__',
-      (options: Parameters<typeof window['__xbell_page_execute__']>[0]): ReturnType<typeof window['__xbell_page_execute__']> => {
+      (options: Parameters<typeof window.__xbell_page_execute__>[0]): ReturnType<typeof window.__xbell_page_execute__> => {
         const { method, args } = options;
         return Reflect.apply(this[method], this, args);
       }
@@ -218,7 +266,7 @@ export class Page implements PageInterface {
     // locator
     await this._page.exposeFunction(
       '__xbell_page_locator_expose__',
-      (queryItems: QueryItem[]): Awaited<ReturnType<typeof window['__xbell_page_locator_expose__']>> => {
+      (queryItems: QueryItem[]): Awaited<ReturnType<typeof window.__xbell_page_locator_expose__>> => {
         const [firstQuery, ...rest] = queryItems;
         const locator = rest.reduce((locator, query) => getLocatorByQueryItem(locator, query), getLocatorByQueryItem(this, firstQuery));
         const uuid = genUUID();
@@ -231,7 +279,7 @@ export class Page implements PageInterface {
 
     await this._page.exposeFunction(
       '__xbell_page_locator_execute__',
-      (options: Parameters<typeof window['__xbell_page_locator_execute__']>[0]) => {
+      (options: Parameters<typeof window.__xbell_page_locator_execute__>[0]) => {
         // TODO: snapshot
         const { uuid, method, args } = options;
         const locator = this._locatorMap.get(uuid)!
@@ -242,7 +290,7 @@ export class Page implements PageInterface {
     // element handle
     await this._page.exposeFunction(
       '__xbell_page_element_handle_expose__',
-      async (queryItems: QueryItem[], uuid?: string): ReturnType<typeof window['__xbell_page_element_handle_expose__']> => {
+      async (queryItems: QueryItem[], uuid?: string): ReturnType<typeof window.__xbell_page_element_handle_expose__> => {
         let elementHandle: PageInterface | ElementHandleInterface | null = uuid ? this._elementHandleMap.get(uuid)! : this;
         // TODO: handle empty array
         for (const queryItem of queryItems) {
@@ -264,7 +312,7 @@ export class Page implements PageInterface {
 
     await this._page.exposeFunction(
       '__xbell_page_element_handle_execute__',
-      (options: Parameters<typeof window['__xbell_page_element_handle_execute__']>[0]) => {
+      (options: Parameters<typeof window.__xbell_page_element_handle_execute__>[0]) => {
         // TODO: snapshot
         const { uuid, method, args } = options;
         const locator = this._elementHandleMap.get(uuid)!
@@ -278,7 +326,7 @@ export class Page implements PageInterface {
     });
 
     const { e2eMatcher } = await import('./expect/matcher');
-    this._page.exposeFunction('__xbell_page_expect__', async (opts: Parameters<typeof window['__xbell_page_expect__']>[0]): ReturnType<typeof window['__xbell_page_expect__']> => {
+    this._page.exposeFunction('__xbell_page_expect__', async (opts: Parameters<typeof window.__xbell_page_expect__>[0]): ReturnType<typeof window.__xbell_page_expect__> => {
       const { type, uuid, method, args, state, target: obj } = opts;
       const target = (() => {
         if (obj) return obj;
@@ -300,6 +348,7 @@ export class Page implements PageInterface {
 
   protected async _setupXBellContext() {
     await this._page.evaluate(() => {
+      window.__xbell_page_callbacks__ = new Map();
       window.__xbell_context__ = {
         mocks: new Map(),
         importActual: async (path: string) => {
@@ -431,7 +480,7 @@ export class Page implements PageInterface {
     // @ts-ignore
     const ret = await this._page.goto(url, otherOptons);
 
-    return ret;
+    return ret ? toCommonResponse(ret) : ret;
   }
 
   async _setupBrowserEnv() {
@@ -448,7 +497,7 @@ export class Page implements PageInterface {
 
   async reload(options?: { timeout?: number | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; }): Promise<Response | null> {
     const ret = await this._page.reload(options);
-    return ret;
+    return ret ? toCommonResponse(ret) : ret;
   }
 
   getFrame(selector: string): FrameLocatorInterface {
@@ -608,24 +657,36 @@ export class Page implements PageInterface {
     return this._page.waitForLoadState(state, options); 
   }
 
-  waitForNavigation(options?: { timeout?: number | undefined; url?: string | RegExp | ((url: URL) => boolean) | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; } | undefined): Promise<Response | null> {
-    return this._page.waitForNavigation(options);
+  async waitForNavigation(options?: { timeout?: number | undefined; url?: string | RegExp | ((url: URL) => boolean) | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; } | undefined): Promise<Response | null> {
+    const ret = await this._page.waitForNavigation(options);
+    return ret ? toCommonResponse(ret) : ret;;
   }
 
-  waitForResponse(urlOrPredicate: string | RegExp | ((response: Response) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Response> {
-    return this._page.waitForResponse(urlOrPredicate, options);
+  async waitForResponse(urlOrPredicate: string | RegExp | ((response: Response) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Response> {
+    const ret = await this._page.waitForResponse(responseUrlOrPredicateToFunction(urlOrPredicate)!, options);
+    return ret ? toCommonResponse(ret) : ret;
   }
 
-  waitForRequest(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
-    return this._page.waitForRequest(urlOrPredicate, options);
+  async waitForRequest(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
+    const ret = await this._page.waitForRequest(requestUrlOrPredicateToFunction(urlOrPredicate)!, options);
+    return ret ? toCommonRequest(ret) : ret;
   }
 
-  waitForRequestFailed(optionsOrPredicate?: { predicate?: ((request: Request) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((request: Request) => boolean | Promise<boolean>) | undefined): Promise<Request> {
-    return this._page.waitForEvent('requestfailed', optionsOrPredicate);
+  async waitForRequestFailed(urlOrPredicate?: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
+    const ret = await this._page.waitForEvent('requestfailed', {
+      predicate: requestUrlOrPredicateToFunction(urlOrPredicate),
+      ...options,
+    });
+    return ret ? toCommonRequest(ret) : ret;
+
   }
 
-  waitForRequestFinished(optionsOrPredicate?: { predicate?: ((request: Request) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request> {
-    return this._page.waitForEvent('requestfinished', optionsOrPredicate);
+  async waitForRequestFinished(urlOrPredicate?: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
+    const ret = await this._page.waitForEvent('requestfinished', {
+      predicate: requestUrlOrPredicateToFunction(urlOrPredicate),
+      ...options,
+    });
+    return ret ? toCommonRequest(ret) : ret;
   }
 
   waitForDownload(optionsOrPredicate?: { predicate?: ((download: Download) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((download: Download) => boolean | Promise<boolean>) | undefined): Promise<Download> {

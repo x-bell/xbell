@@ -1,4 +1,4 @@
-import { Request, Response } from 'playwright-core';
+// import { Request, Response } from 'playwright-core';
 import type {
   CommonPage,
   Page as PageInterface,
@@ -7,10 +7,10 @@ import type {
   FrameLocator as FrameLocatorInterface,
   ElementHandle as ElementHandleInterface
 } from '../types';
-import { FrameGotoOptions, PageFunction, PageScreenshotOptions } from '../types/pw';
+import type { FrameGotoOptions, PageFunction, PageScreenshotOptions, Response, Request } from '../types/pw';
 import { Locator, FrameLocator } from './locator';
 import { getElementHandle } from './element-handle';
-
+import { genUUID } from './utils';
 export class Page implements CommonPage {
   private _type = 'page';
   private async _execute<T extends keyof PageMethods>(method: T, ...args: Parameters<PageMethods[T]>): Promise<ReturnType<PageMethods[T]>> {
@@ -60,6 +60,68 @@ export class Page implements CommonPage {
   async screenshot(options?: PageScreenshotOptions | undefined): Promise<Uint8Array> {
     const buffer = await window.__xbell_page_screenshot__();
     return new Uint8Array(buffer);
+  }
+
+  async waitForRequest(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
+    const isFunction = typeof urlOrPredicate === 'function';
+    if (isFunction) {
+      const callbackUUID = genUUID()
+      return window.__xbell_page_execute_with_callback__({
+        callbackUUID,
+        method: 'waitForRequest',
+        timeoutOptions: options,
+      });
+    }
+
+    return await this._execute('waitForRequest', urlOrPredicate, options);
+  }
+
+  async waitForRequestFailed(urlOrPredicate?: string | RegExp | ((request: Request) => boolean | Promise<boolean>) | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
+    const isFunction = typeof urlOrPredicate === 'function';
+    if (isFunction) {
+      const callbackUUID = genUUID()
+      return window.__xbell_page_execute_with_callback__({
+        callbackUUID,
+        method: 'waitForRequestFailed',
+        timeoutOptions: options,
+      });
+    }
+    return await this._execute('waitForRequestFailed', urlOrPredicate, options);
+  }
+
+  async waitForRequestFinished(urlOrPredicate?: string | RegExp | ((request: Request) => boolean | Promise<boolean>) | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
+    const isFunction = typeof urlOrPredicate === 'function';
+    if (isFunction) {
+      const callbackUUID = genUUID()
+      window.__xbell_page_callbacks__.set(callbackUUID, urlOrPredicate);
+      return window.__xbell_page_execute_with_callback__({
+        callbackUUID,
+        method: 'waitForRequestFinished',
+        timeoutOptions: options,
+      });
+    }
+    return await this._execute('waitForRequestFinished', urlOrPredicate, options);
+  }
+
+  // async waitForRequestFinished(optionsOrPredicate?: { predicate?: ((request: Request) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((request: Request) => boolean | Promise<boolean>) | undefined): Promise<Request> {
+  //   const isFunction = typeof optionsOrPredicate === 'function' || typeof optionsOrPredicate?.predicate === 'function';
+  //   if (!isFunction) {
+  //     return await this._execute('waitForRequestFinished', optionsOrPredicate);
+  //   }
+  // }
+
+  async waitForResponse(urlOrPredicate: string | RegExp | ((response: Response) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Response> {
+    const isFunction = typeof urlOrPredicate === 'function';
+    if (isFunction) {
+      const callbackUUID = genUUID()
+      window.__xbell_page_callbacks__.set(callbackUUID, urlOrPredicate);
+      return window.__xbell_page_execute_with_callback__({
+        callbackUUID,
+        method: 'waitForResponse',
+        timeoutOptions: options,
+      });
+    }
+    return await this._execute('waitForResponse', urlOrPredicate, options);
   }
 
   // waitForLoadState(state?: 'load' | 'domcontentloaded' | 'networkidle' | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<void> {

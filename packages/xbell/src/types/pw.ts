@@ -1,7 +1,18 @@
 
 import type { JSHandle, ElementHandle } from 'playwright-core';
 
-export type { Response, Request, Video, Download } from 'playwright-core';
+export type { Video, Download } from 'playwright-core';
+
+export type Request = {
+  headers: { [key: string]: string; };
+  url: string;
+}
+
+export type Response = {
+  headers: { [key: string]: string; };
+  url: string;
+  status: number;
+}
 
 export type StorageState = {
   cookies: Array<{

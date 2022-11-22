@@ -16,6 +16,10 @@ import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
 
+// const request: Request;
+
+// request.url();
+
 export interface CommonPage {
   screenshot(options?: PageScreenshotOptions): Promise<Uint8Array>;
   getByText(text: string): Locator;
@@ -29,6 +33,14 @@ export interface CommonPage {
   url(): Promise<string>;
   title(): Promise<string>;
   waitForLoadState(state?: Exclude<LifecycleEvent, 'commit'>, options?: { timeout?: number }): Promise<void>;
+  waitForRequestFinished(urlOrPredicate?: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request>;
+  waitForRequestFailed(urlOrPredicate?: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request>;
+  waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
+    timeout?: number;
+  }): Promise<Request>;
+  waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
+    timeout?: number;
+  }): Promise<Response>;
 }
 
 export interface Page<BrowserExtensionArg = {}> extends CommonPage {
@@ -43,14 +55,6 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
     url?: string | RegExp|((url: URL) => boolean);
     waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
   }): Promise<null | Response>;
-  waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
-    timeout?: number;
-  }): Promise<Request>;
-  waitForRequestFinished(optionsOrPredicate?: { predicate?: (request: Request) => boolean | Promise<boolean>, timeout?: number } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request>;
-  waitForRequestFailed(optionsOrPredicate?: { predicate?: (request: Request) => boolean | Promise<boolean>, timeout?: number } | ((request: Request) => boolean | Promise<boolean>)): Promise<Request>;
-  waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
-    timeout?: number;
-  }): Promise<Response>;
   waitForDownload(optionsOrPredicate?: { predicate?: (download: Download) => boolean | Promise<boolean>, timeout?: number } | ((download: Download) => boolean | Promise<boolean>)): Promise<Download>;
   video(): Promise<Video | null>;
   context(): BrowserContext;

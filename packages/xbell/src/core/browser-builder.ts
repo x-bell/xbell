@@ -57,9 +57,9 @@ class BrowserBuilder {
         port,
         watch: {
           ignored: [
-            '**/.test/**',
-            '**/test-report/**',
-          ]
+            '**',
+            '**/.*/**'
+          ],
         }
       },
       plugins: [

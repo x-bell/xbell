@@ -18,3 +18,7 @@ export function isCase(task: XBellTestTaskRecord): task is XBellTestCaseRecord;
 export function isCase(task: XBellTestTask | XBellTestTaskRecord): task is (XBellTestCase<any, any> | XBellTestCaseRecord) {
   return task.type === 'case';
 }
+
+export function isRegExp(v: any): v is RegExp {
+  return Object.prototype.toString.call(v) === '[object RegExp]';
+}
