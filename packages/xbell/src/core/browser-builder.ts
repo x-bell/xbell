@@ -55,6 +55,12 @@ class BrowserBuilder {
           port,
         },
         port,
+        watch: {
+          ignored: [
+            '**/.test/**',
+            '**/test-report/**',
+          ]
+        }
       },
       plugins: [
         coverage?.enabled ? viteCoveragePlugin({
