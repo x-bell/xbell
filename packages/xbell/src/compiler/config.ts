@@ -1,4 +1,5 @@
 import type { TsParserConfig, JscConfig } from '@swc/core';
+import { crossEnv } from '../common/cross-env';
 
 export const tsParserConfig: TsParserConfig = {
   syntax: 'typescript',
@@ -6,14 +7,18 @@ export const tsParserConfig: TsParserConfig = {
   tsx: true,
 };
 
-export const jscConfig: JscConfig = {
-  parser: tsParserConfig,
-  transform: {
-    decoratorMetadata: true,
-    legacyDecorator: true,
-    react: {
-      runtime: 'classic',
-    }
-  },
-  target: 'es2020',
-};
+export function getJSCConfig(): JscConfig {
+  return {
+    parser: tsParserConfig,
+    transform: {
+      decoratorMetadata: true,
+      legacyDecorator: true,
+      react: {
+        runtime: 'classic',
+        pragma: crossEnv.get('jsxPragma'),
+        pragmaFrag: crossEnv.get('jsxPragmaFrag'),
+      }
+    },
+    target: 'es2020',
+  }
+}

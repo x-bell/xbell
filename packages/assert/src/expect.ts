@@ -4,7 +4,6 @@ import color from '@xbell/color';
 import { format } from '@xbell/format';
 import { isPromise, checkRejects, AssertionError, getPromiseValue, toMatch } from './validate';
 import { getAssertionMessage } from './message';
-import { expect } from '.';
 
 
 export function createExpect<MatchObject extends ExpectMatchObject, Type = any, DefaultObject = {}>(matchObject: MatchObject): Expect<MatchObject, Type, DefaultObject> {

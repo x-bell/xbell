@@ -2,7 +2,7 @@ import { resolvePath } from '../utils/resolve';
 import { Visitor } from './visitor';
 import { transformSync, parseSync, Expression, Import, Super, CallExpression } from '@swc/core';
 
-import { jscConfig, tsParserConfig } from './config';
+import { getJSCConfig, tsParserConfig } from './config';
 
 
 class NodeJSVisitor extends Visitor {
@@ -43,9 +43,7 @@ export function compileNodeJSCode(
     module: {
       type: 'nodenext',
     },
-    jsc: {
-      ...jscConfig,
-    }
+    jsc: getJSCConfig(),
   });
   // debugCompiler('nodejs:code', { map, code });
   if (cache) {

@@ -16,11 +16,15 @@ import { coverageManager } from '../common/coverage-manager';
 import debug from 'debug';
 import color from '@xbell/color';
 import { commander } from '../common/commander';
+import { crossEnv } from '../common/cross-env';
 
 const debugContext = debug('xbell:context');
 class XBell {
   async setup() {
     await configurator.setup();
+    const { jsx } = configurator.globalConfig.compiler;
+    if (jsx?.pragma) crossEnv.set('jsxPragmaFrag', jsx.pragma);
+    if (jsx?.pragmaFrag) crossEnv.set('jsxPragmaFrag', jsx.pragmaFrag);
     coverageManager.setup();
     await scheduler.setup();
     await htmlReporter.setup();

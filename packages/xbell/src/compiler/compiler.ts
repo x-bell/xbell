@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import { transformSync, parseSync, Expression, Import, Super, CallExpression } from '@swc/core';
-import { jscConfig, tsParserConfig } from './config';
+import { getJSCConfig, tsParserConfig } from './config';
 import { BrowserPathCollector } from './borwser-path-collector';
 import { browserBuilder } from '../core/browser-builder';
 
@@ -55,7 +55,7 @@ export class Compiler {
         type: 'es6'
       },
       jsc: {
-        ...jscConfig,
+        ...getJSCConfig(),
         target: 'es2020',
       },
       sourceMaps: true

@@ -60,6 +60,12 @@ export class Configurator implements XBellConfigurator {
     browser: this.XBellDefaultBrowserConfig,
     include: ['**/*.{spec,test}.{cjs,mjs,js,jsx,ts,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**'],
+    compiler: {
+      jsx: {
+        pragma: 'React.createElement',
+        pragmaFrag: 'React.Fragment',
+      }
+    },
     hooks: {},
     coverage: {
       enabled: false,

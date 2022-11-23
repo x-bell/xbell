@@ -24,6 +24,13 @@ export interface XBellConfig {
   setup?: string[] | string | (() => Promise<void> | void);
   /** teardown */
   teardown?: string[] | string | (() => Promise<void> | void);
+  /** compiler */
+  compiler?: {
+    jsx?: {
+      pragmaFrag?: string;
+      pragma?: string;
+    }
+  };
   /** browser config */
   browser?: XBellBrowserConfig;
   /** projects */

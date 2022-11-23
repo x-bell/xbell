@@ -1,5 +1,5 @@
 import { transformSync } from '@swc/core';
-import { jscConfig } from './config';
+import { getJSCConfig } from './config';
 
 export async function transformNodeCode(
   sourceCode: string,
@@ -9,9 +9,7 @@ export async function transformNodeCode(
       type: 'nodenext'
     },
     sourceMaps: 'inline',
-    jsc: {
-      ...jscConfig,
-    },
+    jsc: getJSCConfig(),
   });
   return code;
 }
