@@ -5,7 +5,8 @@ import type {
   XBellBrowserTest,
   XBellTest,
   XBellDescribe,
-  XBellBrowserCallback
+  XBellBrowserCallback,
+  XBellNodeJSCallback
 } from '../types';
 import * as path from 'node:path';
 import { fileURLToPath } from '../utils/path';
@@ -160,7 +161,7 @@ export function createBrowserTest<BrowserExtArgs = {}>(
 }
 
 export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
-  nodejsCallbacks: Array<(...args: any[]) => any> = [],
+  nodejsCallbacks: Array<XBellNodeJSCallback> = [],
   browserCallbacks: Array<XBellBrowserCallback> = [],
 ): XBellTest<NodeJSExtArgs, BrowserExtArgs> {
   const test: XBellTest<NodeJSExtArgs, BrowserExtArgs> = (
@@ -173,6 +174,7 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
       runtime: 'node',
       runtimeOptions: {
         browserCallbacks,
+        nodejsCallbacks,
       },
       config: {},
       options: {}
@@ -316,9 +318,15 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
   test.describe = describe;
 
   test.extend = <T extends (args: XBellTestCaseFunctionArguments<NodeJSExtArgs>) => any>(nodejsCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs> => {
+    const callSite = getCallSite();
+    const callSiteFilename = callSite[1]!.getFileName()!;
     return createTest([
       ...nodejsCallbacks,
-      nodejsCallback
+      {
+        callback: nodejsCallback,
+        filename:  fileURLToPath(callSiteFilename),
+        sortValue: getSortValue(),
+      }
     ], browserCallbacks)
   }
 

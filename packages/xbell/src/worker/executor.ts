@@ -132,12 +132,20 @@ export class Executor {
   }
 
   protected async runClassicCaseInNode(c: XBellTestCaseClassic, argManager: ArgumentManager) {
+    // Currently, there are no callbacks
+    const { runtimeOptions } = c;
     const cls = c.class as new () => any;
     const instance = new cls();
     const batchItems = c.options.batch?.items;
+    let args = argManager.getArguments();
+
+    // get args
+    for (const { callback } of runtimeOptions?.nodejsCallbacks || []) {
+      args = await callback(args);
+    }
+
     if (Array.isArray(batchItems)) {
       for (const [index, item] of batchItems.entries()) {
-        const args = argManager.getArguments();
         await instance[c.propertyKey]({
           ...args,
           item,
@@ -145,17 +153,22 @@ export class Executor {
         });
       }
     } else {
-      await instance[c.propertyKey](argManager.getArguments());
+      await instance[c.propertyKey](args);
     }
   }
 
   protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>, argManager: ArgumentManager) {
     const { runtimeOptions, testFunction, options } = c;
     const batchItems = options.batch?.items;
+    let args = argManager.getArguments();
+
+    // get args
+    for (const { callback } of runtimeOptions.nodejsCallbacks || []) {
+      args = await callback(args);
+    }
 
     if (Array.isArray(batchItems)) {
       for (const [index, item] of batchItems.entries()) {
-        const args = argManager.getArguments();
         await testFunction({
           ...args,
           item,
@@ -163,7 +176,7 @@ export class Executor {
         });
       }
     } else {
-      await testFunction(argManager.getArguments());
+      await testFunction(args);
     }
   }
 

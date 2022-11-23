@@ -89,10 +89,17 @@ export type XBellProject = {
 export interface XBellBrowserCallback {
   callback: (...args: any) => any;
   filename: string;
-  sortValue: number;
+  sortValue: number; // no used
+}
+
+export interface XBellNodeJSCallback {
+  callback: (...args: any) => any;
+  filename: string;
+  sortValue: number; // no used
 }
 
 export type XBellRuntimeOptions = Partial<{
   browserCallbacks: XBellBrowserCallback[];
+  nodejsCallbacks: XBellNodeJSCallback[];
   args?: object
 }>;
