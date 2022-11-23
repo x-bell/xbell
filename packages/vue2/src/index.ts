@@ -1,5 +1,6 @@
 import { test as basicTest } from 'xbell';
-import type { expect } from '@xbell/assert';
+export type {} from '@xbell/assert';
+export type {} from '@xbell/snapshot';
 import type { Component } from 'vue';
 import type { expect as browserExpect } from 'xbell/dist/browser-test';
 
@@ -14,13 +15,14 @@ export const test = basicTest.extendBrowser(async (args) => {
     if (!ele) {
       throw new Error('root must be a element');
     }
-    new Vue({
+    const app = new Vue({
       render(h) {
         return h(C, {
           props,
         });
       }
-    }).$mount(ele);
+    });
+    app.$mount(ele);
   }
 
   return {

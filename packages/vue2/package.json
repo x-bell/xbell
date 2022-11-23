@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "xbell": "workspace:*",
-    "@xbell/assert": "workspace:*"
+    "@xbell/assert": "workspace:*",
+    "@xbell/snapshot": "workspace:*"
   },
   "devDependencies": {
     "vue": "^2.7.13"
