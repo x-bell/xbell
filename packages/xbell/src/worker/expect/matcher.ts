@@ -18,8 +18,10 @@ export const e2eMatcher = defineMatcher({
         message: () => getAssertionMessage({
           ...state,
           assertionName: 'toBeChecked',
-          ignoreExpected: true,
-          // additionalMessage: '',
+          expectedLabel: 'Expected selector',
+          receivedLabel: 'Received selector',
+          expectedFormat: `${state.not ? 'not ' : ''}checked`,
+          receivedFormat: `${state.not ? '' : 'not '}checked`
         }),
       };
     };
@@ -32,8 +34,10 @@ export const e2eMatcher = defineMatcher({
         message: () => getAssertionMessage({
           ...state,
           assertionName: 'toBeDisabled',
-          ignoreExpected: true,
-          // additionalMessage: '',
+          expectedLabel: 'Expected selector',
+          receivedLabel: 'Received selector',
+          expectedFormat: `${state.not ? 'not ' : ''}disabled`,
+          receivedFormat: `${state.not ? '' : 'not '}disabled`
         }),
       };
     }
@@ -46,8 +50,10 @@ export const e2eMatcher = defineMatcher({
         message: () => getAssertionMessage({
           ...state,
           assertionName: 'toBeVisible',
-          ignoreExpected: true,
-          // additionalMessage: '',
+          expectedLabel: 'Expected selector',
+          receivedLabel: 'Received selector',
+          expectedFormat: `${state.not ? 'not ' : ''}visible`,
+          receivedFormat: `${state.not ? '' : 'not '}visible`
         })
       };
     }
@@ -60,8 +66,10 @@ export const e2eMatcher = defineMatcher({
         message: () => getAssertionMessage({
           ...state,
           assertionName: 'toBeHidden',
-          ignoreExpected: true,
-          // additionalMessage: '',
+          expectedLabel: 'Expected selector',
+          receivedLabel: 'Received selector',
+          expectedFormat: `${state.not ? 'not ' : ''}hidden`,
+          receivedFormat: `${state.not ? '' : 'not '}hidden`
         })
       };
     }

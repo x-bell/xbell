@@ -23,7 +23,7 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
         // @ts-ignore
         type: target._type,
         // @ts-ignore
-        uuid: target._uuid,
+        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
         method: 'toBeChecked',
         args,
         state,
@@ -36,7 +36,7 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
         // @ts-ignore
         type: target._type,
         // @ts-ignore
-        uuid: target._uuid,
+        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
         method: 'toBeDisabled',
         args,
         state,
@@ -49,7 +49,7 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
         // @ts-ignore
         type: target._type,
         // @ts-ignore
-        uuid: target._uuid,
+        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
         method: 'toBeHidden',
         args,
         state,
@@ -62,7 +62,7 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
         // @ts-ignore
         type: target._type,
         // @ts-ignore
-        uuid: target._uuid,
+        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
         method: 'toBeVisible',
         args,
         state,
@@ -85,7 +85,7 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
         // @ts-ignore
         type: target._type,
         // @ts-ignore
-        uuid: target._uuid,
+        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
         method: 'toMatchScreenshot',
         args,
         state,

@@ -7,7 +7,12 @@ import { getElementHandle } from './element-handle';
 export class Locator implements LocatorInterface {
   private _uuid?: Promise<string>;
   private _type = 'locator';
+
   constructor(private queryItems: QueryItem[]) {
+  }
+
+  private _getUUID() {
+    return this._connectToLocator();
   }
 
   private async _connectToLocator() {
