@@ -36,7 +36,7 @@ function parseStackLines(stack: string) {
       const isHTTPBundle = parsed.filename.includes(XBELL_BUNDLE_PREFIX);
       if (isHTTPBundle) {
         const [, bundlePath] = parsed.filename.split('?')[0].split(XBELL_BUNDLE_PREFIX + '/');
-        const isProject = !bundlePath.includes('@fs');
+        const isProject = !bundlePath.includes('@fs') && !bundlePath.includes('node_modules') && !bundlePath.includes('.vite/deps');
         const filepath = isProject
           ? path.join(pathManager.projectDir, bundlePath)
           : path.join(pathManager.projectDir, 'node_modules', bundlePath);
@@ -124,15 +124,15 @@ async function formatBrowserError(error: Error, options: Partial<{
   const { browserTestFunction } = options;
   const server = await browserBuilder.server
   const stackResult = parseStackLines(error.stack!);
-  debugError('error:before', (error.stack!));
-  debugError('error:after', stackResult);
+  // debugError('error:before', (error.stack!));
+  // debugError('error:after', stackResult);
   const inProjectLines = stackResult.lines.filter(item => item.isInProjectPath || isEvaluateCalback(item.content));
   const [firstLine] = (inProjectLines.length ? inProjectLines : stackResult.lines) || [];
+  // debugError('error:firstLine', firstLine);
   const isEvaluateFunction = !!firstLine.parsed && isEvaluateCalback(firstLine.content) && !!browserTestFunction;
   if (browserTestFunction && stackResult.head) {
     stackResult.head = stackResult.head.replace(/^jsHandle\.evaluate\:\ /, '');
   }
-  debugError('error', error.name, 'msg:', error.message);
   if (isEvaluateFunction && firstLine.parsed) {
     const originEvaluatePosition = firstLine.parsed;
     const { map: fileMap, code: fileCompiledCode } = getNodeJSFileMap(browserTestFunction.filename) ?? {};
@@ -151,7 +151,7 @@ async function formatBrowserError(error: Error, options: Partial<{
               column: originEvaluatePosition.column,
             }
             const originFilePosition = getOriginPosition(fileMap, filePosition);
-            debugError('browser-origin-file-position', originFilePosition, filePosition, fileCompiledCode);
+            // debugError('browser-origin-file-position', originFilePosition, filePosition, fileCompiledCode);
 
             return originFilePosition;
           }
