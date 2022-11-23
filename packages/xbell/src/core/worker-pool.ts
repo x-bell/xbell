@@ -1,5 +1,5 @@
 import type { XBellWorkerTask, XBellWorkerData, XBellProject } from '../types';
-
+import color from '@xbell/color';
 import { Worker, MessageChannel, isMainThread } from 'node:worker_threads';
 // import type { MessagePort } from 'node:worker_threads';
 import { Channel } from '../common/channel';
@@ -124,14 +124,19 @@ export class WorkerPool {
     }
   }
 
-  protected runProjectSetup({ projectName }: { projectName: string }) {
+  protected async runProjectSetup({ projectName }: { projectName: string }) {
     if (!this.projectSetupMap.has(projectName)) {
       const project = configurator.globalConfig.projects.find(project => project.name === projectName)!;
       const setup = project.config?.setup;
       const callbackReturnValue = configurator.runConfigSetup(setup);
       this.projectSetupMap.set(projectName, callbackReturnValue);
+      if (typeof setup === 'function') {
+        console.log(
+          color.cyan(`${projectName ? `[${projectName}] ` : ''}Running setup...`)
+        );
+      }
+      await callbackReturnValue
     }
-
     return this.projectSetupMap.get(projectName);
   }
 

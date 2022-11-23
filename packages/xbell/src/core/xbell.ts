@@ -14,6 +14,7 @@ import { htmlReporter } from '../common/html-reporter';
 import { pathManager } from '../common/path-manager';
 import { coverageManager } from '../common/coverage-manager';
 import debug from 'debug';
+import color from '@xbell/color';
 import { commander } from '../common/commander';
 
 const debugContext = debug('xbell:context');
@@ -28,7 +29,13 @@ class XBell {
       printer.print(records);
     });
 
-    await configurator.runConfigSetup(configurator.globalConfig.setup);
+    if (typeof configurator.globalConfig.setup === 'function') {
+      console.log(
+        color.cyan('Running setup...')
+      );
+      await configurator.runConfigSetup(configurator.globalConfig.setup);
+    }
+
   }
 
   async runTest(filters?: string[]) {
