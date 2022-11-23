@@ -1,8 +1,9 @@
 import type { ToMatchImageSnapshotOptions, ToMatchJavaScriptSnapshotOptions } from '@xbell/snapshot';
+import type { ExpectMatchState } from '@xbell/assert';
 import type { Locator, ElementHandle, CommonPage } from '../../types';
 import type { TimeoutOptions } from '../../types/pw';
 import { matchImageSnapshot, matchJavaScriptSnapshot } from '@xbell/snapshot';
-import { defineMatcher, ExpectMatchState, getAssertionMessage } from '@xbell/assert';
+import { defineMatcher, getAssertionMessage } from '@xbell/assert';
 import { stateManager } from '../state-manager';
 import debug from 'debug';
 
