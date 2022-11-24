@@ -1,5 +1,11 @@
 # @xbell/color
 
+## 0.7.0-alpha.22
+
+### Patch Changes
+
+- 716978e: some apis
+
 ## 0.7.0-alpha.21
 
 ### Patch Changes
