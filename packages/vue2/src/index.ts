@@ -52,6 +52,5 @@ export const test = basicTest.extendBrowser(async (args) => {
   return {
     ...args,
     mount,
-    Vue,
   }
 });
