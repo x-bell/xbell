@@ -79,8 +79,19 @@ class BrowserBuilder {
       { ...testConfig, configFile: false, root: pathManager.projectDir, } as InlineConfig
     );
 
-    debugBrowserBuilder('userViteConfig', userViteConfig);
-    debugBrowserBuilder('finalConfigPlugins', finalConfig.plugins);
+    // debugBrowserBuilder('userViteConfig', userViteConfig);
+    // debugBrowserBuilder('finalConfigPlugins', finalConfig.plugins);
+    const uniqMap: Record<string, true> = {};
+    // TODO: only handle plugin with name
+    finalConfig.plugins = finalConfig.plugins!.filter((plugin: any) => {
+      if (plugin && plugin.name) {
+        const ret = !uniqMap[plugin.name];
+        uniqMap[plugin.name] = true;
+        return ret;
+      }
+
+      return true;
+    })
     const server = await createServer(finalConfig);
     await server.pluginContainer.buildStart({});
     await server.listen();

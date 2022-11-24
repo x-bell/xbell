@@ -33,6 +33,7 @@ export interface XBellConfig {
       importSource?: string;
     }
   };
+  presets?: XBellConfig[] | XBellConfig;
   /** browser config */
   browser?: XBellBrowserConfig;
   /** projects */
@@ -64,7 +65,7 @@ export interface XBellConfig {
   };
 }
 
-type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser';
+type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets';
 type XBellBrowserConfigOptionalsKeys = 'storageState';
 
 type XBellBrowserDevServerConfigOptionalsKeys = 'viteConfig';

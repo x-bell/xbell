@@ -4,6 +4,8 @@ export type {} from '@xbell/snapshot';
 import type { Component } from 'vue';
 import type { expect as browserExpect } from 'xbell/dist/browser-test';
 
+export { preset } from './preset';
+
 export const test = basicTest.extendBrowser(async (args) => {
   const { default: Vue } = await import('vue');
 

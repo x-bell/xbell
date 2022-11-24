@@ -1,10 +1,11 @@
 import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig, XBellBrowserConfigRequired, XBellConfigRequired } from '../types';
 import { existsSync } from 'node:fs';
 import * as path from 'node:path';
+import { cpus } from 'node:os';
 import debug from 'debug';
 import { pathManager } from './path-manager';
 import { commander } from './commander';
-import { cpus } from 'node:os';
+import { mergeConfig as mergeViteConfig } from 'vite';
 
 const debugConfigurator = debug('xbell:configurator');
 
@@ -13,11 +14,15 @@ interface XBellConfigurator {
   queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig>
 }
 
+const viteFunctionConfigOptions = { mode: 'testing', ssrBuild: false, command: 'serve' } as const;
+
 function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfig {
   const browser1 = config1.browser ?? {};
   const browser2 = config2.browser ?? {};
   const compiler1 = config1.compiler ?? {};
   const compiler2 = config2.compiler ?? {};
+  const viteConfig1 = browser1.devServer?.viteConfig || {};
+  const viteConfig2 = browser2.devServer?.viteConfig || {};
   return {
     ...config1,
     ...config2,
@@ -27,7 +32,11 @@ function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfi
       devServer: {
         ...browser1.devServer,
         ...browser2.devServer,
-      }
+        viteConfig: mergeViteConfig(
+          typeof viteConfig1 === 'function' ? viteConfig1({ ...viteFunctionConfigOptions }) : viteConfig1,
+          typeof viteConfig2 === 'function' ? viteConfig2({ ...viteFunctionConfigOptions }) : viteConfig2,
+        ),
+      },
     },
     coverage: {
       ...config1.coverage,
@@ -114,8 +123,21 @@ export class Configurator implements XBellConfigurator {
       return mergeConfig(XBellDefaultConfig, cliConfig) as XBellConfigRequired;
     }
     
-    const { default: userConfig } = await import(targetConfigFilePath);
-    return mergeConfig(XBellDefaultConfig, userConfig, cliConfig) as XBellConfigRequired;
+    const { default: userConfig } = (await import(targetConfigFilePath)) as { default: XBellConfig | null | undefined };
+
+    if (!userConfig) {
+      throw `The configuration file "${targetConfigFilePath}" does not export default.`
+    }
+    const { presets: userConfigPresets } = userConfig;
+    const presets = (() => {
+      if (!userConfigPresets) return [];
+      if (Array.isArray(userConfigPresets)) return userConfigPresets;
+      return [userConfigPresets];
+    })();
+
+    const configByPresets = presets.reduce<XBellConfigRequired>((acc, preset) => mergeConfig(acc, preset) as XBellConfigRequired, XBellDefaultConfig);
+
+    return mergeConfig(configByPresets, userConfig, cliConfig) as XBellConfigRequired;
   }
 
   protected getCLIConfig(): XBellConfig {

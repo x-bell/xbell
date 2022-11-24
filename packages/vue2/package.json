@@ -20,7 +20,11 @@
   "dependencies": {
     "xbell": "workspace:*",
     "@xbell/assert": "workspace:*",
-    "@xbell/snapshot": "workspace:*"
+    "@xbell/snapshot": "workspace:*",
+    "@lancercomet/vue2-jsx-runtime": "^0.4.0",
+    "vite": "^3.1.8",
+    "@vitejs/plugin-vue2": "^2.0.0",
+    "@vitejs/plugin-vue2-jsx": "^1.0.3"
   },
   "devDependencies": {
     "vue": "^2.7.13"
