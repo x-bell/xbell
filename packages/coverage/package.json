@@ -1,6 +1,6 @@
 {
   "name": "@xbell/coverage",
-  "version": "0.7.0-alpha.19",
+  "version": "0.7.0-alpha.20",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
