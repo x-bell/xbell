@@ -8,6 +8,7 @@ import type {
   PageFunction,
   Video,
   Download,
+  TimeoutOptions,
 } from './pw';
 import type { Locator } from './locator';
 import type { FrameLocator } from './frame-locator';
@@ -38,6 +39,7 @@ export interface CommonPage {
   waitForRequest(urlOrPredicate: string| RegExp | ((request: Request) => boolean | Promise<boolean>), options?: {
     timeout?: number;
   }): Promise<Request>;
+  waitForRequestIdle(options?: TimeoutOptions): Promise<void>
   waitForResponse(urlOrPredicate: string| RegExp | ((response: Response) => boolean| Promise<boolean>), options?: {
     timeout?: number;
   }): Promise<Response>;

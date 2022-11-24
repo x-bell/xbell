@@ -213,7 +213,8 @@ export class Page implements PageInterface {
 
   protected _locatorMap: Map<string, LocatorInterface | FrameLocatorInterface> = new Map();
   protected _elementHandleMap: Map<string, ElementHandleInterface> = new Map();
-
+  protected _pendingRequestCount = 0;
+  protected _isListenRequest = false;
   _viteAssetReload?: () => void;
 
   constructor(
@@ -376,6 +377,28 @@ export class Page implements PageInterface {
     this._currentFilename = this._filename;
   }
 
+  protected _onRequest = () => {
+    ++this._pendingRequestCount;
+    debugPage('onRequestStart', this._pendingRequestCount);
+  }
+
+  protected _onRequestDone = () => {
+    --this._pendingRequestCount;
+    debugPage('onRequestDone', this._pendingRequestCount);
+  }
+  protected _listenRequests() {
+    if (this._isListenRequest) {
+      this._page.removeListener('request', this._onRequest);
+      this._page.removeListener('requestfailed', this._onRequestDone);
+      this._page.removeListener('requestfinished', this._onRequestDone);
+    }
+    this._isListenRequest = true;
+    this._pendingRequestCount = 0;
+    this._page.on('request', this._onRequest);
+    this._page.on('requestfailed', this._onRequestDone);
+    this._page.on('requestfinished', this._onRequestDone);
+  }
+
   protected async _proxyRoutes() {
     const channle = this._channel!;
     const { port } = await channle.request('queryServerPort');
@@ -479,7 +502,7 @@ export class Page implements PageInterface {
     // TODO: playwright version
     // @ts-ignore
     const ret = await this._page.goto(url, otherOptons);
-
+    this._listenRequests();
     return ret ? toCommonResponse(ret) : ret;
   }
 
@@ -497,6 +520,7 @@ export class Page implements PageInterface {
 
   async reload(options?: { timeout?: number | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; }): Promise<Response | null> {
     const ret = await this._page.reload(options);
+    this._listenRequests();
     return ret ? toCommonResponse(ret) : ret;
   }
 
@@ -670,6 +694,45 @@ export class Page implements PageInterface {
   async waitForRequest(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
     const ret = await this._page.waitForRequest(requestUrlOrPredicateToFunction(urlOrPredicate)!, options);
     return ret ? toCommonRequest(ret) : ret;
+  }
+
+  waitForRequestIdle(options?: TimeoutOptions) {
+    return new Promise<void>((resolve, reject) => {
+      let isResolved = false;
+      const timeout = options?.timeout ?? 30_000;
+      setTimeout(() => {
+        if (!isResolved) reject(new Error(`waitForRequestIdle timeout over ${timeout}ms`));
+      }, timeout);
+
+      let lastRequestDate = Date.now();
+      const currentSets = new Set<PWRequest>();
+
+      const onRequest = (request: PWRequest) => {
+        currentSets.add(request);
+      };
+
+      const onRequestDone = (request: PWRequest) => {
+        lastRequestDate = Date.now();
+        currentSets.delete(request);
+        maybeDoResolve();
+      };
+      
+      const maybeDoResolve = () => {
+        if (this._pendingRequestCount === 0 && currentSets.size === 0 && Date.now() - lastRequestDate >= 500) {
+          this._page.removeListener('request', onRequest);
+          this._page.removeListener('requestfailed', onRequestDone);
+          this._page.removeListener('requestfinished', onRequestDone);
+          isResolved = true;
+          resolve();
+        } else {
+          setTimeout(maybeDoResolve, Date.now() + 500 - lastRequestDate);
+        }
+      }
+
+      this._page.on('request', onRequest);
+      this._page.on('requestfailed', onRequestDone);
+      this._page.on('requestfinished', onRequestDone);
+    });
   }
 
   async waitForRequestFailed(urlOrPredicate?: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {

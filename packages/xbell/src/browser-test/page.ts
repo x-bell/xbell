@@ -7,7 +7,7 @@ import type {
   FrameLocator as FrameLocatorInterface,
   ElementHandle as ElementHandleInterface
 } from '../types';
-import type { FrameGotoOptions, PageFunction, PageScreenshotOptions, Response, Request } from '../types/pw';
+import type { FrameGotoOptions, PageFunction, PageScreenshotOptions, Response, Request, TimeoutOptions } from '../types/pw';
 import { Locator, FrameLocator } from './locator';
 import { getElementHandle } from './element-handle';
 import { genUUID } from './utils';
@@ -101,6 +101,10 @@ export class Page implements CommonPage {
       });
     }
     return await this._execute('waitForRequestFinished', urlOrPredicate, options);
+  }
+
+  async waitForRequestIdle(options?: TimeoutOptions | undefined): Promise<void> {
+    return await this._execute('waitForRequestIdle', options);
   }
 
   // async waitForRequestFinished(optionsOrPredicate?: { predicate?: ((request: Request) => boolean | Promise<boolean>) | undefined; timeout?: number | undefined; } | ((request: Request) => boolean | Promise<boolean>) | undefined): Promise<Request> {
