@@ -6,6 +6,7 @@ import {
   defineConfig,
   mergeConfig,
   InlineConfig,
+  Plugin,
 } from 'vite';
 import { viteCoveragePlugin } from '@xbell/coverage';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
@@ -67,7 +68,7 @@ class BrowserBuilder {
           exclude: coverage.exclude,
           include: coverage.include,
         }) : undefined,
-      ].filter(Boolean),
+      ].filter(Boolean) as Plugin[],
       build: {
         sourcemap: true,
       },
