@@ -11,6 +11,11 @@ export const preset: XBellConfig = {
       }),
     }
   },
+  browserTest: {
+    html: {
+      content: '<div id="app"></div>'
+    }
+  },
   compiler: {
     jsx: {
       importSource: '@lancercomet/vue2-jsx-runtime',
