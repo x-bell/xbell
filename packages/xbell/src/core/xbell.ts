@@ -23,7 +23,7 @@ class XBell {
   async setup() {
     await configurator.setup();
     const { jsx } = configurator.globalConfig.compiler;
-    if (jsx?.pragma) crossEnv.set('jsxPragmaFrag', jsx.pragma);
+    if (jsx?.pragma) crossEnv.set('jsxPragma', jsx.pragma);
     if (jsx?.pragmaFrag) crossEnv.set('jsxPragmaFrag', jsx.pragmaFrag);
     coverageManager.setup();
     await scheduler.setup();

@@ -1,4 +1,5 @@
 import { resolvePath } from '../utils/resolve';
+import { replaceJSX } from '../utils/jsx';
 import { Visitor } from './visitor';
 import { transformSync, parseSync, Expression, Import, Super, CallExpression } from '@swc/core';
 
@@ -36,7 +37,7 @@ export function compileNodeJSCode(
   });
   const vistor = new NodeJSVisitor(filename);
   const finalProgram = vistor.visitProgram(program);
-  const { code, map } = transformSync(finalProgram, {
+  const { code: codeWithXBellJSX, map } = transformSync(finalProgram, {
     filename,
     sourceFileName: filename,
     sourceMaps,
@@ -45,6 +46,7 @@ export function compileNodeJSCode(
     },
     jsc: getJSCConfig(),
   });
+  const code = replaceJSX(codeWithXBellJSX);
   // debugCompiler('nodejs:code', { map, code });
   if (cache) {
     if (!cache.has(filename)) {

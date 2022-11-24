@@ -84,12 +84,12 @@ export class BrowserPathCollector extends Visitor {
     return block;
   }
 
-  visitIdentifier(n: Identifier): Identifier {
-    if (this.idMapByFullpath && (n.value === 'React1' || n.value === '_jsx1')) {
-      n.value = n.value.replace(/1$/, '');
-    }
-    return n;
-  }
+  // visitIdentifier(n: Identifier): Identifier {
+  //   if (this.idMapByFullpath && (n.value === 'React1' || n.value === '_jsx1')) {
+  //     n.value = n.value.replace(/1$/, '');
+  //   }
+  //   return n;
+  // }
 
   visitCallExpression(n: CallExpression): Expression {
     if (n.callee.type === 'Import' && n.arguments[0].expression.type === 'StringLiteral') {

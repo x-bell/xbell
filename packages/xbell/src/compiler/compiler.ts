@@ -7,6 +7,7 @@ import { browserBuilder } from '../core/browser-builder';
 import debug from 'debug';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import { compileNodeJSCode } from './compile-node';
+import { replaceJSX } from '../utils/jsx';
 const debugCompiler = debug('xbell:compiler');
 
 export interface XBellCompilerDeps {
@@ -50,7 +51,7 @@ export class Compiler {
     const generator = new BrowserPathCollector(idMapByFullPath);
     const browserProgram = generator.visitProgram(program);
 
-    const { code, map } = transformSync(browserProgram, {
+    const { code: codeWithXBellJSX, map } = transformSync(browserProgram, {
       module: {
         type: 'es6'
       },
@@ -60,6 +61,8 @@ export class Compiler {
       },
       sourceMaps: true
     });
+
+    const code = replaceJSX(codeWithXBellJSX);
 
     this.browserSourceCodeMapByCode.set(code, {
       sourceCode,
