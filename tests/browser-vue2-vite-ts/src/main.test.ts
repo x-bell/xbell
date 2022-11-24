@@ -1,11 +1,9 @@
 import { test } from '@xbell/vue2';
 
-test('execute', async ({ page, expect }) => {
-  await page.evaluate(async () => {
-    await import ('./main');
-  });
 
-  await page.waitForLoadState('networkidle');
+test.browser('execute', async ({ page, expect }) => {
+  await import ('./main');
+  await page.waitForRequestIdle();
 
   await expect(page.getByText('User')).toBeVisible();
   await expect(page.getByText('Hang Liang')).toBeVisible();

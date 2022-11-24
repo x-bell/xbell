@@ -1,20 +1,14 @@
 import type { XBellConfig } from 'xbell';
+import { preset } from '@xbell/vue2';
 import viteConfig from './vite.config';
 
 const config: XBellConfig = {
+  presets: [preset],
   browser: {
-    headless: false,
     devServer: {
-      viteConfig,
+      viteConfig
     }
   },
-  hooks: {
-    async beforeEach({ page }) {
-      await page.goto('https://github.com', {
-        mockHTML: '<div id="app"></div>'
-      });
-    }
-  },
-}
+};
 
 export default config;
