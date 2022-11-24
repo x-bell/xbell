@@ -8,7 +8,7 @@ import type { expect as browserExpect } from 'xbell/dist/browser-test';
 export { preset } from './preset';
 
 export const test = basicTest.extendBrowser(async (args) => {
-  const Vue = await import('vue');
+  const { default: Vue } = await import('vue');
 
   function getXPath(element: Element): string {
     if (element.tagName == 'HTML')
@@ -29,7 +29,7 @@ export const test = basicTest.extendBrowser(async (args) => {
     throw new Error('Get xpath error');
   }
 
-  function mount(Comp: Parameters<CreateElement>[0], data: VNodeData, rootElement?: HTMLElement | string): Locator {
+  function mount(Comp: Parameters<CreateElement>[0], data: VNodeData, rootElement?: HTMLElement | string) {
     const ele = typeof rootElement == 'string'
       ? document.querySelector(rootElement)
       : rootElement || document.getElementById('app') || document.getElementById('root');
@@ -38,15 +38,17 @@ export const test = basicTest.extendBrowser(async (args) => {
       throw new Error('root must be a element');
     }
 
-    const app = new Vue.default({
+    const instance = new Vue({
       render(h) {
         return h(Comp, data);
       }
     });
-    app.$mount(ele);
-    const xpath = getXPath(app.$el)
-
-    return args.page.get(`xpath=${xpath}`);
+    instance.$mount(ele);
+    const xpath = getXPath(instance.$el)
+    return {
+      locator: args.page.get(`xpath=${xpath}`),
+      instance,
+    }
   }
 
   return {
