@@ -16,6 +16,8 @@ interface XBellConfigurator {
 function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfig {
   const browser1 = config1.browser ?? {};
   const browser2 = config2.browser ?? {};
+  const compiler1 = config1.compiler ?? {};
+  const compiler2 = config2.compiler ?? {};
   return {
     ...config1,
     ...config2,
@@ -30,6 +32,14 @@ function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfi
     coverage: {
       ...config1.coverage,
       ...config2.coverage,
+    },
+    compiler: {
+      ...compiler1,
+      ...compiler2,
+      jsx: {
+        ...compiler1.jsx,
+        ...compiler2.jsx,
+      }
     }
   }
 }
@@ -64,7 +74,9 @@ export class Configurator implements XBellConfigurator {
       jsx: {
         pragma: 'React.createElement',
         pragmaFrag: 'React.Fragment',
-      }
+        runtime: 'classic',
+        importSource: 'react',
+      },
     },
     hooks: {},
     coverage: {

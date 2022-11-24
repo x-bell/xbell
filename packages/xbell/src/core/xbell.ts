@@ -25,6 +25,9 @@ class XBell {
     const { jsx } = configurator.globalConfig.compiler;
     if (jsx?.pragma) crossEnv.set('jsxPragma', jsx.pragma);
     if (jsx?.pragmaFrag) crossEnv.set('jsxPragmaFrag', jsx.pragmaFrag);
+    if (jsx?.runtime) crossEnv.set('jsxRuntime', jsx.runtime);
+    if (jsx?.importSource) crossEnv.set('jsxImportSource', jsx.importSource);
+
     coverageManager.setup();
     await scheduler.setup();
     await htmlReporter.setup();

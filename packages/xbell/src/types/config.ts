@@ -29,6 +29,8 @@ export interface XBellConfig {
     jsx?: {
       pragmaFrag?: string;
       pragma?: string;
+      runtime?: 'classic' | 'automatic';
+      importSource?: string;
     }
   };
   /** browser config */

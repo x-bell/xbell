@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { transformSync, parseSync, Expression, Import, Super, CallExpression } from '@swc/core';
+import { transformSync, parseSync, Expression, Import, ArrowFunctionExpression, Module, FunctionDeclaration } from '@swc/core';
 import { getJSCConfig, tsParserConfig } from './config';
 import { BrowserPathCollector } from './borwser-path-collector';
 import { browserBuilder } from '../core/browser-builder';
@@ -8,6 +8,8 @@ import debug from 'debug';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import { compileNodeJSCode } from './compile-node';
 import { replaceJSX } from '../utils/jsx';
+import { genJSXAutomaticAsyncImport } from './jsx';
+import { crossEnv } from '../common/cross-env';
 const debugCompiler = debug('xbell:compiler');
 
 export interface XBellCompilerDeps {
@@ -18,7 +20,6 @@ export class Compiler {
   public nodeJSCache = new Map<string, { code: string }>();
   public browserSourceCodeMapByCode = new Map<string, { sourceCode: string; map: string; }>();
 
-
   public compileNodeJSCode(
     sourceCode: string,
     filename: string
@@ -26,11 +27,38 @@ export class Compiler {
     return compileNodeJSCode(sourceCode, filename, true, this.nodeJSCache);
   }
 
+  protected genBrowserJSXCode(program: Module) {
+    function handleArrowFunctionExpression(target: FunctionDeclaration | ArrowFunctionExpression) {
+      if (target.body.type === 'BlockStatement') {
+        target.body.stmts = [
+          genJSXAutomaticAsyncImport({
+            span: target.span,
+            jsxExportName: 'jsx',
+            jsxAliasName: '_jsx',
+            importSource: crossEnv.get('jsxImportSource'),
+  
+          }),
+          ...target.body.stmts,
+        ]
+      }
+    }
+    if (program.type === 'Module') {
+      const [firstElement] = program.body;
+      if (firstElement.type === 'FunctionDeclaration') {
+        handleArrowFunctionExpression(firstElement)
+      } else if (firstElement.type === 'ExpressionStatement' && firstElement.expression.type === 'ArrowFunctionExpression') {
+        handleArrowFunctionExpression(firstElement.expression);
+      }
+    }
+    return program;
+  }
+
   public async compileBrowserCode(sourceCode: string) {
-    debugCompiler('=====compile-browser======', sourceCode);
-    const program = parseSync(sourceCode, {
+    const rawProgram = parseSync(sourceCode, {
       ...tsParserConfig,
     });
+    const jsxRuntime = crossEnv.get('jsxRuntime');
+    const program = jsxRuntime === 'automatic' && sourceCode.includes('_jsx') ? this.genBrowserJSXCode(rawProgram) : rawProgram;
 
     const server = await browserBuilder.server;
     const pathCollector = new BrowserPathCollector();
@@ -50,13 +78,18 @@ export class Compiler {
   
     const generator = new BrowserPathCollector(idMapByFullPath);
     const browserProgram = generator.visitProgram(program);
-
+    const jscConfig = getJSCConfig();
     const { code: codeWithXBellJSX, map } = transformSync(browserProgram, {
       module: {
         type: 'es6'
       },
       jsc: {
-        ...getJSCConfig(),
+        ...jscConfig,
+        transform: {
+          ...jscConfig.transform,
+          // already compiled in nodejs
+          react: undefined,
+        },
         target: 'es2020',
       },
       sourceMaps: true

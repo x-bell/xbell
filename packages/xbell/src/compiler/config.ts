@@ -3,6 +3,7 @@ import { crossEnv } from '../common/cross-env';
 import debug from 'debug';
 import { XBELL_JSX_PRAGMA, XBELL_JSX_PRAGMA_FRAG } from '../constants/xbell';
 const debugJSC = debug('xbell:jsc');
+
 export const tsParserConfig: TsParserConfig = {
   syntax: 'typescript',
   decorators: true,
