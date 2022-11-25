@@ -2,13 +2,13 @@ import { test as basicTest } from 'xbell';
 import type { Locator } from 'xbell';
 export type { } from '@xbell/assert';
 export type { } from '@xbell/snapshot';
-import type { CreateElement, VNodeData } from 'vue';
-import type { expect as browserExpect } from 'xbell/dist/browser-test';
+import type { CreateElement, VNodeData, VNode } from 'vue';
+import { expect as browserExpect, page } from 'xbell/dist/browser-test';
 
 export { preset } from './preset';
 
 export const test = basicTest.extendBrowser(async (args) => {
-  const { default: Vue } = await import('vue');
+  const { default: Vue, reactive } = await import('vue');
 
   function getXPath(element: Element): string {
     if (element.tagName == 'HTML')
@@ -26,30 +26,55 @@ export const test = basicTest.extendBrowser(async (args) => {
         ix++;
     }
 
-    throw new Error('Get xpath error');
+    throw new Error('Get xpath failed');
   }
 
-  function mount(Comp: Parameters<CreateElement>[0], data?: VNodeData, rootElement?: HTMLElement | string) {
-    const ele = typeof rootElement == 'string'
-      ? document.querySelector(rootElement)
-      : rootElement || document.getElementById('app') || document.getElementById('root');
+  function mount(
+    Comp: Parameters<CreateElement>[0],
+    { props: initialProps, slots, events, container }: {
+        props?: VNodeData['props'];
+        slots?: VNodeData['scopedSlots'];
+        events?: VNodeData['on'];
+        container?: Element | 'string';
+    } = {},
+) {
+    const rootEle =
+        typeof container == 'string'
+            ? document.querySelector(container)
+            : container || document.getElementById('app') || document.getElementById('root');
 
-    if (!ele) {
-      throw new Error('root must be a element');
+    if (!rootEle) {
+        throw new Error('Container must be a element');
     }
-
-    const instance = new Vue({
-      render(h) {
-        return h(Comp, data);
-      }
+    const props = reactive(initialProps || {});
+    const vm = new Vue({
+        render(h) {
+            return h(Comp, {
+                on: events,
+                scopedSlots: slots,
+                props,
+            });
+        },
     });
-    instance.$mount(ele);
-    const xpath = getXPath(instance.$el)
+
+    vm.$mount(rootEle);
+
+    const xpath = getXPath(vm.$el)
+
+    const locator = args.page.get(`xpath=${xpath}`);
+
     return {
-      locator: args.page.get(`xpath=${xpath}`),
-      instance,
-    }
-  }
+        component: {
+            setProps(newProps: Record<string, unknown>) {
+                for (const [k, v] of Object.entries(newProps)) {
+                    props[k] = v;
+                }
+                return vm.$nextTick();
+            },
+        },
+        locator,
+    };
+}
 
   return {
     ...args,
