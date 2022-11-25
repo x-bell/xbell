@@ -249,13 +249,14 @@ export class Executor {
         {
           callback: async () => {
             // @ts-ignore
-            const { expect, fn, spyOn, importActual, page } = await import('xbell/browser-test');
+            const { expect, fn, spyOn, importActual, page, sleep } = await import('xbell/browser-test');
             return {
               expect,
               fn,
               spyOn,
               importActual,
-              page
+              page,
+              sleep
             };
           },
           filename: __filename,

@@ -4,6 +4,8 @@ import { expect } from './expect';
 
 export const importActual: <T = any>(path: string) => Promise<T> = window.__xbell_context__.importActual;
 
+export const sleep = (duration: number) => new Promise(r => setTimeout(r, duration));
+
 export {
   fn,
   spyOn,
@@ -18,5 +20,6 @@ export type BrowserTestArguments = {
   expect: typeof expect
   importActual: typeof importActual,
   page: Page,
+  sleep: (duration: number) => Promise<void>;
 }
 

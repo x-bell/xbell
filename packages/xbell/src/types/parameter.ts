@@ -18,6 +18,7 @@ export interface TestArguments extends XBellTestCaseFunctionArguments {
   expect: Expect;
   fn: typeof fn;
   spyOn: typeof spyOn;
+  sleep: (duration: number) => Promise<void>;
 }
 
 export interface TestEachArguments<T = any> extends TestArguments {

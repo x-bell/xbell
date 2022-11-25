@@ -151,6 +151,7 @@ export interface XBellTestCaseFunctionArguments<BrowserExtensionArg = {}> {
   expect: Expect;
   fn: typeof fn;
   spyOn: typeof spyOn;
+  sleep: (duration: number) => Promise<void>;
 }
 
 export interface XBellTestCaseFunction<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> {
