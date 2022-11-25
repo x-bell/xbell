@@ -1,5 +1,15 @@
 # @xbell/snapshot
 
+## 0.7.0-alpha.24
+
+### Patch Changes
+
+- 716978e: some apis
+- Updated dependencies [716978e]
+  - @xbell/assert@0.7.0-alpha.24
+  - @xbell/color@0.7.0-alpha.24
+  - @xbell/format@0.7.0-alpha.24
+
 ## 0.7.0-alpha.23
 
 ### Patch Changes

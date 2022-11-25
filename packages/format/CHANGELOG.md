@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.7.0-alpha.24
+
+### Patch Changes
+
+- 716978e: some apis
+
 ## 0.7.0-alpha.23
 
 ### Patch Changes
