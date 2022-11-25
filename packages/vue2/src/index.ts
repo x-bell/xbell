@@ -29,7 +29,7 @@ export const test = basicTest.extendBrowser(async (args) => {
     throw new Error('Get xpath error');
   }
 
-  function mount(Comp: Parameters<CreateElement>[0], data: VNodeData, rootElement?: HTMLElement | string) {
+  function mount(Comp: Parameters<CreateElement>[0], data?: VNodeData, rootElement?: HTMLElement | string) {
     const ele = typeof rootElement == 'string'
       ? document.querySelector(rootElement)
       : rootElement || document.getElementById('app') || document.getElementById('root');
