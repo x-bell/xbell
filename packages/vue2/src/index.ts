@@ -16,12 +16,12 @@ export const test = basicTest.extendBrowser(async (args) => {
     if (element === document.body)
       return '//html[1]/body[1]';
 
-    let ix = 0;
     const siblings = element.parentNode!.childNodes;
-    for (var i = 0; i < siblings.length; i++) {
-      var sibling = siblings[i];
+    let ix = 0;
+    for (let i = 0; i < siblings.length; i++) {
+      const sibling = siblings[i];
       if (sibling === element)
-        return getXPath(element.parentNode as Element) + '/' + element.tagName.toLocaleLowerCase() + '[' + (ix + 1) + ']';
+        return getXPath(element.parentNode as Element) + (element.tagName ? '/' + element.tagName.toLocaleLowerCase() + '[' + (ix + 1) + ']' : '');
       if (sibling.nodeType === 1 && (sibling as Element).tagName === element.tagName)
         ix++;
     }
