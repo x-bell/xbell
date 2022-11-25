@@ -114,9 +114,10 @@ export function genLazyPage({
       };
     }
     const projectConfig = configurator.getProjectConfig({ projectName });
-    const { headless, viewport, storageState } = projectConfig.browser;
+    const { headless, viewport, storageState, devtools } = projectConfig.browser;
     const browser = await lazyBrowser.newBrowser('chromium', {
       headless: !!headless,
+      devtools: !!devtools,
     });
     const videoDir = path.join(pathManager.tmpDir, 'videos');
 

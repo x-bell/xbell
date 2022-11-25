@@ -221,13 +221,14 @@ export class Executor {
   async runCaseInBrowser(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
     // case config
     const projectConfig = configurator.getProjectConfig({ projectName: file.projectName })
-    const { viewport, headless, storageState, devServer } = projectConfig.browser;
+    const { viewport, headless, storageState, devtools } = projectConfig.browser;
     const { url, html } = projectConfig.browserTest;
     const { coverage: coverageConfig } = projectConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
 
     const browser = await lazyBrowser.newBrowser('chromium', {
       headless: !!headless,
+      devtools: !!devtools,
     });
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,

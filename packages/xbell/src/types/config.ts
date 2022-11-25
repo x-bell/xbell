@@ -8,6 +8,7 @@ export interface XBellBrowserDevServerConfig {
 }
 export interface XBellBrowserConfig {
   headless?: boolean;
+  devtools?: boolean;
   /** browser viewport */
   viewport?: {
     width: number;

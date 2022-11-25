@@ -64,6 +64,7 @@ const mergeConfig = (...configs: Array<XBellConfig>): XBellConfig =>
 export class Configurator implements XBellConfigurator {
   static XBellDefaultBrowserConfig: XBellBrowserConfigRequired = {
     headless: true,
+    devtools: false,
     viewport: {
       width: 1280,
       height: 700,
