@@ -681,12 +681,12 @@ test('toHaveBeenLastCalledWith', ({ expect, fn, spyOn }) => {
 **Signature: expect(received).toHaveBeenNthCalledWith(nthCall, ...args)**
 
 - `received` <type>Mock</type> The mock function
-- `nthCall` <type>number</type> Nth call
+- `nthCall` <type>number</type> The NTH call
 - `args` <type>any[]</type> Expect arguments
 
 **Returns** <type>void</type>
 
-Use `toHaveBeenNthCalledWith` to ensure that the mock function is called the nth time with the specified arguments.
+Use `toHaveBeenNthCalledWith` to ensure that the mock function was called the nth time with the specified arguments.
 
 **Example**
 ```typescript
@@ -705,14 +705,13 @@ test('toHaveBeenNthCalledWith', ({ expect, fn, spyOn }) => {
 ```
 
 ### toHaveReturned
-**Signature: expect(received).toHaveReturned(returnValue)**
+**Signature: expect(received).toHaveReturned()**
 
 - `received` <type>Mock</type> The mock function
-- `returnValue` <type>any</type>
 
 **Returns** <type>void</type>
 
-Use `toHaveReturned` to ensure that a mock function was called with specific return value. The return value are checked with the same algorithm that `toEqual` uses.
+Use `toHaveReturned` to ensure that a mock function successfully returned (i.e., did not throw an error) at least one time.
 
 **Example**
 ```typescript
@@ -732,27 +731,196 @@ test('toHaveReturned', ({ expect, fn, spyOn }) => {
   add(1, 1);
   someOne.makeSomething();
 
-  expect(mockAdd).toHaveReturned(2);
-  expect(someOne.makeSomething).toHaveReturned('something');
+  expect(mockAdd).toHaveReturned();
+  expect(someOne.makeSomething).toHaveReturned();
 });
 ```
+
 ### toHaveReturnedTimes
-
-### toHaveReturnedWith
-
-### toHaveLastReturnedWith
-
-### toHaveNthReturnedWith
-
-### toBeVisible <tag type="node.js" />
-
-**Signature: expect(received).toBeVisible()**
-
-- `received` <type>locator | elementHandle</type>
+**Signature: expect(received).toHaveReturnedTimes(times)**
+- `received` <type>Mock</type> The mock function
+- `times` <type>number</type> Number of calls
 
 **Returns** <type>void</type>
 
+Use `toHaveReturnedTimes` to ensure that a mock function returned successfully (i.e., did not throw an error) an exact number of times. Any calls to the mock function that throw an error are not counted toward the number of times the function returned.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveReturnedTimes', ({ expect, fn, spyOn }) => {
+  const add = (a: number, b: number) => a + b;
+  const someOne = {
+    makeSomething() {
+      return 'something';
+    },
+  };
+
+  const mockAdd = fn(add);
+  spyOn(someOne, 'makeSomething');
+
+  add(1, 1);
+  add(1, 1);
+  someOne.makeSomething();
+  someOne.makeSomething();
+  someOne.makeSomething();
+
+  expect(mockAdd).toHaveReturnedTimes(2);
+  expect(someOne.makeSomething).toHaveReturnedTimes(3);
+});
+```
+
+
+### toHaveReturnedWith
+**Signature: expect(received).toHaveReturnedWith(value)**
+
+- `received` <type>Mock</type> The mock function
+- `value` <type>any</type> The return value
+
+**Returns** <type>void</type>
+
+Use `toHaveReturnedWith` to ensure that a mock function was called with specific return value. The return value are checked with the same algorithm that `toEqual` uses.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveReturnedWith', ({ expect, fn, spyOn }) => {
+  const add = (a: number, b: number) => a + b;
+  const someOne = {
+    makeSomething() {
+      return 'something';
+    },
+  };
+
+  const mockAdd = fn(add);
+  spyOn(someOne, 'makeSomething');
+
+  add(1, 1);
+  someOne.makeSomething();
+
+  expect(mockAdd).toHaveReturnedWith(2);
+  expect(someOne.makeSomething).toHaveReturnedWith('something');
+});
+```
+
+### toHaveLastReturnedWith
+**Signature: expect(received).toHaveLastReturnedWith(value)**
+
+- `received` <type>Mock</type> The mock function
+- `value` <type>any</type> The return value of the last called
+
+**Returns** <type>void</type>
+
+Use `toHaveLastReturnedWith` to ensure that a mock function was called the last time with specific return value. The return value are checked with the same algorithm that `toEqual` uses.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveLastReturnedWith', ({ expect, fn, spyOn }) => {
+  const add = (a: number, b: number) => a + b;
+  const someOne = {
+    makeSomething() {
+      return 'something';
+    },
+  };
+
+  const mockAdd = fn(add);
+  spyOn(someOne, 'makeSomething');
+
+  add(1, 1);
+  add(2, 2);
+  someOne.makeSomething();
+
+  expect(mockAdd).toHaveLastReturnedWith(4);
+  expect(someOne.makeSomething).toHaveLastReturnedWith('something');
+});
+```
+
+### toHaveNthReturnedWith
+**Signature: expect(received).toHaveNthReturnedWith(nthCall, value)**
+
+- `received` <type>Mock</type> The mock function
+- `nthCall` <type>number</type> The NTH call
+- `value` <type>any</type> The return value of the last called
+
+**Returns** <type>void</type>
+
+Use `toHaveNthReturnedWith` to ensure that a mock function was called the nth time with specific return value. The return value are checked with the same algorithm that `toEqual` uses.
+
+**Example**
+```typescript
+import { test } from 'xbell';
+
+test('toHaveNthReturnedWith', ({ expect, fn, spyOn }) => {
+  const add = (a: number, b: number) => a + b;
+  const someOne = {
+    makeSomething() {
+      return 'something';
+    },
+  };
+
+  const mockAdd = fn(add);
+  spyOn(someOne, 'makeSomething');
+
+  add(1, 1);
+  add(20, 20);
+  add(3, 3);
+  someOne.makeSomething();
+
+  expect(mockAdd).toHaveNthReturnedWith(2, 40);
+  expect(someOne.makeSomething).toHaveNthReturnedWith(1, 'something');
+});
+```
+
+### toBeVisible <tag type="node.js" />
+
+**Signature: expect(received).toBeVisible(options?)**
+
+- `received` <type>Locator | ElementHandle</type> Locator or element handle
+- `options?` <type> object </type>
+  - `timeout?` <type>number</type> Time to retry the assertion for.
+
+**Returns** <type>void</type>
+
+Use `toBeVisible` to ensure that a `locator` or `element handle` points to an attached and visible DOM node.
+
+```typescript
+import { test } from 'xbell';
+
+test('toBeVisible', ({ expect, page, spyOn }) => {
+  await page.goto('https://github.com/x-bell/xbell')
+
+  const slogan = page.getByText('Make Web testing easy.')
+
+  await expect(slogan).toBeVisible();
+});
+```
+
 ### toBeHidden
+**Signature: expect(received).toBeHidden(options?)**
+
+- `received` <type>Locator | ElementHandle</type> Locator or element handle
+- `options?` <type> object </type>
+  - `timeout?` <type>number</type> Time to retry the assertion for.
+
+**Returns** <type>void</type>
+
+Use `toBeHidden` to ensure that a `locator` or `element handle` either does not resolve to any DOM node, or resolves to a non-visible one.
+
+```typescript
+import { test } from 'xbell';
+
+test('toBeHidden', ({ expect, page, spyOn }) => {
+  await page.goto('https://github.com/x-bell/xbell')
+
+  const slogan = page.getByText('Make Web testing hard.')
+
+  await expect(slogan).toBeHidden();
+});
+```
 
 ### toBeChecked
 
