@@ -99,4 +99,7 @@ export interface Locator {
   innerHTML(options?: {
     timeout?: number;
   }): Promise<string>;
+  innerText(options?: {
+    timeout?: number;
+  }): Promise<string>;
 }
