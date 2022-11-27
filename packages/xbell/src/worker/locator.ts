@@ -170,6 +170,10 @@ export class Locator implements LocatorInterface {
   innerText(options?: { timeout?: number | undefined; } | undefined): Promise<string> {
     return this._locator.innerText(options);
   }
+
+  inputValue(options?: { timeout?: number | undefined; } | undefined): Promise<string> {
+    return this._locator.inputValue(options);
+  }
 }
 
 export class FrameLocator implements FrameLocatorInterface {

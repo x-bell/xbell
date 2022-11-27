@@ -191,6 +191,11 @@ export class Locator implements LocatorInterface {
   async innerText(options?: { timeout?: number | undefined; } | undefined): Promise<string> {
     return await this._execute('innerText', options);
   }
+
+  async inputValue(options?: { timeout?: number | undefined; } | undefined): Promise<string> {
+    return await this._execute('inputValue', options);
+  }
+
 }
 
 export class FrameLocator implements FrameLocatorInterface {

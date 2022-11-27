@@ -102,4 +102,7 @@ export interface Locator {
   innerText(options?: {
     timeout?: number;
   }): Promise<string>;
+  inputValue(options?: {
+    timeout?: number;
+  }): Promise<string>;
 }
