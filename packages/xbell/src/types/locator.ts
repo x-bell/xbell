@@ -105,4 +105,7 @@ export interface Locator {
   inputValue(options?: {
     timeout?: number;
   }): Promise<string>;
+  selectText(options?: {
+    timeout?: number;
+  }): Promise<void>;
 }

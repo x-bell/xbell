@@ -196,6 +196,9 @@ export class Locator implements LocatorInterface {
     return await this._execute('inputValue', options);
   }
 
+  async selectText(options?: { timeout?: number | undefined; } | undefined): Promise<void> {
+    return await this._execute('selectText', options);
+  }
 }
 
 export class FrameLocator implements FrameLocatorInterface {
