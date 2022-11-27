@@ -2,7 +2,10 @@ import { expect as basic, defineMatcher, getAssertionMessage } from '@xbell/asse
 import type { ExpectMatchState } from '@xbell/assert';
 import type { Locator, ElementHandle, CommonPage } from '../types';
 import type { ToMatchImageSnapshotOptions, ToMatchJavaScriptSnapshotOptions } from '@xbell/snapshot';
-import { e2eMatcher } from '../worker/expect/matcher'
+import { e2eMatcher } from '../worker/expect/matcher';
+import type { Locator as BrowserLocator } from './locator';
+import type { ElementHandle as BrowserElementHandle } from './element-handle';
+import type { Page as BrowserPage } from './page';
 
 type E2EMatcher = typeof e2eMatcher;
 
@@ -19,11 +22,10 @@ type BrowserE2EMatcher = {
 const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
   toBeChecked(target, ...args) {
     return async (state) => {
+      const t = target as BrowserLocator | BrowserElementHandle;
       return window.__xbell_page_expect__({
-        // @ts-ignore
-        type: target._type,
-        // @ts-ignore
-        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
+        type: t._type,
+        uuid: await t._getUUID(),
         method: 'toBeChecked',
         args,
         state,
@@ -32,11 +34,10 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
   },
   toBeDisabled(target, ...args) {
     return async (state) => {
+      const t = target as BrowserLocator | BrowserElementHandle;
       return window.__xbell_page_expect__({
-        // @ts-ignore
-        type: target._type,
-        // @ts-ignore
-        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
+        type: t._type,
+        uuid: await t._getUUID(),
         method: 'toBeDisabled',
         args,
         state,
@@ -45,11 +46,10 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
   },
   toBeHidden(target, ...args) {
     return async (state) => {
+      const t = target as BrowserLocator | BrowserElementHandle;
       return window.__xbell_page_expect__({
-        // @ts-ignore
-        type: target._type,
-        // @ts-ignore
-        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
+        type: t._type,
+        uuid: await t._getUUID(),
         method: 'toBeHidden',
         args,
         state,
@@ -58,11 +58,10 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
   },
   toBeVisible(target, ...args) {
     return async (state) => {
+      const t = target as BrowserLocator | BrowserElementHandle;
       return window.__xbell_page_expect__({
-        // @ts-ignore
-        type: target._type,
-        // @ts-ignore
-        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
+        type: t._type,
+        uuid: await t._getUUID(),
         method: 'toBeVisible',
         args,
         state,
@@ -81,11 +80,10 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
   },
   toMatchScreenshot(target, ...args) {
     return async (state) => {
+      const t = target as BrowserLocator | BrowserElementHandle | BrowserPage;
       return window.__xbell_page_expect__({
-        // @ts-ignore
-        type: target._type,
-        // @ts-ignore
-        uuid: typeof target._getUUID === 'function' ? await target._getUUID() : undefined,
+        type: t._type,
+        uuid: '_getUUID' in  t ? await t._getUUID() : undefined,
         method: 'toMatchScreenshot',
         args,
         state,

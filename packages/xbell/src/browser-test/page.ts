@@ -12,7 +12,8 @@ import { Locator, FrameLocator } from './locator';
 import { getElementHandle } from './element-handle';
 import { genUUID } from './utils';
 export class Page implements CommonPage {
-  private _type = 'page';
+  // @internal
+  _type = 'page' as const;
   private async _execute<T extends keyof PageMethods>(method: T, ...args: Parameters<PageMethods[T]>): Promise<ReturnType<PageMethods[T]>> {
     return window.__xbell_page_execute__({
       method,

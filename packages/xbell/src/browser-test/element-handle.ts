@@ -16,12 +16,12 @@ export async function getElementHandle(queryItems: QueryItem[], uuid?: string) {
 
 export class ElementHandle implements ElementHandleInterface {
   // @internal
-  private _type = 'element';
+  _type = 'element' as const;
 
   constructor(private _uuid: string) {}
 
   // @internal
-  private _getUUID() {
+  _getUUID() {
     return this._uuid;
   }
 
