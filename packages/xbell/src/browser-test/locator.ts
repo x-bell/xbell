@@ -183,6 +183,10 @@ export class Locator implements LocatorInterface {
     const targetUUID = await (target as Locator)._getUUID();
     return await this._executeRPC('rpcDragTo', { uuid: targetUUID }, options);
   }
+
+  async innerHTML(options?: { timeout?: number | undefined; } | undefined): Promise<string> {
+    return await this._execute('innerHTML', options);
+  }
 }
 
 export class FrameLocator implements FrameLocatorInterface {

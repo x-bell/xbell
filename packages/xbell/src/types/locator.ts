@@ -96,4 +96,7 @@ export interface Locator {
     };
     timeout?: number;
   }): Promise<void>;
+  innerHTML(options?: {
+    timeout?: number;
+  }): Promise<string>;
 }

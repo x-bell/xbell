@@ -162,6 +162,10 @@ export class Locator implements LocatorInterface {
     // @ts-ignore
     return this._locator.dragTo(target._locator as PWLocator, options);
   }
+
+  innerHTML(options?: { timeout?: number | undefined; } | undefined): Promise<string> {
+    return this._locator.innerHTML(options);
+  }
 }
 
 export class FrameLocator implements FrameLocatorInterface {
