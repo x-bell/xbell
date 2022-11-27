@@ -1,9 +1,10 @@
 import type { ElementHandle as ElementHandleInterface, Locator as LocatorInterface, FrameLocator as FrameLocatorInterface } from '../types';
 import type { ElementHandleCheckOptions, ElementHandleClickOptions, ElementHandleDblclickOptions, ElementHandleHoverOptions, ElementHandleScreenshotOptions, ElementHandleUncheckOptions, Rect, TimeoutOptions } from '../types/pw';
-import type { QueryItem } from './types';
+import type { QueryItem, LocatorRPCMethods } from './types';
 import { getElementHandle } from './element-handle';
 
 // TODO: browser-native impl
+
 export class Locator implements LocatorInterface {
   private _uuid?: Promise<string>;
   private _type = 'locator';
@@ -11,7 +12,7 @@ export class Locator implements LocatorInterface {
   constructor(private queryItems: QueryItem[]) {
   }
 
-  private _getUUID() {
+  _getUUID() {
     return this._connectToLocator();
   }
 
@@ -23,14 +24,30 @@ export class Locator implements LocatorInterface {
     return this._uuid!;
   }
 
-  private async _execute<T extends keyof LocatorInterface>(method: T, ...args: Parameters<LocatorInterface[T]>): Promise<ReturnType<LocatorInterface[T]>> {
-    const uuid = await this._connectToLocator();
 
+  private async _execute<T extends keyof LocatorInterface>(
+    method: T,
+    ...args: Parameters<LocatorInterface[T]>
+    ): Promise<ReturnType<LocatorInterface[T]>> {
+    const uuid = await this._connectToLocator();
     return window.__xbell_page_locator_execute__({
       uuid,
       method,
       args,
     });
+  }
+
+
+  private async _executeRPC<T extends keyof LocatorRPCMethods>(
+    method: T,
+    ...args: Parameters<LocatorRPCMethods[T]>
+    ): Promise<ReturnType<LocatorRPCMethods[T]>> {
+    const uuid = await this._connectToLocator();
+    return window.__xbell_page_locator_rpc_execute__({
+        uuid,
+        method,
+        args,
+      }) as ReturnType<LocatorRPCMethods[T]>;
   }
 
   private appendQueryItem(queryItem: QueryItem) {
@@ -160,6 +177,11 @@ export class Locator implements LocatorInterface {
 
   async queryAttribute(name: string, options?: TimeoutOptions | undefined): Promise<string | null> {
     return await this._execute('queryAttribute', name, options)
+  }
+
+  async dragTo(target: LocatorInterface, options?: { sourcePosition?: { x: number; y: number; } | undefined; targetPosition?: { x: number; y: number; } | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
+    const targetUUID = await (target as Locator)._getUUID();
+    return await this._executeRPC('rpcDragTo', { uuid: targetUUID }, options);
   }
 }
 

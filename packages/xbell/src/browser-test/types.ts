@@ -16,3 +16,7 @@ export type SelectorItem = {
 };
 
 export type QueryItem = LocatorMethod | SelectorItem;
+
+export interface LocatorRPCMethods {
+  rpcDragTo(target: { uuid: string }, options: Parameters<Locator['dragTo']>[1]): Promise<void>
+}

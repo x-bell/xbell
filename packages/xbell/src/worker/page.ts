@@ -30,7 +30,7 @@ import type {
   Response,
 } from '../types/pw'
 import type { Channel } from '../common/channel';
-import type { QueryItem } from '../browser-test/types';
+import type { LocatorRPCMethods, QueryItem } from '../browser-test/types';
 
 import { XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
@@ -122,6 +122,11 @@ declare global {
       method: T;
       args: Parameters<LocatorInterface[T]>;
     }): ReturnType<LocatorInterface[T]>;
+    __xbell_page_locator_rpc_execute__<T extends keyof LocatorRPCMethods>(opts: {
+      uuid: string;
+      method: T;
+      args: Parameters<LocatorRPCMethods[T]>;
+    }): ReturnType<LocatorRPCMethods[T]>;
     __xbell_page_locator_execute__<T extends keyof FrameLocatorInterface>(opts: {
       uuid: string;
       method: T;
@@ -280,11 +285,24 @@ export class Page implements PageInterface {
 
     await this._page.exposeFunction(
       '__xbell_page_locator_execute__',
-      (options: Parameters<typeof window.__xbell_page_locator_execute__>[0]) => {
+      (options: Parameters<typeof window.__xbell_page_locator_execute__>[0]): ReturnType<typeof window.__xbell_page_locator_execute__> => {
         // TODO: snapshot
         const { uuid, method, args } = options;
         const locator = this._locatorMap.get(uuid)!
         return Reflect.apply(locator[method], locator, args);
+      }
+    );
+
+    await this._page.exposeFunction(
+      '__xbell_page_locator_rpc_execute__',
+      async (options: Parameters<typeof window.__xbell_page_locator_rpc_execute__>[0]): ReturnType<typeof window.__xbell_page_locator_rpc_execute__> => {
+        const { method, uuid, args } = options;
+        if (method === 'rpcDragTo') {
+          const [target, options] = args;
+          const sourceLocator = this._locatorMap.get(uuid)! as LocatorInterface;
+          const targetLocator = this._locatorMap.get(target.uuid)! as LocatorInterface;
+          return sourceLocator.dragTo(targetLocator, options)
+        }
       }
     );
 

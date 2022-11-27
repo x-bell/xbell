@@ -157,6 +157,11 @@ export class Locator implements LocatorInterface {
   queryAttribute(name: string, options?: TimeoutOptions | undefined): Promise<string | null> {
     return this._locator.getAttribute(name, options);
   }
+
+  dragTo(target: LocatorInterface, options?: { sourcePosition?: { x: number; y: number; } | undefined; targetPosition?: { x: number; y: number; } | undefined; timeout?: number | undefined; } | undefined): Promise<void> {
+    // @ts-ignore
+    return this._locator.dragTo(target._locator as PWLocator, options);
+  }
 }
 
 export class FrameLocator implements FrameLocatorInterface {

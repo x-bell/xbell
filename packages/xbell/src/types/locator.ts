@@ -18,6 +18,10 @@ import type { ElementHandle } from './element-handle';
 import type { FrameLocator } from './frame-locator';
 
 export interface Locator {
+  first(): Locator;
+  last(): Locator;
+  nth(index: number): Locator;
+  count(): Promise<number>;
   focus(options?: TimeoutOptions): Promise<void>
   click(options?: ElementHandleClickOptions): Promise<void>;
   dblclick(options?: ElementHandleDblclickOptions): Promise<void>;
@@ -74,13 +78,22 @@ export interface Locator {
     noWaitAfter?: boolean;
     timeout?: number;
   }): Promise<void>;
-  count(): Promise<number>;
-  first(): Locator;
-  last(): Locator;
-  nth(index: number): Locator;
   fill(value: string, options?: {
     timeout?: number;
   }): Promise<void>;
   textContent(options?: TimeoutOptions): Promise<null | string>;
   queryAttribute(name: string, options?: TimeoutOptions): Promise<null | string>;
+  dragTo(target: Locator, options?: {
+    sourcePosition?: {
+      x: number;
+
+      y: number;
+    };
+    targetPosition?: {
+      x: number;
+
+      y: number;
+    };
+    timeout?: number;
+  }): Promise<void>;
 }
