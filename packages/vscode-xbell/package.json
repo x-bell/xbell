@@ -2,7 +2,7 @@
 	"name": "xbell-vsc-extension",
 	"displayName": "XBell",
 	"description": "XBell Test for VSCode",
-	"version": "0.0.2",
+	"version": "0.7.0",
 	"engines": {
 		"vscode": "^1.67.0"
 	},
