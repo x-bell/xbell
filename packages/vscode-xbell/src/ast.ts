@@ -4,7 +4,7 @@ import traverse from '@babel/traverse';
 import { SourceLocation } from '@babel/types';
 
 export type ICase = {
-  caseName: string;
+  // caseName: string;
   loc: SourceLocation;
   startIndex: number;
   endIndex: number;
@@ -12,13 +12,6 @@ export type ICase = {
   browsers: string[];
 };
 
-export type IGroup = {
-  groupName: string;
-  loc: SourceLocation;
-  startIndex: number;
-  endIndex: number;
-  cases: ICase[];
-};
 
 const genAST = (code: string) =>
   parse(
@@ -30,27 +23,28 @@ const genAST = (code: string) =>
     }
   );
 
-export function parseGroups(tsCode: string) {
+export function parseCases(tsCode: string) {
   const ast = genAST(tsCode);
-  const groups: IGroup[] = [];
+  const cases: ICase[] = [];
+
   traverse(ast, {
     ClassDeclaration(path) {
-      path.node.decorators?.forEach((node) => {
-        if (
-          types.isCallExpression(node.expression) &&
-          types.isIdentifier(node.expression.callee, { name: 'Group' }) &&
-          types.isStringLiteral(node.expression.arguments[0])
-        ) {
-          const groupName = node.expression.arguments[0].value;
-          groups.push({
-            groupName: groupName,
-            loc: node.loc as SourceLocation,
-            startIndex: node.start as number,
-            endIndex: node.end as number,
-            cases: [],
-          });
-        }
-      });
+      // path.node.decorators?.forEach((node) => {
+      //   if (
+      //     types.isCallExpression(node.expression) &&
+      //     types.isIdentifier(node.expression.callee, { name: 'Group' }) &&
+      //     types.isStringLiteral(node.expression.arguments[0])
+      //   ) {
+      //     const groupName = node.expression.arguments[0].value;
+      //     groups.push({
+      //       groupName: groupName,
+      //       loc: node.loc as SourceLocation,
+      //       startIndex: node.start as number,
+      //       endIndex: node.end as number,
+      //       cases: [],
+      //     });
+      //   }
+      // });
 
       if (types.isClassBody(path.node.body)) {
         path.node.body.body.forEach(propertyNode => {
@@ -58,11 +52,10 @@ export function parseGroups(tsCode: string) {
             propertyNode.decorators.forEach(decoratorNode => {
               if (
                 types.isCallExpression(decoratorNode.expression) &&
-                types.isIdentifier(decoratorNode.expression.callee, { name: 'Case' }) &&
-                types.isStringLiteral(decoratorNode.expression.arguments[0])
+                types.isIdentifier(decoratorNode.expression.callee, { name: 'Test' })
               ) {
-                groups[groups.length - 1].cases.push({
-                  caseName: decoratorNode.expression.arguments[0].value,
+                cases.push({
+                  // caseName: decoratorNode.expression.arguments[0].value,
                   loc: propertyNode.loc as SourceLocation,
                   startIndex: propertyNode.start as number,
                   endIndex: propertyNode.end as number,
@@ -77,5 +70,5 @@ export function parseGroups(tsCode: string) {
     }
   });
 
-  return groups;
+  return cases;
 }

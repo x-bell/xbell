@@ -8,7 +8,7 @@ import {
   TextDocument,
   Range
 } from 'vscode';
-import { IGroup, parseGroups } from './ast';
+import { ICase, parseCases } from './ast';
 import { genCaseConfig } from './debugConfig';
 import { basename } from 'path';
 
@@ -25,40 +25,26 @@ export class TypeScriptCodeLensProvider implements CodeLensProvider {
 
   public provideCodeLenses(document: TextDocument, token: CancellationToken): ProviderResult<CodeLens[]> {
     const tsCode = document.getText();
-    const groups = parseGroups(tsCode);
-    const lenses = this.makeLens(groups, document);
+    const cases = parseCases(tsCode);
+    const lenses = this.makeLens(cases, document);
     return lenses;
   }
 
-  private makeLens(groups: IGroup[], document: TextDocument) {
+  private makeLens(cases: ICase[], document: TextDocument) {
     const codeLenses: CodeLens[] = [];
-    groups.forEach((group) => {
-      const groupRange = this.makeRange(group, document);
-      codeLenses.push(new CodeLens(groupRange, {
-        title: '调试',
+    cases.forEach((c) => {
+      const caseRange = this.makeRange(c, document);
+      codeLenses.push(new CodeLens(caseRange, {
+        title: 'Debug',
         command: 'extension.debugCase',
         arguments: [
           genCaseConfig({
             fileName: basename(document.fileName),
-            groupName: group.groupName,
           })
         ]
       }));
-      group.cases.forEach((c) => {
-        const caseRange = this.makeRange(c, document);
-        codeLenses.push(new CodeLens(caseRange, {
-          title: '调试',
-          command: 'extension.debugCase',
-          arguments: [
-            genCaseConfig({
-              fileName: basename(document.fileName),
-              groupName: group.groupName,
-              caseName: c.caseName,
-            })
-          ]
-        }));
-      });
     });
+
     return codeLenses;
   }
 
