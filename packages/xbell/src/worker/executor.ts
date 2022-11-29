@@ -182,7 +182,7 @@ export class Executor {
 
   async runCaseInNode(c: XBellTestCase<any, any>, file: XBellTestFile) {
     const argManager = new ArgumentManager(file, c);
-    const { hooks } = configurator.getProjectConfig({ projectName: file.projectName });
+    const { hooks } = await configurator.getProjectConfig({ projectName: file.projectName });
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,
     });
@@ -220,7 +220,7 @@ export class Executor {
 
   async runCaseInBrowser(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
     // case config
-    const projectConfig = configurator.getProjectConfig({ projectName: file.projectName })
+    const projectConfig = await configurator.getProjectConfig({ projectName: file.projectName })
     const { viewport, headless, storageState, devtools } = projectConfig.browser;
     const { url, html } = projectConfig.browserTest;
     const { coverage: coverageConfig } = projectConfig;

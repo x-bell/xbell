@@ -113,7 +113,7 @@ export function genLazyPage({
         browser: _lazyBrowser,
       };
     }
-    const projectConfig = configurator.getProjectConfig({ projectName });
+    const projectConfig = await configurator.getProjectConfig({ projectName });
     const { headless, viewport, storageState, devtools } = projectConfig.browser;
     const browser = await lazyBrowser.newBrowser('chromium', {
       headless: !!headless,

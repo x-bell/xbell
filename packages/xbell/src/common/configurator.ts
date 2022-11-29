@@ -16,7 +16,7 @@ interface XBellConfigurator {
 
 const viteFunctionConfigOptions = { mode: 'testing', ssrBuild: false, command: 'serve' } as const;
 
-function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfig {
+async function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): Promise<XBellConfig> {
   const browser1 = config1.browser ?? {};
   const browser2 = config2.browser ?? {};
   const compiler1 = config1.compiler ?? {};
@@ -33,8 +33,8 @@ function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfi
         ...browser1.devServer,
         ...browser2.devServer,
         viteConfig: mergeViteConfig(
-          typeof viteConfig1 === 'function' ? viteConfig1({ ...viteFunctionConfigOptions }) : viteConfig1,
-          typeof viteConfig2 === 'function' ? viteConfig2({ ...viteFunctionConfigOptions }) : viteConfig2,
+          typeof viteConfig1 === 'function' ? await viteConfig1({ ...viteFunctionConfigOptions }) : viteConfig1,
+          typeof viteConfig2 === 'function' ? await viteConfig2({ ...viteFunctionConfigOptions }) : viteConfig2,
         ),
       },
     },
@@ -53,14 +53,14 @@ function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): XBellConfi
   }
 }
 
-const mergeConfig = (...configs: Array<XBellConfig>): XBellConfig => 
-  (configs)
-    .slice(1)
-    .reduce(
-      (acc, config) => _mergeConfigImp(acc, config),
-      configs[0]
-    );
-
+const mergeConfig = async (...configs: Array<XBellConfig>): Promise<XBellConfig> => {
+  const [config, ...rest] = configs;
+  let ret = config;
+  for (let i = 0; i < rest.length; i++) {
+    ret = await _mergeConfigImp(ret, rest[i]);
+  }
+  return ret;
+}
 export class Configurator implements XBellConfigurator {
   static XBellDefaultBrowserConfig: XBellBrowserConfigRequired = {
     headless: true,
@@ -121,7 +121,7 @@ export class Configurator implements XBellConfigurator {
     const fullPaths = XBellConfigFilePaths.map(filepath => path.join(projectDir, filepath))
     const targetConfigFilePath = fullPaths.find((filepath) => existsSync(filepath))
     if (!targetConfigFilePath) {
-      return mergeConfig(XBellDefaultConfig, cliConfig) as XBellConfigRequired;
+      return await mergeConfig(XBellDefaultConfig, cliConfig) as XBellConfigRequired;
     }
     
     const { default: userConfig } = (await import(targetConfigFilePath)) as { default: XBellConfig | null | undefined };
@@ -136,9 +136,10 @@ export class Configurator implements XBellConfigurator {
       return [userConfigPresets];
     })();
 
-    const configByPresets = presets.reduce<XBellConfigRequired>((acc, preset) => mergeConfig(acc, preset) as XBellConfigRequired, XBellDefaultConfig);
+    const configByPresets = await mergeConfig(XBellDefaultConfig, ...presets);
+    // presets.reduce<XBellConfigRequired>((acc, preset) => mergeConfig(acc, preset) as XBellConfigRequired, XBellDefaultConfig);
 
-    return mergeConfig(configByPresets, userConfig, cliConfig) as XBellConfigRequired;
+    return await mergeConfig(configByPresets, userConfig, cliConfig) as XBellConfigRequired;
   }
 
   protected getCLIConfig(): XBellConfig {
@@ -153,13 +154,13 @@ export class Configurator implements XBellConfigurator {
     return config;
   }
   
-  public getProjectConfig({ projectName }: {
+  public async getProjectConfig({ projectName }: {
     projectName: string
-  }): XBellConfigRequired {
+  }): Promise<XBellConfigRequired> {
     const { projects } = this.globalConfig;
     const project = projects.find(project => project.name === projectName)
     if (project?.config) {
-      return mergeConfig(this.globalConfig, project.config) as XBellConfigRequired;
+      return await mergeConfig(this.globalConfig, project.config) as XBellConfigRequired;
     }
     return this.globalConfig;
   }
