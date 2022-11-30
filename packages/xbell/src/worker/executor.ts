@@ -66,6 +66,7 @@ async function executePage({
     }
   });
 
+  ws.removeAllListeners();
   ws.close();
 
   if (isViteReload) {

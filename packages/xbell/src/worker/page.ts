@@ -439,6 +439,12 @@ export class Page implements PageInterface {
       } catch (err) {
         if ((err as any).statusCode === 504 && this._viteAssetReload) {
           this._viteAssetReload();
+          route.fulfill({
+            status: 200,
+            contentType: 'text/javascript',
+            body: `throw new Error('XBELL_RELOAD');`,
+          });
+          return;
         }
         throw err;
       }
@@ -491,6 +497,12 @@ export class Page implements PageInterface {
       } catch (err) {
         if ((err as any).statusCode === 504 && this._viteAssetReload) {
           this._viteAssetReload();
+          route.fulfill({
+            status: 200,
+            contentType: 'text/javascript',
+            body: `throw new Error('XBELL_RELOAD');`,
+          });
+          return;
         }
         throw err;
       }
