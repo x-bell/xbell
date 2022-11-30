@@ -1,5 +1,18 @@
 # xbell
 
+## 0.7.0
+
+### Patch Changes
+
+- 716978e: some apis
+- Updated dependencies [716978e]
+  - @xbell/assert@0.7.0
+  - @xbell/code-stack@0.7.0
+  - @xbell/color@0.7.0
+  - @xbell/coverage@0.7.0
+  - @xbell/reporter@0.7.0
+  - @xbell/snapshot@0.7.0
+
 ## 0.7.0-alpha.28
 
 ### Patch Changes
