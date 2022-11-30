@@ -7,7 +7,10 @@ export const get = (url: string) => {
       const contentType = res.headers['content-type'];
 
       if (statusCode !== 200) {
-        reject('Request Failed.\n' + `Status Code: ${statusCode}`);
+        const err = new Error('Request Failed.\n' + `Status Code: ${statusCode}`);
+        // @ts-ignore
+        err.statusCode = statusCode;
+        reject(err);
       }
       res.setEncoding('utf8');
       let rawData = ''
@@ -22,6 +25,10 @@ export const get = (url: string) => {
           contentType,
         });
       })
+    }).on('error', (err) => {
+      // @ts-ignore
+      err.statusCode = 504;
+      reject(err);
     })
   })
 }
