@@ -233,6 +233,7 @@ export class Page implements PageInterface {
     this._currentFilename = _filename;
     this.keyboard = new Keyboard(this._page.keyboard);
     this.mouse = this._page.mouse;
+    this._listenRequests();
   }
 
   protected async setup() {
@@ -411,7 +412,6 @@ export class Page implements PageInterface {
       this._page.removeListener('requestfinished', this._onRequestDone);
     }
     this._isListenRequest = true;
-    this._pendingRequestCount = 0;
     this._page.on('request', this._onRequest);
     this._page.on('requestfailed', this._onRequestDone);
     this._page.on('requestfinished', this._onRequestDone);
@@ -532,7 +532,6 @@ export class Page implements PageInterface {
     // TODO: playwright version
     // @ts-ignore
     const ret = await this._page.goto(url, otherOptons);
-    this._listenRequests();
     return ret ? toCommonResponse(ret) : ret;
   }
 
@@ -550,7 +549,6 @@ export class Page implements PageInterface {
 
   async reload(options?: { timeout?: number | undefined; waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit' | undefined; }): Promise<Response | null> {
     const ret = await this._page.reload(options);
-    this._listenRequests();
     return ret ? toCommonResponse(ret) : ret;
   }
 
