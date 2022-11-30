@@ -1,5 +1,15 @@
 # @xbell/vue2
 
+## 0.7.0-alpha.27
+
+### Patch Changes
+
+- 716978e: some apis
+- Updated dependencies [716978e]
+  - @xbell/assert@0.7.0-alpha.27
+  - @xbell/snapshot@0.7.0-alpha.27
+  - xbell@0.7.0-alpha.27
+
 ## 0.7.0-alpha.26
 
 ### Patch Changes
