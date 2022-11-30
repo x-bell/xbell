@@ -66,7 +66,8 @@ export class Page implements CommonPage {
   async waitForRequest(urlOrPredicate: string | RegExp | ((request: Request) => boolean | Promise<boolean>), options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
     const isFunction = typeof urlOrPredicate === 'function';
     if (isFunction) {
-      const callbackUUID = genUUID()
+      const callbackUUID = genUUID();
+      window.__xbell_page_callbacks__.set(callbackUUID, urlOrPredicate);
       return window.__xbell_page_execute_with_callback__({
         callbackUUID,
         method: 'waitForRequest',
@@ -80,7 +81,8 @@ export class Page implements CommonPage {
   async waitForRequestFailed(urlOrPredicate?: string | RegExp | ((request: Request) => boolean | Promise<boolean>) | undefined, options?: { timeout?: number | undefined; } | undefined): Promise<Request> {
     const isFunction = typeof urlOrPredicate === 'function';
     if (isFunction) {
-      const callbackUUID = genUUID()
+      const callbackUUID = genUUID();
+      window.__xbell_page_callbacks__.set(callbackUUID, urlOrPredicate);
       return window.__xbell_page_execute_with_callback__({
         callbackUUID,
         method: 'waitForRequestFailed',
