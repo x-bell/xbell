@@ -1,5 +1,5 @@
 {
-  "name": "@xbell/classic-pom-unit-combind-with-e2e",
+  "name": "@xbell/test-classic-pom-unit-combind-with-e2e",
   "version": "0.0.0",
   "private": true,
   "scripts": {
