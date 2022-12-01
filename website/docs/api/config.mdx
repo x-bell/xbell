@@ -22,15 +22,15 @@ export default config;
 ## teardown
 
 ## maxThreads
-- type: <type>number</type>
-- default: Number of CPU
+- **Type**: <type>number</type>
+- **Default**: Number of CPU
 
 ## include
-- type: <type>string[]</type>
-- default: `['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']`
+- **Type**: <type>string[]</type>
+- **Default**: `['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']`
 
 ## exclude
-- type: <type>string[]</type>
+- **Type**: <type>string[]</type>
 - default `['**/node_modules/**', '**/dist/**']`
 
 ## browser
@@ -38,8 +38,8 @@ export default config;
 Browser Configuration
 
 ### browser.headless
-- type: <type>boolean</type>
-- default: `true`
+- **Type**: <type>boolean</type>
+- **Default**: `true`
 
 Whether to use headless mode
 
@@ -51,23 +51,23 @@ Whether to use headless mode
 
 
 
-- type: <type>{ width: number; height: number; }</type>
-- default: `{ width: 1280, height: 700 }`
+- **Type**: <type>{ width: number; height: number; }</type>
+- **Default**: `{ width: 1280, height: 700 }`
 ## coverage
 
 
 ### coverage.enable
-- type: <type>boolean</type>
-- default: `false`
+- **Type**: <type>boolean</type>
+- **Default**: `false`
 
 Whether to enable coverage
 
 ### coverage.include
-- type: <type>string[]</type>
+- **Type**: <type>string[]</type>
 
 ### coverage.exclude
-- type: <type>string[]</type>
-- default: `[
+- **Type**: <type>string[]</type>
+- **Default**: `[
     '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
     '**/node_modules/**',
     '**/dist/**',
@@ -77,8 +77,8 @@ Whether to enable coverage
 ]`
 
 ### coverage.extension
-- type: <type>string[]</type>
-- default: `['.js', '.cjs', '.mjs', '.ts', '.tsx', '.jsx', '.vue']`
+- **Type**: <type>string[]</type>
+- **Default**: `['.js', '.cjs', '.mjs', '.ts', '.tsx', '.jsx', '.vue']`
 
 ## projects
 
@@ -114,7 +114,7 @@ $ xbell --projects project1
 
 ## project.config
 
-type: <type>XBellConfig</type>
+**Type**: <type>XBellConfig</type>
 
 Each project is allowed to have an independent test configuration, inheriting the root configuration by default.
 
