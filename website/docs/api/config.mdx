@@ -2,6 +2,7 @@
 title: Config
 ---
 
+XBell provides some configuration options to help you test better. You can write configuration options through the `xbell.config.ts` file in the root directory, and "xbell" will read it when it starts.
 
 ```typescript title="xbell.config.ts"
 import type { XBellConfig } from 'xbell';
@@ -16,22 +17,104 @@ const config: XBellConfig = {
 export default config;
 ```
 
+## setup
+
+## teardown
+
+## maxThreads
+- **Type**: <type>number</type>
+- **Default**: Number of CPU
+
 ## include
-- type: <type>string[]</type>
-- default: `['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']`
+- **Type**: <type>string[]</type>
+- **Default**: `['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']`
+
+## exclude
+- **Type**: <type>string[]</type>
+- default `['**/node_modules/**', '**/dist/**']`
 
 ## browser
 
-### headless
-- type: <type>boolean</type>
-- default: `true`
+Browser Configuration
+
+### browser.headless
+- **Type**: <type>boolean</type>
+- **Default**: `true`
 
 Whether to use headless mode
 
+### browser.devtools
+
+### browser.viewport
+
+### browser.storageState
+
+
+
+- **Type**: <type>{ width: number; height: number; }</type>
+- **Default**: `{ width: 1280, height: 700 }`
 ## coverage
 
-### enable
-- `type` <type>boolean</type>
-- default: `false`
+
+### coverage.enable
+- **Type**: <type>boolean</type>
+- **Default**: `false`
 
 Whether to enable coverage
+
+### coverage.include
+- **Type**: <type>string[]</type>
+
+### coverage.exclude
+- **Type**: <type>string[]</type>
+- **Default**: `[
+    '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+    '**/node_modules/**',
+    '**/dist/**',
+    '**/cypress/**',
+    '**/.{idea,git,cache,output,temp}/**',
+    '**/{xbell,playwright,karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress}.config.*'
+]`
+
+### coverage.extension
+- **Type**: <type>string[]</type>
+- **Default**: `['.js', '.cjs', '.mjs', '.ts', '.tsx', '.jsx', '.vue']`
+
+## projects
+
+XBell supports running multiple test projects. You can use `projects` for different testing purposes. 
+
+For example, different `projects` correspond to different data environments, or different `projects` correspond to different browser viewport, or even different `projects` correspond to different test directories.
+
+### project.name
+
+Project Name
+
+```typescript title=xbell.config.ts
+export default = {
+  projects: [
+    { name: 'project1' },
+  ],
+};
+```
+
+```typescript
+import { test } from 'xbell';
+
+test.browser('project1', ({ project, expect }) => {
+  expect(project.name).toBe('project1');
+});
+```
+
+```bash
+$ xbell --projects project1
+```
+
+### project.data
+
+## project.config
+
+**Type**: <type>XBellConfig</type>
+
+Each project is allowed to have an independent test configuration, inheriting the root configuration by default.
+
