@@ -76,10 +76,6 @@ Whether to enable coverage
     '**/{xbell,playwright,karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress}.config.*'
 ]`
 
-### coverage.extension
-- **Type**: <type>string[]</type>
-- **Default**: `['.js', '.cjs', '.mjs', '.ts', '.tsx', '.jsx', '.vue']`
-
 ## projects
 
 XBell supports running multiple test projects. You can use `projects` for different testing purposes. 
@@ -112,9 +108,22 @@ $ xbell --projects project1
 
 ### project.data
 
-## project.config
+### project.config
 
 **Type**: <type>XBellConfig</type>
 
 Each project is allowed to have an independent test configuration, inheriting the root configuration by default.
+
+```typescript
+export default {
+  projects: [
+    {
+      name: 'e2e-project',
+      config: {
+        include: ['**/*.e2e.ts']
+      }
+    }
+  ]
+}
+```
 
