@@ -3,25 +3,31 @@
     "message": "Make testing easy."
   },
   "homepage.getStarted": {
-    "message": "Get Started - 5min ⏱️"
+    "message": "Get Started"
   },
   "homepage.allInOneTesting": {
-    "message": "All-in-one testing"
+    "message": "All-in-One"
   },
   "homepage.allInOneTesting.desc": {
-    "message": "Write unit tests and e2e tests with the same mind."
+    "message": "Write unit tests, integration tests, e2e tests with the one API."
   },
-  "homepage.nodeAndBrowser": {
-    "message": "node & browser"
+  "homepage.realRuntime": {
+    "message": "Real Runtime"
   },
-  "homepage.nodeAndBrowser.desc": {
-    "message": "You can freely switch between Node.js and Browser environments to test your code."
+  "homepage.realRuntime.desc": {
+    "message": "Freedom to choose browser or node.js to test the code instead of both in a single runtime."
   },
-  "homepage.decoratorMode": {
-    "message": "Decorator Mode"
+  "homepage.snapshots": {
+    "message": "Snapshots"
   },
-  "homepage.decoratorMode.desc": {
-    "message": "In decorator mode, you can easily do any test."
+  "homepage.snapshots.desc": {
+    "message": "You can do some javascript value snapshots, image snapshots, page screenshots, area screenshots."
+  },
+  "homepage.outOfBox": {
+    "message": "Out-Of-Box"
+  },
+  "homepage.outOfBox.desc": {
+    "message": "TypeScript, Decorators, ESM and JSX are all out of the box."
   },
   "docs.guide": {
     "message": "Guide"
