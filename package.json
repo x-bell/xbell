@@ -9,6 +9,7 @@
   "scripts": {
     "changeset": "changeset",
     "website": "cd website && pnpm start",
+    "website:zh": "cd website && pnpm start:zh",
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
