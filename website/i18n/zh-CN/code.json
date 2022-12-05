@@ -3,25 +3,31 @@
     "message": "让测试更简单"
   },
   "homepage.getStarted": {
-    "message": "快速开始 - 5min ⏱️"
+    "message": "快速开始"
   },
   "homepage.allInOneTesting": {
-    "message": "一体化测试"
+    "message": "一套API"
+  },
+  "homepage.realRuntime": {
+    "message": "真实的运行时"
+  },
+  "homepage.realRuntime.desc": {
+    "message": "可以自由选择 browser 或 node.js 来测试代码，而不是单一的测试环境 或 Mock。"
   },
   "homepage.allInOneTesting.desc": {
-    "message": "使用同一种心智去写单元、集成、E2E测试代码"
+    "message": "使用同一套 API 去写单元、集成、E2E测试代码。"
   },
   "homepage.snapshots": {
-    "message": "node + browser"
+    "message": "快照"
   },
   "homepage.snapshots.desc": {
-    "message": "你可以自由地选择在 node 或浏览器中去测试"
+    "message": "你可以做 JavaScript 快照、图片快照、页面或模块的截图。"
   },
   "homepage.outOfBox": {
-    "message": "装饰器模式"
+    "message": "开箱即用"
   },
   "homepage.outOfBox.desc": {
-    "message": "通过装饰器模式快速编写测试用例"
+    "message": "内置 TypeScript、装饰器、ESM、JSX 等。"
   },
   "docs.guide": {
     "message": "上手指南"

@@ -6,7 +6,7 @@
     "message": "Get Started"
   },
   "homepage.allInOneTesting": {
-    "message": "All-in-One"
+    "message": "One API"
   },
   "homepage.allInOneTesting.desc": {
     "message": "Write unit tests, integration tests, e2e tests with the one API."
