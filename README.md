@@ -5,7 +5,7 @@
     alt="xbell"
     src="https://raw.githubusercontent.com/x-bell/xbell-assets/main/logo/xbell-logo.svg"
   />
-<h2>XBell</h2>
+<h2 style="margin-top: 2px;">XBell</h2>
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/x-bell/xbell/blob/main/LICENSE)
 [![npm version](https://img.shields.io/npm/v/xbell.svg?color=73a5e9)](https://www.npmjs.com/package/xbell)
