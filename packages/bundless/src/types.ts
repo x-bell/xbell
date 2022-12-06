@@ -10,3 +10,7 @@ export interface RequireItem {
 export interface DynamicImportItem {
   path: string;
 }
+
+export interface ExportItem {
+  name: string;
+}
