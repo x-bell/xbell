@@ -13,6 +13,9 @@
     "dist",
     "loader"
   ],
+  "engines": {
+    "node": ">=v16.16.0"
+  },
   "scripts": {
     "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
     "prepublishOnly": "npm run build"
