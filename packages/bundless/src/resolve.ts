@@ -1,41 +1,15 @@
 // TODO: support alias
 
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import { join, basename, dirname, isAbsolute } from 'node:path';
+import { join, dirname, isAbsolute } from 'node:path';
 import * as fs from 'node:fs';
+import * as url from 'url';
 
-// const { CachedInputFileSystem, ResolverFactory } = enhancedResolve;
+const __filename = url.fileURLToPath(new URL(import.meta.url));
 
-// const resolver = ResolverFactory.createResolver({
-//   extensions: ['.js', '.ts', '.jsx','.tsx', '.json'],
-//   fileSystem: new CachedInputFileSystem(fs),
-//   // conditionNames: ['default'],
-//   preferRelative: true,
-//   resolveToContext: true,
-// });
 
 const PKG_NAME_REG = /^(@[^/]+\/)?[^/]+/;
 
-// export function resolve({
-//   path,
-//   importer,
-// }: {
-//   path: string;
-//   importer: string
-// }): Promise<{
-//   filename: string;
-//   request: any;
-// }> {
-//   return new Promise((r, j) => {
-//     resolver.resolve({}, importer, path, {}, (err, filename, request) => {
-//       if (err || !filename) j(err);
-//       else r({
-//         filename,
-//         request
-//       });
-//     })
-//   })
-// }
+
 
 const fileProtocol = 'file://';
 
@@ -72,17 +46,27 @@ function isRelativePath(specifier: string) {
   return specifier.startsWith('.');
 }
 
-function resolvePackage(cwd: string, pgkName: string) {
-  fs.statSync(
-    join(
-      cwd,
-      'node_modules',
-      pgkName
-    )
-  )
+function resolvePackage(cwd: string, pgkName: string): string {
+  const expectedFilepath = join(
+    cwd,
+    'node_modules',
+    pgkName
+  );
+  const stat = fs.lstatSync(expectedFilepath);
+
+  if (stat.isSymbolicLink()) {
+    const ret = fs.readlinkSync(expectedFilepath);
+    const realPath = join(__filename, ret);
+    return realPath;
+  }
+
+  if (stat.isDirectory()) {
+    return expectedFilepath;
+  }
+  return ''
 }
 
-function parsePackage(specifier: string): null | {
+function checkPackage(specifier: string): null | {
   packageName: string;
   entry: string;
 } {
@@ -94,7 +78,8 @@ function parsePackage(specifier: string): null | {
   // TODO: get by arguments
   const cwd = process.cwd();
   return {
-    entry
+    entry: resolvePackage(cwd, packageName),
+    packageName,
   }
 }
 
@@ -121,10 +106,10 @@ export function resolve({
     const filename = resolveNormalFile(specifier);
     if (!filename) throw new Error(`Not found path "${specifier}"`);
   }
-
-  if (parsePackage(specifier)) {
+  const pkgRet = checkPackage(specifier);
+  if (pkgRet) {
     return {
-      filename,
+      filename: pkgRet.entry,
     }
   }
 
