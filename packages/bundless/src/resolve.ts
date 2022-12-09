@@ -9,7 +9,16 @@ const __filename = url.fileURLToPath(new URL(import.meta.url));
 
 const PKG_NAME_REG = /^(@[^/]+\/)?[^/]+/;
 
+class Resolver {
+  static create({
 
+  }: {
+    conditions?: string[];
+    extensions?: string[];
+  }) {
+
+  }
+}
 
 const fileProtocol = 'file://';
 
