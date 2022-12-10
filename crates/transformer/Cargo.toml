@@ -1,0 +1,20 @@
+[package]
+name = "xbell-transformer"
+version = "0.1.0"
+edition = "2021"
+authors = ["LiangHang <xlianghang@163.com>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+
+[dependencies]
+serde = "1"
+phf = { version = "0.10.0", features = ["macros"] }
+swc_core = { version = "0.47.0", features = ["ecma_plugin_transform", "ecma_utils"] }
+
+# .cargo/config defines few alias to build plugin.
+# cargo build-wasi generates wasm-wasi32 binary
+# cargo build-wasm32 generates wasm32-unknown-unknown binary.

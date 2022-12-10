@@ -11,3 +11,4 @@ __snapshots__
 **/tests/**/coverage
 test-report
 internal-*
+target/
