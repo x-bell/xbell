@@ -1,6 +1,7 @@
-import { test } from 'xbell';
+import type { FileInfo } from '../src/types';
 import * as path from 'node:path';
 import { createRequire } from 'node:module';
+import { test } from 'xbell';
 import { resolve } from '../src/resolve';
 import { fileURLToPath } from 'node:url';
 
@@ -16,21 +17,23 @@ const mainTSFilename = path.join(
 const require = createRequire(import.meta.url);
 
 test('#resolve - pkg', async ({ expect }) => {
-  const { filename } = resolve({
+  const ret = await resolve({
     importer: __filename,
     specifier: '@swc/core'
   });
 
   const retByNative = require.resolve('@swc/core');
-  console.log('ret', filename, retByNative);
+  console.log('ret', retByNative, ret);
+  expect(ret.type).toBe('package');
 });
 
-test('#resolve - file', ({ expect }) => {
+test('#resolve - file', async ({ expect }) => {
   console.log('mainTSFilename', mainTSFilename);
-  const { filename } = resolve({
+  const ret = await resolve({
     importer: mainTSFilename,
     specifier: './add',
   });
-  const relativeFilename = path.relative(__dirname, filename);
+  expect(ret.type).toBe('file');
+  const relativeFilename = path.relative(__dirname, (ret as FileInfo).filename);
   expect(relativeFilename).toBe('fixtures/src/add.ts');
 });

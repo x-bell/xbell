@@ -1,9 +1,9 @@
 // TODO: support alias
-
+import type { FileInfo, PackageInfo } from './types';
 import { join, dirname, isAbsolute } from 'node:path';
 import * as fs from 'node:fs';
 import * as url from 'url';
-
+import { getPackageInfo } from './pkg';
 const __filename = url.fileURLToPath(new URL(import.meta.url));
 
 
@@ -55,30 +55,9 @@ function isRelativePath(specifier: string) {
   return specifier.startsWith('.');
 }
 
-function resolvePackage(cwd: string, pgkName: string): string {
-  const expectedFilepath = join(
-    cwd,
-    'node_modules',
-    pgkName
-  );
-  const stat = fs.lstatSync(expectedFilepath);
 
-  if (stat.isSymbolicLink()) {
-    const ret = fs.readlinkSync(expectedFilepath);
-    const realPath = join(__filename, ret);
-    return realPath;
-  }
 
-  if (stat.isDirectory()) {
-    return expectedFilepath;
-  }
-  return ''
-}
-
-function checkPackage(specifier: string): null | {
-  packageName: string;
-  entry: string;
-} {
+async function checkPackage(specifier: string): Promise<PackageInfo | null> {
   const m = specifier.match(PKG_NAME_REG);
   if (!m) {
     return null;
@@ -86,19 +65,18 @@ function checkPackage(specifier: string): null | {
   const packageName = m[0];
   // TODO: get by arguments
   const cwd = process.cwd();
-  return {
-    entry: resolvePackage(cwd, packageName),
-    packageName,
-  }
+  const pkgInfo = await getPackageInfo(cwd, packageName);
+  if (!pkgInfo) return null;
+  return pkgInfo;
 }
 
-export function resolve({
+export async function resolve({
   specifier,
   importer,
 }: {
   specifier: string;
   importer: string;
-}) {
+}): Promise<FileInfo | PackageInfo> {
   if (isRelativePath(specifier)) {
     const fullSpecifierMaybeWithoutSuffix = join(
       dirname(importer),
@@ -107,6 +85,7 @@ export function resolve({
     const filename = resolveNormalFile(fullSpecifierMaybeWithoutSuffix);
     if (!filename) throw new Error(`Not found path "${specifier}" from "${importer}"`);
     return {
+      type: 'file',
       filename,
     }
   }
@@ -115,11 +94,9 @@ export function resolve({
     const filename = resolveNormalFile(specifier);
     if (!filename) throw new Error(`Not found path "${specifier}"`);
   }
-  const pkgRet = checkPackage(specifier);
+  const pkgRet = await checkPackage(specifier);
   if (pkgRet) {
-    return {
-      filename: pkgRet.entry,
-    }
+    return pkgRet;
   }
 
   throw new Error(`Cannot resolve path "${specifier}"`);

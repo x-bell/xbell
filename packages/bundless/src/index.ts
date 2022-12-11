@@ -19,7 +19,6 @@ export class Pack {
       tsx: true,
     });
     const { imports } = analyse(program);
-    console.log('imprts', imports);
     return {
       imports
     }

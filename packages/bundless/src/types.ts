@@ -14,3 +14,14 @@ export interface DynamicImportItem {
 export interface ExportItem {
   name: string;
 }
+export interface FileInfo {
+  type: 'file';
+  filename: string;
+}
+
+export interface PackageInfo {
+  type: 'package';
+  dir: string;
+  entry: string;
+  packageJSON: object;
+}

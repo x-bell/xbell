@@ -1,11 +1,16 @@
 {
   "name": "@xbell/bundless",
   "version": "0.7.0",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "test": "xbell",
+    "prepublishOnly": "npm run test"
+  },
   "dependencies": {
     "enhanced-resolve": "^5.12.0",
     "@swc/core": "1.2.208"
-  },
-  "scripts": {
-    "test": "xbell"
   }
 }
