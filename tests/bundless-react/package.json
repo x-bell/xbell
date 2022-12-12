@@ -1,0 +1,13 @@
+{
+  "name": "@xbell/test-bundless-react",
+  "version": "0.1.0",
+  "dependencies": {
+    "@xbell/bundless": "workspace:*",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
+  }
+}
