@@ -13,6 +13,7 @@
     "dist",
     "loader"
   ],
+  "bugs": "https://github.com/x-bell/xbell/issues",
   "engines": {
     "node": ">=v16.16.0"
   },
@@ -51,14 +52,13 @@
     }
   },
   "keywords": [
-    "end-to-end",
+    "test",
     "testing",
-    "pom",
-    "ioc",
     "typescript",
-    "decorator",
-    "multi-environment",
-    "ddt"
+    "coverage",
+    "mocking",
+    "jest",
+    "puppeteer"
   ],
   "author": {
     "name": "Hang Liang",

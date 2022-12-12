@@ -25,3 +25,12 @@ export interface PackageInfo {
   entry: string;
   packageJSON: object;
 }
+
+export interface PackageJSON {
+  name: string;
+  version: string;
+  main?: string;
+  module?: string;
+  type?: 'module';
+  exports?: Record<string, any>;
+}
