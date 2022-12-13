@@ -12,3 +12,4 @@ __snapshots__
 test-report
 internal-*
 target/
+.cert
