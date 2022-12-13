@@ -34,3 +34,15 @@ export interface PackageJSON {
   type?: 'module';
   exports?: Record<string, any>;
 }
+
+export interface ServerMiddleware {
+  (ctx: ServerContext, next: () => (Promise<void> | void)): Promise<void> | void;
+}
+
+export interface ServerContext {
+  body: any;
+}
+
+export interface ServerOptions {
+  cwd: string;
+};

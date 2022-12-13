@@ -26,6 +26,7 @@ function getPathByExports({
 
   return null;
 }
+
 export function getPackageEntry({
   packageJSON,
   conditions,
@@ -36,13 +37,26 @@ export function getPackageEntry({
   conditions: string[]
 }) {
   if (packageJSON.exports) {
-    return getPathByExports({
+    const ret = getPathByExports({
       dir,
       subPath: '.',
       exports: packageJSON.exports!,
       conditions,
     });
+  
+    if (!ret) throw `Not found entry of "${packageJSON.name}"`;
+    return ret;
   }
+
+  if (packageJSON.module) {
+    return path.join(dir, packageJSON.module);
+  }
+
+  if (packageJSON.main) {
+    return path.join(dir, packageJSON.main);
+  }
+
+  throw `Not found entry of "${packageJSON.name}"`;
 }
 
 export async function getPackageInfo(cwd: string, pgkName: string): Promise<PackageInfo | null> {
