@@ -1,6 +1,7 @@
 // TODO: support alias
 import type { FileInfo, PackageInfo } from './types';
-import { join, dirname, isAbsolute } from 'node:path';
+import { join, isAbsolute } from 'node:path';
+import { dirname } from './utils';
 import * as fs from 'node:fs';
 import * as url from 'url';
 import { getPackageInfo } from './pkg';

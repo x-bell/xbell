@@ -1,3 +1,4 @@
+import type { UrlWithStringQuery } from 'node:url';
 export interface ImportItem {
   path: string;
   onlyImportDefault: boolean;
@@ -41,6 +42,10 @@ export interface ServerMiddleware {
 
 export interface ServerContext {
   body: any;
+  setHeader(name: string, value: number | string | ReadonlyArray<string>): void;
+  request: {
+    url: UrlWithStringQuery;
+  }
 }
 
 export interface ServerOptions {

@@ -1,6 +1,10 @@
 {
   "name": "@xbell/test-bundless-react",
   "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./scripts/start.mjs"
+  },
   "dependencies": {
     "@xbell/bundless": "workspace:*",
     "react": "^18.0.0",
