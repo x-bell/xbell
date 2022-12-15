@@ -7,6 +7,7 @@
     "keywords": ["swc-plugin"],
     "main": "target/wasm32-wasi/release/xbell-transformer.wasm",
     "scripts": {
+        "prepack": "cargo prepublish --release && cp target/wasm32-wasi/release/xbell-transformer.wasm",
         "prepublishOnly": "cargo build-wasi --release"
     },
     "files": []
