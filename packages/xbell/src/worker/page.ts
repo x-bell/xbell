@@ -787,4 +787,8 @@ export class Page implements PageInterface {
   async video(): Promise<Video | null> {
     return this._page.video();
   }
+
+  async waitForFileChooser(): Promise<void> {
+    await this._page.waitForEvent('filechooser');
+  }
 }
