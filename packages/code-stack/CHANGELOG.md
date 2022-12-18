@@ -1,5 +1,13 @@
 # @xbell/code-stack
 
+## 0.7.1
+
+### Patch Changes
+
+- a010901: support wait for file chooser
+- Updated dependencies [a010901]
+  - @xbell/color@0.7.1
+
 ## 0.7.0
 
 ### Patch Changes

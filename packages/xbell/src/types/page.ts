@@ -64,6 +64,7 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
     timeout?: number;
     waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
   }): Promise<Response | null>;
+  waitForFileChooser(): Promise<void>
 }
 
 export type PageMethods = Omit<Page, 'mouse' | 'keyboard'>;

@@ -1,5 +1,11 @@
 # @xbell/color
 
+## 0.7.1
+
+### Patch Changes
+
+- a010901: support wait for file chooser
+
 ## 0.7.0
 
 ### Patch Changes
