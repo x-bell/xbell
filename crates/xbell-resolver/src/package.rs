@@ -43,32 +43,6 @@ impl Package {
     }
 }
 
-fn read_package_json(raw_json: &str) -> PackageJson {
-    let parsed: PackageJson = serde_json::from_str(raw_json).unwrap();
-    return parsed;
-}
-
-fn get_sub_path_by_exports(
-    package_dir: &Path,
-    exports: &ExportsField,
-    sub_path: &str,
-    conditions: &Vec<&str>,
-) -> Option<PathBuf> {
-    match exports {
-        ExportsField::Map(map) => {
-            let vec = Vec::from_iter(map.iter());
-            for (key, value) in vec {
-                if key == sub_path {
-                    return parse_exports(package_dir, value, conditions);
-                }
-            }
-
-            parse_exports(package_dir, exports, conditions)
-        }
-        ExportsField::Path(path) => Some(package_dir.join(path).canonicalize().unwrap()),
-    }
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PackageJson {
     name: String,
@@ -113,6 +87,32 @@ impl PackageJson {
             Some(exports) => get_sub_path_by_exports(package_dir, exports, ".", &conditions),
             None => None,
         }
+    }
+}
+
+fn read_package_json(raw_json: &str) -> PackageJson {
+    let parsed: PackageJson = serde_json::from_str(raw_json).unwrap();
+    return parsed;
+}
+
+fn get_sub_path_by_exports(
+    package_dir: &Path,
+    exports: &ExportsField,
+    sub_path: &str,
+    conditions: &Vec<&str>,
+) -> Option<PathBuf> {
+    match exports {
+        ExportsField::Map(map) => {
+            let vec = Vec::from_iter(map.iter());
+            for (key, value) in vec {
+                if key == sub_path {
+                    return parse_exports(package_dir, value, conditions);
+                }
+            }
+
+            parse_exports(package_dir, exports, conditions)
+        }
+        ExportsField::Path(path) => Some(package_dir.join(path).canonicalize().unwrap()),
     }
 }
 
