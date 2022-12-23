@@ -1,5 +1,15 @@
 # @xbell/vue2
 
+## 0.7.2
+
+### Patch Changes
+
+- a656ab5: add FileChooser
+- Updated dependencies [a656ab5]
+  - xbell@0.7.2
+  - @xbell/assert@0.7.2
+  - @xbell/snapshot@0.7.2
+
 ## 0.7.1
 
 ### Patch Changes
