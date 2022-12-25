@@ -30,17 +30,23 @@ pub struct Cjs {
 impl VisitMut for Cjs {
     noop_visit_mut_type!();
 
-    fn visit_mut_call_expr(&mut self, CallExpr { callee, args, .. }: &mut CallExpr) {
+    fn visit_mut_call_expr(&mut self, call_expr: &mut CallExpr) {
+        let CallExpr {
+            callee,
+            args,
+            ..
+        } = call_expr;
         // let a = &**callee;
-        match &callee {
-            Callee::Expr(expr) => {
-                match &**expr {
-                    Expr::Ident(id) => {
+        match callee {
+            Callee::Expr(ref mut expr) => {
+                match **expr {
+                    Expr::Ident(ref mut id) => {
                         if id.sym == *"require" {
                             match &*args[0].expr {
                                 Expr::Lit(lit) => {
                                     match lit {
                                         Lit::Str(s) => {
+                                            id.sym = "require_commonjs".into();
                                             self.paths.push(
                                                 s.value.to_string()
                                             );
@@ -48,7 +54,7 @@ impl VisitMut for Cjs {
                                         _ => {}
                                     }
                                 },
-                                _ => {}
+                                _ => {},
                             }
                         }
                     },
@@ -57,6 +63,7 @@ impl VisitMut for Cjs {
             },
             _ => {}
         }
+        call_expr.visit_mut_children_with(self);
     }
 }
 
@@ -122,12 +129,30 @@ module.exports = {
         let mut parser = Parser::new_from(lexer);
 
         match parser.parse_program() {
-            Ok(mut program) => {
+            Ok(mut parsed_program) => {
                 let mut cjs = Cjs {
                     paths: vec![],
                 };
-                program.visit_mut_with(&mut as_folder(&mut cjs));
+                parsed_program.visit_mut_with(&mut as_folder(&mut cjs));
+
                 println!("path is {:?}", &cjs.paths);
+
+                let mut buf = vec![];
+                {
+                    let mut emitter = Emitter {
+                        cfg: Config {
+                            minify: false,
+                            ..Default::default()
+                        },
+                        cm: source_map.clone(),
+                        comments: Some(&comments),
+                        wr: JsWriter::new(source_map.clone(), "\n", &mut buf, None),
+                    };
+
+                    emitter.emit_program(&parsed_program).unwrap();
+                }
+
+                println!("{}", String::from_utf8(buf).expect("non-utf8?"));
             },
             _ => {}
         }
