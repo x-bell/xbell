@@ -1,6 +1,8 @@
 import type { UserConfigExport } from 'vite';
 import type { XBellTestCaseFunction } from './test';
 import type { StorageState } from './pw';
+import type { Awaitable } from './utils';
+import type { RawSourceMap } from 'source-map-js';
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
 export interface XBellBrowserDevServerConfig {
@@ -20,6 +22,13 @@ export interface XBellBrowserConfig {
   devServer?: XBellBrowserDevServerConfig;
 }
 
+interface XBellTransformer {
+  process(sourceText: string, sourcePath: string): Awaitable<{
+    code: string;
+    map?: RawSourceMap;
+  }>
+}
+
 export interface XBellConfig {
   /** setup */
   setup?: string[] | string | (() => Promise<void> | void);
@@ -34,6 +43,7 @@ export interface XBellConfig {
       importSource?: string;
     }
   };
+  transform?: Record<string, XBellTransformer>;
   presets?: XBellConfig[] | XBellConfig;
   /** browser config */
   browser?: XBellBrowserConfig;
@@ -66,7 +76,7 @@ export interface XBellConfig {
   };
 }
 
-type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets';
+type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets' | 'transform';
 type XBellBrowserConfigOptionalsKeys = 'storageState';
 
 type XBellBrowserDevServerConfigOptionalsKeys = 'viteConfig';

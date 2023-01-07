@@ -35,6 +35,7 @@ export function compileNodeJSCode(
   const program = parseSync(sourceCode, {
     ...tsParserConfig,
   });
+
   const vistor = new NodeJSVisitor(filename);
   const finalProgram = vistor.visitProgram(program);
   const { code: codeWithXBellJSX, map } = transformSync(finalProgram, {
@@ -47,7 +48,6 @@ export function compileNodeJSCode(
     jsc: getJSCConfig(),
   });
   const code = replaceJSX(codeWithXBellJSX);
-  // debugCompiler('nodejs:code', { map, code });
   if (cache) {
     if (!cache.has(filename)) {
       cache.set(filename, { code, map });
