@@ -109,8 +109,16 @@ export interface XBellNodeJSCallback {
   sortValue: number; // no used
 }
 
+export interface XBellCommonCallback {
+  callback: (...args: any) => any;
+  filename: string;
+  sortValue: number; // no used
+}
+
+
 export type XBellRuntimeOptions = Partial<{
   browserCallbacks: XBellBrowserCallback[];
   nodejsCallbacks: XBellNodeJSCallback[];
+  commonCallbacks: XBellCommonCallback[];
   args?: object
 }>;

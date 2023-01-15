@@ -2,198 +2,72 @@ import type {
   XBellTestCaseFunction,
   XBellTestGroupFunction,
   XBellTestCaseFunctionArguments,
-  XBellBrowserTest,
   XBellTest,
   XBellDescribe,
   XBellBrowserCallback,
-  XBellNodeJSCallback
+  XBellNodeJSCallback,
+  XBellCommonCallback,
 } from '../types';
+import type { BrowserTestArguments } from '../browser-test';
 import * as path from 'node:path';
 import { fileURLToPath } from '../utils/path';
 import { collector } from './collector';
 import { getCallSite } from '../utils/error';
-import debug from 'debug';
-import type { BrowserTestArguments } from '../browser-test/index';
 import { getSortValue } from '../utils/sort';
+import { createBrowserTest } from './test-browser';
+import { createAllTest } from './test-all';
 
-const debugStandard = debug('xbell:standard');
-
-export function createBrowserTest<BrowserExtArgs = {}>(
-  browserCallbacks: XBellBrowserCallback[] = [],
-): XBellBrowserTest<BrowserExtArgs> {
-  const browser: XBellBrowserTest<BrowserExtArgs> = (caseDescription, testCaseFunction) => {
-    const callSite = getCallSite();
-
-    const callSiteFilename = callSite[1].getFileName()!;
-
-    const _testFunctionFilename = fileURLToPath(callSiteFilename);
-
-    debugStandard('_testFunctionFilename', _testFunctionFilename);
-
-    collector.collectCase({
-      caseDescription,
-      testCaseFunction,
-      runtime: 'browser',
-      runtimeOptions: {
-        browserCallbacks,
-      },
-      config: {},
-      options: {},
-      _testFunctionFilename,
-    });
-  }
-
-  browser.todo = (caseDescription, testCaseFunction) => {
-    collector.collectCase({
-      caseDescription, testCaseFunction,
-      options: {
-        todo: true,
-      },
-      config: {},
-      runtime: 'browser',
-      runtimeOptions: {
-        browserCallbacks
-      }
-    });
-  }
-
-  browser.skip = (caseDescription, testCaseFunction) => {
-    collector.collectCase({
-      caseDescription,
-      testCaseFunction,
-      options: {
-        skip: true,
-      },
-      config: {},
-      runtime: 'browser',
-      runtimeOptions: {
-        browserCallbacks
-      }
-    });
-  }
-
-  browser.only = (caseDescription, testCaseFunction) => {
-    collector.collectCase({
-      caseDescription,
-      testCaseFunction,
-      options: {
-        only: true,
-      },
-      config: {},
-      runtime: 'browser',
-      runtimeOptions: {
-        browserCallbacks
-      }
-    });
-  }
-
-  browser.each = (items) => {
-    return (caseDescriptionArg, testCaseFunction) => {
-      for (const [index, item] of items.entries()) {
-        const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item, index) : caseDescriptionArg;
-        collector.collectCase({
-          caseDescription,
-          testCaseFunction,
-          options: {
-            each: {
-              item,
-              index
-            },
-          },
-          config: {},
-          runtime: 'browser',
-          runtimeOptions: {
-            browserCallbacks,
-          },
-        });
-      }
-    }
-  }
-
-  browser.batch = (items) => {
-    return (caseDescription, testCaseFunction) => {
-      collector.collectCase({
-        caseDescription,
-        testCaseFunction,
-        options: {
-          batch: {
-            items,
-          }
-        },
-        config: {},
-        runtime: 'browser',
-        runtimeOptions: {
-          browserCallbacks,
-        }
-      });
-    }
-  }
-
-  browser.mock = (mockPath: string, factory) => {
-    if (mockPath.startsWith('.')) {
-      const callSite = getCallSite();
-      const callSiteFilename = callSite[1].getFileName()!;
-      mockPath = path.join(
-        path.dirname(
-          fileURLToPath(callSiteFilename)
-        ),
-        mockPath
-      );
-    }
-    collector.collectBrowserMock(mockPath, factory);
-  }
-
-  browser.extend = <T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<BrowserExtArgs & Awaited<ReturnType<T>>> => {
-    const callSite = getCallSite();
-
-    const callSiteFilename = callSite[1]!.getFileName() ?? undefined;
-    return createBrowserTest([
-      ...browserCallbacks,
-      {
-        callback: browserCallback,
-        filename: fileURLToPath(callSiteFilename!),
-        sortValue: getSortValue(),
-      }
-    ]);
-  };
-
-  return browser;
-}
-
-export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
+export function createTest<
+  NodeJSExtensionArguments = {},
+  BrowserExtensionArguments = {},
+  CommonExtensionArguments = {}
+>(
   nodejsCallbacks: Array<XBellNodeJSCallback> = [],
   browserCallbacks: Array<XBellBrowserCallback> = [],
-): XBellTest<NodeJSExtArgs, BrowserExtArgs> {
-  const test: XBellTest<NodeJSExtArgs, BrowserExtArgs> = (
+  commonCallbacks: Array<XBellCommonCallback> = []
+): XBellTest<
+  NodeJSExtensionArguments,
+  BrowserExtensionArguments,
+  CommonExtensionArguments
+> {
+  const test: XBellTest<
+    NodeJSExtensionArguments,
+    BrowserExtensionArguments,
+    CommonExtensionArguments
+  > = (
     caseDescription: string,
-    testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>
+    testCaseFunction: XBellTestCaseFunction<
+      NodeJSExtensionArguments,
+      BrowserExtensionArguments
+    >
   ) => {
     collector.collectCase({
       caseDescription,
       testCaseFunction,
-      runtime: 'node',
+      runtime: 'nodejs',
       runtimeOptions: {
         browserCallbacks,
         nodejsCallbacks,
       },
       config: {},
-      options: {}
+      options: {},
     });
   };
 
   test.todo = (caseDescription, testCaseFunction) => {
     collector.collectCase({
-      caseDescription, testCaseFunction, 
+      caseDescription,
+      testCaseFunction,
       options: {
         todo: true,
       },
       config: {},
-      runtime: 'node',
+      runtime: 'nodejs',
       runtimeOptions: {
-        browserCallbacks
-      }
+        browserCallbacks,
+      },
     });
-  }
+  };
 
   test.skip = (caseDescription, testCaseFunction) => {
     collector.collectCase({
@@ -203,12 +77,12 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
         skip: true,
       },
       config: {},
-      runtime: 'node',
+      runtime: 'nodejs',
       runtimeOptions: {
-        browserCallbacks
-      }
+        browserCallbacks,
+      },
     });
-  }
+  };
 
   test.only = (caseDescription, testCaseFunction) => {
     collector.collectCase({
@@ -218,17 +92,20 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
         only: true,
       },
       config: {},
-      runtime: 'node',
+      runtime: 'nodejs',
       runtimeOptions: {
-        browserCallbacks
-      }
+        browserCallbacks,
+      },
     });
-  }
+  };
 
   test.each = (items) => {
     return (caseDescriptionArg, testCaseFunction) => {
       items.forEach((item, index) => {
-        const caseDescription = typeof caseDescriptionArg === 'function' ? caseDescriptionArg(item, index) : caseDescriptionArg;
+        const caseDescription =
+          typeof caseDescriptionArg === 'function'
+            ? caseDescriptionArg(item, index)
+            : caseDescriptionArg;
         collector.collectCase({
           caseDescription,
           testCaseFunction,
@@ -236,17 +113,17 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
             each: {
               item,
               index,
-            }
+            },
           },
           config: {},
-          runtime: 'node',
+          runtime: 'nodejs',
           runtimeOptions: {
             browserCallbacks,
           },
         });
-      })
-    }
-  }
+      });
+    };
+  };
 
   test.batch = (items) => {
     return (caseDescription, testCaseFunction) => {
@@ -256,18 +133,21 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
         options: {
           batch: {
             items,
-          }
+          },
         },
         config: {},
-        runtime: 'node',
+        runtime: 'nodejs',
         runtimeOptions: {
           browserCallbacks,
-        }
+        },
       });
-    }
-  }
+    };
+  };
 
-  const describe: XBellDescribe = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
+  const describe: XBellDescribe = (
+    groupDescription: string,
+    testGroupFunction: XBellTestGroupFunction
+  ) => {
     collector.collectGroup({
       groupDescription,
       testGroupFunction,
@@ -277,7 +157,10 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     });
   };
 
-  describe.todo = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
+  describe.todo = (
+    groupDescription: string,
+    testGroupFunction: XBellTestGroupFunction
+  ) => {
     collector.collectGroup({
       groupDescription,
       testGroupFunction,
@@ -289,8 +172,10 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     });
   };
 
-
-  describe.skip = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
+  describe.skip = (
+    groupDescription: string,
+    testGroupFunction: XBellTestGroupFunction
+  ) => {
     collector.collectGroup({
       groupDescription,
       testGroupFunction,
@@ -302,7 +187,10 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     });
   };
 
-  describe.only = (groupDescription: string, testGroupFunction: XBellTestGroupFunction) => {
+  describe.only = (
+    groupDescription: string,
+    testGroupFunction: XBellTestGroupFunction
+  ) => {
     collector.collectGroup({
       groupDescription,
       testGroupFunction,
@@ -314,40 +202,7 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
     });
   };
 
-
   test.describe = describe;
-
-  test.extend = <T extends (args: XBellTestCaseFunctionArguments<NodeJSExtArgs>) => any>(nodejsCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs> => {
-    const callSite = getCallSite();
-    const callSiteFilename = callSite[1]!.getFileName()!;
-    return createTest([
-      ...nodejsCallbacks,
-      {
-        callback: nodejsCallback,
-        filename:  fileURLToPath(callSiteFilename),
-        sortValue: getSortValue(),
-      }
-    ], browserCallbacks)
-  }
-
-  
-  test.browser = createBrowserTest(browserCallbacks);
-
-  test.extendBrowser = (browserCallback) => {
-    const callSite = getCallSite();
-    const callSiteFilename = callSite[1]!.getFileName()!;
-
-    return createTest([
-      ...nodejsCallbacks,
-    ], [
-      ...browserCallbacks,
-      {
-        callback: browserCallback,
-        filename: fileURLToPath(callSiteFilename),
-        sortValue: getSortValue(),
-      }
-    ]);
-  }
 
   test.mock = (mockPath: string, factory) => {
     if (mockPath.startsWith('.')) {
@@ -355,15 +210,78 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
       const callSiteFilename = callSite[1]!.getFileName()!;
       if (callSiteFilename) {
         mockPath = path.join(
-          path.dirname(
-            fileURLToPath(callSiteFilename)
-          ),
+          path.dirname(fileURLToPath(callSiteFilename)),
           mockPath
-        )
+        );
       }
     }
     collector.collectMock(mockPath, factory);
-  }
+  };
+
+  test.extend = <
+    T extends (
+      args: XBellTestCaseFunctionArguments<NodeJSExtensionArguments>
+    ) => any
+  >(
+    nodejsCallback: T
+  ): XBellTest<
+    NodeJSExtensionArguments & Awaited<ReturnType<T>>,
+    BrowserExtensionArguments
+  > => {
+    const callSite = getCallSite();
+    const callSiteFilename = callSite[1]!.getFileName()!;
+    return createTest(
+      [
+        ...nodejsCallbacks,
+        {
+          callback: nodejsCallback,
+          filename: fileURLToPath(callSiteFilename),
+          sortValue: getSortValue(),
+        },
+      ],
+      browserCallbacks
+    );
+  };
+
+  test.browser = createBrowserTest(browserCallbacks);
+
+  test.all = createAllTest(commonCallbacks);
+
+  test.extendBrowser = (browserCallback) => {
+    const callSite = getCallSite();
+    const callSiteFilename = callSite[1]!.getFileName()!;
+
+    return createTest(
+      [...nodejsCallbacks],
+      [
+        ...browserCallbacks,
+        {
+          callback: browserCallback,
+          filename: fileURLToPath(callSiteFilename),
+          sortValue: getSortValue(),
+        },
+      ],
+      [...commonCallbacks]
+    );
+  };
+
+  test.extendAll = (commonCallback) => {
+    const callSite = getCallSite();
+    const callSiteFilename = callSite[1]!.getFileName()!;
+
+    return createTest(
+      [...nodejsCallbacks],
+      [...browserCallbacks],
+      [
+        ...commonCallbacks,
+        {
+          callback: commonCallback,
+          filename: fileURLToPath(callSiteFilename),
+          sortValue: getSortValue(),
+        },
+      ]
+    );
+  };
 
   return test;
 }
@@ -371,6 +289,3 @@ export function createTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> (
 export const test = createTest<{}, BrowserTestArguments>();
 
 export const describe = test.describe;
-
-// export const mock = (mockPath: string, factory?: () => any) => {
-// }

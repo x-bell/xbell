@@ -173,7 +173,7 @@ export class ClassicCollector {
           caseDescription: caseDecorators.each?.caseDisplayName(item, index) ?? caseDecorators.displayName ?? caseDecorators.propertyKey,
           filename: this.currentFile!.filename,
           propertyKey: caseDecorators.propertyKey,
-          runtime: 'node',
+          runtime: 'nodejs',
           status: 'waiting',
           class: cls,
           mocks: this.currentFile!.mocks,
@@ -200,7 +200,7 @@ export class ClassicCollector {
       caseDescription: caseDecorators.displayName ?? caseDecorators.propertyKey,
       filename: this.currentFile!.filename,
       propertyKey: caseDecorators.propertyKey,
-      runtime: 'node',
+      runtime: 'nodejs',
       status: 'waiting',
       class: cls,
       // TODO: classic mocks

@@ -13,24 +13,8 @@ import { htmlReporter } from '../common/html-reporter';
 import * as url from 'url';
 import * as fs from 'fs';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
-// import { Page as PWPage } from 'playwright-core';
-// import { getSortValue } from '../utils/sort';
 
-// const p: PWPage;
-
-// const next = await p.evaluateHandle(() => {
-//   return {
-//     key: 'value'
-//   }
-// });
-
-// next.evaluateHandle(({ key }, { a }) => {
-//   return {
-//     ...args
-//   }
-// }, { a: 'k' })
 const __filename = url.fileURLToPath(import.meta.url);
-
 const debugExecutor = debug('xbell:executor');
 
 function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
@@ -124,11 +108,18 @@ export class Executor {
       return;
     }
 
-    if (c.runtime === 'node') {
-      await this.runCaseInNode(c, file);
-    } else {
-      // TODO:
-      await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>, file);
+
+    switch (c.runtime) {
+      case 'nodejs':
+        await this.runCaseInNode(c, file);
+        break;
+      case 'browser':
+        await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>, file);
+        break;
+      case 'all':
+      default:
+        await this.runCaseInAll(c as XBellTestCaseStandard<any, any>, file);
+        break;
     }
   }
 
@@ -219,6 +210,7 @@ export class Executor {
     }
   }
 
+  // only support standard in browser
   async runCaseInBrowser(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
     // case config
     const projectConfig = await configurator.getProjectConfig({ projectName: file.projectName })
@@ -369,5 +361,11 @@ export class Executor {
         videos,
       });
     }
+  }
+
+  // only support standard in all
+  async runCaseInAll(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
+    await this.runCaseInBrowser(c, file);
+    await this.runCaseInNode(c, file);
   }
 }

@@ -13,3 +13,4 @@ export * from './record';
 export * from './browser-context';
 export * from './mouse';
 export * from './file-chooser';
+export * from './test-browser';
