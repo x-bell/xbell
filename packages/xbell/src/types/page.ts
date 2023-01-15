@@ -13,6 +13,7 @@ import type {
 import type { Locator } from './locator';
 import type { FrameLocator } from './frame-locator';
 import type { ElementHandle } from './element-handle';
+import type { FileChooser } from './file-chooser';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
@@ -64,6 +65,7 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
     timeout?: number;
     waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
   }): Promise<Response | null>;
+  waitForFileChooser(): Promise<FileChooser>;
 }
 
 export type PageMethods = Omit<Page, 'mouse' | 'keyboard'>;

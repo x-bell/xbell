@@ -16,7 +16,8 @@ import type {
   BrowserContext,
   XBellMocks,
   XBellBrowserCallback,
-  Mouse
+  Mouse,
+  FileChooser as FileChooserType
 } from '../types';
 
 import type {
@@ -35,6 +36,7 @@ import type { LocatorRPCMethods, QueryItem } from '../browser-test/types';
 import { XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
 import { Locator, FrameLocator } from './locator';
+import { FileChooser } from './file-chooser';
 import { ElementHandle } from './element-handle';
 import { Keyboard } from './keyboard';
 import { idToUrl } from '../utils/path';
@@ -786,5 +788,11 @@ export class Page implements PageInterface {
 
   async video(): Promise<Video | null> {
     return this._page.video();
+  }
+
+  async waitForFileChooser(): Promise<FileChooserType> {
+    const _fileChooser = await this._page.waitForEvent('filechooser');
+    const fileChooser = new FileChooser(_fileChooser);
+    return fileChooser;
   }
 }

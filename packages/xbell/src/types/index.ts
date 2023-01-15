@@ -12,3 +12,4 @@ export * from './element-handle';
 export * from './record';
 export * from './browser-context';
 export * from './mouse';
+export * from './file-chooser';

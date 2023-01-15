@@ -1,5 +1,21 @@
 # @xbell/coverage
 
+## 0.7.2
+
+### Patch Changes
+
+- a656ab5: add FileChooser
+- Updated dependencies [a656ab5]
+  - @xbell/color@0.7.2
+
+## 0.7.1
+
+### Patch Changes
+
+- a010901: support wait for file chooser
+- Updated dependencies [a010901]
+  - @xbell/color@0.7.1
+
 ## 0.7.0
 
 ### Patch Changes

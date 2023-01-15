@@ -1,5 +1,17 @@
 # xbell-reporter
 
+## 0.7.2
+
+### Patch Changes
+
+- a656ab5: add FileChooser
+
+## 0.7.1
+
+### Patch Changes
+
+- a010901: support wait for file chooser
+
 ## 0.7.0
 
 ### Patch Changes
