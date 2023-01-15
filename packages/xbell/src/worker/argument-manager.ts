@@ -38,7 +38,7 @@ export class ArgumentManager {
       spyOn,
       fn,
       ...(this._case.options.each ? this._case.options.each : {}),
-      sleep: (duration: number) => new Promise(r => setTimeout(r, duration)),
+      sleep: (duration: number) => new Promise<void>(r => setTimeout(r, duration)),
     };
   }
 
