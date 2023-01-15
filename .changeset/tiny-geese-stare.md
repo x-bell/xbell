@@ -11,4 +11,4 @@
 "@xbell/vue2": minor
 ---
 
-feat: support testAll for run test in all runtimes
+feat: support test.all for run test in all runtimes
