@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "install-browser": "xbell install browser",
     "test": "xbell",
     "dev": "vite"
   },
