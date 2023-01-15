@@ -1,0 +1,14 @@
+{
+  "name": "@xbell/test-all-wasm",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "install-browser": "xbell install browser",
+    "test": "xbell",
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "xbell": "workspace:*",
+    "vite": "^3.2.4"
+  }
+}
