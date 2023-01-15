@@ -27,7 +27,24 @@ export function idToUrl(id: string, prefix = XBELL_BUNDLE_PREFIX) {
   if (hasPrefix) {
     return id;
   }
-  return id.includes(pathManager.projectDir)
+
+  const url = id.includes(pathManager.projectDir)
       ? id.replace(pathManager.projectDir, `/${prefix}`)
       : (`/${prefix}/@fs` + id);
+  const [urlPath, urlSearch] = url.split('?');
+  if (!urlSearch) {
+    return url;
+  }
+
+  const urlSearchItems = urlSearch.split('&');
+  const hasURLSearch = urlSearchItems.some(item => item === 'url')
+  const hasImportSearch = urlSearchItems.some(item => item === 'import');
+  if (hasURLSearch && !hasImportSearch) {
+    return [
+      urlPath,
+      [...urlSearchItems, 'import'].join('&'),
+    ].join('?');
+  }
+
+  return url;
 }

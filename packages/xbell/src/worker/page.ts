@@ -459,6 +459,7 @@ export class Page implements PageInterface {
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
       urlObj.port = String(port);
+      debugPage('vite-url', urlObj.href);
       try {
         const { body, contentType } = await get(urlObj.href);
         const moduleUrlMapByPath = await channle.request('queryModuleUrls', modulePaths);

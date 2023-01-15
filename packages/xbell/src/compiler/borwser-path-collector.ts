@@ -1,22 +1,16 @@
 import { Visitor } from './visitor';
 import {
-  parseSync,
   CallExpression,
   Expression,
-  transformSync,
   JSXElement,
   BlockStatement,
-  Statement,
-  Identifier,
-  KeyValuePatternProperty,
-  ObjectPatternProperty
 } from '@swc/core';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
-import { pathManager } from '../common/path-manager';
 import { idToUrl } from '../utils/path';
+import debug from 'debug';
 
 const originModulePathByUrl = new Map<string, string>();
-
+const debugCompiler = debug('xbell:compiler');
 export class BrowserPathCollector extends Visitor {
   public paths = new Set<string>()
   constructor(public idMapByFullpath?: Map<string, string>) {
@@ -104,12 +98,13 @@ export class BrowserPathCollector extends Visitor {
         }
         if (!rawValue.includes(XBELL_BUNDLE_PREFIX)) {
           const resolveId = this.idMapByFullpath.get(rawValue)!;
-          const targetUrl = idToUrl(resolveId);
+          const targetURL = idToUrl(resolveId);
+          debugCompiler('targetURL', targetURL);
           // @ts-ignore
-          originModulePathByUrl.set(targetUrl, n.arguments[0].expression.raw);
+          originModulePathByUrl.set(targetURL, n.arguments[0].expression.raw);
           // @ts-ignore
           delete n.arguments[0].expression.raw;
-          n.arguments[0].expression.value = targetUrl as string;
+          n.arguments[0].expression.value = targetURL as string;
         }
       }
     }
