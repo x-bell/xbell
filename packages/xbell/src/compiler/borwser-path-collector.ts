@@ -22,60 +22,7 @@ export class BrowserPathCollector extends Visitor {
   }
 
   visitBlockStatement(block: BlockStatement): BlockStatement {
-    // if (this.urlMap) {
-    //   const { span } = block;
-    //   const jsxRuntime = genVariableDeclaration({
-    //     span,
-    //     // init: genAwaitExpression()
-    //     // init: genAwaitExpression()
-    //     declarations: [
-    //       genVariableDeclarator({
-    //         span,
-    //         id: genObjectPattern({
-    //           span,
-    //           properties: [
-    //             genKeyValuePatternProperty({
-    //               key: genIdentifier({
-    //                 span,
-    //                 value: 'default',
-    //               }),
-    //               value: genIdentifier({
-    //                 span,
-    //                 value: '_jsx',
-    //               })
-    //             })
-    //           ] // TODO:
-    //         }),
-    //         init: genAwaitExpression({
-    //           span,
-    //           argument: genCallExpression({
-    //             span,
-    //             callee: genImport({
-    //               span,
-    //             }),
-    //             arguments: [
-    //               genArgument({
-    //                 expression: genStringLiteral({
-    //                   value: 'react/jsx-runtime',
-    //                   span,
-    //                 }),
-    //               })
-    //             ]
-    //           }) // TODO
-    //         }),
-    //       })
-    //     ]
-    //   });
-
-    //   block.stmts = [
-    //     // jsxRuntime,
-    //     ...block.stmts,
-    //   ]
-    //   // console.log('jsxRuntime', JSON.stringify(jsxRuntime));
-    // }
-    // this.stmts = block.stmts;
-    block.stmts = this.visitStatements(block.stmts);
-    return block;
+    return super.visitBlockStatement(block);
   }
 
   // visitIdentifier(n: Identifier): Identifier {
@@ -96,6 +43,7 @@ export class BrowserPathCollector extends Visitor {
           // restore origin module path for get new url
           rawValue = originModulePathByUrl.get(rawValue)!;
         }
+
         if (!rawValue.includes(XBELL_BUNDLE_PREFIX)) {
           const resolveId = this.idMapByFullpath.get(rawValue)!;
           const targetURL = idToUrl(resolveId);
@@ -108,6 +56,6 @@ export class BrowserPathCollector extends Visitor {
         }
       }
     }
-    return n;
+    return super.visitCallExpression(n);
   }
 }

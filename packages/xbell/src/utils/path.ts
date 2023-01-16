@@ -22,15 +22,7 @@ export function getProjectRelativePath(pathname: string) {
   return pathname.replace(pathManager.projectDir + '/', '')
 }
 
-export function idToUrl(id: string, prefix = XBELL_BUNDLE_PREFIX) {
-  const hasPrefix = xbellPrefixs.some(prefix => id.includes(prefix));
-  if (hasPrefix) {
-    return id;
-  }
-
-  const url = id.includes(pathManager.projectDir)
-      ? id.replace(pathManager.projectDir, `/${prefix}`)
-      : (`/${prefix}/@fs` + id);
+export function processViteURL(url: string) {
   const [urlPath, urlSearch] = url.split('?');
   if (!urlSearch) {
     return url;
@@ -47,4 +39,17 @@ export function idToUrl(id: string, prefix = XBELL_BUNDLE_PREFIX) {
   }
 
   return url;
+}
+
+export function idToUrl(id: string, prefix = XBELL_BUNDLE_PREFIX) {
+  const hasPrefix = xbellPrefixs.some(prefix => id.includes(prefix));
+  if (hasPrefix) {
+    return id;
+  }
+
+  const url = id.includes(pathManager.projectDir)
+      ? id.replace(pathManager.projectDir, `/${prefix}`)
+      : (`/${prefix}/@fs` + id);
+
+  return processViteURL(url);
 }

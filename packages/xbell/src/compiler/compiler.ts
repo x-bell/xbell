@@ -54,6 +54,8 @@ export class Compiler {
   }
 
   public async compileBrowserCode(sourceCode: string) {
+    debugCompiler('sourceCode', sourceCode);
+
     const rawProgram = parseSync(sourceCode, {
       ...tsParserConfig,
     });
@@ -65,6 +67,7 @@ export class Compiler {
     pathCollector.visitProgram(program);
     const idMapByFullPath = new Map<string, string>();
     const paths =  Array.from(pathCollector.paths).filter(path => !path.includes(XBELL_BUNDLE_PREFIX));
+
     for (const path of paths) {
       const moduleId = await server.queryId(path);
       if (moduleId) {

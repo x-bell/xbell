@@ -10,7 +10,7 @@ import { getSortValue } from '../utils/sort';
 const debugTestAll = debug('xbell:test-all');
 
 export function createAllTest<CommonExtensionArguments = {}>(
-  browserCallbacks: XBellCommonCallback[] = [],
+  commonCallbacks: XBellCommonCallback[] = [],
 ): XBellAllTest<CommonExtensionArguments> {
   const all: XBellAllTest<CommonExtensionArguments> = (caseDescription, testCaseFunction) => {
     const callSite = getCallSite();
@@ -26,7 +26,7 @@ export function createAllTest<CommonExtensionArguments = {}>(
       testCaseFunction,
       runtime: 'all',
       runtimeOptions: {
-        browserCallbacks,
+        commonCallbacks,
       },
       config: {},
       options: {},
@@ -43,7 +43,7 @@ export function createAllTest<CommonExtensionArguments = {}>(
       config: {},
       runtime: 'all',
       runtimeOptions: {
-        browserCallbacks
+        commonCallbacks
       }
     });
   }
@@ -58,7 +58,7 @@ export function createAllTest<CommonExtensionArguments = {}>(
       config: {},
       runtime: 'all',
       runtimeOptions: {
-        browserCallbacks
+        commonCallbacks
       }
     });
   }
@@ -73,7 +73,7 @@ export function createAllTest<CommonExtensionArguments = {}>(
       config: {},
       runtime: 'all',
       runtimeOptions: {
-        browserCallbacks
+        commonCallbacks
       }
     });
   }
@@ -94,7 +94,7 @@ export function createAllTest<CommonExtensionArguments = {}>(
           config: {},
           runtime: 'all',
           runtimeOptions: {
-            browserCallbacks,
+            commonCallbacks,
           },
         });
       }
@@ -114,7 +114,7 @@ export function createAllTest<CommonExtensionArguments = {}>(
         config: {},
         runtime: 'all',
         runtimeOptions: {
-          browserCallbacks,
+          commonCallbacks,
         }
       });
     }
@@ -139,7 +139,7 @@ export function createAllTest<CommonExtensionArguments = {}>(
 
     const callSiteFilename = callSite[1]!.getFileName() ?? undefined;
     return createAllTest([
-      ...browserCallbacks,
+      ...commonCallbacks,
       {
         callback: browserCallback,
         filename: fileURLToPath(callSiteFilename!),
