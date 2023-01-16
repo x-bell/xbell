@@ -1,4 +1,4 @@
-import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellTestCaseStandard, XBellTestCaseClassic, XBellConfig, XBellProject } from '../types';
+import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellTestCaseStandard, XBellTestCaseClassic, XBellConfig, XBellProject, BrowserTestArguments } from '../types';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
@@ -17,7 +17,7 @@ import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 const __filename = url.fileURLToPath(import.meta.url);
 const debugExecutor = debug('xbell:executor');
 
-function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
+function isStandardCase(c: any): c is XBellTestCaseStandard<any> {
   return typeof c.testFunction === 'function'
 }
 
@@ -114,11 +114,11 @@ export class Executor {
         await this.runCaseInNode(c, file);
         break;
       case 'browser':
-        await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>, file);
+        await this.runCaseInBrowser(c as XBellTestCaseStandard<any>, file);
         break;
       case 'all':
       default:
-        await this.runCaseInAll(c as XBellTestCaseStandard<any, any>, file);
+        await this.runCaseInAll(c as XBellTestCaseStandard<any>, file);
         break;
     }
   }
@@ -149,7 +149,7 @@ export class Executor {
     }
   }
 
-  protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>, argManager: ArgumentManager) {
+  protected async runStandardCaseInNode(c: XBellTestCaseStandard<any>, argManager: ArgumentManager) {
     const { runtimeOptions, testFunction, options } = c;
     const batchItems = options.batch?.items;
     let args = argManager.getArguments();
@@ -211,14 +211,14 @@ export class Executor {
   }
 
   // only support standard in browser
-  async runCaseInBrowser(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
+  async runCaseInBrowser(c: XBellTestCaseStandard<any>, file: XBellTestFile) {
     // case config
-    const projectConfig = await configurator.getProjectConfig({ projectName: file.projectName })
+    const projectConfig = await configurator.getProjectConfig({ projectName: file.projectName });
+    const globalConfig = configurator.globalConfig;
     const { viewport, headless, storageState, devtools } = projectConfig.browser;
     const { url, html } = projectConfig.browserTest;
     const { coverage: coverageConfig } = projectConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
-
     const browser = await lazyBrowser.newBrowser('chromium', {
       headless: !!headless,
       devtools: !!devtools,
@@ -236,21 +236,27 @@ export class Executor {
       },
       storageState,
     });
+    const project = globalConfig.projects!.find(project => project.name === file.projectName)!;
+    debugExecutor('browser-project', project);
     const page = await Page.from({
       browserContext,
-      setupCalbacks: [
+      project,
+      setupCallbacks: [
         {
           callback: async () => {
             // @ts-ignore
-            const { expect, fn, spyOn, importActual, page, sleep } = await import('xbell/browser-test');
-            return {
+            const { expect, fn, spyOn, importActual, page, sleep } = (await import('xbell/browser-test')) as typeof import('../browser-test');
+            const basicArgs: BrowserTestArguments = {
               expect,
               fn,
               spyOn,
               importActual,
               page,
-              sleep
+              sleep,
+              runtime: 'browser',
+              project: window.__xbell_context__.project!,
             };
+            return basicArgs;
           },
           filename: __filename,
           sortValue: 0,
@@ -364,7 +370,7 @@ export class Executor {
   }
 
   // only support standard in all
-  async runCaseInAll(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
+  async runCaseInAll(c: XBellTestCaseStandard<any>, file: XBellTestFile) {
     await this.runCaseInBrowser(c, file);
     await this.runCaseInNode(c, file);
   }

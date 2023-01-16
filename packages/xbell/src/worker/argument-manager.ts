@@ -1,7 +1,6 @@
-import type { XBellTestCase, XBellTestCaseFunctionArguments, XBellTestFile } from '../types/test';
+import type { XBellTestCase, NodeJSTestArguments, XBellTestFile } from '../types/test';
 import type { XBellProject } from '../types/config';
 import { genLazyPage } from './lazy-page';
-import { workerContext } from './worker-context';
 import { expect } from './expect/expect';
 import { configurator } from '../common/configurator';
 import { htmlReporter } from '../common/html-reporter';
@@ -30,7 +29,7 @@ export class ArgumentManager {
     this.project = project;
   }
 
-  getArguments(): XBellTestCaseFunctionArguments & Partial<{ item: any, index: number }>{
+  getArguments(): NodeJSTestArguments & Partial<{ item: any, index: number }>{
     return {
       page: this.page,
       project: this.project,
@@ -39,6 +38,7 @@ export class ArgumentManager {
       fn,
       ...(this._case.options.each ? this._case.options.each : {}),
       sleep: (duration: number) => new Promise<void>(r => setTimeout(r, duration)),
+      runtime: 'nodejs',
     };
   }
 

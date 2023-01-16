@@ -1,3 +1,10 @@
+import type { TestArgumentsBasic } from './test';
+
+export interface BrowserTestArguments extends TestArgumentsBasic {
+  runtime: 'browser';
+  importActual: <T = any>(path: string) => Promise<T>;
+}
+
 export interface XBellBrowserTestCaseFunction<BrowserExtensionArg = {}> {
   (args: BrowserExtensionArg): (void | Promise<void>);
 }

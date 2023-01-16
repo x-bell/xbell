@@ -1,3 +1,6 @@
+import type { NodeJSTestArguments } from './test';
+import type { BrowserTestArguments } from './test-browser';
+
 interface XBellAllTestCaseFunction<CommonExtensionArguments> {
   (args: CommonExtensionArguments): (void | Promise<void>);
 }
@@ -18,3 +21,5 @@ export interface XBellAllTest<CommonExtensionArguments = {}> {
 
   mock(path: string, factory: (args: CommonExtensionArguments) => any): void;
 }
+
+export type AllTestArguments = NodeJSTestArguments | BrowserTestArguments;

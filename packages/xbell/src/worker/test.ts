@@ -1,14 +1,14 @@
 import type {
-  XBellTestCaseFunction,
   XBellTestGroupFunction,
-  XBellTestCaseFunctionArguments,
   XBellTest,
   XBellDescribe,
   XBellBrowserCallback,
   XBellNodeJSCallback,
   XBellCommonCallback,
+  NodeJSTestArguments,
+  BrowserTestArguments,
+  AllTestArguments,
 } from '../types';
-import type { BrowserTestArguments } from '../browser-test';
 import * as path from 'node:path';
 import { fileURLToPath } from '../utils/path';
 import { collector } from './collector';
@@ -35,11 +35,8 @@ export function createTest<
     BrowserExtensionArguments,
     CommonExtensionArguments
   > = (
-    caseDescription: string,
-    testCaseFunction: XBellTestCaseFunction<
-      NodeJSExtensionArguments,
-      BrowserExtensionArguments
-    >
+    caseDescription,
+    testCaseFunction,
   ) => {
     collector.collectCase({
       caseDescription,
@@ -218,16 +215,9 @@ export function createTest<
     collector.collectMock(mockPath, factory);
   };
 
-  test.extend = <
-    T extends (
-      args: XBellTestCaseFunctionArguments<NodeJSExtensionArguments>
-    ) => any
-  >(
-    nodejsCallback: T
-  ): XBellTest<
-    NodeJSExtensionArguments & Awaited<ReturnType<T>>,
-    BrowserExtensionArguments
-  > => {
+  test.extend = (
+    nodejsCallback
+  ) => {
     const callSite = getCallSite();
     const callSiteFilename = callSite[1]!.getFileName()!;
     return createTest(
@@ -286,6 +276,6 @@ export function createTest<
   return test;
 }
 
-export const test = createTest<{}, BrowserTestArguments>();
+export const test = createTest<NodeJSTestArguments, BrowserTestArguments, AllTestArguments>();
 
 export const describe = test.describe;

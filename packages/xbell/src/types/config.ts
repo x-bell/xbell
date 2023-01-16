@@ -1,5 +1,5 @@
 import type { UserConfigExport } from 'vite';
-import type { XBellTestCaseFunction } from './test';
+import type { XBellNodeJSTestCaseFunction } from './test';
 import type { StorageState } from './pw';
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
@@ -47,8 +47,8 @@ export interface XBellConfig {
   maxThreads?: number;
 
   hooks?: {
-    beforeEach?: XBellTestCaseFunction;
-    afterEach?: XBellTestCaseFunction;
+    beforeEach?: XBellNodeJSTestCaseFunction;
+    afterEach?: XBellNodeJSTestCaseFunction;
   }
 
   coverage?: {

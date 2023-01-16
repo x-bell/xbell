@@ -1,6 +1,6 @@
 import type { ToMatchImageSnapshotOptions, ToMatchJavaScriptSnapshotOptions } from '@xbell/snapshot';
 import type { ExpectMatchState } from '@xbell/assert';
-import type { Locator, ElementHandle, CommonPage } from '../../types';
+import type { Locator, ElementHandle, CommonPage, E2EMatcher } from '../../types';
 import type { TimeoutOptions } from '../../types/pw';
 import { matchImageSnapshot, matchJavaScriptSnapshot } from '@xbell/snapshot';
 import { defineMatcher, getAssertionMessage } from '@xbell/assert';
@@ -9,7 +9,7 @@ import debug from 'debug';
 
 const debugMatcher = debug('xbell:matcher');
 
-export const e2eMatcher = defineMatcher({
+export const e2eMatcher: E2EMatcher = defineMatcher({
   toBeChecked(received: Locator | ElementHandle, options?: TimeoutOptions) {
     return async (state: ExpectMatchState) => {
       const pass = await received.isChecked(options);
@@ -164,4 +164,3 @@ export const e2eMatcher = defineMatcher({
     };
   },
 });
-

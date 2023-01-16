@@ -19,7 +19,7 @@ export class Browser {
     return Page.from({
       browserContext: browserContext,
       browserCallbacks: [],
-      setupCalbacks: [],
+      setupCallbacks: [],
       filename,
       mocks: new Map(),
     });

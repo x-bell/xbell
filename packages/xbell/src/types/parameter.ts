@@ -1,9 +1,5 @@
-import type { fn, spyOn } from '@xbell/assert';
 import type { ParameterType } from '../constants/index'
-import type { XBellTestCaseFunctionArguments } from './test';
-import type { XBellProject } from './config';
-import type { Page } from '../worker/page';
-import type { Expect } from '../worker/expect/expect';
+import type { NodeJSTestArguments } from './test';
 
 export interface IParameter {
   type: ParameterType;
@@ -12,14 +8,7 @@ export interface IParameter {
 
 export type PropertyKey = symbol | string;
 
-export interface TestArguments extends XBellTestCaseFunctionArguments {
-  page: Page;
-  project: XBellProject;
-  expect: Expect;
-  fn: typeof fn;
-  spyOn: typeof spyOn;
-  sleep: (duration: number) => Promise<void>;
-}
+export interface TestArguments extends NodeJSTestArguments {}
 
 export interface TestEachArguments<T = any> extends TestArguments {
   item: T;
