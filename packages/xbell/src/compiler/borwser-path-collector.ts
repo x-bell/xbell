@@ -17,14 +17,6 @@ export class BrowserPathCollector extends Visitor {
     super()
   }
 
-  visitJSXElement(n: JSXElement): JSXElement {
-    return super.visitJSXElement(n)
-  }
-
-  visitBlockStatement(block: BlockStatement): BlockStatement {
-    return super.visitBlockStatement(block);
-  }
-
   // visitIdentifier(n: Identifier): Identifier {
   //   if (this.idMapByFullpath && (n.value === 'React1' || n.value === '_jsx1')) {
   //     n.value = n.value.replace(/1$/, '');
