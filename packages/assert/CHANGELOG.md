@@ -1,5 +1,17 @@
 # @xbell/assert
 
+## 0.8.0
+
+### Minor Changes
+
+- 60af676: feat: support test.all for run test in all runtimes
+
+### Patch Changes
+
+- Updated dependencies [60af676]
+  - @xbell/format@0.8.0
+  - @xbell/color@0.8.0
+
 ## 0.7.2
 
 ### Patch Changes
