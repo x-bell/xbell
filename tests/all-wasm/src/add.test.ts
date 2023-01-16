@@ -1,17 +1,29 @@
-import { test } from 'xbell';
+import { test as basic } from 'xbell';
 
-const testAll = test.all.extend(async ({ expect, runtime }) => {
-  const { default: wasmURL } = await import('./add.wasm?url');
-  const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmURL));
-  const ret = instance.exports
+const test = basic.all.extend(async (args) => {
+  console.log('runtime', args.runtime);
+  const add = await (async () => {
+    if (args.runtime === 'browser') {
+      const { default: wasmURL } = await import('./add.wasm?url');
+      const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmURL));
+      return instance.exports.add;
+    };
+
+    const { readFileSync } = await import('node:fs');
+    const wasm = await WebAssembly.compile(
+      readFileSync(new URL('./add.wasm', import.meta.url)),
+    );
+    const instance = await WebAssembly.instantiate(wasm);
+    return instance.exports.add;
+  })();
+
   return {
-    expect,
+    ...args,
+    add,
   }
-})
+});
 
-test.all('add', async ({ expect }) => {
-  const { default: wasmURL } = await import('./add.wasm?url');
-  const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmURL));
-  const ret = instance.exports.add(1, 1)
+test('add', async ({ expect, add, sleep }) => {
+  const ret = add(1, 1);
   expect(ret).toBe(2);
 });
