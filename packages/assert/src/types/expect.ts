@@ -8,7 +8,7 @@ export interface ExpectMatchState {
 
 export type ExpectMatchResult = { pass: boolean | ((state: ExpectMatchState) => (boolean | Promise<boolean>)), message: ((state: ExpectMatchState) => string) | string };
 
-export type ExpectMatchFunction = (...args: any) => ExpectMatchResult;
+export type ExpectMatchNormalFunction = (...args: any) => ExpectMatchResult;
 
 export type ExpectMatchPromiseFunction = (...args: any) => Promise<ExpectMatchResult>;
 
@@ -16,10 +16,10 @@ export type ExpectMatchFunctionReturnFunction = (...args: any) => (state: Expect
 
 export type ExpectMatchFunctionReturnPromiseFunction = (...args: any) => (state: ExpectMatchState) => Promise<ExpectMatchResult>;
 
-type ExpectMatchObjectItem = ExpectMatchFunction | ExpectMatchPromiseFunction | ExpectMatchFunctionReturnFunction | ExpectMatchFunctionReturnPromiseFunction;
+export type ExpectMatchFunction = ExpectMatchNormalFunction | ExpectMatchPromiseFunction | ExpectMatchFunctionReturnFunction | ExpectMatchFunctionReturnPromiseFunction;
 
 export type ExpectMatchObject = {
-  [key: string]: ExpectMatchObjectItem;
+  [key: string]: ExpectMatchFunction;
 }
 // type ReceivedParameters<Received, Fun extends Function> =
 //   Fun extends <R extends Received>(received: R, expected: R, ...args: infer P) => any
@@ -28,9 +28,9 @@ export type ExpectMatchObject = {
 
 // MatchObject[Key] extends (received: Received, ...args: infer P) => (state: ExpectMatchState) => any
 
-type ExpectMatcherValue<MatchItem extends ExpectMatchObjectItem, Received = any, IsCallPromise extends boolean = false,> = MatchItem extends (received: Received, ...args: infer P) => Promise<any>
+type ExpectMatcherValue<MatchItem extends ExpectMatchFunction, Received = any, IsCallPromise extends boolean = false,> = MatchItem extends (received: Received, ...args: infer P) => Promise<any>
   ? (...args: P) => Promise<void>
-  : ExpectMatchObjectItem extends (received: Received, ...args: infer P) => any
+  : ExpectMatchFunction extends (received: Received, ...args: infer P) => any
   ? IsCallPromise extends true
   ? (...args: P) => Promise<void>
   : (...args: P) => void
