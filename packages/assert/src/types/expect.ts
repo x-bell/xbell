@@ -18,9 +18,10 @@ export type ExpectMatchFunctionReturnPromiseFunction = (...args: any) => (state:
 
 export type ExpectMatchFunction = ExpectMatchNormalFunction | ExpectMatchPromiseFunction | ExpectMatchFunctionReturnFunction | ExpectMatchFunctionReturnPromiseFunction;
 
-export type ExpectMatchObject = {
+export interface ExpectMatchObject {
   [key: string]: ExpectMatchFunction;
 }
+
 // type ReceivedParameters<Received, Fun extends Function> =
 //   Fun extends <R extends Received>(received: R, expected: R, ...args: infer P) => any
 //     ? <R extends Received>(expected: R, ...args: P) => void

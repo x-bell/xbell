@@ -20,7 +20,7 @@ export function createExpect<MatchObject extends ExpectMatchObject, Type = any, 
           state.not = !state.not;
           return receiver;
         }
-  
+
         if (propKey === 'resolves') {
           state.resolves = !state.resolves;
           return receiver;
@@ -136,7 +136,8 @@ export function createExpect<MatchObject extends ExpectMatchObject, Type = any, 
     return proxy;
   }
 
-  const extend: Expect<MatchObject, Type, DefaultObject>['extend'] = <ExtendMatchObject extends ExpectMatchObject, ExtendType>(extendMatchObject: ExtendMatchObject): Expect<ExtendMatchObject, ExtendType, ConditionType<Type, MatchObject, DefaultObject>> => {
+  const extend: Expect<MatchObject, Type, DefaultObject>['extend'] =
+    <ExtendMatchObject extends ExpectMatchObject, ExtendType>(extendMatchObject: ExtendMatchObject): Expect<ExtendMatchObject, ExtendType, ConditionType<Type, MatchObject, DefaultObject>> => {
     return createExpect<ExtendMatchObject, ExtendType, ConditionType<Type, MatchObject, DefaultObject>>({
       ...matchObject,
       ...extendMatchObject,
