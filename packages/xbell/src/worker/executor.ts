@@ -1,4 +1,4 @@
-import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellTestCaseStandard, XBellTestCaseClassic, XBellConfig, XBellProject } from '../types';
+import type { XBellTestCase, XBellTestFile, XBellTestGroup, XBellTestCaseStandard, XBellTestCaseClassic, XBellConfig, XBellProject, BrowserTestArguments } from '../types';
 import { Page } from './page';
 import { lazyBrowser } from './browser';
 import { workerContext } from './worker-context';
@@ -6,34 +6,18 @@ import { ArgumentManager } from './argument-manager';
 import { stateManager } from './state-manager';
 import { configurator } from '../common/configurator';
 import { pathManager } from '../common/path-manager';
-import path, { join } from 'path';
+import { join } from 'path';
 import debug from 'debug';
 import WebSocket from 'ws';
 import { htmlReporter } from '../common/html-reporter';
 import * as url from 'url';
 import * as fs from 'fs';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
-// import { Page as PWPage } from 'playwright-core';
-// import { getSortValue } from '../utils/sort';
 
-// const p: PWPage;
-
-// const next = await p.evaluateHandle(() => {
-//   return {
-//     key: 'value'
-//   }
-// });
-
-// next.evaluateHandle(({ key }, { a }) => {
-//   return {
-//     ...args
-//   }
-// }, { a: 'k' })
 const __filename = url.fileURLToPath(import.meta.url);
-
 const debugExecutor = debug('xbell:executor');
 
-function isStandardCase(c: any): c is XBellTestCaseStandard<any, any> {
+function isStandardCase(c: any): c is XBellTestCaseStandard<any> {
   return typeof c.testFunction === 'function'
 }
 
@@ -79,6 +63,19 @@ async function executePage({
   }
 }
 
+
+// TODO: temp
+interface RunCaseOptions {
+  isFromAll?: boolean;
+  ignoreEmitStatus?: boolean;
+}
+
+interface RunCaseResult {
+  status: 'failed' | 'successed';
+  videos?: string[];
+  coverage?: any;
+  error?: any;
+}
 export class Executor {
   protected _project: XBellProject;
   constructor(protected _deps: {
@@ -86,6 +83,50 @@ export class Executor {
     projectName: XBellProjects['name']
   }) {
     this._project = _deps.globalConfig.projects!.find(project => project.name === _deps.projectName)!;
+  }
+
+  emitBrowserError({
+    case: c,
+    error,
+    videos
+  }: {
+    case: XBellTestCaseStandard<any>,
+    error: any;
+    videos?: string[]
+  }) {
+    workerContext.channel.emit('onCaseExecuteFailed', {
+      uuid: c.uuid,
+      browserTestFunction: c._testFunctionFilename ? {
+        filename: c._testFunctionFilename,
+        body: c.testFunction.toString(),
+      } : undefined,
+      error: {
+        message: error?.message || 'Run case error',
+        name: error?.name || 'UnkonwError',
+        stack: error?.stack,
+      },
+      videos,
+    });
+  }
+
+  emitNodeJSError({
+    case: c,
+    error,
+    videos,
+  }: {
+    case: XBellTestCaseStandard<any>,
+    error: any;
+    videos?: string[]
+  }) {
+    workerContext.channel.emit('onCaseExecuteFailed', {
+      uuid: c.uuid,
+      error: {
+        message: error?.message || 'Run case error',
+        name: error?.name || 'UnknowError',
+        stack: error?.stack,
+      },
+      videos,
+    });
   }
 
   async run(file: XBellTestFile) {
@@ -124,15 +165,22 @@ export class Executor {
       return;
     }
 
-    if (c.runtime === 'node') {
-      await this.runCaseInNode(c, file);
-    } else {
-      // TODO:
-      await this.runCaseInBrowser(c as XBellTestCaseStandard<any, any>, file);
+
+    switch (c.runtime) {
+      case 'nodejs':
+        await this.runCaseInNode(c, file);
+        break;
+      case 'browser':
+        await this.runCaseInBrowser(c as XBellTestCaseStandard<any>, file);
+        break;
+      case 'all':
+      default:
+        await this.runCaseInAll(c as XBellTestCaseStandard<any>, file);
+        break;
     }
   }
 
-  protected async runClassicCaseInNode(c: XBellTestCaseClassic, argManager: ArgumentManager) {
+  protected async runClassicCaseInNode(c: XBellTestCaseClassic, argManager: ArgumentManager, runCaseOptions: RunCaseOptions = {}) {
     // Currently, there are no callbacks
     const { runtimeOptions } = c;
     const cls = c.class as new () => any;
@@ -158,13 +206,15 @@ export class Executor {
     }
   }
 
-  protected async runStandardCaseInNode(c: XBellTestCaseStandard<any, any>, argManager: ArgumentManager) {
+  protected async runStandardCaseInNode(c: XBellTestCaseStandard<any>, argManager: ArgumentManager, runCaseOptions: RunCaseOptions = {}) {
+    const { isFromAll } = runCaseOptions;
     const { runtimeOptions, testFunction, options } = c;
     const batchItems = options.batch?.items;
+    const callbacks = (isFromAll ? runtimeOptions.commonCallbacks : runtimeOptions.nodejsCallbacks) ?? [];
     let args = argManager.getArguments();
 
     // get args
-    for (const { callback } of runtimeOptions.nodejsCallbacks || []) {
+    for (const { callback } of callbacks) {
       args = await callback(args);
     }
 
@@ -181,7 +231,8 @@ export class Executor {
     }
   }
 
-  async runCaseInNode(c: XBellTestCase<any, any>, file: XBellTestFile) {
+  async runCaseInNode(c: XBellTestCase<any, any>, file: XBellTestFile, runCaseOptions: RunCaseOptions = {}): Promise<RunCaseResult> {
+    const { ignoreEmitStatus } = runCaseOptions
     const argManager = new ArgumentManager(file, c);
     const { hooks } = await configurator.getProjectConfig({ projectName: file.projectName });
     workerContext.channel.emit('onCaseExecuteStart', {
@@ -192,9 +243,9 @@ export class Executor {
         await hooks.beforeEach(argManager.getArguments());
       }
       if (isStandardCase(c)) {
-        await this.runStandardCaseInNode(c, argManager);
+        await this.runStandardCaseInNode(c, argManager, runCaseOptions);
       } else {
-        await this.runClassicCaseInNode(c, argManager);
+        await this.runClassicCaseInNode(c, argManager, runCaseOptions);
       }
       if (typeof hooks.afterEach === 'function') {
         await hooks.afterEach(argManager.getArguments());
@@ -202,31 +253,40 @@ export class Executor {
       const coverage = await argManager.genCoverage();
       const pageResult = await argManager.terdown();
       const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
-      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, coverage, videos });
-    } catch(err: any) {
+      if (!ignoreEmitStatus) {
+        workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, coverage, videos });
+      }
+      return {
+        status: 'successed',
+      }
+    } catch(error: any) {
       const pageResult = await argManager.terdown();
       const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
-
-      workerContext.channel.emit('onCaseExecuteFailed', {
-        uuid: c.uuid,
-        error: {
-          message: err?.message || 'Run case error',
-          name: err?.name || 'UnknowError',
-          stack: err?.stack,
-        },
+      if (!ignoreEmitStatus) {
+        this.emitNodeJSError({
+          videos,
+          error,
+          case: c as XBellTestCaseStandard<any>,
+        });
+      }
+      return {
+        status: 'failed',
         videos,
-      });
+        error,
+      }
     }
   }
 
-  async runCaseInBrowser(c: XBellTestCaseStandard<any, any>, file: XBellTestFile) {
+  // only support standard in browser
+  async runCaseInBrowser(c: XBellTestCaseStandard<any>, file: XBellTestFile, runCaseOptions: RunCaseOptions = {}): Promise<RunCaseResult> {
+    const { isFromAll, ignoreEmitStatus } = runCaseOptions;
     // case config
-    const projectConfig = await configurator.getProjectConfig({ projectName: file.projectName })
+    const projectConfig = await configurator.getProjectConfig({ projectName: file.projectName });
+    const globalConfig = configurator.globalConfig;
     const { viewport, headless, storageState, devtools } = projectConfig.browser;
     const { url, html } = projectConfig.browserTest;
     const { coverage: coverageConfig } = projectConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
-
     const browser = await lazyBrowser.newBrowser('chromium', {
       headless: !!headless,
       devtools: !!devtools,
@@ -244,27 +304,33 @@ export class Executor {
       },
       storageState,
     });
+    const project = globalConfig.projects!.find(project => project.name === file.projectName)!;
+    debugExecutor('browser-project', project);
     const page = await Page.from({
       browserContext,
-      setupCalbacks: [
+      project,
+      setupCallbacks: [
         {
           callback: async () => {
             // @ts-ignore
-            const { expect, fn, spyOn, importActual, page, sleep } = await import('xbell/browser-test');
-            return {
+            const { expect, fn, spyOn, importActual, page, sleep } = (await import('xbell/browser-test')) as typeof import('../browser-test');
+            const basicArgs: BrowserTestArguments = {
               expect,
               fn,
               spyOn,
               importActual,
               page,
-              sleep
+              sleep,
+              runtime: 'browser',
+              project: window.__xbell_context__.project!,
             };
+            return basicArgs;
           },
           filename: __filename,
           sortValue: 0,
         },
       ],
-      browserCallbacks: c.runtimeOptions.browserCallbacks || [],
+      browserCallbacks: (isFromAll ? c.runtimeOptions.commonCallbacks : c.runtimeOptions.browserCallbacks) || [],
       mocks: c.browserMocks,
       filename: c._testFunctionFilename!,
       channel: workerContext.channel,
@@ -349,25 +415,65 @@ export class Executor {
       }) : undefined;
       const pageResult = await terdown();
       const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
-      workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, videos, coverage });
+      if (!ignoreEmitStatus) {
+        workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, videos, coverage });
+      }
+
+      return {
+        status: 'successed',
+        videos,
+        coverage,
+      }
       
-    } catch(err: any) {
+    } catch(error: any) {
       // debugExecutor('page.err', err);
       const pageResult = await terdown();
       const videos = pageResult?.videoPath ? [pageResult.videoPath] : undefined;
-      workerContext.channel.emit('onCaseExecuteFailed', {
-        uuid: c.uuid,
-        browserTestFunction: c._testFunctionFilename ? {
-          filename: c._testFunctionFilename,
-          body: c.testFunction.toString(),
-        } : undefined,
-        error: {
-          message: err?.message || 'Run case error',
-          name: err?.name || 'UnkonwError',
-          stack: err?.stack,
-        },
+      if (!ignoreEmitStatus) {
+        this.emitBrowserError({
+          error,
+          videos,
+          case: c,
+        });
+      }
+
+      return {
+        status: 'failed',
         videos,
-      });
+        error,
+      };
+    }
+  }
+
+  // only support standard in all
+  async runCaseInAll(c: XBellTestCaseStandard<any>, file: XBellTestFile) {
+    try {
+      const runCaseOptions: RunCaseOptions = { isFromAll: true, ignoreEmitStatus: true };
+      const nodeJSRunCaseResult = await this.runCaseInNode(c, file, runCaseOptions);
+      const browserRunCaseResult = await this.runCaseInBrowser(c, file, runCaseOptions) ?? {};
+      // TODO: compose all runtime status
+      if (nodeJSRunCaseResult.status === 'successed' && browserRunCaseResult.status === 'successed') {
+        // successed
+        workerContext.channel.emit('onCaseExecuteSuccessed', { uuid: c.uuid, videos: browserRunCaseResult.videos, coverage: browserRunCaseResult.coverage });
+      } else {
+        // failed
+        if (nodeJSRunCaseResult.status === 'failed') {
+          this.emitNodeJSError({
+            case: c,
+            error: nodeJSRunCaseResult.error,
+            videos: nodeJSRunCaseResult.videos,
+          });
+          return;
+        }
+
+        this.emitBrowserError({
+          case: c,
+          error: browserRunCaseResult.error,
+          videos: browserRunCaseResult.videos,
+        });
+      }
+    } catch (error) {
+      // TODO: unhandle error
     }
   }
 }

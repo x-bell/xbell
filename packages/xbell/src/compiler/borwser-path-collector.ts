@@ -1,87 +1,20 @@
 import { Visitor } from './visitor';
 import {
-  parseSync,
   CallExpression,
   Expression,
-  transformSync,
   JSXElement,
   BlockStatement,
-  Statement,
-  Identifier,
-  KeyValuePatternProperty,
-  ObjectPatternProperty
 } from '@swc/core';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
-import { pathManager } from '../common/path-manager';
 import { idToUrl } from '../utils/path';
+import debug from 'debug';
 
 const originModulePathByUrl = new Map<string, string>();
-
+const debugCompiler = debug('xbell:compiler');
 export class BrowserPathCollector extends Visitor {
   public paths = new Set<string>()
   constructor(public idMapByFullpath?: Map<string, string>) {
     super()
-  }
-
-  visitJSXElement(n: JSXElement): JSXElement {
-    return super.visitJSXElement(n)
-  }
-
-  visitBlockStatement(block: BlockStatement): BlockStatement {
-    // if (this.urlMap) {
-    //   const { span } = block;
-    //   const jsxRuntime = genVariableDeclaration({
-    //     span,
-    //     // init: genAwaitExpression()
-    //     // init: genAwaitExpression()
-    //     declarations: [
-    //       genVariableDeclarator({
-    //         span,
-    //         id: genObjectPattern({
-    //           span,
-    //           properties: [
-    //             genKeyValuePatternProperty({
-    //               key: genIdentifier({
-    //                 span,
-    //                 value: 'default',
-    //               }),
-    //               value: genIdentifier({
-    //                 span,
-    //                 value: '_jsx',
-    //               })
-    //             })
-    //           ] // TODO:
-    //         }),
-    //         init: genAwaitExpression({
-    //           span,
-    //           argument: genCallExpression({
-    //             span,
-    //             callee: genImport({
-    //               span,
-    //             }),
-    //             arguments: [
-    //               genArgument({
-    //                 expression: genStringLiteral({
-    //                   value: 'react/jsx-runtime',
-    //                   span,
-    //                 }),
-    //               })
-    //             ]
-    //           }) // TODO
-    //         }),
-    //       })
-    //     ]
-    //   });
-
-    //   block.stmts = [
-    //     // jsxRuntime,
-    //     ...block.stmts,
-    //   ]
-    //   // console.log('jsxRuntime', JSON.stringify(jsxRuntime));
-    // }
-    // this.stmts = block.stmts;
-    block.stmts = this.visitStatements(block.stmts);
-    return block;
   }
 
   // visitIdentifier(n: Identifier): Identifier {
@@ -102,17 +35,19 @@ export class BrowserPathCollector extends Visitor {
           // restore origin module path for get new url
           rawValue = originModulePathByUrl.get(rawValue)!;
         }
+
         if (!rawValue.includes(XBELL_BUNDLE_PREFIX)) {
           const resolveId = this.idMapByFullpath.get(rawValue)!;
-          const targetUrl = idToUrl(resolveId);
+          const targetURL = idToUrl(resolveId);
+          debugCompiler('targetURL', targetURL);
           // @ts-ignore
-          originModulePathByUrl.set(targetUrl, n.arguments[0].expression.raw);
+          originModulePathByUrl.set(targetURL, n.arguments[0].expression.raw);
           // @ts-ignore
           delete n.arguments[0].expression.raw;
-          n.arguments[0].expression.value = targetUrl as string;
+          n.arguments[0].expression.value = targetURL as string;
         }
       }
     }
-    return n;
+    return super.visitCallExpression(n);
   }
 }

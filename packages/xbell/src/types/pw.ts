@@ -1,6 +1,5 @@
 
 import type { JSHandle, ElementHandle } from 'playwright-core';
-
 export type { Video, Download } from 'playwright-core';
 
 export type Request = {

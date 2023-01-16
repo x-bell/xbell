@@ -16,7 +16,9 @@ import type {
   BrowserContext,
   XBellMocks,
   XBellBrowserCallback,
-  Mouse
+  Mouse,
+  FileChooser as FileChooserType,
+  XBellProject
 } from '../types';
 
 import type {
@@ -35,6 +37,7 @@ import type { LocatorRPCMethods, QueryItem } from '../browser-test/types';
 import { XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
 import { Locator, FrameLocator } from './locator';
+import { FileChooser } from './file-chooser';
 import { ElementHandle } from './element-handle';
 import { Keyboard } from './keyboard';
 import { idToUrl } from '../utils/path';
@@ -90,6 +93,7 @@ declare global {
     __xbell_context__: {
       importActual<T = any>(path: string): Promise<T>;
       mocks: Map<string, any>;
+      project?: XBellProject;
     }
     __xbell_page_callbacks__: Map<string, (...args: any[]) => any>;
     __xbell_getImportActualUrl__(path: string): Promise<string>;
@@ -192,18 +196,20 @@ export class Page implements PageInterface {
     browserCallbacks,
     mocks,
     filename,
-    setupCalbacks,
-    channel
+    setupCallbacks,
+    project,
+    channel,
   }: {
     browserContext: PWBroContext;
-    setupCalbacks: XBellBrowserCallback[];
+    setupCallbacks: XBellBrowserCallback[];
     browserCallbacks: XBellBrowserCallback[];
     mocks: XBellMocks;
     filename: string;
+    project?: XBellProject;
     channel?: Channel;
   }) {
     const _page = await browserContext.newPage();
-    const page = new Page(_page, setupCalbacks, browserCallbacks, mocks, filename, channel);
+    const page = new Page(_page, setupCallbacks, browserCallbacks, mocks, filename, project, channel);
     if (channel) {
       await page.setup()
     }
@@ -222,12 +228,13 @@ export class Page implements PageInterface {
   protected _isListenRequest = false;
   _viteAssetReload?: () => void;
 
-  constructor(
+  protected constructor(
     protected _page: PWPage,
-    protected _setupCalbacks: XBellBrowserCallback[],
+    protected _setupCallbacks: XBellBrowserCallback[],
     protected _browserCallbacks: XBellBrowserCallback[],
     protected _mocks: XBellMocks,
     protected _filename: string,
+    protected _project?: XBellProject,
     protected _channel?: Channel,
   ) {
     this._currentFilename = _filename;
@@ -367,7 +374,9 @@ export class Page implements PageInterface {
   }
 
   protected async _setupXBellContext() {
-    await this._page.evaluate(() => {
+    debugPage('this._project', this._project);
+    // @ts-ignore
+    await this._page.evaluate(({ project }) => {
       window.__xbell_page_callbacks__ = new Map();
       window.__xbell_context__ = {
         mocks: new Map(),
@@ -378,7 +387,10 @@ export class Page implements PageInterface {
           }
           return import(url);
         },
+        project,
       };
+    }, {
+      project: this._project,
     });
   }
 
@@ -457,6 +469,7 @@ export class Page implements PageInterface {
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
       urlObj.port = String(port);
+      debugPage('vite-url', urlObj.href);
       try {
         const { body, contentType } = await get(urlObj.href);
         const moduleUrlMapByPath = await channle.request('queryModuleUrls', modulePaths);
@@ -539,7 +552,7 @@ export class Page implements PageInterface {
     this.evaluate = this._originEvaluate;
     this.evaluateHandle = this._originEvaluateHandle;
     if (this._channel) await this._setupXBellContext();
-    if (this._setupCalbacks.length) await this._setEvaluate(this._setupCalbacks);
+    if (this._setupCallbacks.length) await this._setEvaluate(this._setupCallbacks);
     if (this._browserCallbacks.length) await this._setEvaluate(this._browserCallbacks);
   }
 
@@ -786,5 +799,11 @@ export class Page implements PageInterface {
 
   async video(): Promise<Video | null> {
     return this._page.video();
+  }
+
+  async waitForFileChooser(): Promise<FileChooserType> {
+    const _fileChooser = await this._page.waitForEvent('filechooser');
+    const fileChooser = new FileChooser(_fileChooser);
+    return fileChooser;
   }
 }

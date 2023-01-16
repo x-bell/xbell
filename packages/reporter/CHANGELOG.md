@@ -1,5 +1,23 @@
 # xbell-reporter
 
+## 0.8.0
+
+### Minor Changes
+
+- 60af676: feat: support test.all for run test in all runtimes
+
+## 0.7.2
+
+### Patch Changes
+
+- a656ab5: add FileChooser
+
+## 0.7.1
+
+### Patch Changes
+
+- a010901: support wait for file chooser
+
 ## 0.7.0
 
 ### Patch Changes

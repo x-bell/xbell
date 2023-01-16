@@ -1,5 +1,5 @@
 {
-  "name": "@xbell/test-node-basic",
+  "name": "@xbell/test-nodejs-wasm",
   "version": "0.0.0",
   "private": true,
   "scripts": {
