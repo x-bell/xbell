@@ -4,8 +4,10 @@ import { Page as PageInterface } from '../types';
 import { Page } from '../worker/page';
 
 export class Browser {
-  static async launch(): Promise<Browser> {
-    const _browser = await chromium.launch();
+  static async launch(opts?: {
+    headless?: boolean
+  }): Promise<Browser> {
+    const _browser = await chromium.launch(opts);
     return new Browser(_browser);
   }
 
@@ -17,7 +19,7 @@ export class Browser {
     return Page.from({
       browserContext: browserContext,
       browserCallbacks: [],
-      setupCalbacks: [],
+      setupCallbacks: [],
       filename,
       mocks: new Map(),
     });

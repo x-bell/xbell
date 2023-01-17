@@ -136,7 +136,7 @@ export function genLazyPage({
       browserCallbacks,
       mocks: browserMocks,
       filename,
-      setupCalbacks: [],
+      setupCallbacks: [],
       channel: workerContext.channel,
     })
     return {

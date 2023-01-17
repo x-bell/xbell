@@ -1,10 +1,11 @@
 import { spyOn, fn } from '@xbell/assert';
 import { Page } from './page';
 import { expect } from './expect';
+import type { Expect } from '../types';
 
 export const importActual: <T = any>(path: string) => Promise<T> = window.__xbell_context__.importActual;
 
-export const sleep = (duration: number) => new Promise(r => setTimeout(r, duration));
+export const sleep = (duration: number) => new Promise<void>(r => setTimeout(r, duration));
 
 export {
   fn,
@@ -13,13 +14,3 @@ export {
 };
 
 export const page = new Page();
-
-export type BrowserTestArguments = {
-  fn: typeof fn,
-  spyOn: typeof spyOn,
-  expect: typeof expect
-  importActual: typeof importActual,
-  page: Page,
-  sleep: (duration: number) => Promise<void>;
-}
-

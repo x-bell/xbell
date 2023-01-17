@@ -17,7 +17,8 @@ import type {
   XBellMocks,
   XBellBrowserCallback,
   Mouse,
-  FileChooser as FileChooserType
+  FileChooser as FileChooserType,
+  XBellProject
 } from '../types';
 
 import type {
@@ -92,6 +93,7 @@ declare global {
     __xbell_context__: {
       importActual<T = any>(path: string): Promise<T>;
       mocks: Map<string, any>;
+      project?: XBellProject;
     }
     __xbell_page_callbacks__: Map<string, (...args: any[]) => any>;
     __xbell_getImportActualUrl__(path: string): Promise<string>;
@@ -194,18 +196,20 @@ export class Page implements PageInterface {
     browserCallbacks,
     mocks,
     filename,
-    setupCalbacks,
-    channel
+    setupCallbacks,
+    project,
+    channel,
   }: {
     browserContext: PWBroContext;
-    setupCalbacks: XBellBrowserCallback[];
+    setupCallbacks: XBellBrowserCallback[];
     browserCallbacks: XBellBrowserCallback[];
     mocks: XBellMocks;
     filename: string;
+    project?: XBellProject;
     channel?: Channel;
   }) {
     const _page = await browserContext.newPage();
-    const page = new Page(_page, setupCalbacks, browserCallbacks, mocks, filename, channel);
+    const page = new Page(_page, setupCallbacks, browserCallbacks, mocks, filename, project, channel);
     if (channel) {
       await page.setup()
     }
@@ -224,12 +228,13 @@ export class Page implements PageInterface {
   protected _isListenRequest = false;
   _viteAssetReload?: () => void;
 
-  constructor(
+  protected constructor(
     protected _page: PWPage,
-    protected _setupCalbacks: XBellBrowserCallback[],
+    protected _setupCallbacks: XBellBrowserCallback[],
     protected _browserCallbacks: XBellBrowserCallback[],
     protected _mocks: XBellMocks,
     protected _filename: string,
+    protected _project?: XBellProject,
     protected _channel?: Channel,
   ) {
     this._currentFilename = _filename;
@@ -369,7 +374,9 @@ export class Page implements PageInterface {
   }
 
   protected async _setupXBellContext() {
-    await this._page.evaluate(() => {
+    debugPage('this._project', this._project);
+    // @ts-ignore
+    await this._page.evaluate(({ project }) => {
       window.__xbell_page_callbacks__ = new Map();
       window.__xbell_context__ = {
         mocks: new Map(),
@@ -380,7 +387,10 @@ export class Page implements PageInterface {
           }
           return import(url);
         },
+        project,
       };
+    }, {
+      project: this._project,
     });
   }
 
@@ -436,7 +446,7 @@ export class Page implements PageInterface {
         route.fulfill({
           status: 200,
           contentType,
-          body,
+          body: Buffer.from(body),
         });
       } catch (err) {
         if ((err as any).statusCode === 504 && this._viteAssetReload) {
@@ -459,8 +469,10 @@ export class Page implements PageInterface {
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
       urlObj.port = String(port);
+      debugPage('vite-url', urlObj.href);
       try {
         const { body, contentType } = await get(urlObj.href);
+        debugPage('contentType', contentType);
         const moduleUrlMapByPath = await channle.request('queryModuleUrls', modulePaths);
         const targetModule = moduleUrlMapByPath.find(item => item.url === pathnameWithoutPrefix);
         if (targetModule) {
@@ -493,7 +505,7 @@ export class Page implements PageInterface {
           route.fulfill({
             status: 200,
             contentType,
-            body,
+            body: Buffer.from(body),
           });
         }
       } catch (err) {
@@ -541,7 +553,7 @@ export class Page implements PageInterface {
     this.evaluate = this._originEvaluate;
     this.evaluateHandle = this._originEvaluateHandle;
     if (this._channel) await this._setupXBellContext();
-    if (this._setupCalbacks.length) await this._setEvaluate(this._setupCalbacks);
+    if (this._setupCallbacks.length) await this._setEvaluate(this._setupCallbacks);
     if (this._browserCallbacks.length) await this._setEvaluate(this._browserCallbacks);
   }
 

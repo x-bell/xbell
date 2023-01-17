@@ -1,7 +1,7 @@
 import type {
   XBellTaskConfig,
   XBellTestCase,
-  XBellTestCaseFunction,
+  XBellNodeJSTestCaseFunction,
   XBellTestFile,
   XBellTestGroup,
   XBellTestGroupFunction,
@@ -26,9 +26,9 @@ export interface XBellCollector {
     config: XBellTaskConfig,
     runtimeOptions: XBellRuntimeOptions,
   ): Promise<void>;
-  collectCase<NodeJSExtensionArg, BrowserExtensionArg>(
+  collectCase<NodeJSExtensionArg>(
     caseDescription: string,
-    testCaseFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>,
+    testCaseFunction: XBellNodeJSTestCaseFunction<NodeJSExtensionArg>,
     config: XBellTaskConfig,
     runtimeOptions: XBellRuntimeOptions
   ): Promise<void>;
@@ -100,14 +100,14 @@ export class Collector {
     _testFunctionFilename
    }: {
     caseDescription: string,
-    testCaseFunction: XBellTestCaseFunction<any, any>,
+    testCaseFunction: XBellNodeJSTestCaseFunction<any>,
     config: XBellTaskConfig,
     runtime: XBellRuntime,
     runtimeOptions: XBellRuntimeOptions,
     options: XBellOptions,
     _testFunctionFilename?: string,
    }
-  ): XBellTestCaseStandard<any, any> {
+  ): XBellTestCaseStandard<any> {
     return {
       type: 'case',
       runtime,
@@ -129,7 +129,7 @@ export class Collector {
     }
   }
 
-  protected updateFileOptions(task: XBellTestCaseStandard<any, any> | XBellTestGroup) {
+  protected updateFileOptions(task: XBellTestCaseStandard<any> | XBellTestGroup) {
      // group: skip, case: only, will be { skip: true, only: true }, same as { skip: true }
      if (task.options.skip) {
       this.currentFile!.options.skip++;
@@ -204,7 +204,7 @@ export class Collector {
       _testFunctionFilename,
     }: {
       caseDescription: string,
-      testCaseFunction: XBellTestCaseFunction<any, any>,
+      testCaseFunction: XBellNodeJSTestCaseFunction<any>,
       options: XBellOptions,
       config: XBellTaskConfig,
       runtimeOptions: XBellRuntimeOptions,

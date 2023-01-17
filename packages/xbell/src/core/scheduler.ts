@@ -35,6 +35,9 @@ export class Scheduler {
       //   })))
       // },
       async transformBrowserCode({ code: sourceCode }) {
+        // TODO: temp, disable import.meta.url in browser
+        // new Function compile failed
+        sourceCode = sourceCode.replace('import.meta.url', `'Do not support "import.meta.url" outside module'`);
         const { code, map } = await compiler.compileBrowserCode(sourceCode);
         debugScheduler('transform-browser', {
           code,

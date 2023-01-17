@@ -1,5 +1,34 @@
 # xbell
 
+## 0.8.1
+
+### Patch Changes
+
+- 572aa41: use node-fetch to fetch
+- Updated dependencies [572aa41]
+  - @xbell/assert@0.8.1
+  - @xbell/code-stack@0.8.1
+  - @xbell/color@0.8.1
+  - @xbell/coverage@0.8.1
+  - @xbell/reporter@0.8.1
+  - @xbell/snapshot@0.8.1
+
+## 0.8.0
+
+### Minor Changes
+
+- 60af676: feat: support test.all for run test in all runtimes
+
+### Patch Changes
+
+- Updated dependencies [60af676]
+  - @xbell/code-stack@0.8.0
+  - @xbell/coverage@0.8.0
+  - @xbell/reporter@0.8.0
+  - @xbell/snapshot@0.8.0
+  - @xbell/assert@0.8.0
+  - @xbell/color@0.8.0
+
 ## 0.7.2
 
 ### Patch Changes

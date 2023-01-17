@@ -1,33 +1,3 @@
-// export {
-//   Depend,
-//   Group,
-//   Case,
-//   Inject,
-//   BatchData,
-//   BeforeEachCase,
-//   AfterEachCase,
-//   Fixture,
-//   Context,
-//   Init,
-//   Data,
-//   Expect,
-//   Viewport,
-//   Config,
-//   RunEnvs,
-//   RunBrowsers,
-//   Sleep,
-//   defineDecorator,
-// } from './core/index';
-
-// export {
-//   sleep
-// } from './utils/index';
-
-// export {
-//   XBellConfig,
-//   MultiEnvData
-// } from './types/index';
-
 import type {
   TestArguments as TestArgumentsType,
   TestBatchArguments as TestBatchArgumentsType,
@@ -41,7 +11,7 @@ export {
   test,
   describe,
   // exp
-} from './worker/standard';
+} from './worker/test';
 
 export {
   expect,
@@ -66,15 +36,11 @@ export {
 export { Browser } from './common/browser';
 
 export type {
-  FixtureFunction,
   XBellConfig,
   XBellProject as Project,
   XBellTest,
+  BrowserTestArguments,
 } from './types';
-
-export type {
-  BrowserTestArguments
-} from './browser-test/index';
 
 export type { ToMatchJavaScriptSnapshotOptions as ToMatchSnapshotOptions, ToMatchImageSnapshotOptions } from '@xbell/snapshot';
 // @ts-ignore

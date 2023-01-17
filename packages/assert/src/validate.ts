@@ -3,9 +3,6 @@ import {
   ExpectMatchState,
   ExpectMatchResult,
   ExpectMatchFunction,
-  ExpectMatchPromiseFunction,
-  ExpectMatchFunctionReturnFunction,
-  ExpectMatchFunctionReturnPromiseFunction
 } from './types';
 import debug from 'debug';
 
@@ -102,7 +99,7 @@ export function toMatch({
   propKey: string | symbol;
   args: any[];
 }) {
-  const matchReturnValue: ReturnType<ExpectMatchFunction | ExpectMatchPromiseFunction | ExpectMatchFunctionReturnFunction | ExpectMatchFunctionReturnPromiseFunction> = Reflect.apply(matchObject[propKey as string], state, [received, ...args])
+  const matchReturnValue: ReturnType<ExpectMatchFunction> = Reflect.apply(matchObject[propKey as string], state, [received, ...args])
   debugValid('toMatch', propKey, state, received, args);
   const ret = typeof matchReturnValue === 'function' ? matchReturnValue(state) : matchReturnValue;
 

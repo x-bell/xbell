@@ -1,5 +1,5 @@
 {
-  "name": "@xbell/test-browser-wasm",
+  "name": "@xbell/test-all-wasm",
   "version": "0.0.0",
   "private": true,
   "scripts": {

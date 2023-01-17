@@ -1,25 +1,11 @@
 import { expect as basic, defineMatcher, getAssertionMessage } from '@xbell/assert';
-import type { ExpectMatchState } from '@xbell/assert';
-import type { Locator, ElementHandle, CommonPage } from '../types';
-import type { ToMatchImageSnapshotOptions, ToMatchJavaScriptSnapshotOptions } from '@xbell/snapshot';
-import { e2eMatcher } from '../worker/expect/matcher';
+import type { E2EMatcher, Expect } from '../types';
+
 import type { Locator as BrowserLocator } from './locator';
 import type { ElementHandle as BrowserElementHandle } from './element-handle';
 import type { Page as BrowserPage } from './page';
 
-type E2EMatcher = typeof e2eMatcher;
-
-type BrowserE2EMatcher = {
-  [K in keyof E2EMatcher]: E2EMatcher[K] extends (...args: infer Args) => (state: ExpectMatchState) => Promise<{
-    pass: boolean;
-    message: () => string;
-  }> ? (...args: Args) => (state: ExpectMatchState) => Promise<{
-    pass: boolean;
-    message: string;
-  }> : E2EMatcher[K];
-}
-
-const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
+const browserE2EMatcher = defineMatcher<E2EMatcher>({
   toBeChecked(target, ...args) {
     return async (state) => {
       const t = target as BrowserLocator | BrowserElementHandle;
@@ -146,4 +132,4 @@ const browserE2EMatcher = defineMatcher<BrowserE2EMatcher>({
   },
 });
 
-export const expect = basic.extend(browserE2EMatcher);
+export const expect: Expect = basic.extend(browserE2EMatcher);

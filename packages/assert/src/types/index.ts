@@ -5,7 +5,8 @@ export {
   ExpectMatchResult,
   ExpectMatchState,
   ExpectMatchPromiseFunction,
-  ExpectMatchFunction,
+  ExpectMatchNormalFunction,
   ExpectMatchFunctionReturnFunction,
-  ExpectMatchFunctionReturnPromiseFunction
+  ExpectMatchFunctionReturnPromiseFunction,
+  ExpectMatchFunction,
 } from './expect'
