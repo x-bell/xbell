@@ -446,7 +446,7 @@ export class Page implements PageInterface {
         route.fulfill({
           status: 200,
           contentType,
-          body,
+          body: Buffer.from(body),
         });
       } catch (err) {
         if ((err as any).statusCode === 504 && this._viteAssetReload) {
@@ -472,6 +472,7 @@ export class Page implements PageInterface {
       debugPage('vite-url', urlObj.href);
       try {
         const { body, contentType } = await get(urlObj.href);
+        debugPage('contentType', contentType);
         const moduleUrlMapByPath = await channle.request('queryModuleUrls', modulePaths);
         const targetModule = moduleUrlMapByPath.find(item => item.url === pathnameWithoutPrefix);
         if (targetModule) {
@@ -504,7 +505,7 @@ export class Page implements PageInterface {
           route.fulfill({
             status: 200,
             contentType,
-            body,
+            body: Buffer.from(body),
           });
         }
       } catch (err) {
