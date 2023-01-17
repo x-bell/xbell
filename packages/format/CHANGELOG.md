@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.8.1
+
+### Patch Changes
+
+- 572aa41: use node-fetch to fetch
+
 ## 0.8.0
 
 ### Minor Changes

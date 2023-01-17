@@ -1,5 +1,18 @@
 # xbell
 
+## 0.8.1
+
+### Patch Changes
+
+- 572aa41: use node-fetch to fetch
+- Updated dependencies [572aa41]
+  - @xbell/assert@0.8.1
+  - @xbell/code-stack@0.8.1
+  - @xbell/color@0.8.1
+  - @xbell/coverage@0.8.1
+  - @xbell/reporter@0.8.1
+  - @xbell/snapshot@0.8.1
+
 ## 0.8.0
 
 ### Minor Changes
