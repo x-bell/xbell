@@ -1,5 +1,11 @@
 # xbell-reporter
 
+## 0.8.2
+
+### Patch Changes
+
+- 0d47554: support getById
+
 ## 0.8.1
 
 ### Patch Changes
