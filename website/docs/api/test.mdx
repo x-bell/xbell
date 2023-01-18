@@ -233,6 +233,20 @@ test.browser.skip('goto github', async (page) => {
 });
 ```
 
+## test.all
+**Signature: test.all(displayName, testFunction)**
+- `displayName` <type>string</type> case name
+- `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+```typescript
+import { test } from 'xbell';
+
+test.all('one plus one equals two', async ({ page, expect, runtime }) => {
+  const { add } = await (runtime === 'browser' ? import('./browser-add.ts') : import('./nodejs-add.ts'));
+  expect(add(1, 1)).toBe(2);
+});
+```
+
 ## describe
 **Signature: describe(description, testGroupFunction)**
 
