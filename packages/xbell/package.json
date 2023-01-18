@@ -1,6 +1,6 @@
 {
   "name": "xbell",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "A web testing framework.",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -78,6 +78,7 @@
     "debug": "^4.3.4",
     "fast-glob": "^3.2.11",
     "log-update": "^5.0.1",
+    "node-fetch": "^3.3.0",
     "playwright-core": "^1.27.0",
     "reflect-metadata": "^0.1.13",
     "source-map-js": "^1.0.2",

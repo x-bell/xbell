@@ -1,5 +1,13 @@
 # @xbell/coverage
 
+## 0.8.1
+
+### Patch Changes
+
+- 572aa41: use node-fetch to fetch
+- Updated dependencies [572aa41]
+  - @xbell/color@0.8.1
+
 ## 0.8.0
 
 ### Minor Changes
