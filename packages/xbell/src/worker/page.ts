@@ -170,6 +170,7 @@ export function getLocatorByQueryItem(
     if (type === 'class') return locator.getByClass(value);
     if (type === 'testId') return locator.getByTestId(value);
     if (type === 'text') return locator.getByText(value);
+    if (type === 'id') return locator.getById(value);
     return locator.get(value);
   }
   const { method, args } = queryItem;
@@ -585,6 +586,11 @@ export class Page implements PageInterface {
 
   getByTestId(testId: string): Locator {
     return new Locator(this._page.locator(`data-testid=${testId}`));
+  }
+
+  getById(id: string) {
+    const finalId = id.replace(/^#/, '');
+    return new Locator(this._page.locator(`#${finalId}`));
   }
 
   async queryElementByText(text: string): Promise<ElementHandle | null> {
