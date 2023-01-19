@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.8.3
+
+### Patch Changes
+
+- e7e15cb: fix: ignore warning of nodejs@19
+
 ## 0.8.2
 
 ### Patch Changes
