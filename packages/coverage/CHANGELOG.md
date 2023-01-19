@@ -1,5 +1,21 @@
 # @xbell/coverage
 
+## 0.8.3
+
+### Patch Changes
+
+- e7e15cb: fix: ignore warning of nodejs@19
+- Updated dependencies [e7e15cb]
+  - @xbell/color@0.8.3
+
+## 0.8.2
+
+### Patch Changes
+
+- 0d47554: support getById
+- Updated dependencies [0d47554]
+  - @xbell/color@0.8.2
+
 ## 0.8.1
 
 ### Patch Changes

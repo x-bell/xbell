@@ -72,6 +72,10 @@ export class Locator implements LocatorInterface {
     return new Locator(this.appendQueryItem({ type: 'testId', value: testId }));
   }
 
+  getById(id: string): LocatorInterface {
+    return new Locator(this.appendQueryItem({ type: 'id', value: id }));
+  }
+
 
   first(): LocatorInterface {
     return new Locator(this.appendQueryItem({ method: 'first', args: [] }));
@@ -246,6 +250,10 @@ export class FrameLocator implements FrameLocatorInterface {
 
   getByTestId(testId: string): LocatorInterface {
     return  new Locator(this.appendQueryItem({ type: 'testId', value: testId }));
+  }
+
+  getById(id: string): LocatorInterface {
+    return  new Locator(this.appendQueryItem({ type: 'id', value: id }));
   }
 
   first(): FrameLocatorInterface {

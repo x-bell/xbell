@@ -38,6 +38,7 @@ export interface Locator {
   getFrame(selector: string): FrameLocator;
   getByText(text: string): Locator;
   getByTestId(testId: string): Locator;
+  getById(id: string): Locator;
   getByClass(className: string): Locator;
   queryElementByText(text: string): Promise<ElementHandle | null>;
   queryElementByTestId(testId: string): Promise<ElementHandle | null>;
