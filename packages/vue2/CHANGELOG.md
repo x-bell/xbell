@@ -1,5 +1,25 @@
 # @xbell/vue2
 
+## 0.8.3
+
+### Patch Changes
+
+- e7e15cb: fix: ignore warning of nodejs@19
+- Updated dependencies [e7e15cb]
+  - @xbell/snapshot@0.8.3
+  - @xbell/assert@0.8.3
+  - xbell@0.8.3
+
+## 0.8.2
+
+### Patch Changes
+
+- 0d47554: support getById
+- Updated dependencies [0d47554]
+  - xbell@0.8.2
+  - @xbell/assert@0.8.2
+  - @xbell/snapshot@0.8.2
+
 ## 0.8.1
 
 ### Patch Changes

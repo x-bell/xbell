@@ -26,6 +26,7 @@ export interface CommonPage {
   screenshot(options?: PageScreenshotOptions): Promise<Uint8Array>;
   getByText(text: string): Locator;
   getByTestId(testId: string): Locator;
+  getById(id: string): Locator;
   getByClass(className: string): Locator;
   get(selector: string): Locator;
   getFrame(selector: string): FrameLocator;

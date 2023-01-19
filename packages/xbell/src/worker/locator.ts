@@ -114,6 +114,11 @@ export class Locator implements LocatorInterface {
     const cls = className.startsWith('.') ? className : `.${className}`;
     return new Locator(this._locator.locator(cls));
   }
+
+  getById(id: string): LocatorInterface {
+    const finalId = id.replace(/^#/, '');
+    return new Locator(this._locator.locator(`#${finalId}`));
+  }
   
   async queryElementByText(text: string): Promise<ElementHandleInterface | null> {
     const handle = await this._locator.elementHandle();
@@ -202,6 +207,12 @@ export class FrameLocator implements FrameLocatorInterface {
 
   getByTestId(testId: string): LocatorInterface {
     return new Locator(this._frameLocator.getByTestId(testId));
+  }
+
+
+  getById(id: string): LocatorInterface {
+    const finalId = id.replace(/^#/, '');
+    return new Locator(this._frameLocator.locator(`#${finalId}`));
   }
 
   first(): FrameLocatorInterface {

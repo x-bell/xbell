@@ -9,7 +9,7 @@ export type LocatorMethod<T extends LocatorSyncMethodKeys = LocatorSyncMethodKey
 }
 
 export type SelectorItem = {
-  type?: 'text' | 'testId' | 'class' | 'role' | 'title' | 'title';
+  type?: 'text' | 'testId' | 'class' | 'role' | 'title' | 'title' | 'id';
   value: string;
   isFrame?: boolean;
   isElementHandle?: boolean;

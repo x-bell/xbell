@@ -2,6 +2,9 @@ const warnings = new Set([
 	'--experimental-loader is an experimental feature. This feature could change at any time',
 	'Custom ESM Loaders is an experimental feature. This feature could change at any time',
 	'Importing JSON modules is an experimental feature. This feature could change at any time',
+	// nodejs 19
+	'Custom ESM Loaders is an experimental feature and might change at any time',
+	'Importing JSON modules is an experimental feature and might change at any time',
 ]);
 
 const originEmit = process.emit;
