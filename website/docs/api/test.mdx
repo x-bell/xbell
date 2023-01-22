@@ -2,14 +2,17 @@
 title: Test
 ---
 
-## test
-
 `test` is the most basic tool method in **XBell** for declaring and writing test case.
+
+## test
 
 **Signature: test(displayName, testFunction)**
 
-- `displayName` <type>string</type> case name
+- `displayName` <type>string</type> The name of the test, which is displayed when reporting test results.
 - `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+The `test` function is used to declare a test case that will eventually be run in the nodejs environment.
+
 
 ```typescript
 import { test } from 'xbell';
@@ -120,9 +123,12 @@ test.skip('goto github', async (page) => {
 ```
 
 ## test.browser
+
 **Signature: test.browser(displayName, testFunction)**
 - `displayName` <type>string</type> case name
 - `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+The `test.browser` function is used to declare a test case that will eventually be run in the browser environment.
 
 ```typescript
 import { test } from 'xbell';
@@ -237,6 +243,8 @@ test.browser.skip('goto github', async (page) => {
 **Signature: test.all(displayName, testFunction)**
 - `displayName` <type>string</type> case name
 - `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
+
+The `test.all` function is used to declare a test case that will eventually be run in all environment.
 
 ```typescript
 import { test } from 'xbell';
