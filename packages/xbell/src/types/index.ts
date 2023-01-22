@@ -15,3 +15,4 @@ export * from './expect';
 export * from './test';
 export * from './test-browser';
 export * from './test-all';
+export * from './transform';
