@@ -12,4 +12,38 @@
 ![resolution](https://isitmaintained.com/badge/resolution/x-bell/xbell.svg?style=for-the-badge)
 </div>
 
+## Unit Testing
+### test in nodejs
+```typescript
+import { test } from 'xbell';
 
+test('test code in nodejs', ({ add, expect }) => {
+  const { add } = await import('./add');
+  const result = add(1, 1);
+  expect(result).toBe(2);
+});
+```
+
+### test in browser
+```typescript
+test('test code in browser', ({ add, expect }) => {
+  const { add } = await import('./add');
+  const result = add(1, 1);
+  expect(result).toBe(2);
+
+  window.document.body.innerHTML = result;
+  await expect(page).toMatchScreenshot({
+    name: 'default-screenshot',
+  });
+});
+```
+
+## E2E Testing
+```typescript
+test('e2e testing', ({ page, expect }) => {
+  await page.goto('https://example.com');
+  await expect(page).toMatchScreenshot({
+    name: 'default-screenshot',
+  });
+});
+```
