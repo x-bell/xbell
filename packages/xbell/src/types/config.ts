@@ -1,12 +1,8 @@
-import type { UserConfigExport } from 'vite';
 import type { XBellNodeJSTestCaseFunction } from './test';
 import type { StorageState } from './pw';
 import type { Transformer } from './transform';
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
-export interface XBellBrowserDevServerConfig {
-  viteConfig?: UserConfigExport;
-}
 export interface XBellBrowserConfig {
   headless?: boolean;
   devtools?: boolean;
@@ -17,8 +13,6 @@ export interface XBellBrowserConfig {
   };
   // cookies & origins(localStorage)
   storageState?: StorageState | string;
-  /** browser dev server */
-  devServer?: XBellBrowserDevServerConfig;
 }
 
 export interface XBellConfig {
@@ -71,16 +65,9 @@ export interface XBellConfig {
 type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets' | 'transform';
 type XBellBrowserConfigOptionalsKeys = 'storageState';
 
-type XBellBrowserDevServerConfigOptionalsKeys = 'viteConfig';
-
-export type XBellBrowserDevServerConfigRequired = Required<Omit<XBellBrowserDevServerConfig, XBellBrowserDevServerConfigOptionalsKeys>> &
-  Partial<Pick<XBellBrowserDevServerConfig, XBellBrowserDevServerConfigOptionalsKeys>>;
-
 export type XBellBrowserConfigRequired =
   Required<Omit<XBellBrowserConfig, XBellBrowserConfigOptionalsKeys>> &
-  Partial<Pick<XBellBrowserConfig, XBellBrowserConfigOptionalsKeys>> & {
-    devServer: XBellBrowserDevServerConfigRequired;
-  }
+  Partial<Pick<XBellBrowserConfig, XBellBrowserConfigOptionalsKeys>>;
   
 export type XBellConfigRequired =
   Required<Omit<XBellConfig, XBellConfigOptionalsKeys>> &
