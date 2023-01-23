@@ -13,6 +13,10 @@
     "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
     "prepublishOnly": "npm run build"
   },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
   "license": "MIT",
   "peerDependencies": {
     "vue": "2.x"
@@ -35,6 +39,10 @@
     "./preset": {
       "type": "./dist/preset.d.ts",
       "import": "./dist/preset.mjs"
+    },
+    "./transfomer": {
+      "type": "./dist/transfomer.d.ts",
+      "import": "./dist/transfomer.mjs"
     }
   }
 }

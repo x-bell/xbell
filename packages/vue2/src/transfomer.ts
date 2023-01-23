@@ -14,12 +14,12 @@ export const Vue2Transfomer: Transformer = {
       sourceMap: true,
     });
 
-    const scriptCode = genScriptCode({
+    const scriptCode = await genScriptCode({
       descriptor,
       filename,
     });
 
-    const templateCode = genTemplateCode({
+    const templateCode = await genTemplateCode({
       descriptor,
       filename,
     });
@@ -48,7 +48,7 @@ export const Vue2Transfomer: Transformer = {
     )`;
 
     const exportCode = `export default __component__.exports`;
-    const styleCode = genStyleCode({
+    const styleCode = await genStyleCode({
       descriptor,
       filename,
       hash,
