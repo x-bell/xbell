@@ -26,5 +26,15 @@
   },
   "devDependencies": {
     "vue": "^2.7.13"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./preset": {
+      "type": "./dist/preset.d.ts",
+      "import": "./dist/preset.mjs"
+    }
   }
 }
