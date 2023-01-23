@@ -1,6 +1,7 @@
 import type { UserConfigExport } from 'vite';
 import type { XBellNodeJSTestCaseFunction } from './test';
 import type { StorageState } from './pw';
+import type { Transformer } from './transform';
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
 export interface XBellBrowserDevServerConfig {
@@ -64,9 +65,10 @@ export interface XBellConfig {
       content?: string;
     }
   };
+  transform?: Record<string, Transformer>;
 }
 
-type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets';
+type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets' | 'transform';
 type XBellBrowserConfigOptionalsKeys = 'storageState';
 
 type XBellBrowserDevServerConfigOptionalsKeys = 'viteConfig';
