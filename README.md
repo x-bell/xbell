@@ -17,7 +17,7 @@
 ```typescript
 import { test } from 'xbell';
 
-test('test code in nodejs', ({ add, expect }) => {
+test('test code in nodejs', ({ expect }) => {
   const { add } = await import('./add');
   const result = add(1, 1);
   expect(result).toBe(2);
@@ -26,7 +26,7 @@ test('test code in nodejs', ({ add, expect }) => {
 
 ### test in browser
 ```typescript
-test('test code in browser', ({ add, expect }) => {
+test('test code in browser', ({ expect, page }) => {
   const { add } = await import('./add');
   const result = add(1, 1);
   expect(result).toBe(2);
