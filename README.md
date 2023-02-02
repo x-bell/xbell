@@ -12,6 +12,16 @@
 ![resolution](https://isitmaintained.com/badge/resolution/x-bell/xbell.svg?style=for-the-badge)
 </div>
 
+XBell is a modern web testing framework that combines unit testing with end-to-end testing.
+
+## Installation
+```bash
+npm install xbell
+# install browser
+npx xbell install browser
+```
+
+
 ## Unit Testing
 ### test in nodejs
 ```typescript
