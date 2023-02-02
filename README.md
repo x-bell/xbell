@@ -14,6 +14,11 @@
 
 XBell is a modern web testing framework that combines unit testing with end-to-end testing.
 
+<p align="center">
+<a href="https://x-bell.github.io/xbell">Documentation</a> |
+<a href="https://x-bell.github.io/xbell/docs/get-started">Getting Started</a>
+</p>
+
 ## Installation
 ```bash
 npm install xbell
