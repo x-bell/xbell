@@ -12,7 +12,9 @@
 ![resolution](https://isitmaintained.com/badge/resolution/x-bell/xbell.svg?style=for-the-badge)
 </div>
 
-XBell is a modern web testing framework that combines unit testing with end-to-end testing.
+<p align="center">
+A powerful test framework.
+</p>
 
 <p align="center">
 <a href="https://x-bell.github.io/xbell">Documentation</a> |
