@@ -28,22 +28,7 @@ async function executePage({
   page: Page;
   execute: () => Promise<void>;
 }) {
-  // let isViteReload = false;
-  // page._viteAssetReload = () => {
-  //   isViteReload = true;
-  // };
-
-  // const ws = new WebSocket(`ws://localhost:${port}/${XBELL_BUNDLE_PREFIX}/`, 'vite-hmr')
-  // ws.addEventListener('message', ({ data }) => {
-  //   data = JSON.parse(data as string);
-  //   if ((data as any)?.type === 'full-reload') {
-  //     isViteReload = true;
-  //   }
-  //   debugExecutor('===ws:msg===', data);
-  // });
-
   await execute();
-
 }
 
 // TODO: temp

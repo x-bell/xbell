@@ -228,7 +228,6 @@ export class Page implements PageInterface {
   protected _elementHandleMap: Map<string, ElementHandleInterface> = new Map();
   protected _pendingRequestCount = 0;
   protected _isListenRequest = false;
-  _viteAssetReload?: () => void;
 
   protected constructor(
     protected _page: PWPage,
@@ -438,25 +437,12 @@ export class Page implements PageInterface {
       // const pathnameWithPrefix = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '')
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
-      try {
-        const { body, contentType } = await get(urlObj.href.replace(XBELL_ACTUAL_BUNDLE_PREFIX, XBELL_BUNDLE_PREFIX));
-        route.fulfill({
-          status: 200,
-          contentType,
-          body: Buffer.from(body),
-        });
-      } catch (err) {
-        if ((err as any).statusCode === 504 && this._viteAssetReload) {
-          this._viteAssetReload();
-          route.fulfill({
-            status: 200,
-            contentType: 'text/javascript',
-            body: `throw new Error('XBELL_RELOAD');`,
-          });
-          return;
-        }
-        throw err;
-      }
+      const { body, contentType } = await get(urlObj.href.replace(XBELL_ACTUAL_BUNDLE_PREFIX, XBELL_BUNDLE_PREFIX));
+      route.fulfill({
+        status: 200,
+        contentType,
+        body: Buffer.from(body),
+      });
     });
 
     this._page.route((new RegExp(XBELL_BUNDLE_PREFIX)), async (route, request) => {
@@ -468,53 +454,40 @@ export class Page implements PageInterface {
       debugPage('vite-url', urlObj.href);
       const { body, contentType } = await channle.request('getContent', { filename });
 
-      try {
-        const targetModule = mockModulePaths.find(([path]) => path === filename);
-        if (targetModule) {
-          const [, factory] = targetModule
-          if (!factory) throw new Error(`The mocking path is "${filename}" missing factory function`);
-          const obj = await this.evaluateHandle(factory);
+      const targetModule = mockModulePaths.find(([path]) => path === filename);
+      if (targetModule) {
+        const [, factory] = targetModule
+        if (!factory) throw new Error(`The mocking path is "${filename}" missing factory function`);
+        const obj = await this.evaluateHandle(factory);
 
-          await obj.evaluate((factoryReturnValue, modulePath) => {
-            window.__xbell_context__.mocks.set(modulePath, factoryReturnValue);
-          }, filename);
-          const keys = Array.from((await obj.getProperties()).keys());
-          // debugPage('keys', keys);
+        await obj.evaluate((factoryReturnValue, modulePath) => {
+          window.__xbell_context__.mocks.set(modulePath, factoryReturnValue);
+        }, filename);
+        const keys = Array.from((await obj.getProperties()).keys());
+        // debugPage('keys', keys);
 
-          const exportPropertiesCodes = keys.map((key) => {
-            return `export const ${key} = factory["${key}"];`
-          });
+        const exportPropertiesCodes = keys.map((key) => {
+          return `export const ${key} = factory["${key}"];`
+        });
 
-          const mockedBody = [
-            `const factory = window.__xbell_context__.mocks.get("${filename}");`,
-            ...exportPropertiesCodes,
-          ].join('\n');
+        const mockedBody = [
+          `const factory = window.__xbell_context__.mocks.get("${filename}");`,
+          ...exportPropertiesCodes,
+        ].join('\n');
 
-          route.fulfill({
-            status: 200,
-            contentType,
-            body: mockedBody,
-          });
-          route
-        } else {
+        route.fulfill({
+          status: 200,
+          contentType,
+          body: mockedBody,
+        });
+        route
+      } else {
 
-          route.fulfill({
-            status: 200,
-            contentType,
-            body,
-          });
-        }
-      } catch (err) {
-        if ((err as any).statusCode === 504 && this._viteAssetReload) {
-          this._viteAssetReload();
-          route.fulfill({
-            status: 200,
-            contentType: 'text/javascript',
-            body: `throw new Error('XBELL_RELOAD');`,
-          });
-          return;
-        }
-        throw err;
+        route.fulfill({
+          status: 200,
+          contentType,
+          body,
+        });
       }
     });
   }
