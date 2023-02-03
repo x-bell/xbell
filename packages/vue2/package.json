@@ -40,9 +40,9 @@
       "type": "./dist/preset.d.ts",
       "import": "./dist/preset.mjs"
     },
-    "./transfomer": {
-      "type": "./dist/transfomer.d.ts",
-      "import": "./dist/transfomer.mjs"
+    "./loader": {
+      "type": "./dist/loader.d.ts",
+      "import": "./dist/loader.mjs"
     }
   }
 }
