@@ -59,7 +59,7 @@ export function getPackageEntry({
   throw `Not found entry of "${packageJSON.name}"`;
 }
 
-export async function getPackageInfo(cwd: string, pgkName: string): Promise<PackageInfo | null> {
+export function getPackageInfo(cwd: string, pgkName: string): PackageInfo | null {
   const expectedPkgDir = path.join(
     cwd,
     'node_modules',
@@ -70,7 +70,7 @@ export async function getPackageInfo(cwd: string, pgkName: string): Promise<Pack
   if (stat.isSymbolicLink()) {
     const ret = fs.readlinkSync(expectedPkgDir);
     const pkgDir = path.join(__filename, ret);
-    const packageJSON = await getPackageJSON(pkgDir);
+    const packageJSON = getPackageJSON(pkgDir);
     return {
       type: 'package',
       dir: pkgDir,
@@ -84,7 +84,7 @@ export async function getPackageInfo(cwd: string, pgkName: string): Promise<Pack
   }
 
   if (stat.isDirectory()) {
-    const packageJSON = await getPackageJSON(expectedPkgDir);
+    const packageJSON = getPackageJSON(expectedPkgDir);
 
     return {
       type: 'package',
@@ -101,15 +101,13 @@ export async function getPackageInfo(cwd: string, pgkName: string): Promise<Pack
   return null;
 }
 
-async function getPackageJSON(pkgDir: string): Promise<PackageJSON> {
+function getPackageJSON(pkgDir: string): PackageJSON {
   const pkgJSONPath = path.join(
     pkgDir,
     'package.json',
   );
-
-  const { default: pkgJSON } = await import(pkgJSONPath, {
-    assert: { type: 'json' }
-  });
+  const jsonStr = fs.readFileSync(pkgJSONPath, 'utf-8');
+  const pkgJSON = JSON.parse(jsonStr);
 
   return pkgJSON;
 }

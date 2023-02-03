@@ -17,7 +17,7 @@ const mainTSFilename = path.join(
 const require = createRequire(import.meta.url);
 
 test('#resolve - pkg', async ({ expect }) => {
-  const ret = await resolve({
+  const ret = resolve({
     importer: __filename,
     specifier: '@swc/core'
   });
@@ -29,7 +29,7 @@ test('#resolve - pkg', async ({ expect }) => {
 
 test('#resolve - file', async ({ expect }) => {
   console.log('mainTSFilename', mainTSFilename);
-  const ret = await resolve({
+  const ret = resolve({
     importer: mainTSFilename,
     specifier: './add',
   });

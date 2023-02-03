@@ -58,7 +58,7 @@ function isRelativePath(specifier: string) {
 
 
 
-async function checkPackage(specifier: string): Promise<PackageInfo | null> {
+function checkPackage(specifier: string): PackageInfo | null {
   const m = specifier.match(PKG_NAME_REG);
   if (!m) {
     return null;
@@ -66,18 +66,18 @@ async function checkPackage(specifier: string): Promise<PackageInfo | null> {
   const packageName = m[0];
   // TODO: get by arguments
   const cwd = process.cwd();
-  const pkgInfo = await getPackageInfo(cwd, packageName);
+  const pkgInfo = getPackageInfo(cwd, packageName);
   if (!pkgInfo) return null;
   return pkgInfo;
 }
 
-export async function resolve({
+export function resolve({
   specifier,
   importer,
 }: {
   specifier: string;
   importer: string;
-}): Promise<FileInfo | PackageInfo> {
+}): FileInfo | PackageInfo {
   if (isRelativePath(specifier)) {
     const fullSpecifierMaybeWithoutSuffix = join(
       dirname(importer),
@@ -95,7 +95,7 @@ export async function resolve({
     const filename = resolveNormalFile(specifier);
     if (!filename) throw new Error(`Not found path "${specifier}"`);
   }
-  const pkgRet = await checkPackage(specifier);
+  const pkgRet = checkPackage(specifier);
   if (pkgRet) {
     return pkgRet;
   }
