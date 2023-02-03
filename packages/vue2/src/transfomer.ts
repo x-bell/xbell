@@ -23,13 +23,13 @@ export const Vue2Transfomer: Transformer = {
       .digest('hex')
       .substring(0, 8);
 
-    const scriptCode = await genScriptCode({
+    const scriptResult = await genScriptCode({
       descriptor,
       filename,
       hash
     });
 
-    const templateCode = await genTemplateCode({
+    const templateResult = await genTemplateCode({
       descriptor,
       filename,
       hash,
@@ -53,18 +53,18 @@ export const Vue2Transfomer: Transformer = {
     )`;
 
     const exportCode = `export default __component__.exports`;
-    const styleCode = await genStyleCode({
+    const styleResult = await genStyleCode({
       descriptor,
       filename,
       hash,
       hasScoped,
     });
 
-    const output = [
+    const output: string[] = [
       NORMALIZE_FUNCTION_CODE,
-      styleCode,
-      scriptCode,
-      templateCode,
+      styleResult.code,
+      scriptResult.code,
+      templateResult.code,
       normalizerCode,
       exportCode,
     ];

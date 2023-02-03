@@ -1,4 +1,4 @@
-import { RawSourceMap } from 'source-map-js';
+import type { RawSourceMap } from 'source-map-js';
 import type { SFCDescriptor } from 'vue/compiler-sfc';
 import * as compiler from 'vue/compiler-sfc';
 

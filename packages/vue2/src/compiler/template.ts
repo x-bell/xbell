@@ -1,4 +1,6 @@
 import type { SFCDescriptor } from 'vue/compiler-sfc';
+import type { RawSourceMap } from 'source-map-js';
+
 import * as compiler from 'vue/compiler-sfc';
 
 export async function genTemplateCode({
@@ -8,9 +10,14 @@ export async function genTemplateCode({
   descriptor: SFCDescriptor;
   filename: string;
   hash: string;
-}): Promise<string> {
+}): Promise<{
+  code: string;
+  map?: RawSourceMap;
+}> {
   if (!descriptor.template) {
-    return ''
+    return {
+      code: '',
+    }
   }
 
   const templateCode = compiler.compileTemplate({
@@ -21,5 +28,7 @@ export async function genTemplateCode({
     .replace(/var (render|staticRenderFns) =/g, 'var _sfc_$1 =')
     .replace(/(render._withStripped)/, '_sfc_$1');
 
-  return templateCode;
+  return {
+    code: templateCode,
+  };
 }

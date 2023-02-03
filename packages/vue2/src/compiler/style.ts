@@ -1,4 +1,5 @@
 import type { SFCDescriptor } from 'vue/compiler-sfc';
+import type { RawSourceMap } from 'source-map-js';
 import * as compiler from 'vue/compiler-sfc';
 
 export async function genStyleCode({
@@ -11,7 +12,10 @@ export async function genStyleCode({
   filename: string;
   hash: string;
   hasScoped: boolean;
-}): Promise<string> {
+}): Promise<{
+  code: string;
+  map?: RawSourceMap;
+}> {
   async function genSetupCode(style: typeof descriptor.styles[number]) {
     const { code: styleCode } = await compiler.compileStyleAsync({
       source: style.content,
@@ -25,9 +29,11 @@ document.head.appendChild(style);
     `;
   }
 
-  const styleCodes = (await Promise.all(
+  const styleCode = (await Promise.all(
     descriptor.styles.map(genSetupCode)
   )).join('\n');
 
-  return styleCodes;
+  return {
+    code: styleCode,
+  };
 }
