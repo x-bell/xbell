@@ -44,6 +44,7 @@ import { idToUrl } from '../utils/path';
 import debug from 'debug';
 import type { e2eMatcher } from './expect/matcher';
 import type { ExpectMatchState } from '@xbell/assert';
+import { resolve } from '@xbell/bundless';
 import { isRegExp } from '../utils/is';
 
 
@@ -249,17 +250,14 @@ export class Page implements PageInterface {
   }
 
   async _setupExpose() {
-    await this._page.exposeFunction('__xbell_getImportActualUrl__', async (modulePath: string) => {
-      const id = await this._channel!.request('queryModuleId', {
-        modulePath: modulePath,
-        importer: this._currentFilename,
+    await this._page.exposeFunction('__xbell_getImportActualUrl__', async (specifier: string) => {
+      const ret = await resolve({
+        specifier,
+        importer: this._currentFilename!,
       });
-      // debugPage('execute.__xbell_getImportActualUrl__', modulePath, this._currentFilename, id);
-      if (!id) {
-        return null;
-      }
+      if (ret.type === 'package') return ret.entry;
 
-      return idToUrl(id, XBELL_ACTUAL_BUNDLE_PREFIX);
+      return ret.filename;
     });
     await this._page.exposeFunction('__xbell_page_execute_with_callback__', ({ timeoutOptions, callbackUUID, method }: Parameters<typeof window.__xbell_page_execute_with_callback__>[0]): ReturnType<typeof window.__xbell_page_execute_with_callback__> => {
         return this[method]((requestOrResponse) => {
@@ -432,8 +430,7 @@ export class Page implements PageInterface {
 
   protected async _proxyRoutes() {
     const channle = this._channel!;
-    const { port } = await channle.request('queryServerPort');
-    const modulePaths = Array.from(this._mocks.keys());
+    const mockModulePaths = Array.from(this._mocks.entries());
 
     this._page.route(new RegExp(XBELL_ACTUAL_BUNDLE_PREFIX), async (route, request) => {
       const url = request.url();
@@ -441,7 +438,6 @@ export class Page implements PageInterface {
       // const pathnameWithPrefix = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '')
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
-      urlObj.port = String(port);
       try {
         const { body, contentType } = await get(urlObj.href.replace(XBELL_ACTUAL_BUNDLE_PREFIX, XBELL_BUNDLE_PREFIX));
         route.fulfill({
@@ -466,24 +462,22 @@ export class Page implements PageInterface {
     this._page.route((new RegExp(XBELL_BUNDLE_PREFIX)), async (route, request) => {
       const url = request.url();
       const urlObj = new URL(url);
-      const pathnameWithoutPrefix = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '');
+      const filename = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '');
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
-      urlObj.port = String(port);
       debugPage('vite-url', urlObj.href);
+      const { body, contentType } = await channle.request('getContent', { filename });
+
       try {
-        const { body, contentType } = await get(urlObj.href);
-        debugPage('contentType', contentType);
-        const moduleUrlMapByPath = await channle.request('queryModuleUrls', modulePaths);
-        const targetModule = moduleUrlMapByPath.find(item => item.url === pathnameWithoutPrefix);
+        const targetModule = mockModulePaths.find(([path]) => path === filename);
         if (targetModule) {
-          const factory = this._mocks?.get(targetModule?.path);
-          if (!factory) throw new Error(`The mocking path is "${targetModule.path}" missing factory function`);
+          const [, factory] = targetModule
+          if (!factory) throw new Error(`The mocking path is "${filename}" missing factory function`);
           const obj = await this.evaluateHandle(factory);
 
           await obj.evaluate((factoryReturnValue, modulePath) => {
             window.__xbell_context__.mocks.set(modulePath, factoryReturnValue);
-          }, targetModule.path);
+          }, filename);
           const keys = Array.from((await obj.getProperties()).keys());
           // debugPage('keys', keys);
 
@@ -491,22 +485,23 @@ export class Page implements PageInterface {
             return `export const ${key} = factory["${key}"];`
           });
 
-          const body = [
-            `const factory = window.__xbell_context__.mocks.get("${targetModule.path}");`,
+          const mockedBody = [
+            `const factory = window.__xbell_context__.mocks.get("${filename}");`,
             ...exportPropertiesCodes,
           ].join('\n');
 
           route.fulfill({
             status: 200,
             contentType,
-            body,
+            body: mockedBody,
           });
           route
         } else {
+
           route.fulfill({
             status: 200,
             contentType,
-            body: Buffer.from(body),
+            body,
           });
         }
       } catch (err) {

@@ -74,6 +74,7 @@
     "@xbell/coverage": "workspace:*",
     "@xbell/reporter": "workspace:*",
     "@xbell/snapshot": "workspace:*",
+    "@xbell/bundless": "workspace:*",
     "commander": "^9.2.0",
     "debug": "^4.3.4",
     "fast-glob": "^3.2.11",

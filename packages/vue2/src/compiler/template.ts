@@ -7,6 +7,7 @@ export async function genTemplateCode({
 }: {
   descriptor: SFCDescriptor;
   filename: string;
+  hash: string;
 }): Promise<string> {
   if (!descriptor.template) {
     return ''

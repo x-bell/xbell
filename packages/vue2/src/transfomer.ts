@@ -14,26 +14,29 @@ export const Vue2Transfomer: Transformer = {
       sourceMap: true,
     });
 
-    const scriptCode = await genScriptCode({
-      descriptor,
-      filename,
-    });
-
-    const templateCode = await genTemplateCode({
-      descriptor,
-      filename,
-    });
-
-    const hasScoped = descriptor.styles.some(s => s.scoped);
-    const hasCssModules = descriptor.styles.some(s => s.module);
-    const hasFunctional =
-      descriptor.template && descriptor.template.attrs.functional;
 
     const hash = crypto
       .createHash('sha256')
       .update(filename)
       .digest('hex')
       .substring(0, 8);
+
+    const scriptCode = await genScriptCode({
+      descriptor,
+      filename,
+      hash
+    });
+
+    const templateCode = await genTemplateCode({
+      descriptor,
+      filename,
+      hash,
+    });
+
+    const hasScoped = descriptor.styles.some(s => s.scoped);
+    const hasCssModules = descriptor.styles.some(s => s.module);
+    const hasFunctional =
+      descriptor.template && descriptor.template.attrs.functional;
 
     const normalizerCode =  `/* normalize component */
     var __component__ = /*#__PURE__*/__normalizer(

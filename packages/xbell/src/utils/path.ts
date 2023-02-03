@@ -53,3 +53,8 @@ export function idToUrl(id: string, prefix = XBELL_BUNDLE_PREFIX) {
 
   return processViteURL(url);
 }
+
+
+export function fullPathToURL(fullPath: string, prefix = XBELL_BUNDLE_PREFIX) {
+  return (`/${prefix}/@fs` + fullPath);
+}

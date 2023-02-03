@@ -23,46 +23,28 @@ function isStandardCase(c: any): c is XBellTestCaseStandard<any> {
 
 async function executePage({
   page,
-  port,
   execute
 }: {
   page: Page;
-  port: number;
   execute: () => Promise<void>;
 }) {
-  let isViteReload = false;
-  page._viteAssetReload = () => {
-    isViteReload = true;
-  };
+  // let isViteReload = false;
+  // page._viteAssetReload = () => {
+  //   isViteReload = true;
+  // };
 
-  const ws = new WebSocket(`ws://localhost:${port}/${XBELL_BUNDLE_PREFIX}/`, 'vite-hmr')
-  ws.addEventListener('message', ({ data }) => {
-    data = JSON.parse(data as string);
-    if ((data as any)?.type === 'full-reload') {
-      isViteReload = true;
-    }
-    debugExecutor('===ws:msg===', data);
-  });
+  // const ws = new WebSocket(`ws://localhost:${port}/${XBELL_BUNDLE_PREFIX}/`, 'vite-hmr')
+  // ws.addEventListener('message', ({ data }) => {
+  //   data = JSON.parse(data as string);
+  //   if ((data as any)?.type === 'full-reload') {
+  //     isViteReload = true;
+  //   }
+  //   debugExecutor('===ws:msg===', data);
+  // });
 
-  await execute().catch((ret) => {
-    if (!isViteReload) {
-      return Promise.reject(ret);
-    }
-  });
+  await execute();
 
-  ws.removeAllListeners();
-  ws.close();
-
-  if (isViteReload) {
-    await page.reload();
-    await executePage({
-      page,
-      execute,
-      port,
-    });
-  }
 }
-
 
 // TODO: temp
 interface RunCaseOptions {
@@ -355,7 +337,6 @@ export class Executor {
     }
 
     try {
-      const { port } = await workerContext.channel.request('queryServerPort');
       // A tentative decision
       // debugExecutor('page.goto');
       await page.goto(url ?? 'https://xbell.test', {
@@ -366,7 +347,6 @@ export class Executor {
         for (const [index, item] of c.options.batch!.items.entries()) {
          await executePage({
           page,
-          port,
           execute: async() => {
             if (index === 0) await page._setupBrowserEnv();
              // @ts-ignore
@@ -397,7 +377,6 @@ export class Executor {
             }, { item, index });
             await eachContext.evaluateHandle(c.testFunction);
           },
-          port,
         });
       } else {
         await executePage({
@@ -406,7 +385,6 @@ export class Executor {
             await page._setupBrowserEnv();
             await page.evaluate(c.testFunction);
           },
-          port,
         });
       }
       // debugExecutor('page.evaluate.end');

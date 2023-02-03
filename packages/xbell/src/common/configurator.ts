@@ -5,7 +5,6 @@ import { cpus } from 'node:os';
 import debug from 'debug';
 import { pathManager } from './path-manager';
 import { commander } from './commander';
-import { mergeConfig as mergeViteConfig } from 'vite';
 
 const debugConfigurator = debug('xbell:configurator');
 
@@ -21,22 +20,12 @@ async function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): Prom
   const browser2 = config2.browser ?? {};
   const compiler1 = config1.compiler ?? {};
   const compiler2 = config2.compiler ?? {};
-  const viteConfig1 = browser1.devServer?.viteConfig || {};
-  const viteConfig2 = browser2.devServer?.viteConfig || {};
   return {
     ...config1,
     ...config2,
     browser: {
       ...browser1,
       ...browser2,
-      devServer: {
-        ...browser1.devServer,
-        ...browser2.devServer,
-        viteConfig: mergeViteConfig(
-          typeof viteConfig1 === 'function' ? await viteConfig1({ ...viteFunctionConfigOptions }) : viteConfig1,
-          typeof viteConfig2 === 'function' ? await viteConfig2({ ...viteFunctionConfigOptions }) : viteConfig2,
-        ),
-      },
     },
     coverage: {
       ...config1.coverage,
@@ -69,7 +58,6 @@ export class Configurator implements XBellConfigurator {
       width: 1280,
       height: 700,
     },
-    devServer: {},
   };
 
   static XBellDefaultConfig: XBellConfigRequired = {

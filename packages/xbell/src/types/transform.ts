@@ -1,7 +1,7 @@
 import type { RawSourceMap } from 'source-map-js';
 import type { Awaitable } from './utils';
 
-type TransformedSource = {
+export interface TransformedSource {
   code: string;
   map?: RawSourceMap | string | null;
 };

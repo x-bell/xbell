@@ -7,9 +7,10 @@ import type { XBellWorkerTask, XBellProject } from '../types';
 import { configurator } from '../common/configurator';
 import { workerPool, XBellWorkerItem, XBellTaskQuque } from './worker-pool';
 import { recorder } from './recorder';
-import { browserBuilder } from './browser-builder';
+import { transfomer } from './transfomer';
 import { compiler } from '../compiler/compiler';
 import debug from 'debug';
+import { getContentType } from '@xbell/bundless';
 
 const debugScheduler = debug('xbell:scheduler');
 export interface XBellScheduler  {
@@ -50,29 +51,19 @@ export class Scheduler {
         }
       },
       async transformHtml({ html, url }) {
-        const server = await browserBuilder.server;
-        const finalHtml = await server.transformIndexHtml(url, html);
+        // const server = await browserBuilder.server;
+        // const finalHtml = await server.transform(url, html);
+        const finalHtml = await transfomer.transformHtml({ content: html });
         return { html: finalHtml };
       },
-      async queryServerPort() {
-        const { port } = await browserBuilder.server;
+      async getContent({ filename }) {
+        const contentType = getContentType(filename);
+        const { code } = await transfomer.transform(filename)
+        // TODO: source map
         return {
-          port,
+          contentType,
+          body: code,
         }
-      },
-      async queryModuleUrls(modules: string[]) {
-        const server = await browserBuilder.server;
-        return Promise.all(modules.map(async (modulePath) => ({
-          url: await server.queryUrl(modulePath),
-          path: modulePath,
-        })));
-      },
-      async queryModuleId({
-        modulePath,
-        importer
-      }) {
-        const server = await browserBuilder.server;
-        return await server.queryId(modulePath, importer) ?? null;
       }
     });
 

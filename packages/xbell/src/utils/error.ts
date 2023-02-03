@@ -10,8 +10,9 @@ import { RawSourceMap, SourceMapConsumer } from 'source-map-js';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import debug from 'debug';
 import { pathManager } from '../common/path-manager';
-import { browserBuilder } from '../core/browser-builder';
+// import { browserBuilder } from '../core/browser-builder';
 import { compiler } from '../compiler/compiler';
+import { transfomer } from '../core/transfomer';
 
 const STACK_LINE_REG = /\((.+?):(\d+):(\d+)\)$/;
 
@@ -122,7 +123,6 @@ async function formatBrowserError(error: Error, options: Partial<{
     return error;
   }
   const { browserTestFunction } = options;
-  const server = await browserBuilder.server
   const stackResult = parseStackLines(error.stack!);
   // debugError('error:before', (error.stack!));
   // debugError('error:after', stackResult);
@@ -189,15 +189,14 @@ async function formatBrowserError(error: Error, options: Partial<{
     if (firstLine?.isBundleUrl && firstLine.isInProjectPath) {
       // const relativePath = firstLine.lineResult!.filename.split(XBELL_BUNDLE_PREFIX)[1];
       // const id = path.join(pathManager.projectDir, relativePath);
-      return server.getModuleById(
-        fileURLToPath(firstLine.parsed!.filename)
-      );
+      return transfomer.cache.get(fileURLToPath(firstLine.parsed!.filename));
     }
     return undefined;
   })();
   
   if (module?.map) {
-    const originPosition = getOriginPosition(module.map, firstLine.parsed!);
+    // TODO: handle string source map
+    const originPosition = getOriginPosition(module.map as RawSourceMap, firstLine.parsed!);
     if (originPosition) {
       const stackMessage = formatStack(
         fileURLToPath(firstLine.parsed!.filename), {
