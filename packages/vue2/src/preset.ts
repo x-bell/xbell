@@ -1,6 +1,5 @@
 import type { XBellConfig } from 'xbell';
-// import { defineConfig } from 'vite';
-// import vue from '@vitejs/plugin-vue2';
+import { Vue2Transfomer } from './transfomer';
 
 export const preset: XBellConfig = {
   browserTest: {
@@ -8,4 +7,5 @@ export const preset: XBellConfig = {
       content: '<div id="app"></div>'
     }
   },
+  transformers: [Vue2Transfomer],
 };

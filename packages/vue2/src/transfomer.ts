@@ -7,7 +7,9 @@ import { genTemplateCode } from './compiler/template';
 import { genStyleCode } from './compiler/style';
 
 export const Vue2Transfomer: Transformer = {
-  async process(sourceCode: string, filename: string) {
+  name: 'xbell:vue2',
+  match: /\.vue$/,
+  async transform(sourceCode: string, filename: string) {
     const descriptor = compiler.parse({
       source: sourceCode,
       filename,
