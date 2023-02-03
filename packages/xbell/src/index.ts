@@ -40,7 +40,7 @@ export type {
   XBellProject as Project,
   XBellTest,
   BrowserTestArguments,
-  Transformer
+  Loader
 } from './types';
 
 export type { ToMatchJavaScriptSnapshotOptions as ToMatchSnapshotOptions, ToMatchImageSnapshotOptions } from '@xbell/snapshot';

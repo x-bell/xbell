@@ -1,4 +1,4 @@
-import type { Transformer } from 'xbell';
+import type { Loader } from 'xbell';
 import * as compiler from 'vue/compiler-sfc';
 import * as crypto from 'node:crypto';
 import { NORMALIZE_FUNCTION_CODE } from './compiler/constants';
@@ -6,7 +6,7 @@ import { genScriptCode } from './compiler/script';
 import { genTemplateCode } from './compiler/template';
 import { genStyleCode } from './compiler/style';
 
-export const Vue2Transfomer: Transformer = {
+export const Vue2Loader: Loader = {
   name: 'xbell:vue2',
   match: /\.vue$/,
   async transform(sourceCode: string, filename: string) {

@@ -1,6 +1,6 @@
 import type { XBellNodeJSTestCaseFunction } from './test';
 import type { StorageState } from './pw';
-import type { Transformer } from './transform';
+import type { Loader } from './transform';
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
 export interface XBellBrowserConfig {
@@ -59,7 +59,7 @@ export interface XBellConfig {
       content?: string;
     }
   };
-  transformers?: Transformer[];
+  loaders?: Loader[];
 }
 
 type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets';

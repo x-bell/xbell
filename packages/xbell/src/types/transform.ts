@@ -6,7 +6,7 @@ export interface TransformedSource {
   map?: RawSourceMap | string | null;
 };
 
-export interface Transformer {
+export interface Loader {
   transform(
     code: string,
     filename: string,

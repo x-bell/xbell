@@ -37,9 +37,9 @@ async function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): Prom
         ...compiler2.jsx,
       }
     },
-    transformers: [
-      ...(config1.transformers ?? []),
-      ...(config2.transformers ?? []),
+    loaders: [
+      ...(config1.loaders ?? []),
+      ...(config2.loaders ?? []),
     ]
   }
 }
@@ -88,7 +88,7 @@ export class Configurator implements XBellConfigurator {
         content: '<div id="root"></div>'
       },
     },
-    transformers: [],
+    loaders: [],
   }
 
   static XBellConfigFilePaths = [
