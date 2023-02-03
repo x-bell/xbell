@@ -1,5 +1,5 @@
 import type { XBellConfig } from 'xbell';
-import { Vue2Loader } from './transfomer';
+import { Vue2Loader } from './loader';
 
 export const preset: XBellConfig = {
   browserTest: {
