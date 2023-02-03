@@ -2,13 +2,19 @@ import * as fs from 'node:fs/promises';
 import { configurator } from '../common/configurator';
 import type { Transformer, TransformedSource } from '../types';
 
-interface UserTransfomer {
-  match: RegExp;
-  transfomer: Transformer;
+function uniqTransformers(transformers: Transformer[]) {
+  const record: Record<string, true | undefined> = {};
+  return transformers.filter(transformer => {
+    if (record[transformer.name]) {
+      return false;
+    }
+    record[transformer.name] = true;
+    return true;
+  });
 }
 
 export class CodeTransfomer {
-  userTransfomers?: UserTransfomer[];
+  userTransfomers?: Transformer[];
 
   cache: Map<string, TransformedSource> = new Map();
 
@@ -16,29 +22,47 @@ export class CodeTransfomer {
     const { globalConfig } = configurator;
 
     if (!this.userTransfomers) {
-      this.userTransfomers = Object
-        .entries(globalConfig.transform ?? {})
-        .map(([regString, transfomer]) => {
-          return {
-            match: new RegExp(regString),
-            transfomer,
-          };
-        });
+      this.userTransfomers = uniqTransformers(globalConfig.transformers);
     }
-
     return this.userTransfomers;
   }
 
-  getMatchTransformer(filename: string) {
-    const transfomers = this.getUserTransfomers();
-    return transfomers.find(({ match }) => match.test(filename))?.transfomer;
+  async compileByTransformers({
+    transformers,
+    code,
+    filename
+  }: {
+    transformers: Transformer[];
+    code: string;
+    filename: string;
+  }) {
+    // TODO: source map
+    let finalCode = code;
+    let ret: TransformedSource = {
+      code,
+      map: null,
+    }
+    for (const transfomer of transformers) {
+      ret = await transfomer.transform(ret.code, filename);
+    }
+
+    return ret;
+  }
+
+  getMatchTransformers(filename: string): Transformer[] {
+    const transformers = this.getUserTransfomers();
+    return transformers.filter(({ match }) => match.test(filename));
   }
 
   async transform(filename: string): Promise<TransformedSource> {
     const code = await fs.readFile(filename, 'utf-8');
-    const transfomer = this.getMatchTransformer(filename);
-    if (transfomer) {
-      this.cache.set(filename, await transfomer.process(code, filename));
+    const transformers = this.getMatchTransformers(filename);
+    if (transformers.length) {
+      this.cache.set(filename, await this.compileByTransformers({
+        filename,
+        code,
+        transformers,
+      }));
       return this.cache.get(filename)!;
     }
 

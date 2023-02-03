@@ -1,4 +1,4 @@
-import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig, XBellBrowserConfigRequired, XBellConfigRequired } from '../types';
+import type { XBellConfig, XBellTaskConfig, XBellBrowserConfigRequired, XBellConfigRequired } from '../types';
 import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import { cpus } from 'node:os';
@@ -12,8 +12,6 @@ interface XBellConfigurator {
   globalConfig: XBellConfig;
   queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig>
 }
-
-const viteFunctionConfigOptions = { mode: 'testing', ssrBuild: false, command: 'serve' } as const;
 
 async function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): Promise<XBellConfig> {
   const browser1 = config1.browser ?? {};
@@ -38,7 +36,11 @@ async function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): Prom
         ...compiler1.jsx,
         ...compiler2.jsx,
       }
-    }
+    },
+    transformers: [
+      ...(config1.transformers ?? []),
+      ...(config2.transformers ?? []),
+    ]
   }
 }
 
@@ -86,6 +88,7 @@ export class Configurator implements XBellConfigurator {
         content: '<div id="root"></div>'
       },
     },
+    transformers: [],
   }
 
   static XBellConfigFilePaths = [

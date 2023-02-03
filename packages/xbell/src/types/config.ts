@@ -59,10 +59,10 @@ export interface XBellConfig {
       content?: string;
     }
   };
-  transform?: Record<string, Transformer>;
+  transformers?: Transformer[];
 }
 
-type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets' | 'transform';
+type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets';
 type XBellBrowserConfigOptionalsKeys = 'storageState';
 
 export type XBellBrowserConfigRequired =

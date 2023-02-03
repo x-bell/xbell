@@ -7,8 +7,10 @@ export interface TransformedSource {
 };
 
 export interface Transformer {
-  process(
-    sourceText: string,
-    sourcePath: string,
+  transform(
+    code: string,
+    filename: string,
   ): Awaitable<TransformedSource>;
+  name: string;
+  match: RegExp;
 }
