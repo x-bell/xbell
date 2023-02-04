@@ -10,7 +10,11 @@
     "prepublishOnly": "npm run test"
   },
   "dependencies": {
-    "enhanced-resolve": "^5.12.0",
-    "@swc/core": "1.2.208"
+    "@swc/core": "1.2.208",
+    "debug": "^4.3.4",
+    "enhanced-resolve": "^5.12.0"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7"
   }
 }

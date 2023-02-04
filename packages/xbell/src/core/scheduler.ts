@@ -7,7 +7,7 @@ import type { XBellWorkerTask, XBellProject } from '../types';
 import { configurator } from '../common/configurator';
 import { workerPool, XBellWorkerItem, XBellTaskQuque } from './worker-pool';
 import { recorder } from './recorder';
-import { transfomer } from './transfomer';
+import { transformer } from './transformer';
 import { compiler } from '../compiler/compiler';
 import debug from 'debug';
 import { getContentType } from '@xbell/bundless';
@@ -53,12 +53,13 @@ export class Scheduler {
       async transformHtml({ html, url }) {
         // const server = await browserBuilder.server;
         // const finalHtml = await server.transform(url, html);
-        const finalHtml = await transfomer.transformHtml({ content: html });
+        const finalHtml = await transformer.transformHtml({ content: html });
         return { html: finalHtml };
       },
       async getContent({ filename }) {
         const contentType = getContentType(filename);
-        const { code } = await transfomer.transform(filename)
+        const { code } = await transformer.transform(filename)
+        debugScheduler('body', code, contentType);
         // TODO: source map
         return {
           contentType,

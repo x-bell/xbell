@@ -3,6 +3,7 @@ import {
   CallExpression,
   Expression,
 } from '@swc/core';
+import * as bundless from '@xbell/bundless';
 // import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
 import { fullPathToURL } from '../utils/path';
 import debug from 'debug';
@@ -17,10 +18,18 @@ export class BrowserPathCollector extends Visitor {
   visitCallExpression(n: CallExpression): Expression {
     if (n.callee.type === 'Import' && n.arguments[0].expression.type === 'StringLiteral') {
         // @ts-ignore
-        const originFullPath = n.arguments[0].expression.raw;
+        const originFullPathOrPackage = n.arguments[0].expression.value;
+        const resolveFilename = bundless.resolve({
+          specifier: originFullPathOrPackage,
+          // TODO: importer optional
+          importer: '',
+        });
+        const ret = fullPathToURL(resolveFilename);
+        debugCompiler('originFullPathOrPackage', originFullPathOrPackage, originFullPathOrPackage.length, ret, resolveFilename);
+
         // @ts-ignore
         delete n.arguments[0].expression.raw;
-        n.arguments[0].expression.value = fullPathToURL(originFullPath)
+        n.arguments[0].expression.value = ret;
     }
 
     return super.visitCallExpression(n);

@@ -44,7 +44,7 @@ import { idToUrl } from '../utils/path';
 import debug from 'debug';
 import type { e2eMatcher } from './expect/matcher';
 import type { ExpectMatchState } from '@xbell/assert';
-import { resolve } from '@xbell/bundless';
+import * as bundless from '@xbell/bundless';
 import { isRegExp } from '../utils/is';
 
 
@@ -250,13 +250,12 @@ export class Page implements PageInterface {
 
   async _setupExpose() {
     await this._page.exposeFunction('__xbell_getImportActualUrl__', async (specifier: string) => {
-      const ret = await resolve({
+      const resolveFilename = bundless.resolve({
         specifier,
         importer: this._currentFilename!,
       });
-      if (ret.type === 'package') return ret.entry;
 
-      return ret.filename;
+      return resolveFilename;
     });
     await this._page.exposeFunction('__xbell_page_execute_with_callback__', ({ timeoutOptions, callbackUUID, method }: Parameters<typeof window.__xbell_page_execute_with_callback__>[0]): ReturnType<typeof window.__xbell_page_execute_with_callback__> => {
         return this[method]((requestOrResponse) => {

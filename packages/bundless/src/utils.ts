@@ -38,3 +38,32 @@ export function getContentType(filename: string): string {
   // TODO: content-type
   return CONTENT_TYPE_LIST.find(item => item.match.test(filename))?.contentType ?? ''
 }
+
+
+const extensions = [
+  '.js',
+  '.ts',
+  '.jsx',
+  '.tsx',
+  '.mjs',
+  '.cjs',
+];
+
+export function resolveFile(fullSpecifierMaybeWithoutSuffix: string): string | undefined {
+  const existed = fs.existsSync(fullSpecifierMaybeWithoutSuffix);
+
+  if (!existed) {
+    const ext = extensions.find(ext => fs.existsSync(fullSpecifierMaybeWithoutSuffix + ext));
+    return ext ? fullSpecifierMaybeWithoutSuffix + ext : undefined;
+  }
+
+  const stats = fs.statSync(fullSpecifierMaybeWithoutSuffix);
+  if (stats.isFile()) {
+    return fullSpecifierMaybeWithoutSuffix;
+  }
+  if (stats.isDirectory()) {
+    return resolveFile(path.join(fullSpecifierMaybeWithoutSuffix, 'index'));
+  }
+
+  return extensions.find(ext => resolveFile(path.join(fullSpecifierMaybeWithoutSuffix + ext))) ?? undefined;
+}

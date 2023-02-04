@@ -1,10 +1,13 @@
-import type { PackageInfo, PackageJSON } from './types';
+import type { PackageInfo, PackageJSON, PackageJSONExportsField } from './types';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as url from 'node:url';
 import { defaultConditions } from './constants';
+import debug from 'debug';
+import { resolveFile } from './utils';
 const __filename = url.fileURLToPath(new URL(import.meta.url));
 
+const debugPkg = debug('xbell:pkg');
 function getPathByExports({
   dir,
   exports,
@@ -59,17 +62,24 @@ export function getPackageEntry({
   throw `Not found entry of "${packageJSON.name}"`;
 }
 
-export function getPackageInfo(cwd: string, pgkName: string): PackageInfo | null {
+export function getPackageInfo({
+  cwd,
+  packageName,
+}: {
+  cwd: string;
+  packageName: string
+}): PackageInfo | null {
   const expectedPkgDir = path.join(
     cwd,
     'node_modules',
-    pgkName
+    packageName,
   );
   const stat = fs.lstatSync(expectedPkgDir);
 
   if (stat.isSymbolicLink()) {
     const ret = fs.readlinkSync(expectedPkgDir);
-    const pkgDir = path.join(__filename, ret);
+    const pkgDir = path.join(path.dirname(expectedPkgDir), ret);
+    debugPkg('pkgDir', pkgDir);
     const packageJSON = getPackageJSON(pkgDir);
     return {
       type: 'package',
@@ -110,4 +120,56 @@ function getPackageJSON(pkgDir: string): PackageJSON {
   const pkgJSON = JSON.parse(jsonStr);
 
   return pkgJSON;
+}
+
+export function resolvePackageSubPath({
+  conditions,
+  packageInfo,
+  subPath,
+}: {
+  conditions: string[]
+  packageInfo: PackageInfo;
+  subPath: string;
+}): string | undefined {
+  const { packageJSON } = packageInfo;
+  if (packageJSON.exports) {
+    return getSubPathByExports({
+      exportsField: packageJSON.exports,
+      packageDir: packageInfo.dir,
+      conditions,
+      subPath,
+    });
+  }
+
+  if (subPath === '.') {
+    return packageJSON.module ?? packageJSON.main;
+  }
+
+  return;
+}
+
+function getSubPathByExports({
+  exportsField,
+  subPath,
+  conditions,
+  packageDir
+}: {
+  exportsField: PackageJSONExportsField;
+  subPath: string;
+  conditions: string[];
+  packageDir: string;
+}): string | undefined {
+  const target = exportsField[subPath];
+  if (target) {
+    if (typeof target === 'string') {
+      return path.join(packageDir, target);
+    }
+
+    const condition = conditions.find(condition => target[condition]);
+    if (condition) {
+      return path.join(packageDir, target[condition] as string);
+    }
+  }
+
+  return resolveFile(path.join(packageDir, subPath));
 }

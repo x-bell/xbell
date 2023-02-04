@@ -81,4 +81,4 @@ export class CodeTransfomer {
   }
 }
 
-export const transfomer = new CodeTransfomer();
+export const transformer = new CodeTransfomer();

@@ -12,7 +12,7 @@ import debug from 'debug';
 import { pathManager } from '../common/path-manager';
 // import { browserBuilder } from '../core/browser-builder';
 import { compiler } from '../compiler/compiler';
-import { transfomer } from '../core/transfomer';
+import { transformer } from '../core/transformer';
 
 const STACK_LINE_REG = /\((.+?):(\d+):(\d+)\)$/;
 
@@ -189,7 +189,7 @@ async function formatBrowserError(error: Error, options: Partial<{
     if (firstLine?.isBundleUrl && firstLine.isInProjectPath) {
       // const relativePath = firstLine.lineResult!.filename.split(XBELL_BUNDLE_PREFIX)[1];
       // const id = path.join(pathManager.projectDir, relativePath);
-      return transfomer.cache.get(fileURLToPath(firstLine.parsed!.filename));
+      return transformer.cache.get(fileURLToPath(firstLine.parsed!.filename));
     }
     return undefined;
   })();
