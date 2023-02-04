@@ -48,6 +48,13 @@ export class Page implements CommonPage {
     }]);
   }
 
+  getById(id: string): LocatorInterface {
+    return new Locator([{
+      type: 'id',
+      value: id,
+    }]);
+  }
+
   getFrame(selector: string): FrameLocatorInterface {
     return new FrameLocator([{
       isFrame: true,

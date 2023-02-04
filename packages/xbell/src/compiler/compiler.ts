@@ -1,8 +1,7 @@
 import * as path from 'node:path';
-import { transformSync, parseSync, Expression, Import, ArrowFunctionExpression, Module, FunctionDeclaration } from '@swc/core';
+import { transformSync, parseSync, ArrowFunctionExpression, Module, FunctionDeclaration } from '@swc/core';
 import { getJSCConfig, tsParserConfig } from './config';
 import { BrowserPathCollector } from './borwser-path-collector';
-import { browserBuilder } from '../core/browser-builder';
 
 import debug from 'debug';
 import { XBELL_BUNDLE_PREFIX } from '../constants/xbell';
@@ -54,32 +53,18 @@ export class Compiler {
   }
 
   public async compileBrowserCode(sourceCode: string) {
+    debugCompiler('sourceCode', sourceCode);
+
     const rawProgram = parseSync(sourceCode, {
       ...tsParserConfig,
     });
     const jsxRuntime = crossEnv.get('jsxRuntime');
     const program = jsxRuntime === 'automatic' && sourceCode.includes('_jsx') ? this.genBrowserJSXCode(rawProgram) : rawProgram;
 
-    const server = await browserBuilder.server;
     const pathCollector = new BrowserPathCollector();
     pathCollector.visitProgram(program);
-    const idMapByFullPath = new Map<string, string>();
-    const paths =  Array.from(pathCollector.paths).filter(path => !path.includes(XBELL_BUNDLE_PREFIX));
-    for (const path of paths) {
-      const moduleId = await server.queryId(path);
-      if (moduleId) {
-        idMapByFullPath.set(path, moduleId);
-      } else {
-        const err = new Error(`not found module: "${path}"`)
-        err.name = 'CompileError';
-        throw err;
-      }
-    }
-  
-    const generator = new BrowserPathCollector(idMapByFullPath);
-    const browserProgram = generator.visitProgram(program);
     const jscConfig = getJSCConfig();
-    const { code: codeWithXBellJSX, map } = transformSync(browserProgram, {
+    const { code: codeWithXBellJSX, map } = transformSync(program, {
       module: {
         type: 'es6'
       },

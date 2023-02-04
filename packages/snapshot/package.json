@@ -1,6 +1,6 @@
 {
   "name": "@xbell/snapshot",
-  "version": "0.7.1",
+  "version": "0.8.3",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

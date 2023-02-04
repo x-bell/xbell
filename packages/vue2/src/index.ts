@@ -3,9 +3,6 @@ import type { Locator } from 'xbell';
 export type { } from '@xbell/assert';
 export type { } from '@xbell/snapshot';
 import type { CreateElement, VNodeData, VNode } from 'vue';
-import { expect as browserExpect, page } from 'xbell/dist/browser-test';
-
-export { preset } from './preset';
 
 export const test = basicTest.extendBrowser(async (args) => {
   const { default: Vue, reactive } = await import('vue');

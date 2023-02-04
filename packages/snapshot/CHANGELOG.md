@@ -1,5 +1,58 @@
 # @xbell/snapshot
 
+## 0.8.3
+
+### Patch Changes
+
+- e7e15cb: fix: ignore warning of nodejs@19
+- Updated dependencies [e7e15cb]
+  - @xbell/assert@0.8.3
+  - @xbell/format@0.8.3
+  - @xbell/color@0.8.3
+
+## 0.8.2
+
+### Patch Changes
+
+- 0d47554: support getById
+- Updated dependencies [0d47554]
+  - @xbell/assert@0.8.2
+  - @xbell/color@0.8.2
+  - @xbell/format@0.8.2
+
+## 0.8.1
+
+### Patch Changes
+
+- 572aa41: use node-fetch to fetch
+- Updated dependencies [572aa41]
+  - @xbell/assert@0.8.1
+  - @xbell/color@0.8.1
+  - @xbell/format@0.8.1
+
+## 0.8.0
+
+### Minor Changes
+
+- 60af676: feat: support test.all for run test in all runtimes
+
+### Patch Changes
+
+- Updated dependencies [60af676]
+  - @xbell/assert@0.8.0
+  - @xbell/format@0.8.0
+  - @xbell/color@0.8.0
+
+## 0.7.2
+
+### Patch Changes
+
+- a656ab5: add FileChooser
+- Updated dependencies [a656ab5]
+  - @xbell/assert@0.7.2
+  - @xbell/color@0.7.2
+  - @xbell/format@0.7.2
+
 ## 0.7.1
 
 ### Patch Changes

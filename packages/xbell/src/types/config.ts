@@ -1,13 +1,10 @@
-import type { UserConfigExport } from 'vite';
-import type { XBellTestCaseFunction } from './test';
+import type { XBellNodeJSTestCaseFunction } from './test';
 import type { StorageState } from './pw';
 import type { Awaitable } from './utils';
 import type { RawSourceMap } from 'source-map-js';
+import type { Loader } from './transform';
 export type XBellBrowserType = 'chromium' | 'firefox' | 'webkit';
 
-export interface XBellBrowserDevServerConfig {
-  viteConfig?: UserConfigExport;
-}
 export interface XBellBrowserConfig {
   headless?: boolean;
   devtools?: boolean;
@@ -18,8 +15,6 @@ export interface XBellBrowserConfig {
   };
   // cookies & origins(localStorage)
   storageState?: StorageState | string;
-  /** browser dev server */
-  devServer?: XBellBrowserDevServerConfig;
 }
 
 interface XBellTransformer {
@@ -57,8 +52,8 @@ export interface XBellConfig {
   maxThreads?: number;
 
   hooks?: {
-    beforeEach?: XBellTestCaseFunction;
-    afterEach?: XBellTestCaseFunction;
+    beforeEach?: XBellNodeJSTestCaseFunction;
+    afterEach?: XBellNodeJSTestCaseFunction;
   }
 
   coverage?: {
@@ -74,21 +69,15 @@ export interface XBellConfig {
       content?: string;
     }
   };
+  loaders?: Loader[];
 }
 
-type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets' | 'transform';
+type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets' | 'loaders';
 type XBellBrowserConfigOptionalsKeys = 'storageState';
-
-type XBellBrowserDevServerConfigOptionalsKeys = 'viteConfig';
-
-export type XBellBrowserDevServerConfigRequired = Required<Omit<XBellBrowserDevServerConfig, XBellBrowserDevServerConfigOptionalsKeys>> &
-  Partial<Pick<XBellBrowserDevServerConfig, XBellBrowserDevServerConfigOptionalsKeys>>;
 
 export type XBellBrowserConfigRequired =
   Required<Omit<XBellBrowserConfig, XBellBrowserConfigOptionalsKeys>> &
-  Partial<Pick<XBellBrowserConfig, XBellBrowserConfigOptionalsKeys>> & {
-    devServer: XBellBrowserDevServerConfigRequired;
-  }
+  Partial<Pick<XBellBrowserConfig, XBellBrowserConfigOptionalsKeys>>;
   
 export type XBellConfigRequired =
   Required<Omit<XBellConfig, XBellConfigOptionalsKeys>> &
@@ -119,8 +108,16 @@ export interface XBellNodeJSCallback {
   sortValue: number; // no used
 }
 
+export interface XBellCommonCallback {
+  callback: (...args: any) => any;
+  filename: string;
+  sortValue: number; // no used
+}
+
+
 export type XBellRuntimeOptions = Partial<{
   browserCallbacks: XBellBrowserCallback[];
   nodejsCallbacks: XBellNodeJSCallback[];
+  commonCallbacks: XBellCommonCallback[];
   args?: object
 }>;

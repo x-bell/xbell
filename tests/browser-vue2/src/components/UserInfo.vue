@@ -40,7 +40,7 @@ export default defineComponent({
   </div>
 </template>
 
-<style scoped>
+<style>
 .user-info-root {
   width: 200px;
   color: #888;

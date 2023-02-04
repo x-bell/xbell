@@ -16,7 +16,9 @@ import type {
   BrowserContext,
   XBellMocks,
   XBellBrowserCallback,
-  Mouse
+  Mouse,
+  FileChooser as FileChooserType,
+  XBellProject
 } from '../types';
 
 import type {
@@ -35,12 +37,14 @@ import type { LocatorRPCMethods, QueryItem } from '../browser-test/types';
 import { XBELL_BUNDLE_PREFIX, XBELL_ACTUAL_BUNDLE_PREFIX } from '../constants/xbell';
 import { get } from '../utils/http';
 import { Locator, FrameLocator } from './locator';
+import { FileChooser } from './file-chooser';
 import { ElementHandle } from './element-handle';
 import { Keyboard } from './keyboard';
 import { idToUrl } from '../utils/path';
 import debug from 'debug';
 import type { e2eMatcher } from './expect/matcher';
 import type { ExpectMatchState } from '@xbell/assert';
+import * as bundless from '@xbell/bundless';
 import { isRegExp } from '../utils/is';
 
 
@@ -90,6 +94,7 @@ declare global {
     __xbell_context__: {
       importActual<T = any>(path: string): Promise<T>;
       mocks: Map<string, any>;
+      project?: XBellProject;
     }
     __xbell_page_callbacks__: Map<string, (...args: any[]) => any>;
     __xbell_getImportActualUrl__(path: string): Promise<string>;
@@ -166,6 +171,7 @@ export function getLocatorByQueryItem(
     if (type === 'class') return locator.getByClass(value);
     if (type === 'testId') return locator.getByTestId(value);
     if (type === 'text') return locator.getByText(value);
+    if (type === 'id') return locator.getById(value);
     return locator.get(value);
   }
   const { method, args } = queryItem;
@@ -192,18 +198,20 @@ export class Page implements PageInterface {
     browserCallbacks,
     mocks,
     filename,
-    setupCalbacks,
-    channel
+    setupCallbacks,
+    project,
+    channel,
   }: {
     browserContext: PWBroContext;
-    setupCalbacks: XBellBrowserCallback[];
+    setupCallbacks: XBellBrowserCallback[];
     browserCallbacks: XBellBrowserCallback[];
     mocks: XBellMocks;
     filename: string;
+    project?: XBellProject;
     channel?: Channel;
   }) {
     const _page = await browserContext.newPage();
-    const page = new Page(_page, setupCalbacks, browserCallbacks, mocks, filename, channel);
+    const page = new Page(_page, setupCallbacks, browserCallbacks, mocks, filename, project, channel);
     if (channel) {
       await page.setup()
     }
@@ -220,14 +228,14 @@ export class Page implements PageInterface {
   protected _elementHandleMap: Map<string, ElementHandleInterface> = new Map();
   protected _pendingRequestCount = 0;
   protected _isListenRequest = false;
-  _viteAssetReload?: () => void;
 
-  constructor(
+  protected constructor(
     protected _page: PWPage,
-    protected _setupCalbacks: XBellBrowserCallback[],
+    protected _setupCallbacks: XBellBrowserCallback[],
     protected _browserCallbacks: XBellBrowserCallback[],
     protected _mocks: XBellMocks,
     protected _filename: string,
+    protected _project?: XBellProject,
     protected _channel?: Channel,
   ) {
     this._currentFilename = _filename;
@@ -241,17 +249,13 @@ export class Page implements PageInterface {
   }
 
   async _setupExpose() {
-    await this._page.exposeFunction('__xbell_getImportActualUrl__', async (modulePath: string) => {
-      const id = await this._channel!.request('queryModuleId', {
-        modulePath: modulePath,
-        importer: this._currentFilename,
+    await this._page.exposeFunction('__xbell_getImportActualUrl__', async (specifier: string) => {
+      const resolveFilename = bundless.resolve({
+        specifier,
+        importer: this._currentFilename!,
       });
-      // debugPage('execute.__xbell_getImportActualUrl__', modulePath, this._currentFilename, id);
-      if (!id) {
-        return null;
-      }
 
-      return idToUrl(id, XBELL_ACTUAL_BUNDLE_PREFIX);
+      return resolveFilename;
     });
     await this._page.exposeFunction('__xbell_page_execute_with_callback__', ({ timeoutOptions, callbackUUID, method }: Parameters<typeof window.__xbell_page_execute_with_callback__>[0]): ReturnType<typeof window.__xbell_page_execute_with_callback__> => {
         return this[method]((requestOrResponse) => {
@@ -367,7 +371,9 @@ export class Page implements PageInterface {
   }
 
   protected async _setupXBellContext() {
-    await this._page.evaluate(() => {
+    debugPage('this._project', this._project);
+    // @ts-ignore
+    await this._page.evaluate(({ project }) => {
       window.__xbell_page_callbacks__ = new Map();
       window.__xbell_context__ = {
         mocks: new Map(),
@@ -378,7 +384,10 @@ export class Page implements PageInterface {
           }
           return import(url);
         },
+        project,
       };
+    }, {
+      project: this._project,
     });
   }
 
@@ -419,8 +428,7 @@ export class Page implements PageInterface {
 
   protected async _proxyRoutes() {
     const channle = this._channel!;
-    const { port } = await channle.request('queryServerPort');
-    const modulePaths = Array.from(this._mocks.keys());
+    const mockModulePaths = Array.from(this._mocks.entries());
 
     this._page.route(new RegExp(XBELL_ACTUAL_BUNDLE_PREFIX), async (route, request) => {
       const url = request.url();
@@ -428,83 +436,57 @@ export class Page implements PageInterface {
       // const pathnameWithPrefix = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '')
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
-      urlObj.port = String(port);
-      try {
-        const { body, contentType } = await get(urlObj.href.replace(XBELL_ACTUAL_BUNDLE_PREFIX, XBELL_BUNDLE_PREFIX));
-        route.fulfill({
-          status: 200,
-          contentType,
-          body,
-        });
-      } catch (err) {
-        if ((err as any).statusCode === 504 && this._viteAssetReload) {
-          this._viteAssetReload();
-          route.fulfill({
-            status: 200,
-            contentType: 'text/javascript',
-            body: `throw new Error('XBELL_RELOAD');`,
-          });
-          return;
-        }
-        throw err;
-      }
+      const { body, contentType } = await get(urlObj.href.replace(XBELL_ACTUAL_BUNDLE_PREFIX, XBELL_BUNDLE_PREFIX));
+      route.fulfill({
+        status: 200,
+        contentType,
+        body: Buffer.from(body),
+      });
     });
 
     this._page.route((new RegExp(XBELL_BUNDLE_PREFIX)), async (route, request) => {
       const url = request.url();
       const urlObj = new URL(url);
-      const pathnameWithoutPrefix = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '');
+      const filename = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX + '/@fs', '');
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
-      urlObj.port = String(port);
-      try {
-        const { body, contentType } = await get(urlObj.href);
-        const moduleUrlMapByPath = await channle.request('queryModuleUrls', modulePaths);
-        const targetModule = moduleUrlMapByPath.find(item => item.url === pathnameWithoutPrefix);
-        if (targetModule) {
-          const factory = this._mocks?.get(targetModule?.path);
-          if (!factory) throw new Error(`The mocking path is "${targetModule.path}" missing factory function`);
-          const obj = await this.evaluateHandle(factory);
+      debugPage('vite-url', urlObj.href);
+      const { body, contentType } = await channle.request('getContent', { filename });
 
-          await obj.evaluate((factoryReturnValue, modulePath) => {
-            window.__xbell_context__.mocks.set(modulePath, factoryReturnValue);
-          }, targetModule.path);
-          const keys = Array.from((await obj.getProperties()).keys());
-          // debugPage('keys', keys);
+      const targetModule = mockModulePaths.find(([path]) => path === filename);
+      if (targetModule) {
+        const [, factory] = targetModule
+        if (!factory) throw new Error(`The mocking path is "${filename}" missing factory function`);
+        const obj = await this.evaluateHandle(factory);
 
-          const exportPropertiesCodes = keys.map((key) => {
-            return `export const ${key} = factory["${key}"];`
-          });
+        await obj.evaluate((factoryReturnValue, modulePath) => {
+          window.__xbell_context__.mocks.set(modulePath, factoryReturnValue);
+        }, filename);
+        const keys = Array.from((await obj.getProperties()).keys());
+        // debugPage('keys', keys);
 
-          const body = [
-            `const factory = window.__xbell_context__.mocks.get("${targetModule.path}");`,
-            ...exportPropertiesCodes,
-          ].join('\n');
+        const exportPropertiesCodes = keys.map((key) => {
+          return `export const ${key} = factory["${key}"];`
+        });
 
-          route.fulfill({
-            status: 200,
-            contentType,
-            body,
-          });
-          route
-        } else {
-          route.fulfill({
-            status: 200,
-            contentType,
-            body,
-          });
-        }
-      } catch (err) {
-        if ((err as any).statusCode === 504 && this._viteAssetReload) {
-          this._viteAssetReload();
-          route.fulfill({
-            status: 200,
-            contentType: 'text/javascript',
-            body: `throw new Error('XBELL_RELOAD');`,
-          });
-          return;
-        }
-        throw err;
+        const mockedBody = [
+          `const factory = window.__xbell_context__.mocks.get("${filename}");`,
+          ...exportPropertiesCodes,
+        ].join('\n');
+
+        route.fulfill({
+          status: 200,
+          contentType,
+          body: mockedBody,
+        });
+        route
+      } else {
+
+        route.fulfill({
+          status: 200,
+          contentType,
+          body,
+        });
       }
     });
   }
@@ -539,7 +521,7 @@ export class Page implements PageInterface {
     this.evaluate = this._originEvaluate;
     this.evaluateHandle = this._originEvaluateHandle;
     if (this._channel) await this._setupXBellContext();
-    if (this._setupCalbacks.length) await this._setEvaluate(this._setupCalbacks);
+    if (this._setupCallbacks.length) await this._setEvaluate(this._setupCallbacks);
     if (this._browserCallbacks.length) await this._setEvaluate(this._browserCallbacks);
   }
 
@@ -571,6 +553,11 @@ export class Page implements PageInterface {
 
   getByTestId(testId: string): Locator {
     return new Locator(this._page.locator(`data-testid=${testId}`));
+  }
+
+  getById(id: string) {
+    const finalId = id.replace(/^#/, '');
+    return new Locator(this._page.locator(`#${finalId}`));
   }
 
   async queryElementByText(text: string): Promise<ElementHandle | null> {
@@ -788,7 +775,9 @@ export class Page implements PageInterface {
     return this._page.video();
   }
 
-  async waitForFileChooser(): Promise<void> {
-    await this._page.waitForEvent('filechooser');
+  async waitForFileChooser(): Promise<FileChooserType> {
+    const _fileChooser = await this._page.waitForEvent('filechooser');
+    const fileChooser = new FileChooser(_fileChooser);
+    return fileChooser;
   }
 }

@@ -13,6 +13,7 @@ import type {
 import type { Locator } from './locator';
 import type { FrameLocator } from './frame-locator';
 import type { ElementHandle } from './element-handle';
+import type { FileChooser } from './file-chooser';
 import type { Mouse } from './mouse';
 import type { Keyboard } from './keyboard';
 import type { BrowserContext } from './browser-context';
@@ -25,6 +26,7 @@ export interface CommonPage {
   screenshot(options?: PageScreenshotOptions): Promise<Uint8Array>;
   getByText(text: string): Locator;
   getByTestId(testId: string): Locator;
+  getById(id: string): Locator;
   getByClass(className: string): Locator;
   get(selector: string): Locator;
   getFrame(selector: string): FrameLocator;
@@ -64,7 +66,7 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
     timeout?: number;
     waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
   }): Promise<Response | null>;
-  waitForFileChooser(): Promise<void>
+  waitForFileChooser(): Promise<FileChooser>;
 }
 
 export type PageMethods = Omit<Page, 'mouse' | 'keyboard'>;

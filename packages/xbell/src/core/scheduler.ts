@@ -7,9 +7,10 @@ import type { XBellWorkerTask, XBellProject } from '../types';
 import { configurator } from '../common/configurator';
 import { workerPool, XBellWorkerItem, XBellTaskQuque } from './worker-pool';
 import { recorder } from './recorder';
-import { browserBuilder } from './browser-builder';
+import { transformer } from './transformer';
 import { compiler } from '../compiler/compiler';
 import debug from 'debug';
+import { getContentType } from '@xbell/bundless';
 
 const debugScheduler = debug('xbell:scheduler');
 export interface XBellScheduler  {
@@ -35,6 +36,9 @@ export class Scheduler {
       //   })))
       // },
       async transformBrowserCode({ code: sourceCode }) {
+        // TODO: temp, disable import.meta.url in browser
+        // new Function compile failed
+        sourceCode = sourceCode.replace('import.meta.url', `'Do not support "import.meta.url" outside module'`);
         const { code, map } = await compiler.compileBrowserCode(sourceCode);
         debugScheduler('transform-browser', {
           code,
@@ -47,29 +51,20 @@ export class Scheduler {
         }
       },
       async transformHtml({ html, url }) {
-        const server = await browserBuilder.server;
-        const finalHtml = await server.transformIndexHtml(url, html);
+        // const server = await browserBuilder.server;
+        // const finalHtml = await server.transform(url, html);
+        const finalHtml = await transformer.transformHtml({ content: html });
         return { html: finalHtml };
       },
-      async queryServerPort() {
-        const { port } = await browserBuilder.server;
+      async getContent({ filename }) {
+        const contentType = getContentType(filename);
+        const { code } = await transformer.transform(filename)
+        debugScheduler('body', code, contentType);
+        // TODO: source map
         return {
-          port,
+          contentType,
+          body: code,
         }
-      },
-      async queryModuleUrls(modules: string[]) {
-        const server = await browserBuilder.server;
-        return Promise.all(modules.map(async (modulePath) => ({
-          url: await server.queryUrl(modulePath),
-          path: modulePath,
-        })));
-      },
-      async queryModuleId({
-        modulePath,
-        importer
-      }) {
-        const server = await browserBuilder.server;
-        return await server.queryId(modulePath, importer) ?? null;
       }
     });
 

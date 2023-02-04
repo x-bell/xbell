@@ -1,5 +1,35 @@
 # xbell-reporter
 
+## 0.8.3
+
+### Patch Changes
+
+- e7e15cb: fix: ignore warning of nodejs@19
+
+## 0.8.2
+
+### Patch Changes
+
+- 0d47554: support getById
+
+## 0.8.1
+
+### Patch Changes
+
+- 572aa41: use node-fetch to fetch
+
+## 0.8.0
+
+### Minor Changes
+
+- 60af676: feat: support test.all for run test in all runtimes
+
+## 0.7.2
+
+### Patch Changes
+
+- a656ab5: add FileChooser
+
 ## 0.7.1
 
 ### Patch Changes

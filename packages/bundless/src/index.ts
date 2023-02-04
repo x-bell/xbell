@@ -1,7 +1,8 @@
 import type { ImportDeclaration, Program } from '@swc/core';
 import { parse } from '@swc/core';
 import { analyse } from './analyse';
-
+export { resolve } from './resolve';
+export { getContentType } from './utils';
 interface PackFile {
   id: string;
   filename: string;
@@ -24,5 +25,3 @@ export class Pack {
     }
   }
 }
-
-export { Server } from './server';

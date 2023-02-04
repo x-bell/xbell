@@ -1,14 +1,19 @@
 import type { fn, spyOn } from '@xbell/assert';
-import type { XBellTaskConfig, XBellRuntimeOptions, XBellProject } from './config';
+import type {
+  XBellTaskConfig,
+  XBellRuntimeOptions,
+  XBellProject,
+} from './config';
 import type { Expect } from '../worker/expect/expect';
-import type { Page } from './page';
+import type { CommonPage, Page } from './page';
 import type {
   XBellTestCaseStatus,
   XBellError,
   XBellTestFileRecord,
   XBellWorkerLog,
 } from './record';
-
+import type { XBellBrowserTest } from './test-browser';
+import type { XBellAllTest } from './test-all';
 export type XBellMocks = Map<string, ((args: any) => any) | undefined>;
 
 export interface XBellOptions {
@@ -18,16 +23,16 @@ export interface XBellOptions {
   each?: {
     item: any;
     index: number;
-  }
+  };
   batch?: {
     items?: any[];
-  }
+  };
 }
 
 export interface XBellTestFile {
   projectName: string;
   filename: string;
-  options:  Record<'only' | 'skip' | 'todo', number>;
+  options: Record<'only' | 'skip' | 'todo', number>;
   tasks: XBellTestTask[];
   config: XBellTaskConfig;
   logs: XBellWorkerLog[];
@@ -53,7 +58,7 @@ export type XBellCaseTagName =
   | 'each'
   | 'batch'
   | 'skip'
-  | 'config'
+  | 'config';
 
 interface XBellCaseCommonTagInfo {
   tag: XBellCaseTagName;
@@ -61,42 +66,41 @@ interface XBellCaseCommonTagInfo {
 }
 
 export interface XBellCaseNormalTagInfo extends XBellCaseCommonTagInfo {
-  tag: 'normal'
+  tag: 'normal';
   options?: void;
 }
 
 export interface XBellCaseTodoTagInfo extends XBellCaseCommonTagInfo {
-  tag: 'todo'
+  tag: 'todo';
   options?: void;
 }
 
 export interface XBellCaseSkipTagInfo extends XBellCaseCommonTagInfo {
-  tag: 'skip'
+  tag: 'skip';
   options?: void;
 }
 
-
 export interface XBellCaseOnlyTagInfo extends XBellCaseCommonTagInfo {
-  tag: 'only'
+  tag: 'only';
   options?: void;
 }
 
 export interface XBellCaseEachTagInfo extends XBellCaseCommonTagInfo {
-  tag: 'each'
+  tag: 'each';
   options: {
-    item: any
+    item: any;
   };
 }
 
 export interface XBellCaseBatchTagInfo extends XBellCaseCommonTagInfo {
-  tag: 'batch'
+  tag: 'batch';
   options: {
-    items: any[]
+    items: any[];
   };
 }
 
 export interface XBellCaseConfigTagInfo extends XBellCaseCommonTagInfo {
-  tag: 'config'
+  tag: 'config';
   options: XBellTaskConfig;
 }
 
@@ -109,9 +113,7 @@ export type XBellCaseTagInfo =
   | XBellCaseEachTagInfo
   | XBellCaseConfigTagInfo;
 
-export type XBellRuntime =
-  | 'browser'
-  | 'node'
+export type XBellRuntime = 'browser' | 'nodejs' | 'all';
 
 interface XBellTestCaseCommon {
   type: 'case';
@@ -129,8 +131,10 @@ interface XBellTestCaseCommon {
   mocks: XBellMocks;
   browserMocks: XBellMocks;
 }
-export interface XBellTestCaseStandard<NodeJSExtensionArg, BrowserExtensionArg> extends XBellTestCaseCommon {
-  testFunction: XBellTestCaseFunction<NodeJSExtensionArg, BrowserExtensionArg>;
+export interface XBellTestCaseStandard<
+  NodeJSExtensionArguments,
+> extends XBellTestCaseCommon {
+  testFunction: XBellNodeJSTestCaseFunction<NodeJSExtensionArguments>;
 }
 
 export interface XBellTestCaseClassic extends XBellTestCaseCommon {
@@ -138,33 +142,43 @@ export interface XBellTestCaseClassic extends XBellTestCaseCommon {
   propertyKey: string;
 }
 
-export type XBellTestCase<NodeJSExtensionArg, BrowserExtensionArg> = XBellTestCaseStandard<NodeJSExtensionArg, BrowserExtensionArg> | XBellTestCaseClassic;
-
+export type XBellTestCase<NodeJSExtensionArguments, BrowserExtensionArguments> =
+    | XBellTestCaseStandard<NodeJSExtensionArguments>
+    | XBellTestCaseClassic;
 
 export interface XBellTestGroupFunction {
-  (): void
+  (): void;
 }
 
-export interface XBellTestCaseFunctionArguments<BrowserExtensionArg = {}> {
-  page: Page<BrowserExtensionArg>;
+export interface TestArgumentsBasic {
+  page: CommonPage;
   project: XBellProject;
   expect: Expect;
   fn: typeof fn;
   spyOn: typeof spyOn;
   sleep: (duration: number) => Promise<void>;
+  runtime: 'nodejs' | 'browser';
 }
 
-export interface XBellTestCaseFunction<NodeJSExtensionArg = {}, BrowserExtensionArg = {}> {
-  (args: XBellTestCaseFunctionArguments<BrowserExtensionArg> & NodeJSExtensionArg): void
+export interface NodeJSTestArguments extends TestArgumentsBasic {
+  page: Page;
+  runtime: 'nodejs';
 }
 
-export interface XBellBrowserTestCaseFunction<BrowserExtensionArg = {}> {
-  (args: BrowserExtensionArg): (void | Promise<void>);
+export interface XBellNodeJSTestCaseFunction<
+  NodeJSExtensionArguments = {},
+> {
+  (
+    args: NodeJSExtensionArguments
+  ): void;
 }
 
-export type XBellTestTask<NodeJSExtensionArg = any, BrowserExtensionArg = any> =
+export type XBellTestTask<
+  NodeJSExtensionArguments = any,
+  BrowserExtensionArguments = any
+> =
   | XBellTestGroup
-  | XBellTestCase<NodeJSExtensionArg, BrowserExtensionArg>;
+  | XBellTestCase<NodeJSExtensionArguments, BrowserExtensionArguments>;
 
 export interface XBellTestCaseLifecycle {
   onStart(): void;
@@ -173,64 +187,116 @@ export interface XBellTestCaseLifecycle {
 }
 
 export interface XBellWorkerLifecycle {
-  onLog(log: XBellWorkerLog & { filename: string; projectName: string; }): void;
+  onLog(log: XBellWorkerLog & { filename: string; projectName: string }): void;
   onFileCollectSuccesed(file: XBellTestFileRecord): void;
   onFileCollectFailed(file: XBellTestFileRecord): void;
   onCaseExecuteSkipped(c: { uuid: string }): void;
   onCaseExecuteTodo(c: { uuid: string }): void;
   onCaseExecuteStart(c: { uuid: string }): void;
-  onCaseExecuteSuccessed(c: { uuid: string, coverage?: any, videos?: string[] }): void;
-  onCaseExecuteFailed(c: { uuid: string, error: XBellError, videos?: string[], browserTestFunction?: { body: string; filename: string; } }): void;
+  onCaseExecuteSuccessed(c: {
+    uuid: string;
+    coverage?: any;
+    videos?: string[];
+  }): void;
+  onCaseExecuteFailed(c: {
+    uuid: string;
+    error: XBellError;
+    videos?: string[];
+    browserTestFunction?: { body: string; filename: string };
+  }): void;
   onAllDone(): Promise<void> | void;
   onExit(): void;
 }
 
-export interface XBellBrowserTest<BrowserExtArgs = {}> {
-  (caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
-
-  only(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
-
-  skip(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
-
-  todo(caseDescription: string, testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs>): void;
-
-  each<T>(items: T[]): (caseDescription: string | ((item: T, index: number) => string), testCaseFunction: XBellBrowserTestCaseFunction<BrowserExtArgs & { item: T; index: number }>) => void;
-
-  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<BrowserExtArgs & { item: T; index: number }>) => void;
-
-  extend<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellBrowserTest<Awaited<ReturnType<T>>>;
-
-  mock(path: string, factory: (args: BrowserExtArgs) => any): void;
-}
-
 export interface XBellDescribe {
   (groupDescription: string, testGroupFunction: XBellTestGroupFunction): void;
-  only(caseDescription: string, testGroupFunction: XBellTestGroupFunction): void;
-  skip(caseDescription: string, testGroupFunction: XBellTestGroupFunction): void;
-  todo(caseDescription: string, testGroupFunction: XBellTestGroupFunction): void;
+  only(
+    caseDescription: string,
+    testGroupFunction: XBellTestGroupFunction
+  ): void;
+  skip(
+    caseDescription: string,
+    testGroupFunction: XBellTestGroupFunction
+  ): void;
+  todo(
+    caseDescription: string,
+    testGroupFunction: XBellTestGroupFunction
+  ): void;
 }
 
-export interface XBellTest<NodeJSExtArgs = {}, BrowserExtArgs = {}> {
+export interface XBellTest<
+  NodeJSExtensionArguments = {},
+  BrowserExtensionArguments = {},
+  CommonExtensionArguments = {}
+> {
   /** group */
   describe: XBellDescribe;
 
-  only(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
+  only(
+    caseDescription: string,
+    testCaseFunction: XBellNodeJSTestCaseFunction<
+      NodeJSExtensionArguments
+    >
+  ): void;
 
-  skip(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
+  skip(
+    caseDescription: string,
+    testCaseFunction: XBellNodeJSTestCaseFunction<NodeJSExtensionArguments>
+  ): void;
 
-  todo(caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
+  todo(
+    caseDescription: string,
+    testCaseFunction: XBellNodeJSTestCaseFunction<
+      NodeJSExtensionArguments
+    >
+  ): void;
 
-  each<T>(items: T[]): (caseDescription: string | ((item: T, index: number) => string), testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T; index: number }, BrowserExtArgs>) => void;
+  each<T>(
+    items: T[]
+  ): (
+    caseDescription: string | ((item: T, index: number) => string),
+    testCaseFunction: XBellNodeJSTestCaseFunction<NodeJSExtensionArguments & { item: T; index: number }>
+  ) => void;
 
-  batch<T>(items: T[]): (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs & { item: T; index: number; }, BrowserExtArgs>) => void;
+  batch<T>(
+    items: T[]
+  ): (
+    caseDescription: string,
+    testCaseFunction: XBellNodeJSTestCaseFunction<NodeJSExtensionArguments & { item: T; index: number }>
+  ) => void;
 
-  browser: XBellBrowserTest<BrowserExtArgs>;
+  mock(path: string, factory: (args: NodeJSExtensionArguments) => any): void;
 
-  extend<T extends (args: XBellTestCaseFunctionArguments<BrowserExtArgs>) => any>(nodeJSCallback: T): XBellTest<NodeJSExtArgs & Awaited<ReturnType<T>>, BrowserExtArgs>;
-   /** case */
-  (caseDescription: string, testCaseFunction: XBellTestCaseFunction<NodeJSExtArgs, BrowserExtArgs>): void;
-   
-  mock(path: string, factory: (args: NodeJSExtArgs) => any): void;
+  browser: XBellBrowserTest<BrowserExtensionArguments>;
 
-  extendBrowser<T extends (args: BrowserExtArgs) => any>(browserCallback: T): XBellTest<NodeJSExtArgs, Awaited<ReturnType<T>>>;
+  all: XBellAllTest<CommonExtensionArguments>;
+
+  extend<T extends (args: NodeJSExtensionArguments) => any>(
+  nodeJSCallback: T
+): XBellTest<
+  Awaited<ReturnType<T>>,
+  BrowserExtensionArguments,
+  CommonExtensionArguments
+>;
+/** case */
+(
+  caseDescription: string,
+  testCaseFunction: XBellNodeJSTestCaseFunction<NodeJSExtensionArguments>
+): void;
+
+  extendBrowser<T extends (args: BrowserExtensionArguments) => any>(
+    browserCallback: T
+  ): XBellTest<
+    NodeJSExtensionArguments,
+    Awaited<ReturnType<T>>,
+    CommonExtensionArguments
+  >;
+
+  extendAll<T extends (args: CommonExtensionArguments) => any>(
+    commonCallback: T
+  ): XBellTest<
+    NodeJSExtensionArguments,
+    BrowserExtensionArguments,
+    Awaited<ReturnType<T>>
+  >;
 }

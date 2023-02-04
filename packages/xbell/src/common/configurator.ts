@@ -1,11 +1,10 @@
-import type { XBellConfig, XBellTaskConfig, XBellBrowserConfig, XBellBrowserConfigRequired, XBellConfigRequired } from '../types';
+import type { XBellConfig, XBellTaskConfig, XBellBrowserConfigRequired, XBellConfigRequired } from '../types';
 import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import { cpus } from 'node:os';
 import debug from 'debug';
 import { pathManager } from './path-manager';
 import { commander } from './commander';
-import { mergeConfig as mergeViteConfig } from 'vite';
 
 const debugConfigurator = debug('xbell:configurator');
 
@@ -14,29 +13,17 @@ interface XBellConfigurator {
   queryCaseConfig(caseConfig: XBellTaskConfig): Promise<XBellConfig>
 }
 
-const viteFunctionConfigOptions = { mode: 'testing', ssrBuild: false, command: 'serve' } as const;
-
 async function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): Promise<XBellConfig> {
   const browser1 = config1.browser ?? {};
   const browser2 = config2.browser ?? {};
   const compiler1 = config1.compiler ?? {};
   const compiler2 = config2.compiler ?? {};
-  const viteConfig1 = browser1.devServer?.viteConfig || {};
-  const viteConfig2 = browser2.devServer?.viteConfig || {};
   return {
     ...config1,
     ...config2,
     browser: {
       ...browser1,
       ...browser2,
-      devServer: {
-        ...browser1.devServer,
-        ...browser2.devServer,
-        viteConfig: mergeViteConfig(
-          typeof viteConfig1 === 'function' ? await viteConfig1({ ...viteFunctionConfigOptions }) : viteConfig1,
-          typeof viteConfig2 === 'function' ? await viteConfig2({ ...viteFunctionConfigOptions }) : viteConfig2,
-        ),
-      },
     },
     coverage: {
       ...config1.coverage,
@@ -49,7 +36,11 @@ async function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): Prom
         ...compiler1.jsx,
         ...compiler2.jsx,
       }
-    }
+    },
+    loaders: [
+      ...(config1.loaders ?? []),
+      ...(config2.loaders ?? []),
+    ]
   }
 }
 
@@ -69,7 +60,6 @@ export class Configurator implements XBellConfigurator {
       width: 1280,
       height: 700,
     },
-    devServer: {},
   };
 
   static XBellDefaultConfig: XBellConfigRequired = {
@@ -98,6 +88,7 @@ export class Configurator implements XBellConfigurator {
         content: '<div id="root"></div>'
       },
     },
+    loaders: [],
   }
 
   static XBellConfigFilePaths = [

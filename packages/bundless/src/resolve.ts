@@ -4,12 +4,13 @@ import { join, isAbsolute } from 'node:path';
 import { dirname } from './utils';
 import * as fs from 'node:fs';
 import * as url from 'url';
-import { getPackageInfo } from './pkg';
+import { getPackageInfo, resolvePackageSubPath } from './pkg';
+import { resolveFile } from './utils';
+import debug from 'debug';
 const __filename = url.fileURLToPath(new URL(import.meta.url));
-
-
 const PKG_NAME_REG = /^(@[^/]+\/)?[^/]+/;
 
+const debugBundless = debug('xbell:bundless');
 class Resolver {
   static create({
 
@@ -23,80 +24,105 @@ class Resolver {
 
 const fileProtocol = 'file://';
 
-const extensions = [
-  '.js',
-  '.ts',
-  '.jsx',
-  '.tsx',
-  '.mjs',
-  '.cjs',
-];
-
-function resolveNormalFile(fullSpecifierMaybeWithoutSuffix: string): string | null {
-  const existed = fs.existsSync(fullSpecifierMaybeWithoutSuffix);
-
-  if (!existed) {
-    const ext = extensions.find(ext => fs.existsSync(fullSpecifierMaybeWithoutSuffix + ext));
-    return ext ? fullSpecifierMaybeWithoutSuffix + ext : null;
-  }
-
-  const stats = fs.statSync(fullSpecifierMaybeWithoutSuffix);
-  if (stats.isFile()) {
-    return fullSpecifierMaybeWithoutSuffix;
-  }
-  if (stats.isDirectory()) {
-    return resolveNormalFile(join(fullSpecifierMaybeWithoutSuffix, 'index'));
-  }
-
-  return extensions.find(ext => resolveNormalFile(join(fullSpecifierMaybeWithoutSuffix + ext))) ?? null;
-}
-
-
 function isRelativePath(specifier: string) {
   return specifier.startsWith('.');
 }
 
 
 
-async function checkPackage(specifier: string): Promise<PackageInfo | null> {
+// function checkPackage(specifier: string): PackageInfo | null {
+//   const m = specifier.match(PKG_NAME_REG);
+//   if (!m) {
+//     return null;
+//   }
+//   const [packageName] = m;
+//   // TODO: get by arguments
+//   const cwd = process.cwd();
+//   const subPath = packageName.includes(packageName + '/') ? specifier.replace(packageName, '.') : null;
+//   const pkgInfo = getPackageInfo({
+//     cwd,
+//     packageName,
+//   });
+
+//   if (!pkgInfo) return null;
+
+//   return pkgInfo;
+// }
+
+function resolvePackage({
+  conditions,
+  specifier,
+}: {
+  conditions: string[];
+  specifier: string;
+}): string | undefined {
   const m = specifier.match(PKG_NAME_REG);
   if (!m) {
-    return null;
+    return undefined;
   }
-  const packageName = m[0];
+  const [packageName] = m;
   // TODO: get by arguments
   const cwd = process.cwd();
-  const pkgInfo = await getPackageInfo(cwd, packageName);
-  if (!pkgInfo) return null;
-  return pkgInfo;
+  const subPath = specifier.includes(packageName + '/') ? specifier.replace(packageName, '.') : undefined;
+  const packageInfo = getPackageInfo({
+    cwd,
+    packageName,
+  });
+
+  debugBundless('resolvePackage::1', subPath, packageInfo?.packageJSON.exports);
+
+  if (packageInfo) {
+    if (subPath) {
+      return resolvePackageSubPath({
+        conditions,
+        packageInfo,
+        subPath,
+      });
+    }
+    return packageInfo.entry;
+  }
 }
 
-export async function resolve({
+export function resolve({
   specifier,
   importer,
+  conditions,
 }: {
   specifier: string;
   importer: string;
-}): Promise<FileInfo | PackageInfo> {
+  conditions?: string[];
+}): string {
+  conditions = [...(conditions ?? []).filter(condition => condition !== 'default')]
+  if (!conditions.includes('import')) {
+    conditions.push('import');
+  }
+
+  if (!conditions.includes('default')) {
+    conditions.push('default');
+  }
+
   if (isRelativePath(specifier)) {
     const fullSpecifierMaybeWithoutSuffix = join(
       dirname(importer),
       specifier
     );
-    const filename = resolveNormalFile(fullSpecifierMaybeWithoutSuffix);
+    const filename = resolveFile(fullSpecifierMaybeWithoutSuffix);
     if (!filename) throw new Error(`Not found path "${specifier}" from "${importer}"`);
-    return {
-      type: 'file',
-      filename,
-    }
+    return filename;
   }
 
   if (isAbsolute(specifier)) {
-    const filename = resolveNormalFile(specifier);
+    const filename = resolveFile(specifier);
     if (!filename) throw new Error(`Not found path "${specifier}"`);
   }
-  const pkgRet = await checkPackage(specifier);
+  
+  const pkgRet = resolvePackage({
+    specifier,
+    conditions, 
+  });
+
   if (pkgRet) {
+    debugBundless('pkgRet', pkgRet);
     return pkgRet;
   }
 

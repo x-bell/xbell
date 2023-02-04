@@ -20,11 +20,8 @@ export interface FileInfo {
   filename: string;
 }
 
-export interface PackageInfo {
-  type: 'package';
-  dir: string;
-  entry: string;
-  packageJSON: object;
+export interface PackageJSONExportsField {
+  [key: string]: PackageJSONExportsField | string;
 }
 
 export interface PackageJSON {
@@ -33,7 +30,14 @@ export interface PackageJSON {
   main?: string;
   module?: string;
   type?: 'module';
-  exports?: Record<string, any>;
+  exports?: PackageJSONExportsField;
+}
+
+export interface PackageInfo {
+  type: 'package';
+  dir: string;
+  entry: string;
+  packageJSON: PackageJSON;
 }
 
 export interface ServerMiddleware {

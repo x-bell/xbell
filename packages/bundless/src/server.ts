@@ -33,15 +33,13 @@ export class Server {
           '.' + pathname,
         ));
         if (isExisted) {
-          const ret = await resolve({
+          const filename = resolve({
             importer: server.cwd,
             specifier: '.' + pathname,
           });
-          if (ret.type === 'file') {
-            const fileContent = fs.readFileSync(ret.filename, 'utf-8');
-            ctx.setHeader('Content-Type', 'application/javascript');
-            ctx.body = fileContent;
-          }
+          const fileContent = fs.readFileSync(filename, 'utf-8');
+          ctx.setHeader('Content-Type', 'application/javascript');
+          ctx.body = fileContent;
         } else {
           ctx.body = 'Not found';
         }

@@ -1,6 +1,6 @@
 {
   "name": "@xbell/reporter",
-  "version": "0.7.1",
+  "version": "0.8.3",
   "main": "./lib/index.mjs",
   "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
