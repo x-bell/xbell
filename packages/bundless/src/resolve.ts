@@ -6,10 +6,11 @@ import * as fs from 'node:fs';
 import * as url from 'url';
 import { getPackageInfo, resolvePackageSubPath } from './pkg';
 import { resolveFile } from './utils';
+import debug from 'debug';
 const __filename = url.fileURLToPath(new URL(import.meta.url));
-
 const PKG_NAME_REG = /^(@[^/]+\/)?[^/]+/;
 
+const debugBundless = debug('xbell:bundless');
 class Resolver {
   static create({
 
@@ -29,24 +30,24 @@ function isRelativePath(specifier: string) {
 
 
 
-function checkPackage(specifier: string): PackageInfo | null {
-  const m = specifier.match(PKG_NAME_REG);
-  if (!m) {
-    return null;
-  }
-  const [packageName] = m;
-  // TODO: get by arguments
-  const cwd = process.cwd();
-  const subPath = packageName.includes(packageName + '/') ? specifier.replace(packageName, '.') : null;
-  const pkgInfo = getPackageInfo({
-    cwd,
-    packageName,
-  });
+// function checkPackage(specifier: string): PackageInfo | null {
+//   const m = specifier.match(PKG_NAME_REG);
+//   if (!m) {
+//     return null;
+//   }
+//   const [packageName] = m;
+//   // TODO: get by arguments
+//   const cwd = process.cwd();
+//   const subPath = packageName.includes(packageName + '/') ? specifier.replace(packageName, '.') : null;
+//   const pkgInfo = getPackageInfo({
+//     cwd,
+//     packageName,
+//   });
 
-  if (!pkgInfo) return null;
+//   if (!pkgInfo) return null;
 
-  return pkgInfo;
-}
+//   return pkgInfo;
+// }
 
 function resolvePackage({
   conditions,
@@ -62,12 +63,13 @@ function resolvePackage({
   const [packageName] = m;
   // TODO: get by arguments
   const cwd = process.cwd();
-  const subPath = packageName.includes(packageName + '/') ? specifier.replace(packageName, '.') : undefined;
+  const subPath = specifier.includes(packageName + '/') ? specifier.replace(packageName, '.') : undefined;
   const packageInfo = getPackageInfo({
     cwd,
     packageName,
   });
 
+  debugBundless('resolvePackage::1', subPath, packageInfo?.packageJSON.exports);
 
   if (packageInfo) {
     if (subPath) {
@@ -91,6 +93,10 @@ export function resolve({
   conditions?: string[];
 }): string {
   conditions = [...(conditions ?? []).filter(condition => condition !== 'default')]
+  if (!conditions.includes('import')) {
+    conditions.push('import');
+  }
+
   if (!conditions.includes('default')) {
     conditions.push('default');
   }
@@ -109,12 +115,14 @@ export function resolve({
     const filename = resolveFile(specifier);
     if (!filename) throw new Error(`Not found path "${specifier}"`);
   }
+  
   const pkgRet = resolvePackage({
     specifier,
     conditions, 
   });
 
   if (pkgRet) {
+    debugBundless('pkgRet', pkgRet);
     return pkgRet;
   }
 

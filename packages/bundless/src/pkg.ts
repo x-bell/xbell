@@ -7,7 +7,7 @@ import debug from 'debug';
 import { resolveFile } from './utils';
 const __filename = url.fileURLToPath(new URL(import.meta.url));
 
-const debugPkg = debug('xbell:pkg');
+const debugBundless = debug('xbell:bundless');
 function getPathByExports({
   dir,
   exports,
@@ -79,7 +79,7 @@ export function getPackageInfo({
   if (stat.isSymbolicLink()) {
     const ret = fs.readlinkSync(expectedPkgDir);
     const pkgDir = path.join(path.dirname(expectedPkgDir), ret);
-    debugPkg('pkgDir', pkgDir);
+    debugBundless('pkgDir', pkgDir);
     const packageJSON = getPackageJSON(pkgDir);
     return {
       type: 'package',
@@ -140,7 +140,6 @@ export function resolvePackageSubPath({
       subPath,
     });
   }
-
   if (subPath === '.') {
     return packageJSON.module ?? packageJSON.main;
   }
@@ -162,11 +161,16 @@ function getSubPathByExports({
   const target = exportsField[subPath];
   if (target) {
     if (typeof target === 'string') {
+      debugBundless('getSubPathByExports::1', target);
       return path.join(packageDir, target);
     }
 
     const condition = conditions.find(condition => target[condition]);
+
+    debugBundless('getSubPathByExports::2', condition, conditions);
+    
     if (condition) {
+      debugBundless('getSubPathByExports::2', target[condition]);
       return path.join(packageDir, target[condition] as string);
     }
   }
