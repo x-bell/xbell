@@ -24,12 +24,12 @@ export class BrowserPathCollector extends Visitor {
           // TODO: importer optional
           importer: '',
         });
-        const ret = fullPathToURL(resolveFilename);
-        debugCompiler('originFullPathOrPackage', originFullPathOrPackage, originFullPathOrPackage.length, ret, resolveFilename);
+        const url = fullPathToURL(resolveFilename);
+        debugCompiler('url', url);
 
         // @ts-ignore
         delete n.arguments[0].expression.raw;
-        n.arguments[0].expression.value = ret;
+        n.arguments[0].expression.value = url;
     }
 
     return super.visitCallExpression(n);

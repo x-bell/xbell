@@ -447,7 +447,7 @@ export class Page implements PageInterface {
     this._page.route((new RegExp(XBELL_BUNDLE_PREFIX)), async (route, request) => {
       const url = request.url();
       const urlObj = new URL(url);
-      const filename = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX, '');
+      const filename = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX + '/@fs', '');
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
       debugPage('vite-url', urlObj.href);
