@@ -38,7 +38,7 @@ export interface XBellConfig {
       importSource?: string;
     }
   };
-  transform?: Record<string, XBellTransformer>;
+
   presets?: XBellConfig[] | XBellConfig;
   /** browser config */
   browser?: XBellBrowserConfig;
@@ -72,7 +72,7 @@ export interface XBellConfig {
   loaders?: Loader[];
 }
 
-type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets' | 'loaders';
+type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets';
 type XBellBrowserConfigOptionalsKeys = 'storageState';
 
 export type XBellBrowserConfigRequired =
