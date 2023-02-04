@@ -77,8 +77,7 @@ export function getPackageInfo({
   const stat = fs.lstatSync(expectedPkgDir);
 
   if (stat.isSymbolicLink()) {
-    const ret = fs.readlinkSync(expectedPkgDir);
-    const pkgDir = path.join(path.dirname(expectedPkgDir), ret);
+    const pkgDir = fs.realpathSync(expectedPkgDir);
     debugBundless('pkgDir', pkgDir);
     const packageJSON = getPackageJSON(pkgDir);
     return {
