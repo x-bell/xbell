@@ -212,8 +212,9 @@ test.browser.batch([1, 2, 3])(
 - `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
 
 ```typescript
-test.browser.todo('goto github', async (page) => {
-  await page.goto('https://github.com');
+test.browser.todo('goto github', async ({ expect }) => {
+  const { add } = await import('./add.ts');
+  expect(add(1, 1)).toBe(2);
 });
 ```
 
@@ -223,8 +224,9 @@ test.browser.todo('goto github', async (page) => {
 - `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
 
 ```typescript
-test.browser.only('goto github', async (page) => {
-  await page.goto('https://github.com');
+test.browser.only('goto github', async ({ expect }) => {
+  const { add } = await import('./add.ts');
+  expect(add(1, 1)).toBe(2);
 });
 ```
 
@@ -234,8 +236,9 @@ test.browser.only('goto github', async (page) => {
 - `testFunction` <type>(args: TestArguments) => void | Promise&lt;void&gt; </type> test function
 
 ```typescript
-test.browser.skip('goto github', async (page) => {
-  await page.goto('https://github.com');
+test.browser.skip('', async ({ expect }) => {
+  const { add } = await import('./add.ts');
+  expect(add(1, 1)).toBe(2);
 });
 ```
 
