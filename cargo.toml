@@ -1,8 +1,0 @@
-[workspace]
-
-members = [
-  "crates/xbell-resolver"
-]
-
-[workspace.dependencies]
-swc_core = { version = "0.48.12" }
