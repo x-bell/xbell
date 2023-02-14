@@ -1,15 +1,15 @@
 import { defineConfig } from 'vite'
-import { Vue2Transfomer } from '@xbell/vue2/transfomer';
+import { Vue2Loader } from '@xbell/vue2/loader';
 
-function compileVue() {
+function vue2PluginForVite() {
   return {
-    name: 'my-vue2',
+    name: Vue2Loader.name,
     async transform(sourceCode: string, filename: string) {
-      if (Vue2Transfomer.match.test(filename)) {
-        const { code } = await Vue2Transfomer.transform(sourceCode, filename);
+      if (Vue2Loader.match.test(filename)) {
+        const { code } = await Vue2Loader.transform(sourceCode, filename);
         return {
           code,
-        }
+        };
       }
     }
   }
@@ -18,7 +18,6 @@ function compileVue() {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    // vue(),
-    compileVue(),
+    vue2PluginForVite(),
   ],
 });
