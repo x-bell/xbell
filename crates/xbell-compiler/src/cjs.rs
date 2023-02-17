@@ -23,11 +23,12 @@ use swc_core::{
             resolver,
         },
         utils::{prepend_stmts, StmtLike},
-        visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
+        visit::{as_folder, noop_visit_mut_type, VisitMut, VisitMutWith},
     },
 };
 
 const XBELL_ASSET_PREFIX: &str = "/__xbell_asset_prefix__";
+
 
 pub struct Cjs {
     pub specifiers: Vec<String>,
@@ -41,7 +42,18 @@ impl Cjs {
 
         let filename = PathBuf::from(&dirname);
         let filename = filename.join(specifier);
-        filename.canonicalize().unwrap()
+        // log_many("filename:", filename.to_str().unwrap());
+        
+        let ret = match fs::canonicalize(filename) {
+            Ok(ret) => ret,
+            Err(e) => {
+                // log_many("error", &e.to_string());
+                panic!("{}", e.to_string());
+            }
+        };
+        // log_many("ret:", ret.to_str().unwrap());
+
+        return ret;
     }
 
     pub fn get_file_name_var(&self, specifier: &str) -> String {
@@ -135,33 +147,29 @@ impl VisitMut for Cjs {
                 span: DUMMY_SP,
                 kind: VarDeclKind::Let,
                 declare: false,
-                decls: vec![
-                    VarDeclarator {
-                        span: DUMMY_SP,
-                        definite: false,
-                        init: Some(Box::new(
-                            Bool {
-                                span: DUMMY_SP,
-                                value: false,
-                            }
-                            .into(),
-                        )),
-                        name: BindingIdent {
-                            type_ann: None,
-                            id: Ident {
-                                span: DUMMY_SP,
-                                sym: "flag".into(),
-                                optional: false,
-                            },
+                decls: vec![VarDeclarator {
+                    span: DUMMY_SP,
+                    definite: false,
+                    init: Some(Box::new(
+                        Bool {
+                            span: DUMMY_SP,
+                            value: false,
                         }
                         .into(),
-                    },
-
-                ],
+                    )),
+                    name: BindingIdent {
+                        type_ann: None,
+                        id: Ident {
+                            span: DUMMY_SP,
+                            sym: "flag".into(),
+                            optional: false,
+                        },
+                    }
+                    .into(),
+                }],
             }
             .into(),
         ));
-
 
         let stmts = items
             .iter()
@@ -226,21 +234,19 @@ impl VisitMut for Cjs {
                                     })),
                                 })),
                                 alt: None,
-                                cons: Box::new(Stmt::Expr(
-                                    ExprStmt {
+                                cons: Box::new(Stmt::Expr(ExprStmt {
+                                    span: DUMMY_SP,
+                                    expr: Box::new(Expr::Call(CallExpr {
                                         span: DUMMY_SP,
-                                        expr: Box::new(Expr::Call(CallExpr {
+                                        args: vec![],
+                                        callee: Callee::Expr(Box::new(Expr::Ident(Ident {
                                             span: DUMMY_SP,
-                                            args: vec![],
-                                            callee: Callee::Expr(Box::new(Expr::Ident(Ident {
-                                                span: DUMMY_SP,
-                                                optional: false,
-                                                sym: "origin".into(),
-                                            }))),
-                                            type_args: None,
-                                        })),
-                                    }),
-                                ),
+                                            optional: false,
+                                            sym: "origin".into(),
+                                        }))),
+                                        type_args: None,
+                                    })),
+                                })),
                             }),
                             Stmt::Expr(ExprStmt {
                                 span: DUMMY_SP,
@@ -250,47 +256,27 @@ impl VisitMut for Cjs {
                                     left: PatOrExpr::Expr(Box::new(Expr::Ident(Ident {
                                         span: DUMMY_SP,
                                         optional: false,
-                                        sym: "flag".into()
+                                        sym: "flag".into(),
                                     }))),
                                     right: Box::new(Expr::Lit(Lit::Bool(Bool {
                                         span: DUMMY_SP,
                                         value: true,
-                                    })))
-                                }))
+                                    }))),
+                                })),
                             }),
                             Stmt::Return(ReturnStmt {
                                 span: DUMMY_SP,
-                                arg: Some(Box::new(
-                                    Expr::Object(ObjectLit {
-                                        span: DUMMY_SP,
-                                        props: vec![
-                                            PropOrSpread::Prop(Box::new(
-                                                Prop::KeyValue(
-                                                    KeyValueProp {
-                                                        key: PropName::Ident(Ident {
-                                                            span: DUMMY_SP,
-                                                            optional: false,
-                                                            sym: "default".into()
-                                                        }),
-                                                        value: Box::new(Expr::Member(MemberExpr {
-                                                            span: DUMMY_SP,
-                                                            obj: Box::new(Expr::Ident(Ident {
-                                                                span: DUMMY_SP,
-                                                                sym: "module".into(),
-                                                                optional: false,
-                                                            })),
-                                                            prop: MemberProp::Ident(Ident {
-                                                                span: DUMMY_SP,
-                                                                optional: false,
-                                                                sym: "exports".into()
-                                                            })
-                                                        }))
-                                                    }
-                                                )
-                                            )),
-                                            PropOrSpread::Spread(SpreadElement {
-                                                dot3_token: DUMMY_SP,
-                                                expr: Box::new(Expr::Member(MemberExpr {
+                                arg: Some(Box::new(Expr::Object(ObjectLit {
+                                    span: DUMMY_SP,
+                                    props: vec![
+                                        PropOrSpread::Prop(Box::new(Prop::KeyValue(
+                                            KeyValueProp {
+                                                key: PropName::Ident(Ident {
+                                                    span: DUMMY_SP,
+                                                    optional: false,
+                                                    sym: "default".into(),
+                                                }),
+                                                value: Box::new(Expr::Member(MemberExpr {
                                                     span: DUMMY_SP,
                                                     obj: Box::new(Expr::Ident(Ident {
                                                         span: DUMMY_SP,
@@ -300,14 +286,30 @@ impl VisitMut for Cjs {
                                                     prop: MemberProp::Ident(Ident {
                                                         span: DUMMY_SP,
                                                         optional: false,
-                                                        sym: "exports".into()
-                                                    })
-                                                }))
-                                            })
-                                        ]
-                                    })
-                                ))
-                            })
+                                                        sym: "exports".into(),
+                                                    }),
+                                                })),
+                                            },
+                                        ))),
+                                        PropOrSpread::Spread(SpreadElement {
+                                            dot3_token: DUMMY_SP,
+                                            expr: Box::new(Expr::Member(MemberExpr {
+                                                span: DUMMY_SP,
+                                                obj: Box::new(Expr::Ident(Ident {
+                                                    span: DUMMY_SP,
+                                                    sym: "module".into(),
+                                                    optional: false,
+                                                })),
+                                                prop: MemberProp::Ident(Ident {
+                                                    span: DUMMY_SP,
+                                                    optional: false,
+                                                    sym: "exports".into(),
+                                                }),
+                                            })),
+                                        }),
+                                    ],
+                                }))),
+                            }),
                         ],
                     }),
                     is_generator: false,
@@ -319,18 +321,16 @@ impl VisitMut for Cjs {
             .into(),
         ));
 
-        prepend_items.push(ModuleItem::ModuleDecl(
-            ModuleDecl::ExportDefaultExpr(ExportDefaultExpr {
+        prepend_items.push(ModuleItem::ModuleDecl(ModuleDecl::ExportDefaultExpr(
+            ExportDefaultExpr {
                 span: DUMMY_SP,
-                expr: Box::new(
-                    Expr::Ident(Ident {
-                        span: DUMMY_SP,
-                        sym: "exe".into(),
-                        optional: false,
-                    })
-                )
-            })
-        ));
+                expr: Box::new(Expr::Ident(Ident {
+                    span: DUMMY_SP,
+                    sym: "exe".into(),
+                    optional: false,
+                })),
+            },
+        )));
 
         *items = vec![];
         prepend_stmts(items, prepend_items.into_iter());
@@ -366,97 +366,67 @@ impl VisitMut for Cjs {
     }
 }
 
+pub fn cjs_to_esm(source_code: &str, file_name: &str) -> String {
+
+    let file_name_for_source_map = FileName::Real(file_name.into());
+    let source_map: Arc<SourceMap> = Default::default();
+    let comments = SwcComments::default();
+    let fm = source_map.new_source_file(file_name_for_source_map.clone(), source_code.into());
+
+    let lexer = Lexer::new(
+        Syntax::Es(EsConfig {
+            jsx: true,
+            fn_bind: true,
+            decorators: true,
+            decorators_before_export: true,
+            export_default_from: true,
+            import_assertions: true,
+            allow_super_outside_method: true,
+            allow_return_outside_function: true,
+        }),
+        EsVersion::latest(),
+        StringInput::from(&*fm),
+        Some(&comments),
+    );
+
+    let mut parser = Parser::new_from(lexer);
+
+    let mut parsed_program = parser.parse_module().unwrap();
+    let mut cjs = Cjs {
+        specifiers: vec![],
+        file_name: PathBuf::from(file_name),
+    };
+
+    parsed_program.visit_mut_with(&mut as_folder(&mut cjs));
+
+    println!("path is {:?}", &cjs.specifiers);
+
+    let mut buf = vec![];
+    let mut emitter = Emitter {
+        cfg: Config {
+            minify: false,
+            ..Default::default()
+        },
+        cm: source_map.clone(),
+        comments: Some(&comments),
+        wr: JsWriter::new(source_map.clone(), "\n", &mut buf, None),
+    };
+
+    emitter.emit_module(&parsed_program).unwrap();
+    String::from_utf8(buf).unwrap()
+}
+
 #[cfg(test)]
 mod tests {
-    use super::Cjs;
-    use std::path::Path;
-    use std::{fs, path::PathBuf};
-
-    use std::sync::Arc;
-
-    use swc_core::{
-        base::{Compiler, SwcComments},
-        common::{
-            errors::{Handler, HANDLER},
-            input::{self, StringInput},
-            source_map::SourceMapGenConfig,
-            BytePos, FileName, Globals, LineCol, Mark, SourceMap, GLOBALS,
-        },
-        ecma::{
-            ast::*,
-            codegen::{text_writer::JsWriter, Config, Emitter},
-            parser::{lexer::Lexer, EsConfig, Parser, Syntax, TsConfig},
-            transforms::base::{
-                helpers::{Helpers, HELPERS},
-                resolver,
-            },
-            visit::{as_folder, VisitMut, VisitMutWith},
-        },
-    };
+    use super::{cjs_to_esm};
+    use std::fs;
 
     #[test]
     fn it_works() {
-        let source = r#"
-const a = true ? require("./resolve.ts") : require('./constants.ts')
-module.exports = {
-    a: a,
-    b: 'bb'
-};
-        "#;
+        let file_name = "/Users/lianghang/Desktop/github/xlianghang/bell/crates/xbell-compiler/fixtures/condition-require.js";
+        let source = fs::read_to_string(file_name).unwrap();
 
-        let file_name = FileName::Custom("test.js".into());
-        let source_map: Arc<SourceMap> = Default::default();
-        let comments = SwcComments::default();
-        let fm = source_map.new_source_file(file_name.clone(), source.into());
-
-        let lexer = Lexer::new(
-            Syntax::Es(EsConfig {
-                jsx: true,
-                fn_bind: true,
-                decorators: true,
-                decorators_before_export: true,
-                export_default_from: true,
-                import_assertions: true,
-                allow_super_outside_method: true,
-                allow_return_outside_function: true,
-            }),
-            EsVersion::latest(),
-            StringInput::from(&*fm),
-            Some(&comments),
-        );
-
-        let mut parser = Parser::new_from(lexer);
-
-        match parser.parse_module() {
-            Ok(mut parsed_program) => {
-                let mut cjs = Cjs {
-                    specifiers: vec![],
-                    file_name: PathBuf::from(
-                        "/Users/lianghang/Desktop/git/xbell/packages/bundless/src/pkg.ts",
-                    ),
-                };
-                parsed_program.visit_mut_with(&mut as_folder(&mut cjs));
-
-                println!("path is {:?}", &cjs.specifiers);
-
-                let mut buf = vec![];
-                {
-                    let mut emitter = Emitter {
-                        cfg: Config {
-                            minify: false,
-                            ..Default::default()
-                        },
-                        cm: source_map.clone(),
-                        comments: Some(&comments),
-                        wr: JsWriter::new(source_map.clone(), "\n", &mut buf, None),
-                    };
-
-                    emitter.emit_module(&parsed_program).unwrap();
-                }
-
-                println!("aabb {}", String::from_utf8(buf).unwrap());
-            }
-            _ => {}
-        }
+        let esm_code = cjs_to_esm(&source, file_name);
+        println!("esm_code is {}", esm_code);
     }
 }

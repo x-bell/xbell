@@ -1,0 +1,15 @@
+[workspace]
+
+members = [
+  "crates/xbell-compiler"
+]
+
+[workspace.dependencies]
+swc_core = { version = "0.59.29" }
+wasm-bindgen = { version = "0.2.84" }
+serde = { version = "1.0.152", features = ["derive"] }
+serde-wasm-bindgen = { version = "0.4.5" }
+dunce = { version = "1.0.3" }
+napi = { version = "2.11.1", default-features = false, features = ["napi4"] }
+napi-derive = "2.11.0"
+napi-build = "2.0.1"
