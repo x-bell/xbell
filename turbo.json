@@ -9,6 +9,17 @@
         "dist/**"
       ]
     },
+    "test:source": {
+      "dependsOn": [
+        "^test:source"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "build",
+        "^test"
+      ]
+    },
     "lint": {
       "outputs": []
     },
@@ -17,6 +28,11 @@
     },
     "deploy": {
       "dependsOn": ["build"]
+    },
+    "build:debug": {
+      "dependsOn": [
+        "^build:debug"
+      ]
     }
   }
 }

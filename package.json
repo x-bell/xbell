@@ -10,7 +10,11 @@
     "changeset": "changeset",
     "website": "cd website && pnpm start",
     "website:zh": "cd website && pnpm start:zh",
+    "test": "turbo run test",
+    "test:source": "turbo run test:source",
     "build": "turbo run build",
+    "build:debug": "turbo run build:debug",
+    "build:crates": "turbo run build --filter='./crates/**'",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -29,5 +33,6 @@
     "@types/node": "^18.7.18",
     "@swc/core": "1.2.208",
     "@napi-rs/cli": "^2.14.7"
-  }
+  },
+  "packageManager": "pnpm@7.24.3"
 }
