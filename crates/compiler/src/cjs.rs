@@ -423,7 +423,7 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let file_name = "/Users/lianghang/Desktop/github/xlianghang/bell/crates/xbell-compiler/fixtures/condition-require.js";
+        let file_name = "/Users/lianghang/Desktop/github/xlianghang/bell/crates/compiler/fixtures/condition-require.js";
         let source = fs::read_to_string(file_name).unwrap();
 
         let esm_code = cjs_to_esm(&source, file_name);

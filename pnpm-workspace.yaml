@@ -3,4 +3,4 @@ packages:
   - "examples/*"
   - "tests/*"
   - website
-  - "crates/xbell-compiler"
+  - "crates/compiler"

@@ -57,7 +57,7 @@ mod tests {
             ],
             extensions: vec![],
         };
-        let specifier = "./crates/xbell-compiler/fixtures/condition-require.js";
+        let specifier = "./crates/compiler/fixtures/condition-require.js";
         let ret = resolve_file(current_dir, specifier, &options);
 
         let final_relative_path = ret.to_str().unwrap().replace(current_dir, ".");
@@ -82,7 +82,7 @@ mod tests {
             conditions: vec![],
         };
 
-        let specifier = "./crates/xbell-compiler/fixtures/condition-require";
+        let specifier = "./crates/compiler/fixtures/condition-require";
         let specifier_with_ext = specifier.to_string() + ".js";
         let ret = resolve_file(current_dir, specifier, &options);
 

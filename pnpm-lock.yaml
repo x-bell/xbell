@@ -28,7 +28,7 @@ importers:
       typescript: registry.npmmirror.com/typescript/4.8.2
       xbell: link:packages/xbell
 
-  crates/xbell-compiler:
+  crates/compiler:
     specifiers: {}
 
   examples/basic:
