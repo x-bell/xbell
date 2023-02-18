@@ -5,7 +5,7 @@ members = [
 ]
 
 [workspace.dependencies]
-swc_core = { version = "0.59.29" }
+swc_core = { version = "0.59.31" }
 wasm-bindgen = { version = "0.2.84" }
 serde = { version = "1.0.152", features = ["derive"] }
 serde-wasm-bindgen = { version = "0.4.5" }

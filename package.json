@@ -14,7 +14,7 @@
     "test:source": "turbo run test:source",
     "build": "turbo run build",
     "build:debug": "turbo run build:debug",
-    "build:crates": "turbo run build --filter='./crates/**'",
+    "build:crates": "turbo run build --filter=@xbell/compiler",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

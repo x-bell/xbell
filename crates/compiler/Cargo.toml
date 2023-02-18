@@ -37,4 +37,4 @@ napi-derive = { workspace = true }
 napi-build = { workspace = true }
 
 [profile.release]
-lto = true
+# lto = true
