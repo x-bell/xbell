@@ -419,14 +419,16 @@ pub fn cjs_to_esm(source_code: &str, file_name: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::{cjs_to_esm};
-    use std::fs;
+    use std::{fs, env};
 
     #[test]
     fn it_works() {
-        let file_name = "/Users/lianghang/Desktop/github/xlianghang/bell/crates/compiler/fixtures/condition-require.js";
-        let source = fs::read_to_string(file_name).unwrap();
+        let current_dir = env::current_dir().unwrap();
+        let current_dir = current_dir.to_str().unwrap();
+        let file_name = &format!("{}/{}", current_dir, "__tests__/fixtures/condition-require.js");
+        let source = &fs::read_to_string(file_name).unwrap();
 
-        let esm_code = cjs_to_esm(&source, file_name);
+        let esm_code = cjs_to_esm(source, file_name.as_str());
         println!("esm_code is {}", esm_code);
     }
 }

@@ -7,6 +7,8 @@ use std::{
     str::FromStr,
 };
 
+use crate::constants::{NODE_MODULES, DEFAULT_CONDITION};
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
 pub enum ExportsField {
@@ -27,19 +29,79 @@ pub enum TypeField {
 pub struct Package {
     pub package_json: PackageJson,
     pub is_esm: bool,
-    pub entry_path: Option<PathBuf>,
+    pub dir: PathBuf,
 }
 
 impl Package {
     pub fn new(package_dir: &Path) -> Package {
         let package_json = PackageJson::new(package_dir);
         let is_esm = package_json.is_esm();
-        let entry_path = package_json.get_entry_path(package_dir, &vec!["default"]);
         Package {
+            dir: package_dir.to_path_buf(),
             package_json,
             is_esm,
-            entry_path,
         }
+    }
+
+    fn parse_exports(
+        &self,
+        exports: &ExportsField,
+        conditions: &Vec<&str>,
+    ) -> Option<PathBuf> {
+        match exports {
+            ExportsField::Map(map) => {
+                let target_condition = conditions
+                    .iter()
+                    .find(|&condition| map.contains_key(*condition));
+                match target_condition {
+                    Some(condition) => {
+                        let inner_map = map.get(*condition).unwrap();
+                        self.parse_exports(inner_map, conditions)
+                    }
+                    None => None,
+                }
+            }
+            ExportsField::Path(path) => Some(self.dir.join(path).canonicalize().unwrap()),
+        }
+    }
+
+    fn get_sub_path_by_exports(
+        &self,
+        exports: &ExportsField,
+        sub_path: &str,
+        conditions: &Vec<&str>,
+    ) -> Option<PathBuf> {
+        match exports {
+            ExportsField::Map(map) => {
+                let vec = Vec::from_iter(map.iter());
+                for (key, value) in vec {
+                    if key == sub_path {
+                        return self.parse_exports(value, conditions);
+                    }
+                }
+
+                self.parse_exports(exports, conditions)
+            }
+            ExportsField::Path(path) => Some(self.dir.join(path).canonicalize().unwrap()),
+        }
+    }
+
+    pub fn get_entry(&self, conditions: &Vec<&str>) -> Option<PathBuf> {
+        let mut condition: Vec<&str> = conditions.clone();
+
+        if !condition.contains(&DEFAULT_CONDITION) {
+            condition.push(&DEFAULT_CONDITION);
+        }
+
+        if let Some(exports) = &self.package_json.exports {
+            return self.get_sub_path_by_exports(exports, ".", &conditions);
+        } else if let Some(module) = &self.package_json.module {
+            return Some(self.dir.join(module).canonicalize().unwrap())
+        } else if let Some(main) = &self.package_json.main {
+            return Some(self.dir.join(main).canonicalize().unwrap());
+        }
+
+        None
     }
 }
 
@@ -66,9 +128,9 @@ impl PackageJson {
 
         let real_link = real_link_str;
 
-        println!("path is {:?}", real_link.to_str());
+        // println!("path is {:?}", real_link.to_str());
         let content = fs::read_to_string(real_link.join("package.json")).unwrap();
-        let package_json = read_package_json(&content);
+        let package_json: PackageJson = serde_json::from_str(&content).unwrap();
         package_json
     }
 
@@ -81,59 +143,5 @@ impl PackageJson {
             _ => false,
         }
     }
-
-    pub fn get_entry_path(&self, package_dir: &Path, conditions: &Vec<&str>) -> Option<PathBuf> {
-        match &self.exports {
-            Some(exports) => get_sub_path_by_exports(package_dir, exports, ".", &conditions),
-            None => None,
-        }
-    }
 }
 
-fn read_package_json(raw_json: &str) -> PackageJson {
-    let parsed: PackageJson = serde_json::from_str(raw_json).unwrap();
-    return parsed;
-}
-
-fn get_sub_path_by_exports(
-    package_dir: &Path,
-    exports: &ExportsField,
-    sub_path: &str,
-    conditions: &Vec<&str>,
-) -> Option<PathBuf> {
-    match exports {
-        ExportsField::Map(map) => {
-            let vec = Vec::from_iter(map.iter());
-            for (key, value) in vec {
-                if key == sub_path {
-                    return parse_exports(package_dir, value, conditions);
-                }
-            }
-
-            parse_exports(package_dir, exports, conditions)
-        }
-        ExportsField::Path(path) => Some(package_dir.join(path).canonicalize().unwrap()),
-    }
-}
-
-fn parse_exports(
-    package_dir: &Path,
-    exports: &ExportsField,
-    conditions: &Vec<&str>,
-) -> Option<PathBuf> {
-    match exports {
-        ExportsField::Map(map) => {
-            let target_condition = conditions
-                .iter()
-                .find(|&condition| map.contains_key(*condition));
-            match target_condition {
-                Some(condition) => {
-                    let inner_map = map.get(*condition).unwrap();
-                    parse_exports(package_dir, inner_map, conditions)
-                }
-                None => None,
-            }
-        }
-        ExportsField::Path(path) => Some(package_dir.join(path).canonicalize().unwrap()),
-    }
-}

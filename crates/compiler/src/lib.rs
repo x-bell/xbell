@@ -3,13 +3,14 @@
 #[macro_use]
 extern crate napi_derive;
 
-use crate::optionts::{CompileOptions};
-use crate::cjs::{cjs_to_esm};
+mod package;
+mod cjs;
+mod graph;
+mod resolve;
+mod utils;
+mod optionts;
+mod specifier_replace;
+mod compile;
+mod constants;
+pub use self::compile::{compile};
 
-pub mod package;
-pub mod cjs;
-pub mod graph;
-pub mod resolve;
-pub mod utils;
-pub mod optionts;
-pub mod compile;

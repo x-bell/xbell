@@ -13,3 +13,4 @@ dunce = { version = "1.0.3" }
 napi = { version = "2.11.1", default-features = false, features = ["napi4"] }
 napi-derive = "2.11.0"
 napi-build = "2.0.1"
+lazy_static = "1.4.0"
