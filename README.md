@@ -73,3 +73,7 @@ test('e2e testing', ({ page, expect }) => {
   });
 });
 ```
+
+## License
+
+XBell is [MIT licensed](./LICENSE).
