@@ -45,7 +45,7 @@ async function _mergeConfigImp(config1: XBellConfig, config2: XBellConfig): Prom
 }
 
 export const defineConfig = (config: XBellConfig) => {
-  return config
+  return config;
 }
 
 const mergeConfig = async (...configs: Array<XBellConfig>): Promise<XBellConfig> => {
