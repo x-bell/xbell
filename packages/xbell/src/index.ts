@@ -35,6 +35,10 @@ export {
 } from './worker/classic-decorators';
 export { Browser } from './common/browser';
 
+export {
+  defineConfig
+} from './common/configurator';
+
 export type {
   XBellConfig,
   XBellProject as Project,
