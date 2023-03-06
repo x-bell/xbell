@@ -1,5 +1,13 @@
 # @xbell/code-stack
 
+## 0.8.5
+
+### Patch Changes
+
+- b4c2dfa: BrowserContext support cookies
+- Updated dependencies [b4c2dfa]
+  - @xbell/color@0.8.5
+
 ## 0.8.4
 
 ### Patch Changes

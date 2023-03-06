@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.8.5
+
+### Patch Changes
+
+- b4c2dfa: BrowserContext support cookies
+
 ## 0.8.4
 
 ### Patch Changes
