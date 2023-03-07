@@ -5,6 +5,9 @@ use crate::package::Package;
 use crate::utils::is_package_exists;
 use crate::utils::is_relative_path;
 use crate::utils::is_root_dir;
+use crate::utils::is_absolute_path;
+use crate::utils::parse_package_specifier;
+use crate::utils::PackageSpecifierParsed;
 use std::fmt::format;
 use std::path::Path;
 use std::path::PathBuf;
@@ -38,25 +41,46 @@ fn resolve_relative_path(importer: &str, specifier: &str, options: &CompileOptio
 pub fn resolve_file(importer: &str, specifier: &str, options: &CompileOptions) -> Option<PathBuf> {
   if is_relative_path(specifier) {
     return Some(resolve_relative_path(importer, specifier, options));
+  } else if is_absolute_path(specifier) {
+    return Some(PathBuf::from(specifier))
   }
 
   None
 }
 
-pub fn resolve_package(package_name: &str, options: &CompileOptions) -> Option<PathBuf> {
+pub fn resolve_path(importer: &str, specifier: &str, options: &CompileOptions) -> Option<PathBuf> {
+  let resolve_file_ret = resolve_file(importer, specifier, options);
+  if resolve_file_ret != None {
+    return resolve_file_ret;
+  }
+
+  resolve_package(specifier, options)
+}
+
+pub fn resolve_package(package_name_maybe_with_path: &str, options: &CompileOptions) -> Option<PathBuf> {
+  let PackageSpecifierParsed {
+    sub_path,
+    package_name,
+  } = parse_package_specifier(package_name_maybe_with_path);
   let cwd = PathBuf::from(&options.cwd);
   let mut curr_dir = cwd.clone();
   while !is_root_dir(&curr_dir)
-    && !is_package_exists(&curr_dir, package_name)
+    && !is_package_exists(&curr_dir, &package_name)
   {
     curr_dir.pop();
   }
 
-  if is_package_exists(&curr_dir, package_name) {
+  if is_package_exists(&curr_dir, &package_name) {
     let package_dir = curr_dir.join(
-      format!("{}/{}", NODE_MODULES, package_name)
+      format!("{}/{}", NODE_MODULES, &package_name)
     );
-    return Package::new(&package_dir).get_entry(&vec![]);
+    let package =  Package::new(&package_dir);
+
+    if let Some(sub_path) = sub_path {
+      return package.get_sub_path(&sub_path, &vec![]); 
+    }
+
+    return package.get_entry(&vec![]);
   }
 
   None

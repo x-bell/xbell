@@ -4,7 +4,7 @@ use std::{
     fs::{self, File},
     io::{self, Read, Write},
     path::{Path, PathBuf},
-    str::FromStr,
+    str::FromStr, fmt::format,
 };
 
 use crate::constants::{NODE_MODULES, DEFAULT_CONDITION};
@@ -87,10 +87,11 @@ impl Package {
     }
 
     pub fn get_entry(&self, conditions: &Vec<&str>) -> Option<PathBuf> {
-        let mut condition: Vec<&str> = conditions.clone();
+        let mut conditions: Vec<&str> = conditions.clone();
 
-        if !condition.contains(&DEFAULT_CONDITION) {
-            condition.push(&DEFAULT_CONDITION);
+        // TODO:
+        if !conditions.contains(&DEFAULT_CONDITION) {
+            conditions.push(&DEFAULT_CONDITION);
         }
 
         if let Some(exports) = &self.package_json.exports {
@@ -102,6 +103,22 @@ impl Package {
         }
 
         None
+    }
+
+    pub fn get_sub_path(&self, sub_path: &str, conditions: &Vec<&str>) -> Option<PathBuf> {
+        let mut conditions: Vec<&str> = conditions.clone();
+        let relative_sub_path = format!("./{}", sub_path);
+
+        // TODO:
+        if !conditions.contains(&DEFAULT_CONDITION) {
+            conditions.push(&DEFAULT_CONDITION);
+        }
+
+        if let Some(exports) = &self.package_json.exports {
+            return self.get_sub_path_by_exports(exports, &relative_sub_path, &conditions);
+        } else {
+            return Some(PathBuf::from(&self.dir).join(sub_path));
+        }
     }
 }
 
