@@ -1,5 +1,17 @@
 # xbell-reporter
 
+## 0.8.5
+
+### Patch Changes
+
+- b4c2dfa: BrowserContext support cookies
+
+## 0.8.4
+
+### Patch Changes
+
+- 3d7ae82: chore: remove deps from reporter
+
 ## 0.8.3
 
 ### Patch Changes

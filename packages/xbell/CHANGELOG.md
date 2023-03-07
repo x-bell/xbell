@@ -1,5 +1,31 @@
 # xbell
 
+## 0.8.5
+
+### Patch Changes
+
+- b4c2dfa: BrowserContext support cookies
+- Updated dependencies [b4c2dfa]
+  - @xbell/assert@0.8.5
+  - @xbell/code-stack@0.8.5
+  - @xbell/color@0.8.5
+  - @xbell/coverage@0.8.5
+  - @xbell/reporter@0.8.5
+  - @xbell/snapshot@0.8.5
+
+## 0.8.4
+
+### Patch Changes
+
+- 3d7ae82: chore: remove deps from reporter
+- Updated dependencies [3d7ae82]
+  - @xbell/reporter@0.8.4
+  - @xbell/assert@0.8.4
+  - @xbell/code-stack@0.8.4
+  - @xbell/color@0.8.4
+  - @xbell/coverage@0.8.4
+  - @xbell/snapshot@0.8.4
+
 ## 0.8.3
 
 ### Patch Changes
