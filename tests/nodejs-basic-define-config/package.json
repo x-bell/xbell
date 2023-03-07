@@ -1,0 +1,11 @@
+{
+  "name": "@xbell/test-nodejs-basic-define-config",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "xbell"
+  },
+  "devDependencies": {
+    "xbell": "workspace:*"
+  }
+}
