@@ -7,18 +7,19 @@
     "url": "https://github.com/xlianghang"
   },
   "scripts": {
-    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "build": "rimraf ./dist && tsc && node ../../scripts/build.mjs",
     "prepublishOnly": "pnpm build"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "dependencies": {
+    "@xbell/color": "workspace:*",
     "debug": "^4.3.4",
-    "js-tokens": "^8.0.0",
-    "@xbell/color": "workspace:*"
+    "js-tokens": "^8.0.0"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7"
+    "@types/debug": "^4.1.7",
+    "rimraf": "^4.3.1"
   }
 }

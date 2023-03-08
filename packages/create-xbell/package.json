@@ -14,18 +14,18 @@
     "bin"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "build": "rimraf ./dist && tsc && node ../../scripts/build.mjs",
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
+    "@xbell/color": "workspace:*",
     "chalk": "^4.1.2",
     "commander": "^9.2.0",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.1",
     "inquirer": "^8.2.4",
     "nunjucks": "^3.2.3",
-    "ora": "^5.4.1",
-    "@xbell/color": "workspace:*"
+    "ora": "^5.4.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
@@ -33,6 +33,7 @@
     "@types/inquirer": "^8.2.1",
     "@types/node": "^18.7.18",
     "@types/nunjucks": "^3.2.1",
+    "rimraf": "^4.3.1",
     "typescript": "^4.6.4",
     "xbell": "workspace:*"
   }

@@ -5,14 +5,17 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "build": "rimraf ./dist && tsc && node ../../scripts/build.mjs",
     "test": "xbell",
     "prepublishOnly": "npm run test"
   },
   "dependencies": {
-    "debug": "^4.3.4",
-    "@xbell/format": "workspace:*",
+    "@types/debug": "^4.1.7",
     "@xbell/color": "workspace:*",
-    "@types/debug": "^4.1.7"
+    "@xbell/format": "workspace:*",
+    "debug": "^4.3.4"
+  },
+  "devDependencies": {
+    "rimraf": "^4.3.1"
   }
 }
