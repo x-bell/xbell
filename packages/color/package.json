@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "xbell",
-    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "build": "rimraf ./dist && tsc && node ../../scripts/build.mjs",
     "prepublishOnly": "pnpm test && pnpm build"
   },
   "files": [

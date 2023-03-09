@@ -5,7 +5,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./dist && tsc && node ../../scripts/build.mjs",
+    "build": "rimraf ./dist && tsc && node ../../scripts/build.mjs",
     "test": "xbell",
     "prepublishOnly": "npm run test"
   },
