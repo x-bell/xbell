@@ -14,8 +14,5 @@
     "@xbell/color": "workspace:*",
     "@xbell/format": "workspace:*",
     "debug": "^4.3.4"
-  },
-  "devDependencies": {
-    "rimraf": "^4.3.1"
   }
 }
