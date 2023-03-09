@@ -1,6 +1,5 @@
 use crate::constants::NODE_MODULES;
 use crate::optionts::CompileOptions;
-use crate::package;
 use crate::package::Package;
 use crate::utils::is_package_exists;
 use crate::utils::is_relative_path;
@@ -8,7 +7,6 @@ use crate::utils::is_root_dir;
 use crate::utils::is_absolute_path;
 use crate::utils::parse_package_specifier;
 use crate::utils::PackageSpecifierParsed;
-use std::fmt::format;
 use std::path::Path;
 use std::path::PathBuf;
 

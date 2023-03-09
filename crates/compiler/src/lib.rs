@@ -4,12 +4,12 @@
 extern crate napi_derive;
 
 mod package;
-mod cjs;
+mod cjs_to_esm;
 mod graph;
 mod resolve;
 mod utils;
 mod optionts;
-mod specifier_replace;
+mod replace_specifier;
 mod compile;
 mod constants;
 

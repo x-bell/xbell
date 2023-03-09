@@ -1,41 +1,26 @@
-use crate::package;
-use std::path::Path;
 use std::{fs, path::PathBuf};
 
-use std::sync::Arc;
 
 use swc_core::ecma::utils::StmtOrModuleItem;
 use swc_core::{
-    base::{Compiler, SwcComments},
     common::{
-        errors::{Handler, HANDLER},
-        input::{self, StringInput},
-        source_map::SourceMapGenConfig,
-        util::take::Take,
-        BytePos, FileName, Globals, LineCol, Mark, SourceMap, DUMMY_SP, GLOBALS,
+        DUMMY_SP
     },
     ecma::{
         ast::*,
-        codegen::{text_writer::JsWriter, Config, Emitter},
-        parser::{lexer::Lexer, EsConfig, Parser, Syntax, TsConfig},
-        transforms::base::{
-            helpers::{Helpers, HELPERS},
-            resolver,
-        },
-        utils::{prepend_stmts, StmtLike},
-        visit::{as_folder, noop_visit_mut_type, VisitMut, VisitMutWith},
+        utils::{prepend_stmts},
+        visit::{noop_visit_mut_type, as_folder, Fold, VisitMut, VisitMutWith},
     },
 };
 
 const XBELL_ASSET_PREFIX: &str = "/__xbell_asset_prefix__";
 
-
-pub struct Cjs {
+pub struct CjsToEsm {
     pub specifiers: Vec<String>,
     pub file_name: PathBuf,
 }
 
-impl Cjs {
+impl CjsToEsm {
     pub fn get_file_name(&self, specifier: &str) -> PathBuf {
         let mut dirname = PathBuf::from(&self.file_name);
         dirname.pop();
@@ -66,7 +51,7 @@ impl Cjs {
     }
 }
 
-impl VisitMut for Cjs {
+impl VisitMut for CjsToEsm {
     noop_visit_mut_type!();
 
     fn visit_mut_stmts(&mut self, stmts: &mut Vec<Stmt>) {
@@ -366,69 +351,52 @@ impl VisitMut for Cjs {
     }
 }
 
-pub fn cjs_to_esm(source_code: &str, file_name: &str) -> String {
-
-    let file_name_for_source_map = FileName::Real(file_name.into());
-    let source_map: Arc<SourceMap> = Default::default();
-    let comments = SwcComments::default();
-    let fm = source_map.new_source_file(file_name_for_source_map.clone(), source_code.into());
-
-    let lexer = Lexer::new(
-        Syntax::Es(EsConfig {
-            jsx: true,
-            fn_bind: true,
-            decorators: true,
-            decorators_before_export: true,
-            export_default_from: true,
-            import_assertions: true,
-            allow_super_outside_method: true,
-            allow_return_outside_function: true,
-        }),
-        EsVersion::latest(),
-        StringInput::from(&*fm),
-        Some(&comments),
-    );
-
-    let mut parser = Parser::new_from(lexer);
-
-    let mut parsed_program = parser.parse_module().unwrap();
-    let mut cjs = Cjs {
+pub fn cjs_to_esm(file_name: &str) -> impl Fold + VisitMut  {
+    as_folder(CjsToEsm {
         specifiers: vec![],
         file_name: PathBuf::from(file_name),
-    };
-
-    parsed_program.visit_mut_with(&mut as_folder(&mut cjs));
-
-    println!("path is {:?}", &cjs.specifiers);
-
-    let mut buf = vec![];
-    let mut emitter = Emitter {
-        cfg: Config {
-            minify: false,
-            ..Default::default()
-        },
-        cm: source_map.clone(),
-        comments: Some(&comments),
-        wr: JsWriter::new(source_map.clone(), "\n", &mut buf, None),
-    };
-
-    emitter.emit_module(&parsed_program).unwrap();
-    String::from_utf8(buf).unwrap()
+    })
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{cjs_to_esm};
+    use crate::{compile::compile, optionts::CompileOptions};
     use std::{fs, env};
+
+    use lazy_static::lazy_static;
+
+  lazy_static! {
+    static ref CONDITIONS: Vec<String> = vec![];
+
+    static ref EXTENSIONS: Vec<String> = vec![".ts", ".tsx", ".js", "cjs", ".mjs", ".jsx"]
+      .iter()
+      .map(|ext| ext.to_string())
+      .collect();
+
+    static ref TEST_DIR: String = env::current_dir()
+      .unwrap()
+      .join("__tests__")
+      .canonicalize()
+      .unwrap()
+      .to_str()
+      .unwrap()
+      .to_string();
+  }
 
     #[test]
     fn it_works() {
         let current_dir = env::current_dir().unwrap();
         let current_dir = current_dir.to_str().unwrap();
-        let file_name = &format!("{}/{}", current_dir, "__tests__/fixtures/condition-require.js");
-        let source = &fs::read_to_string(file_name).unwrap();
+        let file_name = format!("{}/{}", current_dir, "__tests__/fixtures/condition-require.js");
+        let source = fs::read_to_string(file_name.clone()).unwrap();
 
-        let esm_code = cjs_to_esm(source, file_name.as_str());
+        let compile_options = CompileOptions {
+            extensions: EXTENSIONS.clone(),
+            conditions: CONDITIONS.clone(),
+            cwd: TEST_DIR.to_string(),
+          };
+
+        let esm_code = compile(source, file_name, compile_options);
         println!("esm_code is {}", esm_code);
     }
 }
