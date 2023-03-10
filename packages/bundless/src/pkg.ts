@@ -146,6 +146,29 @@ export function resolvePackageSubPath({
   return;
 }
 
+function getFileNameBySubPathValue({
+  exportsFiledOrSubPathValue,
+  packageDir,
+  conditions
+}: {
+  exportsFiledOrSubPathValue: PackageJSONExportsField | string;
+  conditions: string[];
+  packageDir: string;
+}): string | undefined {
+  if (typeof exportsFiledOrSubPathValue === 'string') {
+    return path.join(packageDir, exportsFiledOrSubPathValue);
+  }
+
+  const targetCondition = conditions.find(condition => exportsFiledOrSubPathValue[condition]);
+  if (targetCondition) {
+    return getFileNameBySubPathValue({
+      exportsFiledOrSubPathValue: exportsFiledOrSubPathValue[targetCondition],
+      packageDir,
+      conditions,
+    })
+  }
+}
+
 function getSubPathByExports({
   exportsField,
   subPath,
@@ -157,22 +180,39 @@ function getSubPathByExports({
   conditions: string[];
   packageDir: string;
 }): string | undefined {
-  const target = exportsField[subPath];
-  if (target) {
-    if (typeof target === 'string') {
-      debugBundless('getSubPathByExports::1', target);
-      return path.join(packageDir, target);
-    }
+  const subPathValue = exportsField[subPath];
+  return getFileNameBySubPathValue({
+    conditions,
+    packageDir,
+    exportsFiledOrSubPathValue: subPathValue,
+  });
+  // if (target) {
+  //   if (typeof target === 'string') {
+  //     debugBundless('getSubPathByExports::1', target);
+  //     return path.join(packageDir, target);
+  //   }
 
-    const condition = conditions.find(condition => target[condition]);
 
-    debugBundless('getSubPathByExports::2', condition, conditions);
+  //   const condition = conditions.find(condition => target[condition]);
+
+  //   debugBundless('getSubPathByExports::2', condition, conditions);
     
-    if (condition) {
-      debugBundless('getSubPathByExports::2', target[condition]);
-      return path.join(packageDir, target[condition] as string);
-    }
-  }
+  //   if (condition) {
+  //     const subPathValue = target[condition];
+  //     debugBundless('getSubPathByExports::3', subPathValue);
+  //     if (typeof subPathValue === 'string') {
+  //       return path.join(packageDir, subPathValue);
+  //     }
 
-  return resolveFile(path.join(packageDir, subPath));
+  //     // recursive find
+  //     return getSubPathByExports({
+  //       subPath,
+  //       conditions,
+  //       packageDir,
+  //       exportsField: subPathValue,
+  //     });
+  //   }
+  // }
+
+  // return resolveFile(path.join(packageDir, subPath));
 }

@@ -63,7 +63,7 @@ function resolvePackage({
   const [packageName] = m;
   // TODO: get by arguments
   const cwd = process.cwd();
-  const subPath = specifier.includes(packageName + '/') ? specifier.replace(packageName, '.') : undefined;
+  const subPath = specifier.includes(packageName + '/') ? specifier.replace(packageName, '.') : '.';
   const packageInfo = getPackageInfo({
     cwd,
     packageName,
@@ -92,6 +92,7 @@ export function resolve({
   importer: string;
   conditions?: string[];
 }): string {
+  debugBundless('before', 'specifier:', specifier, 'importer:', importer, 'condition:', conditions)
   conditions = [...(conditions ?? []).filter(condition => condition !== 'default')]
   if (!conditions.includes('import')) {
     conditions.push('import');
@@ -114,16 +115,16 @@ export function resolve({
   if (isAbsolute(specifier)) {
     const filename = resolveFile(specifier);
     if (!filename) throw new Error(`Not found path "${specifier}"`);
+    return filename;
   }
   
-  const pkgRet = resolvePackage({
+  const packageEntry = resolvePackage({
     specifier,
     conditions, 
   });
 
-  if (pkgRet) {
-    debugBundless('pkgRet', pkgRet);
-    return pkgRet;
+  if (packageEntry) {
+    return packageEntry;
   }
 
   throw new Error(`Cannot resolve path "${specifier}"`);

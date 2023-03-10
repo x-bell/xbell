@@ -1,5 +1,8 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
+import debug from 'debug';
+
+const debugBundless = debug('xbell:bundless');
 
 export function dirname(pathname: string): string {
   const stat = fs.statSync(pathname)
@@ -10,7 +13,7 @@ export function dirname(pathname: string): string {
   return path.dirname(pathname);
 }
 
-const JS_REG_EXP = /\.(ts|tsx|js|mjs|cjs|jsx)$/;
+const JS_REG_EXP = /\.(ts|tsx|js|mjs|cjs|jsx|vue)$/;
 const CSS_REG_EXP = /\.(css|less|sass|scss)$/;
 const JSON_REG_EXP = /\.json$/;
 const ContentType = {
@@ -51,16 +54,17 @@ const extensions = [
 
 export function resolveFile(fullSpecifierMaybeWithoutSuffix: string): string | undefined {
   const existed = fs.existsSync(fullSpecifierMaybeWithoutSuffix);
-
   if (!existed) {
     const ext = extensions.find(ext => fs.existsSync(fullSpecifierMaybeWithoutSuffix + ext));
     return ext ? fullSpecifierMaybeWithoutSuffix + ext : undefined;
   }
 
   const stats = fs.statSync(fullSpecifierMaybeWithoutSuffix);
+
   if (stats.isFile()) {
     return fullSpecifierMaybeWithoutSuffix;
   }
+
   if (stats.isDirectory()) {
     return resolveFile(path.join(fullSpecifierMaybeWithoutSuffix, 'index'));
   }

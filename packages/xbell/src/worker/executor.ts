@@ -280,6 +280,8 @@ export class Executor {
         {
           callback: async () => {
             // @ts-ignore
+            window.process = { env: {} };
+            // @ts-ignore
             const { expect, fn, spyOn, importActual, page, sleep } = (await import('xbell/browser-test')) as typeof import('../browser-test');
             const basicArgs: BrowserTestArguments = {
               expect,

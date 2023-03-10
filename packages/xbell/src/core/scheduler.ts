@@ -28,18 +28,14 @@ export class Scheduler {
   protected setupWorker = (worker: XBellWorkerItem) => {
      // requests
      worker.channel.registerRoutes({
-      // async queryModuleUrl(modules) {
-      //   const server = await browserBuilder.server;
-      //   return Promise.all(modules.map(async (modulePath) => ({
-      //     url:(await server.pluginContainer.resolveId(modulePath))?.id as string,
-      //     path: modulePath,
-      //   })))
-      // },
-      async transformBrowserCode({ code: sourceCode }) {
+      async transformCallbackFunction({ code: sourceCode, filename }) {
         // TODO: temp, disable import.meta.url in browser
         // new Function compile failed
         sourceCode = sourceCode.replace('import.meta.url', `'Do not support "import.meta.url" outside module'`);
-        const { code, map } = await compiler.compileBrowserCode(sourceCode);
+        const { code, map } = await transformer.transform(filename, sourceCode, {
+          isCallbackFunction: true,
+        })
+        // const { code, map } = await compiler.compileBrowserCode(sourceCode);
         debugScheduler('transform-browser', {
           code,
           map,
@@ -50,12 +46,14 @@ export class Scheduler {
           map,
         }
       },
+
       async transformHtml({ html, url }) {
         // const server = await browserBuilder.server;
         // const finalHtml = await server.transform(url, html);
         const finalHtml = await transformer.transformHtml({ content: html });
         return { html: finalHtml };
       },
+
       async getContent({ filename }) {
         const contentType = getContentType(filename);
         const { code } = await transformer.transform(filename)

@@ -1,6 +1,11 @@
 import * as fs from 'node:fs/promises';
 import { configurator } from '../common/configurator';
 import type { Loader, TransformedSource } from '../types';
+import { compile } from '@xbell/compiler';
+import debug from 'debug';
+import { pathManager } from '../common/path-manager';
+
+const debugTransformer = debug('xbell:transformer');
 
 function uniqLoaders(loaders: Loader[]) {
   const record: Record<string, true | undefined> = {};
@@ -11,6 +16,12 @@ function uniqLoaders(loaders: Loader[]) {
     record[loader.name] = true;
     return true;
   });
+}
+
+const compileOptions = {
+  extensions: [".ts", ".tsx", ".js", ".jsx", ".cjs", ".mjs"],
+  conditions: ["import",],
+  cwd: pathManager.projectDir,
 }
 
 export class CodeTransfomer {
@@ -45,7 +56,6 @@ export class CodeTransfomer {
     for (const loader of loaders) {
       ret = await loader.transform(ret.code, filename);
     }
-
     return ret;
   }
 
@@ -54,21 +64,28 @@ export class CodeTransfomer {
     return loaders.filter(({ match }) => match.test(filename));
   }
 
-  async transform(filename: string): Promise<TransformedSource> {
-    const code = await fs.readFile(filename, 'utf-8');
+  async transform(filename: string, sourceCode?: string, opts?: {
+    isCallbackFunction: boolean;
+  }): Promise<TransformedSource> {
+    const code = sourceCode ?? await fs.readFile(filename, 'utf-8');
     const loaders = this.getMatchLoaders(filename);
-    if (loaders.length) {
-      this.cache.set(filename, await this.transformByLoaders({
-        filename,
-        code,
-        loaders,
-      }));
-      return this.cache.get(filename)!;
-    }
+    const resultByLoaders = loaders.length ? await this.transformByLoaders({
+      filename,
+      code,
+      loaders,
+    }) : { code };
+
+    debugTransformer('==before==', 'filename:', filename, 'code:', resultByLoaders.code);
+    const codeByCompiler = compile(resultByLoaders.code, filename, {
+      ...compileOptions,
+      isCallbackFunction: !!opts?.isCallbackFunction,
+    })
+    debugTransformer('==after==', 'filename:', filename, 'code:', codeByCompiler);
 
     this.cache.set(filename, {
-      code,
+      code: codeByCompiler,
     });
+
     return this.cache.get(filename)!;
   }
 

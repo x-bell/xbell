@@ -24,21 +24,26 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     },
     "./browser-test": {
       "type": "./dist/browser-test/index.d.ts",
-      "import": "./dist/browser-test/index.mjs"
+      "import": "./dist/browser-test/index.mjs",
+      "default": "./dist/browser-test/index.mjs"
     },
     "./decorators": {
       "type": "./dist/decorators.d.ts",
-      "import": "./dist/decorators.mjs"
+      "import": "./dist/decorators.mjs",
+      "default": "./dist/decorators.mjs"
     },
     "./loader/ignore-warning.cjs": {
-      "require": "./loader/ignore-warning.cjs"
+      "require": "./loader/ignore-warning.cjs",
+      "default": "./loader/ignore-warning.cjs"
     },
     "./loader/loader.mjs": {
-      "import": "./loader/loader.mjs"
+      "import": "./loader/loader.mjs",
+      "default": "./loader/loader.mjs"
     }
   },
   "typesVersions": {
@@ -68,6 +73,7 @@
   "license": "MIT",
   "dependencies": {
     "@swc/core": "1.2.208",
+    "@xbell/compiler": "workspace:*",
     "@xbell/assert": "workspace:*",
     "@xbell/bundless": "workspace:*",
     "@xbell/code-stack": "workspace:*",

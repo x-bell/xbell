@@ -15,7 +15,7 @@ interface XBellWorkerMessageCommon {
 }
 
 interface XBellWorkerRequests {
-  transformBrowserCode(data: { code: string; }): Promise<{ code: string; }>;
+  transformCallbackFunction(data: { code: string; filename: string; }): Promise<{ code: string; }>;
   transformHtml(data: { html: string; url: string }): Promise<{ html: string }>;
   getContent(data: { filename: string }): Promise<{ body: string; contentType: string }>;
 }

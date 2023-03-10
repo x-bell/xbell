@@ -450,10 +450,10 @@ export class Page implements PageInterface {
       const filename = urlObj.pathname.replace('/' + XBELL_BUNDLE_PREFIX + '/@fs', '');
       urlObj.protocol = 'http';
       urlObj.hostname = 'localhost';
-      debugPage('vite-url', urlObj.href);
       const { body, contentType } = await channle.request('getContent', { filename });
 
       const targetModule = mockModulePaths.find(([path]) => path === filename);
+      // send mock result to browser
       if (targetModule) {
         const [, factory] = targetModule
         if (!factory) throw new Error(`The mocking path is "${filename}" missing factory function`);
@@ -474,19 +474,23 @@ export class Page implements PageInterface {
           ...exportPropertiesCodes,
         ].join('\n');
 
-        route.fulfill({
+        // send a mocke response to the browser
+        const mockedResponse = {
           status: 200,
           contentType,
           body: mockedBody,
-        });
-        route
+        };
+        debugPage('mocked', 'response:', mockedResponse);
+        route.fulfill(mockedResponse);
       } else {
-
-        route.fulfill({
+        // send a content to the browser
+        const response =  {
           status: 200,
           contentType,
           body,
-        });
+        };
+        debugPage('content', 'response:', filename, response);
+        route.fulfill(response);
       }
     });
   }
@@ -591,8 +595,8 @@ export class Page implements PageInterface {
     }
 
     const { code: targetCode } = await channel.request(
-      'transformBrowserCode',
-      { code: browserFunction.toString() },
+      'transformCallbackFunction',
+      { code: browserFunction.toString(), filename: this._currentFilename, },
     );
     const funcBody = `return ${targetCode}`;
     const func = new Function(funcBody);
