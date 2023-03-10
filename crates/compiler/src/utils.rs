@@ -16,7 +16,6 @@ pub fn is_root_dir(path: &Path) -> bool {
 
 pub fn is_package_exists(cwd: &Path, package_name: &str) -> bool {
   let package_dir = cwd.join(format!("{}/{}", NODE_MODULES, package_name));
-  println!("==debug:package_dir:{}==", package_dir.to_str().unwrap());
   package_dir.exists()
 }
 

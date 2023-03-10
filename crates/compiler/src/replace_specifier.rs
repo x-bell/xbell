@@ -21,7 +21,6 @@ impl VisitMut for SpecifierReplace {
     import_decl.src.raw = None;
     let importer = self.file_name.to_str().unwrap();
 
-    println!("importer: {}, specifier: {}", importer, specifier);
     let absolute_path = resolve_path(&importer, &specifier, &self.options).unwrap();
 
     import_decl.src.value = format!("{}{}", XBELL_FS_PREFIX, absolute_path.to_str().unwrap()).into();
@@ -95,7 +94,6 @@ mod tests {
     };
 
     let esm_code = compile(source, file_name, compile_options);
-    println!("esm_code is {}", esm_code);
   }
 
   #[test]

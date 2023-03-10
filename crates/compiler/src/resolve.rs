@@ -44,7 +44,7 @@ pub fn resolve_file(importer: &str, specifier: &str, options: &CompileOptions) -
   if is_relative_path(specifier) {
     return Some(resolve_relative_path(importer, specifier, options));
   } else if is_absolute_path(specifier) {
-    return Some(PathBuf::from(specifier))
+    return Some(PathBuf::from(fix_extension(&PathBuf::from(specifier), &options.extensions)))
   }
 
   None
@@ -79,14 +79,10 @@ pub fn resolve_package(importer: &str, package_name_maybe_with_path: &str, optio
     let package =  Package::new(&package_dir);
 
     if let Some(sub_path) = sub_path {
-      println!("===get_sub_path: {}===", sub_path);
       return package.get_sub_path(&sub_path, &options.conditions); 
     }
-    println!("===get_entry===");
     return package.get_entry(&options);
   }
-
-  println!("===none, curr_dir {}===", curr_dir.to_str().unwrap());
 
   None
 }

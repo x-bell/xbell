@@ -1,8 +1,10 @@
 use crate::analyzer::Analyzer;
 use crate::cjs_to_esm::cjs_to_esm;
+use crate::constants::NODE_MODULES;
 use crate::optionts::CompileOptions;
 use crate::replace_specifier::replace_specifier;
 use std::collections::HashMap;
+use std::option;
 use std::sync::Arc;
 use swc_core::ecma::visit::{as_folder, FoldWith, VisitWith};
 use swc_core::{
@@ -37,17 +39,17 @@ pub fn compile(source_code: String, file_name: String, options: CompileOptions) 
     StringInput::from(&*fm),
     Some(&comments),
   );
-
-  let mut analyzer = Analyzer::new(&file_name, &options);
-
+  let is_in_cwd = file_name.contains(&options.cwd);
+  let is_in_node_modules = file_name.contains(&NODE_MODULES);
+  let mut analyzer = Analyzer::new(&file_name.clone(), &options);
   let mut parser = Parser::new_from(lexer);
   let module = parser.parse_module().unwrap();
+  let file_info = analyzer.get_import_map(&module);
 
   module.visit_with(&mut analyzer);
 
   let module = module.fold_with(&mut replace_specifier(&file_name, &options));
-  let file_info = analyzer.get_import_map(&module);
-  let is_esm_file = file_info.has_exports || options.is_callback_function;
+  let is_esm_file = file_info.has_exports || options.is_callback_function || (is_in_cwd && !is_in_node_modules);
   let module = if is_esm_file {
     module
   } else {
