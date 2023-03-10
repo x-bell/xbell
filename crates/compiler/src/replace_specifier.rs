@@ -1,7 +1,9 @@
 use crate::optionts::CompileOptions;
 use crate::resolve::{resolve_path};
+use crate::constants::XBELL_FS_PREFIX;
 use std::path::PathBuf;
 
+use swc_core::common::util::take::Take;
 use swc_core::{
   ecma::{
     ast::*,
@@ -25,6 +27,21 @@ impl VisitMut for SpecifierReplace {
       &self.options
     ).unwrap().to_str().unwrap().into()
   }
+
+  fn visit_mut_call_expr(&mut self, n: &mut CallExpr) {
+    if n.callee.is_import() {
+      // let arg = n.args[0].clone();
+      if let Some(arg) = n.args.first_mut() {
+        if let Expr::Lit(Lit::Str(specifier)) = &mut *arg.expr {
+          if let Some(absolute_path) = resolve_path(&self.file_name.to_str().unwrap(), &specifier.value, &self.options) {
+            let final_specifier = format!("{}{}", XBELL_FS_PREFIX, absolute_path.to_str().unwrap());
+            specifier.value = final_specifier.into();
+            specifier.raw = None;
+          }
+        }
+      }
+    }
+  }
 }
 
 pub fn replace_specifier(file_name: &str, options: &CompileOptions) -> impl Fold + VisitMut {
@@ -37,7 +54,7 @@ pub fn replace_specifier(file_name: &str, options: &CompileOptions) -> impl Fold
 
 #[cfg(test)]
 mod tests {
-  use crate::optionts::CompileOptions;
+  use crate::{optionts::CompileOptions, constants::XBELL_FS_PREFIX};
   use crate::compile::compile;
 // use super::specifier_replace;
   use std::{env, fs};
@@ -63,7 +80,7 @@ mod tests {
   }
 
   #[test]
-  fn it_works() {
+  fn import_esm_package() {
     let current_dir = env::current_dir().unwrap();
     let current_dir = current_dir.to_str().unwrap();
     let file_name = format!("{}/{}", current_dir, "__tests__/fixtures/import-esm-pkg.ts");
@@ -76,6 +93,26 @@ mod tests {
     };
 
     let esm_code = compile(source, file_name, compile_options);
+    println!("esm_code is {}", esm_code);
+  }
+
+  #[test]
+  fn dynamic_import_esm_package() {
+    let current_dir = env::current_dir().unwrap();
+    let current_dir = current_dir.to_str().unwrap();
+    let file_name = format!("{}/{}", current_dir, "__tests__/fixtures/dynamic-import-esm-pkg.ts");
+    let source = fs::read_to_string(file_name.clone()).unwrap();
+
+    let compile_options = CompileOptions {
+      extensions: EXTENSIONS.clone(),
+      conditions: CONDITIONS.clone(),
+      cwd: TEST_DIR.to_string(),
+    };
+
+    let esm_code = compile(source, file_name, compile_options);
+    let expected_specifier = format!("{}{}/{}", XBELL_FS_PREFIX, current_dir, "__tests__/node_modules/exports-field-mjs/main.mjs");
+    let expected_esm_code = format!(r#"const {{ main  }} = await import("{}");{}"#, expected_specifier, "\n");
+    assert_eq!(esm_code, expected_esm_code);
     println!("esm_code is {}", esm_code);
   }
 }

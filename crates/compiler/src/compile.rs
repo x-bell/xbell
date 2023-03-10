@@ -41,7 +41,7 @@ pub fn compile(source_code: String, file_name: String, options: CompileOptions) 
 
   let module = parser.parse_module().unwrap();
   let module = module.fold_with(&mut replace_specifier(&file_name, &options));
-  let module = module.fold_with(&mut cjs_to_esm(&file_name));
+  // let module = module.fold_with(&mut cjs_to_esm(&file_name));
 
   let mut buf = vec![];
   let mut emitter = Emitter {

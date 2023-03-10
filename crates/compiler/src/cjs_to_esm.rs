@@ -1,5 +1,5 @@
 use std::{fs, path::PathBuf};
-
+use crate::constants::XBELL_FS_PREFIX;
 
 use swc_core::ecma::utils::StmtOrModuleItem;
 use swc_core::{
@@ -13,7 +13,8 @@ use swc_core::{
     },
 };
 
-const XBELL_ASSET_PREFIX: &str = "/__xbell_asset_prefix__";
+// const XBELL_ASSET_PREFIX: &str = "/__xbell_asset_prefix__";
+
 
 pub struct CjsToEsm {
     pub specifiers: Vec<String>,
@@ -69,8 +70,7 @@ impl VisitMut for CjsToEsm {
             let file_name = self.get_file_name(sepcifier);
             let file_name_var = self.get_file_name_var(sepcifier);
             // TODO: check packages file alias
-            let mut asset_url = String::from(XBELL_ASSET_PREFIX);
-            asset_url.push_str("/@fs");
+            let mut asset_url = String::from(XBELL_FS_PREFIX);
             asset_url.push_str(file_name.to_str().unwrap());
 
             ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
