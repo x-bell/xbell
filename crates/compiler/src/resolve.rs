@@ -11,12 +11,12 @@ use std::path::Path;
 use std::path::PathBuf;
 
 
-fn fix_extension(file_path: &Path, options: &CompileOptions) -> PathBuf {
+pub fn fix_extension(file_path: &Path, extensions: &Vec<String>) -> PathBuf {
   if file_path.exists() {
     return file_path.canonicalize().unwrap();
   }
 
-  for ext in &options.extensions {
+  for ext in extensions {
     let mut path_with_ext = String::from(file_path.to_str().unwrap());
     path_with_ext += ext.as_str();
 
@@ -30,8 +30,12 @@ fn fix_extension(file_path: &Path, options: &CompileOptions) -> PathBuf {
 }
 
 fn resolve_relative_path(importer: &str, specifier: &str, options: &CompileOptions) -> PathBuf {
-  let path = PathBuf::from(importer).join(specifier);
-  let path_with_ext = fix_extension(&path, options);
+  let mut path = PathBuf::from(importer);
+  if path.is_file() {
+    path.pop();
+  }
+  path.push(specifier);
+  let path_with_ext = fix_extension(&path, &options.extensions);
 
   path_with_ext
 }
@@ -52,15 +56,15 @@ pub fn resolve_path(importer: &str, specifier: &str, options: &CompileOptions) -
     return resolve_file_ret;
   }
 
-  resolve_package(specifier, options)
+  resolve_package(importer, specifier, options)
 }
 
-pub fn resolve_package(package_name_maybe_with_path: &str, options: &CompileOptions) -> Option<PathBuf> {
+pub fn resolve_package(importer: &str, package_name_maybe_with_path: &str, options: &CompileOptions) -> Option<PathBuf> {
   let PackageSpecifierParsed {
     sub_path,
     package_name,
   } = parse_package_specifier(package_name_maybe_with_path);
-  let cwd = PathBuf::from(&options.cwd);
+  let cwd = PathBuf::from(importer);
   let mut curr_dir = cwd.clone();
   while !is_root_dir(&curr_dir)
     && !is_package_exists(&curr_dir, &package_name)
@@ -75,11 +79,14 @@ pub fn resolve_package(package_name_maybe_with_path: &str, options: &CompileOpti
     let package =  Package::new(&package_dir);
 
     if let Some(sub_path) = sub_path {
-      return package.get_sub_path(&sub_path, &vec![]); 
+      println!("===get_sub_path: {}===", sub_path);
+      return package.get_sub_path(&sub_path, &options.conditions); 
     }
-
-    return package.get_entry(&vec![]);
+    println!("===get_entry===");
+    return package.get_entry(&options);
   }
+
+  println!("===none, curr_dir {}===", curr_dir.to_str().unwrap());
 
   None
 }
@@ -113,6 +120,7 @@ mod resolve_file_tests {
       conditions: vec![],
       extensions: EXTENSIONS.clone(),
       cwd: TEST_DIR.clone(),
+      is_callback_function: false,
     };
 
     let specifier = "./fixtures/condition-require.js";
@@ -128,6 +136,7 @@ mod resolve_file_tests {
       extensions: EXTENSIONS.clone(),
       conditions: vec![],
       cwd: TEST_DIR.to_string(),
+      is_callback_function: false,
     };
 
     let specifier = "./fixtures/condition-require";
@@ -167,11 +176,13 @@ mod resolve_package_tests {
   #[test]
   fn test_main_field_with_scope() {
     let entry = resolve_package(
+      &TEST_DIR.to_string(),
       "@scope/main-field",
       &CompileOptions {
         extensions: EXTENSIONS.clone(),
         conditions: CONDITIONS.clone(),
         cwd: TEST_DIR.to_string(),
+        is_callback_function: false,
       },
     ).unwrap();
 
@@ -182,11 +193,13 @@ mod resolve_package_tests {
   #[test]
   fn test_main_field_without_scope() {
     let entry = resolve_package(
+      &TEST_DIR.to_string(),
       "main-field",
       &CompileOptions {
         extensions: EXTENSIONS.clone(),
         conditions: CONDITIONS.clone(),
         cwd: TEST_DIR.to_string(),
+        is_callback_function: false,
       },
     ).unwrap();
 

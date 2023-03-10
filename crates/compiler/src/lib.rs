@@ -12,6 +12,7 @@ mod optionts;
 mod replace_specifier;
 mod compile;
 mod constants;
+mod analyzer;
 
 pub use self::compile::{compile};
 

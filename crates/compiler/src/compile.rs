@@ -1,9 +1,10 @@
+use crate::analyzer::Analyzer;
 use crate::cjs_to_esm::cjs_to_esm;
-use crate::replace_specifier::replace_specifier;
 use crate::optionts::CompileOptions;
+use crate::replace_specifier::replace_specifier;
+use std::collections::HashMap;
 use std::sync::Arc;
-
-use swc_core::ecma::visit::FoldWith;
+use swc_core::ecma::visit::{as_folder, FoldWith, VisitWith};
 use swc_core::{
   base::SwcComments,
   common::{input::StringInput, FileName, SourceMap},
@@ -37,11 +38,21 @@ pub fn compile(source_code: String, file_name: String, options: CompileOptions) 
     Some(&comments),
   );
 
-  let mut parser = Parser::new_from(lexer);
+  let mut analyzer = Analyzer::new(&file_name, &options);
 
+  let mut parser = Parser::new_from(lexer);
   let module = parser.parse_module().unwrap();
+
+  module.visit_with(&mut analyzer);
+
   let module = module.fold_with(&mut replace_specifier(&file_name, &options));
-  // let module = module.fold_with(&mut cjs_to_esm(&file_name));
+  let file_info = analyzer.get_import_map(&module);
+  let is_esm_file = file_info.has_exports || options.is_callback_function;
+  let module = if is_esm_file {
+    module
+  } else {
+    module.fold_with(&mut cjs_to_esm(&file_name, &options))
+  };
 
   let mut buf = vec![];
   let mut emitter = Emitter {
@@ -57,3 +68,18 @@ pub fn compile(source_code: String, file_name: String, options: CompileOptions) 
   emitter.emit_module(&module).unwrap();
   String::from_utf8(buf).unwrap()
 }
+
+// #[cfg(test)]
+// mod compile_tests {
+//   use crate::{compile, optionts::CompileOptions};
+//   use lazy_static::lazy_static;
+
+//   lazy_static! {
+//     static ref CONDITIONS: Vec<String> = vec!["import".into(), "default".into()];
+
+//     static ref EXTENSIONS: Vec<String> = vec![".ts", ".tsx", ".js", "cjs", ".mjs", ".jsx"]
+//       .iter()
+//       .map(|ext| ext.to_string())
+//       .collect();
+//   }
+// }

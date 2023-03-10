@@ -1,13 +1,11 @@
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{BTreeMap, HashMap},
-    fs::{self, File},
-    io::{self, Read, Write},
+    collections::{BTreeMap},
+    fs::{self},
     path::{Path, PathBuf},
-    str::FromStr, fmt::format,
 };
-
-use crate::constants::{NODE_MODULES, DEFAULT_CONDITION};
+use crate::{resolve::fix_extension, optionts::CompileOptions};
+use crate::constants::{DEFAULT_CONDITION};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)]
@@ -46,16 +44,16 @@ impl Package {
     fn parse_exports(
         &self,
         exports: &ExportsField,
-        conditions: &Vec<&str>,
+        conditions: &Vec<String>,
     ) -> Option<PathBuf> {
         match exports {
             ExportsField::Map(map) => {
                 let target_condition = conditions
                     .iter()
-                    .find(|&condition| map.contains_key(*condition));
+                    .find(|&condition| map.contains_key(condition));
                 match target_condition {
                     Some(condition) => {
-                        let inner_map = map.get(*condition).unwrap();
+                        let inner_map = map.get(condition).unwrap();
                         self.parse_exports(inner_map, conditions)
                     }
                     None => None,
@@ -69,7 +67,7 @@ impl Package {
         &self,
         exports: &ExportsField,
         sub_path: &str,
-        conditions: &Vec<&str>,
+        conditions: &Vec<String>,
     ) -> Option<PathBuf> {
         match exports {
             ExportsField::Map(map) => {
@@ -86,32 +84,37 @@ impl Package {
         }
     }
 
-    pub fn get_entry(&self, conditions: &Vec<&str>) -> Option<PathBuf> {
-        let mut conditions: Vec<&str> = conditions.clone();
+    pub fn get_entry(&self, compile_options: &CompileOptions) -> Option<PathBuf> {
+        let mut conditions: Vec<String> = compile_options.conditions.clone();
 
         // TODO:
-        if !conditions.contains(&DEFAULT_CONDITION) {
-            conditions.push(&DEFAULT_CONDITION);
+        if !conditions.contains(&DEFAULT_CONDITION.into()) {
+            conditions.push(DEFAULT_CONDITION.into());
         }
 
         if let Some(exports) = &self.package_json.exports {
             return self.get_sub_path_by_exports(exports, ".", &conditions);
+        } else if let Some(browser) = &self.package_json.browser {
+            let file_name = fix_extension(&self.dir.join(browser), &compile_options.extensions) ;
+            return Some(file_name.canonicalize().unwrap());
         } else if let Some(module) = &self.package_json.module {
-            return Some(self.dir.join(module).canonicalize().unwrap())
+            let file_name = fix_extension(&self.dir.join(module), &compile_options.extensions) ;
+            return Some(file_name.canonicalize().unwrap());
         } else if let Some(main) = &self.package_json.main {
-            return Some(self.dir.join(main).canonicalize().unwrap());
+            let file_name = fix_extension(&self.dir.join(main), &compile_options.extensions) ;
+            return Some(file_name.canonicalize().unwrap());
         }
 
         None
     }
 
-    pub fn get_sub_path(&self, sub_path: &str, conditions: &Vec<&str>) -> Option<PathBuf> {
-        let mut conditions: Vec<&str> = conditions.clone();
+    pub fn get_sub_path(&self, sub_path: &str, conditions: &Vec<String>) -> Option<PathBuf> {
+        let mut conditions: Vec<String> = conditions.clone();
         let relative_sub_path = format!("./{}", sub_path);
 
         // TODO:
-        if !conditions.contains(&DEFAULT_CONDITION) {
-            conditions.push(&DEFAULT_CONDITION);
+        if !conditions.contains(&DEFAULT_CONDITION.into()) {
+            conditions.push(DEFAULT_CONDITION.into());
         }
 
         if let Some(exports) = &self.package_json.exports {
@@ -127,6 +130,7 @@ pub struct PackageJson {
     name: String,
     version: String,
     main: Option<String>,
+    browser: Option<String>,
     module: Option<String>,
     #[serde(rename = "type")]
     t: Option<TypeField>,
