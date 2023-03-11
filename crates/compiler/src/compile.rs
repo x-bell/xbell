@@ -34,6 +34,7 @@ pub fn compile(source_code: String, file_name: String, options: CompileOptions) 
       import_assertions: true,
       allow_super_outside_method: true,
       allow_return_outside_function: true,
+      ..Default::default()
     }),
     EsVersion::latest(),
     StringInput::from(&*fm),

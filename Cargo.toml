@@ -5,12 +5,13 @@ members = [
 ]
 
 [workspace.dependencies]
-swc_core = { version = "0.59.31" }
-wasm-bindgen = { version = "0.2.84" }
-serde = { version = "1.0.152", features = ["derive"] }
-serde-wasm-bindgen = { version = "0.4.5" }
-dunce = { version = "1.0.3" }
-napi = { version = "2.11.1", default-features = false, features = ["napi4"] }
-napi-derive = "2.11.0"
-napi-build = "2.0.1"
-lazy_static = "1.4.0"
+swc_core                  = { version = "0.65.0" }
+wasm-bindgen              = { version = "0.2.84" }
+serde                     = { version = "1.0.152", features = ["derive"] }
+serde_json                = { version = "1.0.94"}
+serde-wasm-bindgen        = { version = "0.5.0" }
+dunce                     = { version = "1.0.3" }
+napi                      = { version = "2.11.2", default-features = false, features = ["napi4"] }
+napi-derive               = "2.11.1"
+napi-build                = "2.0.1"
+lazy_static               = "1.4.0"
