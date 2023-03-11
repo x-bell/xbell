@@ -95,8 +95,7 @@ impl Package {
         if let Some(exports) = &self.package_json.exports {
             return self.get_sub_path_by_exports(exports, ".", &conditions);
         } else if let Some(browser) = &self.package_json.browser {
-            let file_name = fix_extension(&self.dir.join(browser), &compile_options.extensions) ;
-            return Some(file_name.canonicalize().unwrap());
+            return self.get_sub_path_by_exports(browser, ".", &conditions);
         } else if let Some(module) = &self.package_json.module {
             let file_name = fix_extension(&self.dir.join(module), &compile_options.extensions) ;
             return Some(file_name.canonicalize().unwrap());
@@ -130,7 +129,7 @@ pub struct PackageJson {
     name: String,
     version: String,
     main: Option<String>,
-    browser: Option<String>,
+    browser: Option<ExportsField>,
     module: Option<String>,
     #[serde(rename = "type")]
     t: Option<TypeField>,
@@ -151,7 +150,7 @@ impl PackageJson {
 
         // println!("path is {:?}", real_link.to_str());
         let content = fs::read_to_string(real_link.join("package.json")).unwrap();
-        let package_json: PackageJson = serde_json::from_str(&content).unwrap();
+        let package_json: PackageJson = serde_json::from_str(&content).expect(&format!("Parse package.json failed in {}", package_dir.to_str().unwrap()));
         package_json
     }
 

@@ -5,7 +5,6 @@ extern crate napi_derive;
 
 mod package;
 mod cjs_to_esm;
-mod graph;
 mod resolve;
 mod utils;
 mod optionts;
