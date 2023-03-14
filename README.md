@@ -50,7 +50,7 @@ test('test code in nodejs', ({ expect }) => {
 Here's an example of how to use XBell to test your code in the browser:
 
 ```typescript
-test('test code in browser', ({ expect, page }) => {
+test.browser('test code in browser', ({ expect, page }) => {
   const { add } = await import('./add');
   const result = add(1, 1);
   expect(result).toBe(2);
