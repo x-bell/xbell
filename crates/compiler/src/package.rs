@@ -138,6 +138,7 @@ pub struct PackageJson {
 
 impl PackageJson {
     pub fn new(package_dir: &Path) -> PackageJson {
+        let package_dir_str = package_dir.to_str().unwrap();
         let is_symlink = package_dir.is_symlink();
         let real_link_str = if is_symlink {
             let real_link = package_dir.canonicalize().unwrap();
@@ -149,8 +150,8 @@ impl PackageJson {
         let real_link = real_link_str;
 
         // println!("path is {:?}", real_link.to_str());
-        let content = fs::read_to_string(real_link.join("package.json")).unwrap();
-        let package_json: PackageJson = serde_json::from_str(&content).expect(&format!("Parse package.json failed in {}", package_dir.to_str().unwrap()));
+        let content = fs::read_to_string(real_link.join("package.json")).expect(&format!("{}/package.json is not found", package_dir_str));
+        let package_json: PackageJson = serde_json::from_str(&content).expect( &format!("Parse package.json failed in {}", package_dir.to_str().unwrap()));
         package_json
     }
 
@@ -164,4 +165,3 @@ impl PackageJson {
         }
     }
 }
-
