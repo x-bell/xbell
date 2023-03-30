@@ -47,7 +47,6 @@ import type { ExpectMatchState } from '@xbell/assert';
 import * as bundless from '@xbell/bundless';
 import { isRegExp } from '../utils/is';
 
-
 const debugPage = debug('xbell:page');
 
 function toCommonRequest(r: PWRequest): Request {
@@ -96,6 +95,7 @@ declare global {
       mocks: Map<string, any>;
       project?: XBellProject;
     }
+    __xbell_page_console__<T extends 'log' | 'time' | 'timeEnd'>(opts: { type: T; args: any[] }): void;
     __xbell_page_callbacks__: Map<string, (...args: any[]) => any>;
     __xbell_getImportActualUrl__(path: string): Promise<string>;
     __xbell_page_screenshot__(): Promise<number[]>;
@@ -368,6 +368,10 @@ export class Page implements PageInterface {
         message: msg,
       };
     });
+
+    this._page.exposeFunction('__xbell_page_console__', (({ type, args }: Parameters<typeof window.__xbell_page_console__>[0]) => {
+      console[type](...args);
+    }));
   }
 
   protected async _setupXBellContext() {
@@ -375,6 +379,24 @@ export class Page implements PageInterface {
     // @ts-ignore
     await this._page.evaluate(({ project }) => {
       window.__xbell_page_callbacks__ = new Map();
+      const originConsoleLog = window.console.log;
+      const originConsoleTime = window.console.time;
+      const originConsoleTimeEnd = window.console.timeEnd;
+
+      window.console.log = (...args) => {
+        originConsoleLog.apply(window.console, args);
+        window.__xbell_page_console__({ type: 'log', args });
+      };
+      window.console.time = (...args) => {
+        originConsoleTime.apply(window.console, args)
+        window.__xbell_page_console__({ type: 'time', args });
+
+      };
+      window.console.timeEnd = (...args) => {
+        originConsoleTimeEnd.apply(window.console, args);
+        window.__xbell_page_console__({ type: 'timeEnd', args });
+      };
+
       window.__xbell_context__ = {
         mocks: new Map(),
         importActual: async (path: string) => {
