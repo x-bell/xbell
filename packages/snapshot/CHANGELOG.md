@@ -1,5 +1,15 @@
 # @xbell/snapshot
 
+## 0.8.6
+
+### Patch Changes
+
+- ed17157: Displays the browser print to the node console
+- Updated dependencies [ed17157]
+  - @xbell/assert@0.8.6
+  - @xbell/color@0.8.6
+  - @xbell/format@0.8.6
+
 ## 0.8.5
 
 ### Patch Changes
