@@ -14,6 +14,7 @@ const debugLazyPage = debug('xbell:lazyPage');
 
 const LOCATOR_SYNC_KEYS = new Set<LocatorSyncMethodKeys>([
   'first',
+  'locator',
   'get',
   'getByClass',
   'getByTestId',
@@ -24,6 +25,7 @@ const LOCATOR_SYNC_KEYS = new Set<LocatorSyncMethodKeys>([
 ]);
 
 const PAGE_SYNC_KEYS = new Set<PageSyncMethodKeys>([
+  'locator',
   'get',
   'getByClass',
   'getByText',

@@ -24,7 +24,13 @@ export class Page implements CommonPage {
   get(selector: string): LocatorInterface {
     return new Locator([{
       value: selector,
-    }])
+    }]);
+  }
+
+  locator(selector: string): LocatorInterface {
+    return new Locator([{
+      value: selector,
+    }]);
   }
 
   getByClass(className: string): LocatorInterface {

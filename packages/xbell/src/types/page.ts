@@ -28,6 +28,7 @@ export interface CommonPage {
   getByTestId(testId: string): Locator;
   getById(id: string): Locator;
   getByClass(className: string): Locator;
+  locator(selector: string): Locator;
   get(selector: string): Locator;
   getFrame(selector: string): FrameLocator;
   queryElementByText(text: string): Promise<ElementHandle | null>;
