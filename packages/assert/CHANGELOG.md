@@ -1,5 +1,14 @@
 # @xbell/assert
 
+## 0.8.7
+
+### Patch Changes
+
+- 65884ca: Locator api
+- Updated dependencies [65884ca]
+  - @xbell/color@0.8.7
+  - @xbell/format@0.8.7
+
 ## 0.8.6
 
 ### Patch Changes

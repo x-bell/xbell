@@ -597,6 +597,10 @@ export class Page implements PageInterface {
     return new Locator(this._page.locator(selector));
   }
 
+  locator(selector: string): LocatorInterface {
+    return new Locator(this._page.locator(selector));
+  }
+
   getByText(text: string): LocatorInterface {
     return new Locator(this._page.locator(`text=${text}`));
   }

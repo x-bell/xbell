@@ -1,5 +1,11 @@
 # @xbell/color
 
+## 0.8.7
+
+### Patch Changes
+
+- 65884ca: Locator api
+
 ## 0.8.6
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 import type { Locator } from '../types/locator';
 
-export type PageSyncMethodKeys = 'get' | 'getByClass' | 'getByTestId' | 'getByText' | 'getFrame';
+export type PageSyncMethodKeys = 'locator' | 'get' | 'getByClass' | 'getByTestId' | 'getByText' | 'getFrame';
 export type LocatorSyncMethodKeys = 'first' | 'nth' | 'last' | PageSyncMethodKeys;
 
 export type LocatorMethod<T extends LocatorSyncMethodKeys = LocatorSyncMethodKeys> = {

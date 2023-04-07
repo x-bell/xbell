@@ -1,5 +1,15 @@
 # @xbell/vue2
 
+## 0.8.7
+
+### Patch Changes
+
+- 65884ca: Locator api
+- Updated dependencies [65884ca]
+  - @xbell/assert@0.8.7
+  - @xbell/snapshot@0.8.7
+  - xbell@0.8.7
+
 ## 0.8.6
 
 ### Patch Changes

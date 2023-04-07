@@ -34,6 +34,7 @@ export interface Locator {
   isHidden(options?: TimeoutOptions): Promise<boolean>;
   boundingBox(options?: TimeoutOptions): Promise<Rect | null>;
   screenshot(options?: ElementHandleScreenshotOptions): Promise<Buffer>
+  locator(selector: string): Locator;
   get(selector: string): Locator;
   getFrame(selector: string): FrameLocator;
   getByText(text: string): Locator;
