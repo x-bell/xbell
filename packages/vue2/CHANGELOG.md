@@ -1,5 +1,15 @@
 # @xbell/vue2
 
+## 0.8.8
+
+### Patch Changes
+
+- 0f95c96: Some apis
+- Updated dependencies [0f95c96]
+  - @xbell/snapshot@0.8.8
+  - @xbell/assert@0.8.8
+  - xbell@0.8.8
+
 ## 0.8.7
 
 ### Patch Changes

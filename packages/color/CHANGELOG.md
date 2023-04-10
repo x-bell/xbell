@@ -1,5 +1,11 @@
 # @xbell/color
 
+## 0.8.8
+
+### Patch Changes
+
+- 0f95c96: Some apis
+
 ## 0.8.7
 
 ### Patch Changes

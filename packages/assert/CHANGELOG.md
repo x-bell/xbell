@@ -1,5 +1,14 @@
 # @xbell/assert
 
+## 0.8.8
+
+### Patch Changes
+
+- 0f95c96: Some apis
+- Updated dependencies [0f95c96]
+  - @xbell/format@0.8.8
+  - @xbell/color@0.8.8
+
 ## 0.8.7
 
 ### Patch Changes
