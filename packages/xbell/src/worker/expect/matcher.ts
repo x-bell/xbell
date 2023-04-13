@@ -74,8 +74,11 @@ export const e2eMatcher: E2EMatcher = defineMatcher({
       };
     }
   },
-  toMatchImageScreenshot(received: Uint8Array | Buffer, options: ToMatchImageSnapshotOptions | string) {
+  toMatchImageSnapshot(received: Uint8Array | Buffer, options: ToMatchImageSnapshotOptions | string) {
     return async (state) => {
+      if (Object.prototype.toString.apply(received) === '[object Object]') {
+        received = new Uint8Array(Object.values(received));
+      }
       const validOpts: ToMatchImageSnapshotOptions = typeof options === 'string' ? { name: options } : options;
       const buffer = received;
       const testState = stateManager.getCurrentState();

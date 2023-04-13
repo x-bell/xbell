@@ -54,11 +54,11 @@ const browserE2EMatcher = defineMatcher<E2EMatcher>({
       });
     }
   },
-  toMatchImageScreenshot(target, ...args) {
+  toMatchImageSnapshot(target, ...args) {
     return async (state) => {
       return window.__xbell_page_expect__({
         target,
-        method: 'toMatchImageScreenshot',
+        method: 'toMatchImageSnapshot',
         args,
         state,
       });

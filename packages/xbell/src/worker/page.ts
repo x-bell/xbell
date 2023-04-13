@@ -839,4 +839,24 @@ export class Page implements PageInterface {
     const fileChooser = new FileChooser(_fileChooser);
     return fileChooser;
   }
+
+  waitForEvent(...args: any[]) {
+    // @ts-ignore
+    return this._page.waitForEvent(...args);
+  }
+
+  on(...args: any[]) {
+    // @ts-ignore
+    return this._page.on.apply(...args);
+  }
+
+  off(...args: any[]) {
+    // @ts-ignore
+    return this._page.off(...args);
+  }
+
+  $(...args: any[]) {
+    // @ts-ignore
+    return this._page.$(...args);
+  }
 }
