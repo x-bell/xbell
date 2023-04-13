@@ -1,5 +1,13 @@
 # create-xbell
 
+## 0.8.9
+
+### Patch Changes
+
+- 0364253: Browser toMatchImageSnapshot
+- Updated dependencies [0364253]
+  - @xbell/color@0.8.9
+
 ## 0.8.8
 
 ### Patch Changes
