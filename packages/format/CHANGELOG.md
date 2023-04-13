@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.8.10
+
+### Patch Changes
+
+- 78d2f5b: Support browser debug mode
+
 ## 0.8.9
 
 ### Patch Changes
