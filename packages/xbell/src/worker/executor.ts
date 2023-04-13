@@ -307,34 +307,39 @@ export class Executor {
     });
     const project = globalConfig.projects!.find(project => project.name === file.projectName)!;
     debugExecutor('browser-project', project);
+    const browserSetup = {
+      callback: async () => {
+        // @ts-ignore
+        const { expect, fn, spyOn, importActual, page, sleep } = (await import('xbell/browser-test')) as typeof import('../browser-test');
+        const basicArgs: BrowserTestArguments = {
+          expect,
+          fn,
+          spyOn,
+          importActual,
+          page,
+          sleep,
+          runtime: 'browser',
+          project: window.__xbell_context__.project!,
+        };
+        return basicArgs;
+      },
+      filename: __filename,
+      sortValue: 0,
+    };
     const page = await Page.from({
       browserContext,
       project,
-      // @ts-ignore
-      setupCallbacks: [
-        debug ? () => {
-          return new Promise(resolve => setTimeout(resolve, 1000));
-        } : undefined,
-        {
-          callback: async () => {
-            // @ts-ignore
-            const { expect, fn, spyOn, importActual, page, sleep } = (await import('xbell/browser-test')) as typeof import('../browser-test');
-            const basicArgs: BrowserTestArguments = {
-              expect,
-              fn,
-              spyOn,
-              importActual,
-              page,
-              sleep,
-              runtime: 'browser',
-              project: window.__xbell_context__.project!,
-            };
-            return basicArgs;
+      setupCallbacks: debug ? [{
+          callback: () => {
+            return new Promise(resolve => setTimeout(resolve, 1000));
           },
           filename: __filename,
           sortValue: 0,
         },
-      ].filter(Boolean),
+        browserSetup,
+      ] : [
+        browserSetup
+      ],
       browserCallbacks: (isFromAll ? c.runtimeOptions.commonCallbacks : c.runtimeOptions.browserCallbacks) || [],
       mocks: c.browserMocks,
       filename: c._testFunctionFilename!,
