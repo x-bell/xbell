@@ -1,5 +1,14 @@
 # @xbell/assert
 
+## 0.8.11
+
+### Patch Changes
+
+- e163044: Fix browser callback
+- Updated dependencies [e163044]
+  - @xbell/format@0.8.11
+  - @xbell/color@0.8.11
+
 ## 0.8.10
 
 ### Patch Changes

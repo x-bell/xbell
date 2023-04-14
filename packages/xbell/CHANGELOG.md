@@ -1,5 +1,18 @@
 # xbell
 
+## 0.8.11
+
+### Patch Changes
+
+- e163044: Fix browser callback
+- Updated dependencies [e163044]
+  - @xbell/code-stack@0.8.11
+  - @xbell/coverage@0.8.11
+  - @xbell/reporter@0.8.11
+  - @xbell/snapshot@0.8.11
+  - @xbell/assert@0.8.11
+  - @xbell/color@0.8.11
+
 ## 0.8.10
 
 ### Patch Changes

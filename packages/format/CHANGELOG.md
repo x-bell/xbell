@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.8.11
+
+### Patch Changes
+
+- e163044: Fix browser callback
+
 ## 0.8.10
 
 ### Patch Changes
