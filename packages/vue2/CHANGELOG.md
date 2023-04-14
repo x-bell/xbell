@@ -1,5 +1,25 @@
 # @xbell/vue2
 
+## 0.8.11
+
+### Patch Changes
+
+- e163044: Fix browser callback
+- Updated dependencies [e163044]
+  - @xbell/snapshot@0.8.11
+  - @xbell/assert@0.8.11
+  - xbell@0.8.11
+
+## 0.8.10
+
+### Patch Changes
+
+- 78d2f5b: Support browser debug mode
+- Updated dependencies [78d2f5b]
+  - @xbell/snapshot@0.8.10
+  - @xbell/assert@0.8.10
+  - xbell@0.8.10
+
 ## 0.8.9
 
 ### Patch Changes

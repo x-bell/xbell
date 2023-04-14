@@ -1,5 +1,17 @@
 # xbell-reporter
 
+## 0.8.11
+
+### Patch Changes
+
+- e163044: Fix browser callback
+
+## 0.8.10
+
+### Patch Changes
+
+- 78d2f5b: Support browser debug mode
+
 ## 0.8.9
 
 ### Patch Changes
