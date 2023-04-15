@@ -94,6 +94,10 @@ export class Locator implements LocatorInterface {
     return new Locator(this._locator.nth(index));
   }
 
+  locator(selector: string): LocatorInterface {
+    return new Locator(this._locator.locator(selector));
+  }
+
   get(selector: string): LocatorInterface {
     return new Locator(this._locator.locator(selector));
   }
@@ -187,6 +191,10 @@ export class Locator implements LocatorInterface {
 
 export class FrameLocator implements FrameLocatorInterface {
   constructor(protected _frameLocator: PWFrameLocator) {}
+
+  locator(selector: string): LocatorInterface {
+    return new Locator(this._frameLocator.locator(selector));
+  }
 
   get(selector: string): LocatorInterface {
     return new Locator(this._frameLocator.locator(selector));

@@ -14,6 +14,7 @@ const debugLazyPage = debug('xbell:lazyPage');
 
 const LOCATOR_SYNC_KEYS = new Set<LocatorSyncMethodKeys>([
   'first',
+  'locator',
   'get',
   'getByClass',
   'getByTestId',
@@ -24,6 +25,7 @@ const LOCATOR_SYNC_KEYS = new Set<LocatorSyncMethodKeys>([
 ]);
 
 const PAGE_SYNC_KEYS = new Set<PageSyncMethodKeys>([
+  'locator',
   'get',
   'getByClass',
   'getByText',
@@ -114,10 +116,11 @@ export function genLazyPage({
       };
     }
     const projectConfig = await configurator.getProjectConfig({ projectName });
+    const { debug } = projectConfig;
     const { headless, viewport, storageState, devtools } = projectConfig.browser;
     const browser = await lazyBrowser.newBrowser('chromium', {
-      headless: !!headless,
-      devtools: !!devtools,
+      headless: debug ? false : !!headless,
+      devtools: debug ? true : !!devtools,
     });
     const videoDir = path.join(pathManager.tmpDir, 'videos');
 

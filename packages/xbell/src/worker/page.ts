@@ -568,6 +568,10 @@ export class Page implements PageInterface {
     return new Locator(this._page.locator(selector));
   }
 
+  locator(selector: string): LocatorInterface {
+    return new Locator(this._page.locator(selector));
+  }
+
   getByText(text: string): LocatorInterface {
     return new Locator(this._page.locator(`text=${text}`));
   }
@@ -805,5 +809,25 @@ export class Page implements PageInterface {
     const _fileChooser = await this._page.waitForEvent('filechooser');
     const fileChooser = new FileChooser(_fileChooser);
     return fileChooser;
+  }
+
+  waitForEvent(...args: any[]) {
+    // @ts-ignore
+    return this._page.waitForEvent(...args);
+  }
+
+  on(...args: any[]) {
+    // @ts-ignore
+    return this._page.on.apply(...args);
+  }
+
+  off(...args: any[]) {
+    // @ts-ignore
+    return this._page.off(...args);
+  }
+
+  $(...args: any[]) {
+    // @ts-ignore
+    return this._page.$(...args);
   }
 }

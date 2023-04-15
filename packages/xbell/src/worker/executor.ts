@@ -250,13 +250,14 @@ export class Executor {
     // case config
     const projectConfig = await configurator.getProjectConfig({ projectName: file.projectName });
     const globalConfig = configurator.globalConfig;
+    const { debug } = projectConfig;
     const { viewport, headless, storageState, devtools } = projectConfig.browser;
     const { url, html } = projectConfig.browserTest;
     const { coverage: coverageConfig } = projectConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
     const browser = await lazyBrowser.newBrowser('chromium', {
-      headless: !!headless,
-      devtools: !!devtools,
+      headless: debug ? false : !!headless,
+      devtools: debug ? true : !!devtools,
     });
     workerContext.channel.emit('onCaseExecuteStart', {
       uuid: c.uuid,
@@ -273,31 +274,40 @@ export class Executor {
     });
     const project = globalConfig.projects!.find(project => project.name === file.projectName)!;
     debugExecutor('browser-project', project);
+    const browserSetup = {
+      callback: async () => {
+        // @ts-ignore
+        window.process = { env: {} };
+        // @ts-ignore
+        const { expect, fn, spyOn, importActual, page, sleep } = (await import('xbell/browser-test')) as typeof import('../browser-test');
+        const basicArgs: BrowserTestArguments = {
+          expect,
+          fn,
+          spyOn,
+          importActual,
+          page,
+          sleep,
+          runtime: 'browser',
+          project: window.__xbell_context__.project!,
+        };
+        return basicArgs;
+      },
+      filename: __filename,
+      sortValue: 0,
+    };
     const page = await Page.from({
       browserContext,
       project,
-      setupCallbacks: [
-        {
-          callback: async () => {
-            // @ts-ignore
-            window.process = { env: {} };
-            // @ts-ignore
-            const { expect, fn, spyOn, importActual, page, sleep } = (await import('xbell/browser-test')) as typeof import('../browser-test');
-            const basicArgs: BrowserTestArguments = {
-              expect,
-              fn,
-              spyOn,
-              importActual,
-              page,
-              sleep,
-              runtime: 'browser',
-              project: window.__xbell_context__.project!,
-            };
-            return basicArgs;
+      setupCallbacks: debug ? [{
+          callback: () => {
+            return new Promise(resolve => setTimeout(resolve, 1000));
           },
           filename: __filename,
           sortValue: 0,
         },
+        browserSetup,
+      ] : [
+        browserSetup
       ],
       browserCallbacks: (isFromAll ? c.runtimeOptions.commonCallbacks : c.runtimeOptions.browserCallbacks) || [],
       mocks: c.browserMocks,

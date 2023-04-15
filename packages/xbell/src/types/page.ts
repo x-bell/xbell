@@ -10,6 +10,7 @@ import type {
   Download,
   TimeoutOptions,
 } from './pw';
+import { Page as PWPage } from 'playwright-core';
 import type { Locator } from './locator';
 import type { FrameLocator } from './frame-locator';
 import type { ElementHandle } from './element-handle';
@@ -28,6 +29,7 @@ export interface CommonPage {
   getByTestId(testId: string): Locator;
   getById(id: string): Locator;
   getByClass(className: string): Locator;
+  locator(selector: string): Locator;
   get(selector: string): Locator;
   getFrame(selector: string): FrameLocator;
   queryElementByText(text: string): Promise<ElementHandle | null>;
@@ -67,6 +69,10 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
     waitUntil?: 'load' | 'domcontentloaded' | 'networkidle' | 'commit';
   }): Promise<Response | null>;
   waitForFileChooser(): Promise<FileChooser>;
+  $: PWPage['$'];
+  on: PWPage['on'];
+  off: PWPage['off'];
+  waitForEvent: PWPage['waitForEvent'];
 }
 
 export type PageMethods = Omit<Page, 'mouse' | 'keyboard'>;

@@ -1,5 +1,35 @@
 # xbell-reporter
 
+## 0.8.11
+
+### Patch Changes
+
+- e163044: Fix browser callback
+
+## 0.8.10
+
+### Patch Changes
+
+- 78d2f5b: Support browser debug mode
+
+## 0.8.9
+
+### Patch Changes
+
+- 0364253: Browser toMatchImageSnapshot
+
+## 0.8.8
+
+### Patch Changes
+
+- 0f95c96: Some apis
+
+## 0.8.7
+
+### Patch Changes
+
+- 65884ca: Locator api
+
 ## 0.8.6
 
 ### Patch Changes

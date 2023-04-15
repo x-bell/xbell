@@ -25,6 +25,7 @@ interface XBellTransformer {
 }
 
 export interface XBellConfig {
+  debug?: boolean;
   /** setup */
   setup?: string[] | string | (() => Promise<void> | void);
   /** teardown */

@@ -1,0 +1,11 @@
+{
+  "name": "@xbell/test-browser-debug",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "xbell": "workspace:*"
+  },
+  "scripts": {
+    "test": "xbell"
+  }
+}

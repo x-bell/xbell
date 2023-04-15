@@ -67,6 +67,7 @@ export class Configurator implements XBellConfigurator {
   };
 
   static XBellDefaultConfig: XBellConfigRequired = {
+    debug: false,
     projects: [
       { name: '' }
     ],

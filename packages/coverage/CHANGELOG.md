@@ -1,5 +1,45 @@
 # @xbell/coverage
 
+## 0.8.11
+
+### Patch Changes
+
+- e163044: Fix browser callback
+- Updated dependencies [e163044]
+  - @xbell/color@0.8.11
+
+## 0.8.10
+
+### Patch Changes
+
+- 78d2f5b: Support browser debug mode
+- Updated dependencies [78d2f5b]
+  - @xbell/color@0.8.10
+
+## 0.8.9
+
+### Patch Changes
+
+- 0364253: Browser toMatchImageSnapshot
+- Updated dependencies [0364253]
+  - @xbell/color@0.8.9
+
+## 0.8.8
+
+### Patch Changes
+
+- 0f95c96: Some apis
+- Updated dependencies [0f95c96]
+  - @xbell/color@0.8.8
+
+## 0.8.7
+
+### Patch Changes
+
+- 65884ca: Locator api
+- Updated dependencies [65884ca]
+  - @xbell/color@0.8.7
+
 ## 0.8.6
 
 ### Patch Changes

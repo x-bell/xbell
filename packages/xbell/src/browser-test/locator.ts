@@ -60,6 +60,10 @@ export class Locator implements LocatorInterface {
     return new Locator(this.appendQueryItem({ value: selector }));
   }
 
+  locator(selector: string): LocatorInterface {
+    return new Locator(this.appendQueryItem({ value: selector }));
+  }
+
   getByText(text: string): LocatorInterface {
     return new Locator(this.appendQueryItem({ type: 'text', value: text }));
   }
@@ -234,6 +238,10 @@ export class FrameLocator implements FrameLocatorInterface {
  
   private appendQueryItem(queryItem: QueryItem) {
     return [...this.queryItems, queryItem];
+  }
+
+  locator(selector: string): LocatorInterface {
+    return new Locator(this.appendQueryItem({ value: selector }));
   }
 
   get(selector: string): LocatorInterface {
