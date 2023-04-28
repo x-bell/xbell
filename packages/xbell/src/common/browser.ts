@@ -5,7 +5,7 @@ import { Page } from '../worker/page';
 
 export class Browser {
   static async launch(opts?: {
-    headless?: boolean
+    headless?: boolean;
   }): Promise<Browser> {
     const _browser = await chromium.launch(opts);
     return new Browser(_browser);
@@ -13,9 +13,11 @@ export class Browser {
 
   protected constructor(protected _browser: ChromiumBrowser) {}
 
-  async newPage(): Promise<PageInterface> {
+  async newPage(opts: {
+    userAgent?: string;
+  } = {}): Promise<PageInterface> {
     const filename = url.fileURLToPath(import.meta.url);
-    const browserContext = await this._browser.newContext();
+    const browserContext = await this._browser.newContext(opts);
     return Page.from({
       browserContext: browserContext,
       browserCallbacks: [],

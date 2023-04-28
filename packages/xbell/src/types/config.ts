@@ -18,6 +18,8 @@ export interface XBellBrowserConfig {
   storageState?: StorageState | string;
   /** browser dev server */
   devServer?: XBellBrowserDevServerConfig;
+  /** User agent */
+  userAgent?: string;
 }
 
 export interface XBellConfig {
@@ -68,7 +70,7 @@ export interface XBellConfig {
 }
 
 type XBellConfigOptionalsKeys = 'setup' | 'teardown' | 'browser' | 'presets';
-type XBellBrowserConfigOptionalsKeys = 'storageState';
+type XBellBrowserConfigOptionalsKeys = 'storageState' | 'userAgent';
 
 type XBellBrowserDevServerConfigOptionalsKeys = 'viteConfig';
 
