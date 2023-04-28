@@ -1,5 +1,18 @@
 # xbell
 
+## 0.8.12
+
+### Patch Changes
+
+- 965ac0d: Support user agent
+- Updated dependencies [965ac0d]
+  - @xbell/code-stack@0.8.12
+  - @xbell/coverage@0.8.12
+  - @xbell/reporter@0.8.12
+  - @xbell/snapshot@0.8.12
+  - @xbell/assert@0.8.12
+  - @xbell/color@0.8.12
+
 ## 0.8.11
 
 ### Patch Changes
