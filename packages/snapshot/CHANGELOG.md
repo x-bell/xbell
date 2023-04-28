@@ -1,5 +1,15 @@
 # @xbell/snapshot
 
+## 0.8.12
+
+### Patch Changes
+
+- 965ac0d: Support user agent
+- Updated dependencies [965ac0d]
+  - @xbell/assert@0.8.12
+  - @xbell/format@0.8.12
+  - @xbell/color@0.8.12
+
 ## 0.8.11
 
 ### Patch Changes

@@ -284,7 +284,7 @@ export class Executor {
     const projectConfig = await configurator.getProjectConfig({ projectName: file.projectName });
     const globalConfig = configurator.globalConfig;
     const { debug } = projectConfig;
-    const { viewport, headless, storageState, devtools } = projectConfig.browser;
+    const { viewport, headless, storageState, devtools, userAgent } = projectConfig.browser;
     const { url, html } = projectConfig.browserTest;
     const { coverage: coverageConfig } = projectConfig;
     const videoDir = join(pathManager.tmpDir, 'videos');
@@ -303,6 +303,7 @@ export class Executor {
         size: viewport,
         dir: videoDir,
       },
+      userAgent,
       storageState,
     });
     const project = globalConfig.projects!.find(project => project.name === file.projectName)!;

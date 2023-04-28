@@ -344,6 +344,12 @@ importers:
       vite: registry.npmmirror.com/vite/3.2.5
       xbell: link:../../packages/xbell
 
+  tests/browser-canvas-to-image:
+    specifiers:
+      xbell: workspace:*
+    dependencies:
+      xbell: link:../../packages/xbell
+
   tests/browser-console:
     specifiers:
       xbell: workspace:*

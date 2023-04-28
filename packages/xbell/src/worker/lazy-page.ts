@@ -117,7 +117,7 @@ export function genLazyPage({
     }
     const projectConfig = await configurator.getProjectConfig({ projectName });
     const { debug } = projectConfig;
-    const { headless, viewport, storageState, devtools } = projectConfig.browser;
+    const { headless, viewport, storageState, devtools, userAgent } = projectConfig.browser;
     const browser = await lazyBrowser.newBrowser('chromium', {
       headless: debug ? false : !!headless,
       devtools: debug ? true : !!devtools,
@@ -126,6 +126,7 @@ export function genLazyPage({
 
     const browserContext = await browser.newContext({
       viewport,
+      userAgent,
       recordVideo: {
         dir: videoDir,
         size: viewport,

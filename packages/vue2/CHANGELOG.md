@@ -1,5 +1,15 @@
 # @xbell/vue2
 
+## 0.8.12
+
+### Patch Changes
+
+- 965ac0d: Support user agent
+- Updated dependencies [965ac0d]
+  - @xbell/snapshot@0.8.12
+  - @xbell/assert@0.8.12
+  - xbell@0.8.12
+
 ## 0.8.11
 
 ### Patch Changes

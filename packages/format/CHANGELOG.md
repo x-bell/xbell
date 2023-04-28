@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.8.12
+
+### Patch Changes
+
+- 965ac0d: Support user agent
+
 ## 0.8.11
 
 ### Patch Changes
