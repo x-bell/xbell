@@ -73,7 +73,7 @@ export interface Page<BrowserExtensionArg = {}> extends CommonPage {
   on: PWPage['on'];
   off: PWPage['off'];
   waitForEvent: PWPage['waitForEvent'];
-  _internalPage: PWPage;
+  _getInternalPage(): Promise<PWPage>;
 }
 
-export type PageMethods = Omit<Page, 'mouse' | 'keyboard' | '_internalPage'>;
+export type PageMethods = Omit<Page, 'mouse' | 'keyboard'>;
