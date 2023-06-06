@@ -217,6 +217,8 @@ export class Page implements PageInterface {
     return page;
   }
 
+  public _internalPage: PWPage;
+
   public keyboard: Keyboard;
 
   public mouse: Mouse;
@@ -241,6 +243,7 @@ export class Page implements PageInterface {
     this._currentFilename = _filename;
     this.keyboard = new Keyboard(this._page.keyboard);
     this.mouse = this._page.mouse;
+    this._internalPage = this._page;
     this._listenRequests();
   }
 
@@ -858,9 +861,5 @@ export class Page implements PageInterface {
   $(...args: any[]) {
     // @ts-ignore
     return this._page.$(...args);
-  }
-
-  get _internalPage() {
-    return this._page;
   }
 }
