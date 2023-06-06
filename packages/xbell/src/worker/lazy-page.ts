@@ -58,7 +58,7 @@ export function genLazyPage({
   filename: string,
 }): PageInterface & { used: boolean } {
   const { projectName } = file;
-  function genProxy(pagePropKey: 'mouse' | 'keyboard') {
+  function genProxy(pagePropKey: 'mouse' | 'keyboard' | '_internalPage') {
     const proxy = new Proxy({}, {
       get(target, propKey: keyof Page[typeof pagePropKey]) {
         return (...args: any[]) => {
@@ -152,6 +152,7 @@ export function genLazyPage({
 
   const keyboardProxy = genProxy('keyboard');
   const mouseProxy = genProxy('mouse');
+  const _internalPageProxy = genProxy('_internalPage');
 
   const proxyPage = new Proxy({}, {
     get(target, propKey: keyof PageInterface | 'used') {
@@ -166,6 +167,10 @@ export function genLazyPage({
 
       if (propKey === 'mouse') {
         return mouseProxy;
+      }
+
+      if (propKey === '_internalPage') {
+        return _internalPageProxy;
       }
 
       return (...args: any[]) => {

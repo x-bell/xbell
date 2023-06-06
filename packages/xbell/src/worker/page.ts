@@ -859,4 +859,8 @@ export class Page implements PageInterface {
     // @ts-ignore
     return this._page.$(...args);
   }
+
+  get _internalPage() {
+    return this._page;
+  }
 }
