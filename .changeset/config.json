@@ -8,5 +8,5 @@
   "access": "restricted",
   "baseBranch": "next",
   "updateInternalDependencies": "patch",
-  "ignore": ["@xbell/test-*", "@xbell/example-*", "website", "@internal/*", "xband", "xbell-vsc-extension"]
+  "ignore": ["@xbell/test-*", "@xbell/example-*", "website", "xband", "xbell-vsc-extension"]
 }
