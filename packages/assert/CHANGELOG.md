@@ -1,5 +1,14 @@
 # @xbell/assert
 
+## 0.8.14
+
+### Patch Changes
+
+- d78e76f: Fixed internalPage
+- Updated dependencies [d78e76f]
+  - @xbell/format@0.8.14
+  - @xbell/color@0.8.14
+
 ## 0.8.13
 
 ### Patch Changes

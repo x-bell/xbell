@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.8.14
+
+### Patch Changes
+
+- d78e76f: Fixed internalPage
+
 ## 0.8.13
 
 ### Patch Changes
