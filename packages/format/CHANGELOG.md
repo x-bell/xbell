@@ -1,5 +1,11 @@
 # @xbell/format
 
+## 0.8.13
+
+### Patch Changes
+
+- c115980: add \_internalPage
+
 ## 0.8.12
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @xbell/coverage
 
+## 0.8.13
+
+### Patch Changes
+
+- c115980: add \_internalPage
+- Updated dependencies [c115980]
+  - @xbell/color@0.8.13
+
 ## 0.8.12
 
 ### Patch Changes
