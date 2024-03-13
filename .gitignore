@@ -15,6 +15,5 @@ test-report
 internal-*
 target/
 .cert
-/Cargo.lock
 
 *.node

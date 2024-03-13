@@ -3,20 +3,35 @@ use crate::cjs_to_esm::cjs_to_esm;
 use crate::constants::NODE_MODULES;
 use crate::optionts::CompileOptions;
 use crate::replace_specifier::replace_specifier;
+use std::env;
+use std::path::Path;
+
 use std::sync::Arc;
+use swc_core::common::comments::{self, SingleThreadedComments};
 use swc_core::ecma::parser::TsConfig;
+use swc_core::ecma::transforms::typescript::{strip, tsx, Config, TsxConfig};
 use swc_core::ecma::visit::{FoldWith, VisitWith};
 use swc_core::{
   base::SwcComments,
   common::{
-    input::StringInput, FileName, Globals, Mark,
-    SourceMap, GLOBALS,
+    errors::{ColorConfig, Handler},
+    input::StringInput,
+    sync::Lrc,
+    FileName, Globals, Mark, SourceMap, GLOBALS,
   },
   ecma::{
     ast::*,
-    codegen::{text_writer::JsWriter, Config, Emitter},
+    codegen,
+    codegen::{text_writer::JsWriter, Emitter},
     parser::{lexer::Lexer, Parser, Syntax},
+    transforms::base::{
+      fixer::{fixer, paren_remover},
+      helpers::{self, Helpers},
+      hygiene::hygiene,
+      resolver,
+    },
     transforms::react::{react, Options as ReactOptions},
+    transforms::typescript::typescript,
   },
 };
 
@@ -30,58 +45,91 @@ pub fn compile(source_code: String, file_name: String, options: CompileOptions) 
   let globals: Globals = Default::default();
   // generate preset mark & helpers
   GLOBALS.set(&globals, || {
-      let top_level_mark = Mark::new();
-      let lexer = Lexer::new(
-        Syntax::Typescript(TsConfig {
-          tsx: true, // Enable TSX support
-          decorators: true,
-          no_early_errors: false,
-          ..Default::default()
-        }),
-        EsVersion::latest(),
-        StringInput::from(&*fm),
-        Some(&comments),
-      );
-      let is_in_cwd = file_name.contains(&options.cwd);
-      let is_in_node_modules = file_name.contains(&NODE_MODULES);
-      let mut analyzer = Analyzer::new(&file_name.clone(), &options);
-      let mut parser = Parser::new_from(lexer);
-      let module = parser.parse_module().unwrap();
-      let file_info = analyzer.get_import_map(&module);
-    
-      module.visit_with(&mut analyzer);
-    
-      let module = module.fold_with(&mut replace_specifier(&file_name, &options));
-      let is_esm_file =
-        file_info.has_exports || options.is_callback_function || (is_in_cwd && !is_in_node_modules);
-      let module = if is_esm_file {
-        module
-      } else {
-        module.fold_with(&mut cjs_to_esm(&file_name, &options))
-      };
-    
-      let module = module.fold_with(&mut react(
-        source_map.clone(),
-        Some(&comments),
-        ReactOptions {
-          ..Default::default()
-        },
-        top_level_mark,
-      ));
-    
-      let mut buf = vec![];
-      let mut emitter = Emitter {
-        cfg: Config {
-          minify: false,
-          ..Default::default()
-        },
-        cm: source_map.clone(),
-        comments: Some(&comments),
-        wr: JsWriter::new(source_map.clone(), "\n", &mut buf, None),
-      };
-    
-      emitter.emit_module(&module).unwrap();
-      String::from_utf8(buf).unwrap()
+    let top_level_mark = Mark::new();
+    let unresolved_mark = Mark::new();
+    let lexer = Lexer::new(
+      Syntax::Typescript(TsConfig {
+        tsx: true, // Enable TSX support
+        decorators: true,
+        no_early_errors: false,
+        ..Default::default()
+      }),
+      EsVersion::EsNext,
+      StringInput::from(&*fm),
+      Some(&comments),
+    );
+    let is_in_cwd = file_name.contains(&options.cwd);
+    let is_in_node_modules = file_name.contains(&NODE_MODULES);
+    let mut analyzer = Analyzer::new(&file_name.clone(), &options);
+    let mut parser = Parser::new_from(lexer);
+    let module = parser.parse_module().unwrap();
+    let file_info = analyzer.get_import_map(&module);
+
+    let module = module.fold_with(&mut replace_specifier(&file_name, &options));
+    let is_esm_file =
+      file_info.has_exports || options.is_callback_function || (is_in_cwd && !is_in_node_modules);
+
+    println!("is_esm_file:{}", is_esm_file);
+    // Conduct identifier scope analysis
+    let module = module.fold_with(&mut resolver(unresolved_mark, top_level_mark, true));
+
+    // module.visit_with(&mut analyzer);
+
+    let module: Module = if is_esm_file {
+      module
+    } else {
+      module.fold_with(&mut cjs_to_esm(&file_name, &options))
+    };
+
+    // Remove typescript types
+    // let module = module.fold_with(&mut typescript(
+    //   // source_map.clone(),
+    //   typescript::Config {
+    //     no_empty_export: true,
+    //     ..Default::default()
+    //   },
+    //   // TsxConfig::default(),
+    //   // comments.clone(),
+    //   top_level_mark,
+    // ));
+    // let module = module.fold_with(&mut tsx(
+    //     source_map.clone(),
+    //     typescript::Config {
+    //       no_empty_export: true,
+    //       ..Default::default()
+    //     },
+    //     TsxConfig::default(),
+    //     comments.clone(),
+    //     top_level_mark
+    //   )
+    // );
+
+    // Fix up any identifiers with the same name, but different contexts
+    // let module = module.fold_with(&mut hygiene());
+
+    // // Ensure that we have enough parenthesis.
+    // let module = module.fold_with(&mut fixer(Some(&comments)));
+
+    let module = module.fold_with(&mut react(
+      source_map.clone(),
+      Some(&comments),
+      ReactOptions {
+        ..Default::default()
+      },
+      top_level_mark,
+      unresolved_mark,
+    ));
+
+    let mut buf = vec![];
+    let mut emitter = Emitter {
+      cfg: codegen::Config::default().with_minify(false),
+      cm: source_map.clone(),
+      comments: Some(&comments),
+      wr: JsWriter::new(source_map.clone(), "\n", &mut buf, None),
+    };
+
+    emitter.emit_module(&module).unwrap();
+    String::from_utf8(buf).unwrap()
   })
 }
 
@@ -113,23 +161,28 @@ mod compile_tests {
     let current_dir = env::current_dir().unwrap();
     let current_dir = current_dir.to_str().unwrap();
     let file_name = format!(
-      "{}/{}",
-      current_dir, "__tests__/fixtures/react-ts/main.tsx"
+      // "{}/{}",
+      "{}",
+      "/Users/lianghang/Desktop/github/xbell/node_modules/.pnpm/debug@4.3.4/node_modules/debug/src/browser.js"
+      // current_dir, "__tests__/fixtures/react-ts/main.tsx"
     );
     let source = fs::read_to_string(file_name.clone()).unwrap();
     let compile_options = CompileOptions {
       extensions: EXTENSIONS.clone(),
       conditions: CONDITIONS.clone(),
-      cwd:  TEST_DIR.clone(),
+      cwd: TEST_DIR.clone(),
       is_callback_function: false,
     };
     let result = compile(source.into(), file_name.into(), compile_options);
-    let expected_result = format!(r#"import React from "/__xbell_prefix__/@fs{}/__tests__/node_modules/react/index.js";
+    let expected_result = format!(
+      r#"import React from "/__xbell_prefix__/@fs{}/__tests__/node_modules/react/index.js";
 import ReactDOM from "/__xbell_prefix__/@fs{}/__tests__/node_modules/react-dom/client.js";
 import App from "/__xbell_prefix__/@fs{}/__tests__/fixtures/react-ts/App.tsx";
 import "/__xbell_prefix__/@fs{}/__tests__/fixtures/react-ts/index.css";
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(/*#__PURE__*/ React.createElement(React.StrictMode, null, /*#__PURE__*/ React.createElement(App, null)));
-"#, current_dir, current_dir, current_dir, current_dir);
+"#,
+      current_dir, current_dir, current_dir, current_dir
+    );
     assert_eq!(result, expected_result);
   }
 }

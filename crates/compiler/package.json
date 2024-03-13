@@ -25,7 +25,7 @@
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
     "prepublishOnly": "napi prepublish -t npm",
-    "test": "napi build:debug && pnpm test",
+    "test": "napi build && pnpm test",
     "test:rs": "cargo test",
     "universal": "napi universal",
     "version": "napi version"

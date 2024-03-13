@@ -69,7 +69,8 @@ impl VisitMut for CjsToEsm {
 
       ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
         type_only: false,
-        asserts: None,
+        // asserts: None,
+        phase: Default::default(),
         specifiers: vec![ImportSpecifier::Default(ImportDefaultSpecifier {
           span: DUMMY_SP,
           local: Ident {
@@ -78,6 +79,7 @@ impl VisitMut for CjsToEsm {
             optional: false,
           },
         })],
+        with: None,
         span: DUMMY_SP,
         src: Box::new(Str {
           value: asset_url.into(),
@@ -436,9 +438,9 @@ mod tests {
       "{}/{}",
       current_dir, "__tests__/fixtures/condition-require.js"
     );
-    let source = fs::read_to_string(file_name.clone()).unwrap();
+    let source: String = fs::read_to_string(file_name.clone()).unwrap();
 
-    let compile_options = CompileOptions {
+    let compile_options: CompileOptions = CompileOptions {
       extensions: EXTENSIONS.clone(),
       conditions: CONDITIONS.clone(),
       cwd: TEST_DIR.to_string(),
