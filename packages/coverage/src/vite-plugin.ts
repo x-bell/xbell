@@ -59,6 +59,7 @@ export function viteCoveragePlugin(opts: CoverageOptions = {}): Plugin {
       }
 
       if (testExclude.shouldInstrument(id)) {
+        // @ts-ignore
         const sourceMap = sanitizeSourceMap(this.getCombinedSourcemap());
         // @ts-ignore
         const code = instrumenter.instrumentSync(srcCode, id, sourceMap);

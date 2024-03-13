@@ -3,13 +3,13 @@ import { IParameter } from '../types/index'
 
 export function genParameterDecorator(parameterType: ParameterType): () => ParameterDecorator {
   return () => {
-    return (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
-      const types: IParameter[] = Reflect.getMetadata(MetaDataType.Parameter, target, propertyKey) || []
+    return (target: Object, propertyKey: string | symbol | undefined, parameterIndex: number) => {
+      const types: IParameter[] = Reflect.getMetadata(MetaDataType.Parameter, target, propertyKey!) || []
       types.push({
         index: parameterIndex,
         type: parameterType,
       })
-      Reflect.defineMetadata(MetaDataType.Parameter, types, target, propertyKey)
+      Reflect.defineMetadata(MetaDataType.Parameter, types, target, propertyKey!)
     }
   }
 }

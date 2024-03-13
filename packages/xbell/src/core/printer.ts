@@ -91,7 +91,7 @@ class Printer {
     skipped: color.gray('↓'),
   }
 
-  protected timer?: NodeJS.Timer;
+  protected timer?: number;
   protected currentFrame = 0;
   protected files?: XBellTestFileRecord[]
   public isAllDone = false;
@@ -286,7 +286,7 @@ class Printer {
       if (this.files) {
         this.print(this.files);
       }
-    }, 100)
+    }, 100) as unknown as number;
   }
 
   stopPrint() {

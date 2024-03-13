@@ -31,9 +31,9 @@
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
     "@types/inquirer": "^8.2.1",
-    "@types/node": "^18.7.18",
+    "@types/node": "^20.11.25",
     "@types/nunjucks": "^3.2.1",
-    "typescript": "^4.6.4",
+    "typescript": "^5.4.2",
     "xbell": "workspace:*"
   }
 }
